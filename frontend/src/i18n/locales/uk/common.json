@@ -1,0 +1,124 @@
+{
+	"app": {
+		"name": "Krydix"
+	},
+	"nav": {
+		"home": "Головна",
+		"products": "Товари",
+		"search": "Пошук",
+		"cart": "Кошик",
+		"account": "Кабінет",
+		"sellerCabinet": "Кабінет продавця",
+		"moderator": "Панель модератора",
+		"admin": "Адмін-панель"
+	},
+	"auth": {
+		"login": "Увійти",
+		"register": "Зареєструватись",
+		"logout": "Вийти",
+		"email": "Електронна пошта",
+		"password": "Пароль",
+		"confirmPassword": "Підтвердіть пароль",
+		"forgotPassword": "Забули пароль?",
+		"resetPassword": "Скинути пароль",
+		"verifyEmail": "Підтвердити пошту",
+		"noAccount": "Немає акаунту?",
+		"hasAccount": "Вже є акаунт?"
+	},
+	"common": {
+		"save": "Зберегти",
+		"cancel": "Скасувати",
+		"confirm": "Підтвердити",
+		"delete": "Видалити",
+		"edit": "Редагувати",
+		"add": "Додати",
+		"search": "Пошук",
+		"filter": "Фільтр",
+		"sort": "Сортування",
+		"loading": "Завантаження...",
+		"noData": "Дані відсутні",
+		"error": "Щось пішло не так",
+		"success": "Успішно",
+		"required": "Поле обов'язкове",
+		"back": "Назад",
+		"next": "Далі",
+		"submit": "Надіслати",
+		"upload": "Завантажити",
+		"download": "Скачати",
+		"preview": "Попередній перегляд",
+		"close": "Закрити",
+		"yes": "Так",
+		"no": "Ні",
+		"all": "Всі",
+		"active": "Активний",
+		"inactive": "Неактивний",
+		"status": "Статус",
+		"actions": "Дії",
+		"createdAt": "Створено",
+		"updatedAt": "Оновлено"
+	},
+	"status": {
+		"product": {
+			"DRAFT": "Чернетка",
+			"PENDING_MODERATION": "На перевірці",
+			"APPROVED": "Схвалено",
+			"REJECTED": "Відхилено",
+			"ARCHIVED": "В архіві",
+			"BLOCKED": "Заблоковано",
+			"DISABLED": "Вимкнено",
+			"ENABLED": "Увімкнено"
+		},
+		"order": {
+			"PENDING": "Очікує",
+			"CONFIRMED": "Підтверджено",
+			"SHIPPED": "Відправлено",
+			"DELIVERED": "Доставлено",
+			"CANCELLED": "Скасовано",
+			"REFUNDED": "Повернено"
+		},
+		"payment": {
+			"PENDING": "Очікує",
+			"AUTHORIZED": "Авторизовано",
+			"PAID": "Оплачено",
+			"FAILED": "Помилка",
+			"REFUNDED": "Повернено"
+		},
+		"delivery": {
+			"PENDING": "Очікує",
+			"PACKED": "Упаковано",
+			"SENT": "Відправлено",
+			"IN_TRANSIT": "В дорозі",
+			"DELIVERED": "Доставлено",
+			"NOT_RECEIVED": "Не отримано",
+			"RETURNED": "Повернено"
+		},
+		"verification": {
+			"DRAFT": "Чернетка",
+			"PENDING": "Очікує",
+			"UNDER_REVIEW": "На перевірці",
+			"APPROVED": "Схвалено",
+			"REJECTED": "Відхилено",
+			"BLOCKED": "Заблоковано"
+		},
+		"complaint": {
+			"NEW": "Нова",
+			"IN_REVIEW": "На розгляді",
+			"RESOLVED": "Вирішено",
+			"REJECTED": "Відхилено"
+		}
+	},
+	"pagination": {
+		"rowsPerPage": "Рядків на сторінці",
+		"of": "з",
+		"page": "Сторінка"
+	},
+	"emptyState": {
+		"title": "Тут ще нічого немає",
+		"description": "Наразі дані відсутні."
+	},
+	"confirmDialog": {
+		"title": "Ви впевнені?",
+		"confirm": "Підтвердити",
+		"cancel": "Скасувати"
+	}
+}
