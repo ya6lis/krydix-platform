@@ -91,7 +91,8 @@ export const theme = createTheme({
 		MuiCard: {
 			styleOverrides: {
 				root: {
-					boxShadow: '0px 0px 2px rgba(145, 158, 171, 0.2), 0px 12px 24px rgba(145, 158, 171, 0.12)',
+					boxShadow:
+						'0px 0px 2px rgba(145, 158, 171, 0.2), 0px 12px 24px rgba(145, 158, 171, 0.12)',
 					borderRadius: 16,
 				},
 			},

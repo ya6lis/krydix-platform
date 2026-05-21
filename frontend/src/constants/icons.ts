@@ -75,7 +75,10 @@ import {
 	faExternalLinkAlt,
 } from '@fortawesome/free-solid-svg-icons';
 
-import { faStar as faStarRegular, faHeart as faHeartRegular } from '@fortawesome/free-regular-svg-icons';
+import {
+	faStar as faStarRegular,
+	faHeart as faHeartRegular,
+} from '@fortawesome/free-regular-svg-icons';
 
 export const Icons = {
 	// Navigation
