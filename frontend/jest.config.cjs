@@ -1,0 +1,18 @@
+/** @type {import('jest').Config} */
+const config = {
+	preset: 'ts-jest',
+	testEnvironment: 'jsdom',
+	roots: ['<rootDir>/src'],
+	testMatch: ['**/__tests__/**/*.{ts,tsx}', '**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}'],
+	moduleNameMapper: {
+		'^@/(.*)$': '<rootDir>/src/$1',
+		'\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+	},
+	setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
+	transform: {
+		'^.+\\.(ts|tsx)$': ['ts-jest', { tsconfig: 'tsconfig.json' }],
+	},
+	clearMocks: true,
+};
+
+module.exports = config;

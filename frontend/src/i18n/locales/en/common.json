@@ -1,0 +1,124 @@
+{
+	"app": {
+		"name": "Krydix"
+	},
+	"nav": {
+		"home": "Home",
+		"products": "Products",
+		"search": "Search",
+		"cart": "Cart",
+		"account": "Account",
+		"sellerCabinet": "Seller Cabinet",
+		"moderator": "Moderator Panel",
+		"admin": "Admin Panel"
+	},
+	"auth": {
+		"login": "Sign In",
+		"register": "Sign Up",
+		"logout": "Sign Out",
+		"email": "Email",
+		"password": "Password",
+		"confirmPassword": "Confirm Password",
+		"forgotPassword": "Forgot password?",
+		"resetPassword": "Reset Password",
+		"verifyEmail": "Verify Email",
+		"noAccount": "Don't have an account?",
+		"hasAccount": "Already have an account?"
+	},
+	"common": {
+		"save": "Save",
+		"cancel": "Cancel",
+		"confirm": "Confirm",
+		"delete": "Delete",
+		"edit": "Edit",
+		"add": "Add",
+		"search": "Search",
+		"filter": "Filter",
+		"sort": "Sort",
+		"loading": "Loading...",
+		"noData": "No data available",
+		"error": "Something went wrong",
+		"success": "Success",
+		"required": "This field is required",
+		"back": "Back",
+		"next": "Next",
+		"submit": "Submit",
+		"upload": "Upload",
+		"download": "Download",
+		"preview": "Preview",
+		"close": "Close",
+		"yes": "Yes",
+		"no": "No",
+		"all": "All",
+		"active": "Active",
+		"inactive": "Inactive",
+		"status": "Status",
+		"actions": "Actions",
+		"createdAt": "Created",
+		"updatedAt": "Updated"
+	},
+	"status": {
+		"product": {
+			"DRAFT": "Draft",
+			"PENDING_MODERATION": "Pending Review",
+			"APPROVED": "Approved",
+			"REJECTED": "Rejected",
+			"ARCHIVED": "Archived",
+			"BLOCKED": "Blocked",
+			"DISABLED": "Disabled",
+			"ENABLED": "Enabled"
+		},
+		"order": {
+			"PENDING": "Pending",
+			"CONFIRMED": "Confirmed",
+			"SHIPPED": "Shipped",
+			"DELIVERED": "Delivered",
+			"CANCELLED": "Cancelled",
+			"REFUNDED": "Refunded"
+		},
+		"payment": {
+			"PENDING": "Pending",
+			"AUTHORIZED": "Authorized",
+			"PAID": "Paid",
+			"FAILED": "Failed",
+			"REFUNDED": "Refunded"
+		},
+		"delivery": {
+			"PENDING": "Pending",
+			"PACKED": "Packed",
+			"SENT": "Sent",
+			"IN_TRANSIT": "In Transit",
+			"DELIVERED": "Delivered",
+			"NOT_RECEIVED": "Not Received",
+			"RETURNED": "Returned"
+		},
+		"verification": {
+			"DRAFT": "Draft",
+			"PENDING": "Pending",
+			"UNDER_REVIEW": "Under Review",
+			"APPROVED": "Approved",
+			"REJECTED": "Rejected",
+			"BLOCKED": "Blocked"
+		},
+		"complaint": {
+			"NEW": "New",
+			"IN_REVIEW": "In Review",
+			"RESOLVED": "Resolved",
+			"REJECTED": "Rejected"
+		}
+	},
+	"pagination": {
+		"rowsPerPage": "Rows per page",
+		"of": "of",
+		"page": "Page"
+	},
+	"emptyState": {
+		"title": "Nothing here yet",
+		"description": "There is no data to display at the moment."
+	},
+	"confirmDialog": {
+		"title": "Are you sure?",
+		"confirm": "Confirm",
+		"cancel": "Cancel"
+	}
+}
