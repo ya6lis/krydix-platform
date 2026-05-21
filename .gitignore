@@ -53,3 +53,6 @@ cypress/downloads/
 .eslintcache
 CLAUDE.md
 .claude
+
+# Local scripts (machine-specific, not for repo)
+local/
