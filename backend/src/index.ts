@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { type RequestHandler } from 'express';
 import cors from 'cors';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@as-integrations/express5';
@@ -24,7 +24,7 @@ async function bootstrap() {
 		'/graphql',
 		expressMiddleware(server, {
 			context: async () => ({ user: null }),
-		})
+		}) as RequestHandler
 	);
 
 	app.listen(env.PORT, () => {
