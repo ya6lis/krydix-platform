@@ -23,7 +23,15 @@
 		"resetPassword": "Reset Password",
 		"verifyEmail": "Verify Email",
 		"noAccount": "Don't have an account?",
-		"hasAccount": "Already have an account?"
+		"hasAccount": "Already have an account?",
+		"firstName": "First Name",
+		"lastName": "Last Name",
+		"loginSubtitle": "Sign in to continue to Krydix",
+		"registerSubtitle": "Create your free account",
+		"registerSuccess": "Account created! Please check your email to verify.",
+		"verifyEmailSuccess": "Email verified successfully. You can now sign in.",
+		"verifyEmailFailed": "Invalid or expired verification link.",
+		"verifyEmailRetry": "Please request a new verification email."
 	},
 	"common": {
 		"save": "Save",

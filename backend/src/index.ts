@@ -5,6 +5,7 @@ import { expressMiddleware } from '@as-integrations/express5';
 import { env } from './config/env.js';
 import { logger } from './utils/logger.js';
 import { schema } from './graphql/schema.js';
+import { extractAuthUser } from './middleware/auth.js';
 import type { GraphQLContext } from './types/context.js';
 
 async function bootstrap() {
@@ -23,7 +24,7 @@ async function bootstrap() {
 	app.use(
 		'/graphql',
 		expressMiddleware(server, {
-			context: async () => ({ user: null }),
+			context: async ({ req }) => ({ user: extractAuthUser(req) }),
 		}) as unknown as express.RequestHandler
 	);
 

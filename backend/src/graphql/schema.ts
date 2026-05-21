@@ -1,15 +1,14 @@
 import { makeExecutableSchema } from '@graphql-tools/schema';
+import { mergeTypeDefs, mergeResolvers } from '@graphql-tools/merge';
+import { authTypeDefs } from './modules/auth/typeDefs.js';
+import { authResolvers } from './modules/auth/resolvers.js';
 
-const typeDefs = `#graphql
-  type Query {
-    health: String!
-  }
+const rootTypeDefs = `#graphql
+	type Query
+	type Mutation
 `;
 
-const resolvers = {
-	Query: {
-		health: () => 'ok',
-	},
-};
-
-export const schema = makeExecutableSchema({ typeDefs, resolvers });
+export const schema = makeExecutableSchema({
+	typeDefs: mergeTypeDefs([rootTypeDefs, authTypeDefs]),
+	resolvers: mergeResolvers([authResolvers]),
+});

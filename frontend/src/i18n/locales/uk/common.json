@@ -23,7 +23,15 @@
 		"resetPassword": "Скинути пароль",
 		"verifyEmail": "Підтвердити пошту",
 		"noAccount": "Немає акаунту?",
-		"hasAccount": "Вже є акаунт?"
+		"hasAccount": "Вже є акаунт?",
+		"firstName": "Ім'я",
+		"lastName": "Прізвище",
+		"loginSubtitle": "Увійдіть, щоб продовжити",
+		"registerSubtitle": "Створіть безкоштовний акаунт",
+		"registerSuccess": "Акаунт створено! Перевірте пошту для підтвердження.",
+		"verifyEmailSuccess": "Пошту підтверджено. Тепер можна увійти.",
+		"verifyEmailFailed": "Недійсне або прострочене посилання.",
+		"verifyEmailRetry": "Запросіть новий лист з підтвердженням."
 	},
 	"common": {
 		"save": "Зберегти",
