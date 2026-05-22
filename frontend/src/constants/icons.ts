@@ -53,6 +53,9 @@ import {
 	faFlag,
 	faShield,
 	faBuilding,
+	faStore,
+	faGripVertical,
+	faCircleCheck,
 	faTruck,
 	faMapMarkerAlt,
 	faPhone,
@@ -176,6 +179,9 @@ export const Icons = {
 
 	// Misc
 	building: faBuilding,
+	store: faStore,
+	grip: faGripVertical,
+	checkCircle: faCircleCheck,
 	globe: faGlobe,
 	settings: faCog,
 } as const;

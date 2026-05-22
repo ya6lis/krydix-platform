@@ -1,0 +1,179 @@
+// ─── Brand palette ───────────────────────────────────────────────────────────
+// Krydix purple design system — mirrors theme/index.ts tokens
+$color-white:       #FFFFFF;
+$color-indigo:      #200A69;
+$color-cyan:        #00B8D9;
+$color-sand:        #F4F6F8;
+$color-ink:         #1C252E;
+$color-amber:       #FFAB00;
+$color-coral:       #FF5630;
+$color-purple:      #7635DC;
+$color-purple-soft: #BBA0EC;
+$color-coral-light: #FF8469;
+
+// ─── Colors ──────────────────────────────────────────────────────────────────
+$primary:         #7635DC;
+$primary-dark:    #200A69;
+$primary-light:   #F1EAFC;
+
+$secondary:       #200A69;
+$secondary-dark:  #15064A;
+$secondary-light: rgba(#200A69, 0.08);
+
+$info:            #00B8D9;
+$info-dark:       #006C7F;
+
+$success:         #00B8D9;
+$success-dark:    #006C7F;
+
+$warning:         #FFAB00;
+$warning-dark:    #6B4A00;
+
+$error:           #FF5630;
+$error-dark:      #B23A1A;
+
+// ─── Accent (purple) ─────────────────────────────────────────────────────────
+$accent:        #7635DC;
+$accent-soft:   #F1EAFC;
+$accent-ink:    #200A69;
+$accent-light:  #BBA0EC;
+
+// ─── Status soft/ink pairs ───────────────────────────────────────────────────
+$cyan-soft:  #E0F7FB;
+$cyan-ink:   #006C7F;
+$amber-soft: #FFF5DB;
+$amber-ink:  #6B4A00;
+$coral-soft: #FFE6DF;
+$coral-ink:  #B23A1A;
+$blue-soft:  #E6EEF8;
+$blue-ink:   #1D3F6E;
+
+// ─── Neutrals ────────────────────────────────────────────────────────────────
+$grey-100: #F9FAFB;
+$grey-200: #F4F6F8;
+$grey-300: #E1E5EA;
+$grey-400: #C4CDD5;
+$grey-500: #8794A1;
+$grey-600: #455463;
+$grey-700: #455463;
+$grey-800: #1C252E;
+$grey-900: #141A21;
+
+// ─── Semantic ────────────────────────────────────────────────────────────────
+$text-primary:   #1C252E;
+$text-secondary: #8794A1;
+$text-disabled:  #8794A1;
+
+$bg-default: #F4F6F8;
+$bg-paper:   #FFFFFF;
+$bg-surface-2: #EAEDF1;
+
+$line:    #E1E5EA;
+$line-2:  #EDF0F3;
+$divider: #E1E5EA;
+
+// ─── Layout ──────────────────────────────────────────────────────────────────
+$sidebar-width:           240px;
+$sidebar-collapsed-width:  88px;
+$header-height:            64px;
+$public-header-height:     64px;
+
+// ─── Shadows ─────────────────────────────────────────────────────────────────
+$shadow-xs:   0 1px 2px rgba(28, 37, 46, 0.04);
+$shadow-sm:   0 1px 2px rgba(28, 37, 46, 0.04);
+$shadow-md:   0 4px 16px rgba(28, 37, 46, 0.06);
+$shadow-lg:   0 12px 32px rgba(28, 37, 46, 0.12);
+$shadow-card: 0 1px 2px rgba(28, 37, 46, 0.04);
+$shadow-pop:  0 16px 48px rgba(28, 37, 46, 0.14);
+$shadow-dialog: 0 16px 48px rgba(28, 37, 46, 0.18);
+
+// ─── Border radius ───────────────────────────────────────────────────────────
+$radius-xs: 6px;
+$radius-sm: 8px;
+$radius-md: 10px;
+$radius-lg: 14px;
+$radius-xl: 18px;
+$radius-full: 9999px;
+
+// ─── Spacing ─────────────────────────────────────────────────────────────────
+$space-1:  4px;
+$space-2:  8px;
+$space-3:  12px;
+$space-4:  16px;
+$space-5:  20px;
+$space-6:  24px;
+$space-8:  32px;
+$space-10: 40px;
+$space-12: 48px;
+$space-16: 64px;
+
+// ─── Typography ──────────────────────────────────────────────────────────────
+// Public Sans is Latin-only; Inter carries Cyrillic glyphs (Ukrainian).
+$font-family: 'Public Sans', 'Inter', 'Helvetica Neue', Arial, sans-serif;
+$font-mono:   'JetBrains Mono', 'SFMono-Regular', Menlo, monospace;
+
+$font-xs:   0.75rem;   // 12px
+$font-sm:   0.875rem;  // 14px
+$font-base: 1rem;      // 16px
+$font-lg:   1.125rem;  // 18px
+$font-xl:   1.25rem;   // 20px
+$font-2xl:  1.5rem;    // 24px
+$font-3xl:  1.875rem;  // 30px
+$font-4xl:  2.25rem;   // 36px
+
+$fw-regular: 400;
+$fw-medium:  500;
+$fw-semibold: 600;
+$fw-bold:    700;
+$fw-extrabold: 800;
+
+// ─── Z-index ─────────────────────────────────────────────────────────────────
+$z-below:   -1;
+$z-base:     0;
+$z-raised:  10;
+$z-dropdown: 100;
+$z-sticky:  200;
+$z-header:  300;
+$z-sidebar: 400;
+$z-modal:  1300;
+$z-toast:  1400;
+
+// ─── Transitions ─────────────────────────────────────────────────────────────
+$transition-fast:   0.15s ease-in-out;
+$transition-base:   0.25s ease-in-out;
+$transition-slow:   0.35s ease-in-out;
+$transition-sidebar: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+// ─── Breakpoints ─────────────────────────────────────────────────────────────
+$bp-xs: 0px;
+$bp-sm: 600px;
+$bp-md: 900px;
+$bp-lg: 1200px;
+$bp-xl: 1536px;
+
+// ─── CSS Custom Properties (runtime accessible) ───────────────────────────────
+:root {
+  --primary:         #{$primary};
+  --primary-dark:    #{$primary-dark};
+  --primary-light:   #{$primary-light};
+  --secondary:       #{$secondary};
+  --accent:          #{$accent};
+  --accent-soft:     #{$accent-soft};
+  --accent-ink:      #{$accent-ink};
+  --accent-light:    #{$accent-light};
+  --text-primary:    #{$text-primary};
+  --text-secondary:  #{$text-secondary};
+  --bg-default:      #{$bg-default};
+  --bg-paper:        #{$bg-paper};
+  --bg-surface-2:    #{$bg-surface-2};
+  --line:            #{$line};
+  --line-2:          #{$line-2};
+  --divider:         #{$divider};
+  --sidebar-width:   #{$sidebar-width};
+  --header-height:   #{$header-height};
+  --shadow-card:     #{$shadow-card};
+  --shadow-pop:      #{$shadow-pop};
+  --radius-md:       #{$radius-md};
+  --radius-lg:       #{$radius-lg};
+  --transition-base: #{$transition-base};
+}

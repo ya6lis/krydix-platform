@@ -1,11 +1,17 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
+import { Role } from '@/constants/enums';
 
 import PublicLayout from '@/layouts/PublicLayout';
 import BuyerLayout from '@/layouts/BuyerLayout';
 import SellerLayout from '@/layouts/SellerLayout';
 import ModeratorLayout from '@/layouts/ModeratorLayout';
 import AdminLayout from '@/layouts/AdminLayout';
+
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import LoginPage from '@/pages/public/LoginPage';
+import RegisterPage from '@/pages/public/RegisterPage';
+import VerifyEmailPage from '@/pages/public/VerifyEmailPage';
 
 const Placeholder = ({ name }: { name: string }) => (
 	<div style={{ padding: 32 }}>
@@ -15,6 +21,9 @@ const Placeholder = ({ name }: { name: string }) => (
 );
 
 export const router = createBrowserRouter([
+	// Full-screen pre-auth pages — no public chrome
+	{ path: ROUTES.LOGIN, element: <LoginPage /> },
+	{ path: ROUTES.REGISTER, element: <RegisterPage /> },
 	{
 		element: <PublicLayout />,
 		children: [
@@ -23,9 +32,7 @@ export const router = createBrowserRouter([
 			{ path: '/products/:slug', element: <Placeholder name="Product Detail" /> },
 			{ path: ROUTES.SEARCH, element: <Placeholder name="Search" /> },
 			{ path: '/seller/:id', element: <Placeholder name="Seller Profile" /> },
-			{ path: ROUTES.LOGIN, element: <Placeholder name="Login" /> },
-			{ path: ROUTES.REGISTER, element: <Placeholder name="Register" /> },
-			{ path: ROUTES.VERIFY_EMAIL, element: <Placeholder name="Verify Email" /> },
+			{ path: ROUTES.VERIFY_EMAIL, element: <VerifyEmailPage /> },
 			{ path: ROUTES.FORGOT_PASSWORD, element: <Placeholder name="Forgot Password" /> },
 			{ path: ROUTES.RESET_PASSWORD, element: <Placeholder name="Reset Password" /> },
 			{ path: ROUTES.NOT_FOUND, element: <Placeholder name="404 Not Found" /> },
@@ -35,7 +42,11 @@ export const router = createBrowserRouter([
 	},
 	{
 		path: '/account',
-		element: <BuyerLayout />,
+		element: (
+			<ProtectedRoute allowedRoles={[Role.BUYER, Role.SELLER, Role.MODERATOR, Role.ADMIN]}>
+				<BuyerLayout />
+			</ProtectedRoute>
+		),
 		children: [
 			{ index: true, element: <Placeholder name="Account Home" /> },
 			{ path: 'orders', element: <Placeholder name="My Orders" /> },
@@ -49,7 +60,11 @@ export const router = createBrowserRouter([
 	},
 	{
 		path: '/seller-cabinet',
-		element: <SellerLayout />,
+		element: (
+			<ProtectedRoute allowedRoles={[Role.SELLER, Role.ADMIN]}>
+				<SellerLayout />
+			</ProtectedRoute>
+		),
 		children: [
 			{ index: true, element: <Placeholder name="Seller Home" /> },
 			{ path: 'dashboard', element: <Placeholder name="Seller Dashboard" /> },
@@ -65,7 +80,11 @@ export const router = createBrowserRouter([
 	},
 	{
 		path: '/moderator',
-		element: <ModeratorLayout />,
+		element: (
+			<ProtectedRoute allowedRoles={[Role.MODERATOR, Role.ADMIN]}>
+				<ModeratorLayout />
+			</ProtectedRoute>
+		),
 		children: [
 			{ index: true, element: <Placeholder name="Moderator Home" /> },
 			{ path: 'products', element: <Placeholder name="Product Moderation" /> },
@@ -76,7 +95,11 @@ export const router = createBrowserRouter([
 	},
 	{
 		path: '/admin',
-		element: <AdminLayout />,
+		element: (
+			<ProtectedRoute allowedRoles={[Role.ADMIN]}>
+				<AdminLayout />
+			</ProtectedRoute>
+		),
 		children: [
 			{ index: true, element: <Placeholder name="Admin Home" /> },
 			{ path: 'users', element: <Placeholder name="Users" /> },

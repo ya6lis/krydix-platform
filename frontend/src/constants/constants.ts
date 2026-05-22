@@ -13,6 +13,6 @@ export const AUTH_ACCESS_TOKEN_KEY = 'krydix_access_token';
 export const AUTH_REFRESH_TOKEN_KEY = 'krydix_refresh_token';
 
 export const SUPPORTED_LANGUAGES = ['en', 'uk'] as const;
-export const DEFAULT_LANGUAGE = 'uk';
+export const DEFAULT_LANGUAGE = 'en';
 
 export const DEBOUNCE_SEARCH_MS = 400;

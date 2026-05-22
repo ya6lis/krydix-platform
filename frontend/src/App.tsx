@@ -4,6 +4,8 @@ import { ApolloProvider } from '@apollo/client';
 import { theme } from '@/theme';
 import { apolloClient } from '@/graphql/client';
 import { router } from '@/router';
+import { AppToastProvider } from '@/components/ui';
+import { AuthInitializer } from '@/components/auth/AuthInitializer';
 import '@/i18n';
 
 export default function App() {
@@ -11,7 +13,11 @@ export default function App() {
 		<ApolloProvider client={apolloClient}>
 			<ThemeProvider theme={theme}>
 				<CssBaseline />
-				<RouterProvider router={router} />
+				<AppToastProvider>
+					<AuthInitializer>
+						<RouterProvider router={router} />
+					</AuthInitializer>
+				</AppToastProvider>
 			</ThemeProvider>
 		</ApolloProvider>
 	);
