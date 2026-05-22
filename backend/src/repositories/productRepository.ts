@@ -1,0 +1,59 @@
+import { Prisma } from '@prisma/client';
+import { prisma } from '../utils/prisma.js';
+
+const productInclude = {
+	translations: true,
+	media: { orderBy: { sortOrder: 'asc' } },
+	variants: { where: { isActive: true } },
+	categories: { include: { category: { include: { translations: true } } } },
+	seller: { include: { profile: true } },
+} satisfies Prisma.ProductInclude;
+
+export type ProductRecord = Prisma.ProductGetPayload<{ include: typeof productInclude }>;
+
+export async function findProducts(
+	where: Prisma.ProductWhereInput,
+	orderBy: Prisma.ProductOrderByWithRelationInput,
+	skip: number,
+	take: number
+): Promise<ProductRecord[]> {
+	return prisma.product.findMany({ where, include: productInclude, orderBy, skip, take });
+}
+
+export async function countProducts(where: Prisma.ProductWhereInput): Promise<number> {
+	return prisma.product.count({ where });
+}
+
+export async function findProductBySlug(slug: string): Promise<ProductRecord | null> {
+	return prisma.product.findFirst({
+		where: { slug, deletedAt: null },
+		include: productInclude,
+	});
+}
+
+/** Aggregated rating + count for many products in one query. */
+export async function ratingsByProductIds(productIds: string[]) {
+	if (productIds.length === 0) return [];
+	return prisma.productReview.groupBy({
+		by: ['productId'],
+		where: {
+			productId: { in: productIds },
+			isApproved: true,
+			isBlocked: false,
+			deletedAt: null,
+		},
+		_avg: { rating: true },
+		_count: { _all: true },
+	});
+}
+
+/** Distinct non-null brand names across visible products. */
+export async function distinctBrands(visibleWhere: Prisma.ProductWhereInput): Promise<string[]> {
+	const rows = await prisma.product.findMany({
+		where: { ...visibleWhere, brand: { not: null } },
+		distinct: ['brand'],
+		select: { brand: true },
+		orderBy: { brand: 'asc' },
+	});
+	return rows.map((r) => r.brand).filter((b): b is string => Boolean(b));
+}

@@ -109,3 +109,11 @@ export enum ImportStatus {
 	COMPLETED = 'COMPLETED',
 	FAILED = 'FAILED',
 }
+
+export enum ProductSort {
+	NEWEST = 'NEWEST',
+	POPULARITY = 'POPULARITY',
+	PRICE_ASC = 'PRICE_ASC',
+	PRICE_DESC = 'PRICE_DESC',
+	RATING = 'RATING',
+}
