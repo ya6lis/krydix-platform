@@ -11,7 +11,7 @@ import type { GraphQLContext } from './types/context.js';
 async function bootstrap() {
 	const app = express();
 
-	app.use(cors({ origin: '*', credentials: true }));
+	app.use(cors({ origin: env.FRONTEND_URL, credentials: true }));
 	app.use(express.json());
 
 	app.get('/health', (_req, res) => {

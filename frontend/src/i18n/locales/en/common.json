@@ -31,7 +31,60 @@
 		"registerSuccess": "Account created! Please check your email to verify.",
 		"verifyEmailSuccess": "Email verified successfully. You can now sign in.",
 		"verifyEmailFailed": "Invalid or expired verification link.",
-		"verifyEmailRetry": "Please request a new verification email."
+		"verifyEmailRetry": "Please request a new verification email.",
+		"welcomeBack": "Welcome back",
+		"getStartedFree": "Get started — free",
+		"signInTitle": "Sign in to Krydix",
+		"createAccountTitle": "Create your account",
+		"noAccountYet": "Don't have an account yet?",
+		"createOne": "Create one",
+		"alreadyHaveOne": "Already have one?",
+		"workEmail": "Work email",
+		"emailVerifyHint": "We'll send a verification link.",
+		"passwordHint": "At least 8 characters",
+		"keepSignedIn": "Keep me signed in",
+		"showPassword": "Show password",
+		"hidePassword": "Hide password",
+		"termsAgree": "I agree to the Terms of Service and Privacy Policy.",
+		"termsRequired": "You must accept the terms to continue.",
+		"roleBuyerTitle": "Buy on Krydix",
+		"roleBuyerDesc": "Browse verified sellers, place orders, leave reviews.",
+		"roleSellerTitle": "Sell on Krydix",
+		"roleSellerDesc": "Apply for seller status after sign-up. Verification required.",
+		"copyright": "© 2026 Krydix",
+		"passwordReq": {
+			"length": "At least 8 characters",
+			"uppercase": "One uppercase letter",
+			"number": "One number",
+			"symbol": "One symbol"
+		},
+		"legal": {
+			"privacy": "Privacy",
+			"terms": "Terms",
+			"help": "Help"
+		},
+		"art": {
+			"loginTag": "Krydix Marketplace",
+			"loginHeadline": "Verified sellers. Honest commerce.",
+			"registerTag": "Join Krydix",
+			"registerHeadline": "A marketplace built on trust from day one.",
+			"benefit1Title": "Sign up in 60 seconds",
+			"benefit1Desc": "Email and password. Confirm your inbox and you're in.",
+			"benefit2Title": "Browse verified products",
+			"benefit2Desc": "Every seller is identity-checked — no counterfeit listings.",
+			"benefit3Title": "Buyer protection on every order",
+			"benefit3Desc": "14-day returns, tracked delivery, dispute resolution.",
+			"footnote": "Joined by thousands of buyers and sellers across 38 countries.",
+			"trust1Title": "Identity-checked sellers",
+			"trust1Desc": "Every seller passes EDRPOU business verification.",
+			"trust2Title": "Buyer protection",
+			"trust2Desc": "14-day returns and dispute resolution on every order.",
+			"trust3Title": "Tracked delivery",
+			"trust3Desc": "Real-time shipment tracking from order to doorstep.",
+			"quote": "The verification flow is the reason buyers actually trust the listings.",
+			"quoteAuthor": "Elena Wren",
+			"quoteRole": "Founder · Atelier Studio"
+		}
 	},
 	"common": {
 		"save": "Save",
@@ -128,5 +181,15 @@
 		"title": "Are you sure?",
 		"confirm": "Confirm",
 		"cancel": "Cancel"
+	},
+	"components": {
+		"passwordStrength": {
+			"label": "Password strength",
+			"empty": "Enter a password",
+			"weak": "Weak",
+			"fair": "Fair",
+			"good": "Good",
+			"strong": "Strong"
+		}
 	}
 }

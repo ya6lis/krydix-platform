@@ -1,0 +1,91 @@
+@use '@/styles/variables' as v;
+@use '@/styles/mixins' as m;
+
+.header {
+  position: fixed;
+  top: 0;
+  left: v.$sidebar-width;
+  right: 0;
+  height: v.$header-height;
+  background: rgba(v.$bg-paper, 0.8);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-bottom: 1px solid v.$divider;
+  @include m.flex-between;
+  padding: 0 v.$space-6;
+  z-index: v.$z-header;
+  transition: left v.$transition-sidebar;
+}
+
+.left {
+  @include m.flex-start;
+  gap: v.$space-2;
+}
+
+.right {
+  @include m.flex-start;
+  gap: v.$space-1;
+}
+
+.iconBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: v.$radius-sm;
+  @include m.flex-center;
+  cursor: pointer;
+  transition: background v.$transition-fast;
+  color: v.$text-secondary;
+  font-size: 18px;
+  position: relative;
+
+  &:hover {
+    background: rgba(v.$grey-800, 0.04);
+    color: v.$text-primary;
+  }
+}
+
+.badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: v.$error;
+  border: 2px solid v.$bg-paper;
+}
+
+.breadcrumb {
+  @include m.flex-start;
+  gap: v.$space-1;
+  font-size: v.$font-sm;
+  color: v.$text-secondary;
+}
+
+.breadcrumbSep {
+  color: v.$text-disabled;
+}
+
+.breadcrumbCurrent {
+  color: v.$text-primary;
+  font-weight: v.$fw-medium;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: v.$primary-light;
+  color: v.$primary;
+  font-weight: v.$fw-bold;
+  font-size: v.$font-sm;
+  @include m.flex-center;
+  cursor: pointer;
+  border: 2px solid v.$divider;
+  transition: border-color v.$transition-fast;
+  margin-left: v.$space-1;
+
+  &:hover {
+    border-color: v.$primary;
+  }
+}

@@ -45,3 +45,52 @@ export type { ToastMessage } from './AppToast';
 
 export { PageSectionWrapper } from './PageSectionWrapper';
 export type { PageSectionWrapperProps } from './PageSectionWrapper';
+
+// ─── Design-system components (Components.html) ───────────────────────────────
+export { AppCard } from './AppCard';
+export type { AppCardProps } from './AppCard';
+
+export { AppAvatar } from './AppAvatar';
+export type { AppAvatarProps, AppAvatarColor, AppAvatarSize } from './AppAvatar';
+
+export { AppSwitch } from './AppSwitch';
+export type { AppSwitchProps } from './AppSwitch';
+
+export { AppTabs } from './AppTabs';
+export type { AppTabsProps, AppTabItem } from './AppTabs';
+
+export { AppAlert } from './AppAlert';
+export type { AppAlertProps } from './AppAlert';
+
+export { AppTooltip } from './AppTooltip';
+export type { AppTooltipProps } from './AppTooltip';
+
+export { AppProgress } from './AppProgress';
+export type { AppProgressProps } from './AppProgress';
+
+export { AppSkeleton } from './AppSkeleton';
+export type { AppSkeletonProps } from './AppSkeleton';
+
+export { AppBreadcrumbs } from './AppBreadcrumbs';
+export type { AppBreadcrumbsProps, AppBreadcrumbItem } from './AppBreadcrumbs';
+
+export { SegmentedControl } from './SegmentedControl';
+export type { SegmentedControlProps, SegmentedOption } from './SegmentedControl';
+
+export { StatCard } from './StatCard';
+export type { StatCardProps, StatCardTone } from './StatCard';
+
+export { RangeSlider } from './RangeSlider';
+export type { RangeSliderProps } from './RangeSlider';
+
+export { RoleChooser } from './RoleChooser';
+export type { RoleChooserProps, RoleOption } from './RoleChooser';
+
+export { PasswordStrength, scorePassword } from './PasswordStrength';
+export type { PasswordStrengthProps } from './PasswordStrength';
+
+export { AppMenu } from './AppMenu';
+export type { AppMenuProps, AppMenuItem } from './AppMenu';
+
+export { NotificationItem } from './NotificationItem';
+export type { NotificationItemProps, NotificationTone } from './NotificationItem';

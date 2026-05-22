@@ -3,10 +3,12 @@ import { env } from '../config/env.js';
 import { logger } from './logger.js';
 
 function createTransporter() {
-	if (!env.GMAIL_USER || !env.GMAIL_APP_PASSWORD) return null;
+	if (!env.EMAIL_HOST || !env.EMAIL_USER || !env.EMAIL_PASSWORD) return null;
 	return nodemailer.createTransport({
-		service: 'gmail',
-		auth: { user: env.GMAIL_USER, pass: env.GMAIL_APP_PASSWORD },
+		host: env.EMAIL_HOST,
+		port: env.EMAIL_PORT,
+		secure: env.EMAIL_PORT === 465,
+		auth: { user: env.EMAIL_USER, pass: env.EMAIL_PASSWORD },
 	});
 }
 

@@ -21,6 +21,9 @@ const Placeholder = ({ name }: { name: string }) => (
 );
 
 export const router = createBrowserRouter([
+	// Full-screen pre-auth pages — no public chrome
+	{ path: ROUTES.LOGIN, element: <LoginPage /> },
+	{ path: ROUTES.REGISTER, element: <RegisterPage /> },
 	{
 		element: <PublicLayout />,
 		children: [
@@ -29,8 +32,6 @@ export const router = createBrowserRouter([
 			{ path: '/products/:slug', element: <Placeholder name="Product Detail" /> },
 			{ path: ROUTES.SEARCH, element: <Placeholder name="Search" /> },
 			{ path: '/seller/:id', element: <Placeholder name="Seller Profile" /> },
-			{ path: ROUTES.LOGIN, element: <LoginPage /> },
-			{ path: ROUTES.REGISTER, element: <RegisterPage /> },
 			{ path: ROUTES.VERIFY_EMAIL, element: <VerifyEmailPage /> },
 			{ path: ROUTES.FORGOT_PASSWORD, element: <Placeholder name="Forgot Password" /> },
 			{ path: ROUTES.RESET_PASSWORD, element: <Placeholder name="Reset Password" /> },
