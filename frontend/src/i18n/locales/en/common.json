@@ -191,5 +191,64 @@
 			"good": "Good",
 			"strong": "Strong"
 		}
+	},
+	"catalog": {
+		"title": "Catalog",
+		"subtitle": "Browse verified products across Krydix.",
+		"sortLabel": "Sort by",
+		"resultsCount": "{{count}} products",
+		"new": "New",
+		"lowStock": "Low stock",
+		"outOfStock": "Out of stock",
+		"inStockCount": "{{count}} in stock",
+		"sort": {
+			"newest": "Newest",
+			"popularity": "Popularity",
+			"priceAsc": "Price: low to high",
+			"priceDesc": "Price: high to low",
+			"rating": "Rating"
+		},
+		"empty": {
+			"title": "No products found",
+			"description": "Try adjusting your filters or clearing them."
+		},
+		"filters": {
+			"category": "Category",
+			"price": "Price (USD)",
+			"brand": "Brand",
+			"rating": "Rating",
+			"andUp": "& up",
+			"availability": "Availability",
+			"inStockOnly": "In stock only",
+			"clearAll": "Clear all filters"
+		}
+	},
+	"product": {
+		"variant": "Variant",
+		"reviewCount": "{{count}} reviews",
+		"inStockCount": "In stock · {{count}} available",
+		"outOfStock": "Out of stock",
+		"noDescription": "No description provided.",
+		"reviewsSummary": "Based on {{count}} reviews",
+		"notFound": {
+			"title": "Product not found",
+			"description": "This product may have been removed or is no longer available."
+		},
+		"tabs": {
+			"description": "Description",
+			"specifications": "Specifications",
+			"reviews": "Reviews"
+		},
+		"specs": {
+			"brand": "Brand",
+			"sku": "SKU / Article",
+			"category": "Category",
+			"availability": "Availability"
+		},
+		"trust": {
+			"verified": "Verified seller — EDRPOU & tax docs confirmed",
+			"delivery": "Tracked delivery — courier, branch or self pickup",
+			"returns": "14-day returns — buyer protection on all orders"
+		}
 	}
 }

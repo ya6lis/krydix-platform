@@ -12,6 +12,8 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import LoginPage from '@/pages/public/LoginPage';
 import RegisterPage from '@/pages/public/RegisterPage';
 import VerifyEmailPage from '@/pages/public/VerifyEmailPage';
+import CatalogPage from '@/pages/public/CatalogPage';
+import ProductPage from '@/pages/public/ProductPage';
 
 const Placeholder = ({ name }: { name: string }) => (
 	<div style={{ padding: 32 }}>
@@ -28,8 +30,8 @@ export const router = createBrowserRouter([
 		element: <PublicLayout />,
 		children: [
 			{ path: ROUTES.HOME, element: <Placeholder name="Home" /> },
-			{ path: ROUTES.PRODUCTS, element: <Placeholder name="Products" /> },
-			{ path: '/products/:slug', element: <Placeholder name="Product Detail" /> },
+			{ path: ROUTES.PRODUCTS, element: <CatalogPage /> },
+			{ path: '/products/:slug', element: <ProductPage /> },
 			{ path: ROUTES.SEARCH, element: <Placeholder name="Search" /> },
 			{ path: '/seller/:id', element: <Placeholder name="Seller Profile" /> },
 			{ path: ROUTES.VERIFY_EMAIL, element: <VerifyEmailPage /> },
