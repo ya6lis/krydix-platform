@@ -10,7 +10,61 @@
 		"account": "Account",
 		"sellerCabinet": "Seller Cabinet",
 		"moderator": "Moderator Panel",
-		"admin": "Admin Panel"
+		"admin": "Admin Panel",
+		"group": {
+			"overview": "Overview",
+			"marketplace": "Marketplace",
+			"selling": "Selling",
+			"moderation": "Moderation",
+			"communication": "Communication",
+			"adminGroup": "Admin",
+			"account": "Account"
+		},
+		"dashboard": "Dashboard",
+		"catalog": "Catalog",
+		"product": "Product page",
+		"orders": "Orders",
+		"verification": "Verification",
+		"queue": "Queue",
+		"complaints": "Complaints",
+		"reviews": "Reviews",
+		"messages": "Messages",
+		"users": "Users & roles",
+		"categories": "Categories",
+		"verifications": "Verifications",
+		"platform": "Platform settings",
+		"audit": "Audit log",
+		"settings": "Settings",
+		"help": "Help & support"
+	},
+	"shell": {
+		"search": {
+			"placeholder": "Search products, orders, users…"
+		},
+		"cart": {
+			"title": "Your cart",
+			"itemsFrom": "{{count}} items from {{sellers}} sellers",
+			"empty": "Your cart is empty",
+			"subtotal": "Subtotal",
+			"shipping": "Shipping",
+			"shippingCalc": "Calculated at checkout",
+			"viewCart": "View cart",
+			"checkout": "Checkout",
+			"remove": "Remove"
+		},
+		"notif": {
+			"title": "Notifications",
+			"unread": "{{count}} unread",
+			"markAllRead": "Mark all read",
+			"viewAll": "View all notifications",
+			"empty": "No notifications yet",
+			"tab": {
+				"all": "All",
+				"unread": "Unread",
+				"orders": "Orders",
+				"system": "System"
+			}
+		}
 	},
 	"auth": {
 		"login": "Sign In",
