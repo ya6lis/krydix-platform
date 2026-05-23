@@ -111,11 +111,12 @@ export default function CatalogPage() {
 							gap={1.5}
 							mb={2.25}
 						>
-							<Typography variant="body2" color="text.secondary">
+							<Typography data-cy="results-count" variant="body2" color="text.secondary">
 								{t('catalog.resultsCount', { count: total })}
 							</Typography>
 							<Box sx={{ width: 200 }}>
 								<AppSelect
+									data-cy="sort-select"
 									label={t('catalog.sortLabel')}
 									options={sortOptions}
 									value={sort}

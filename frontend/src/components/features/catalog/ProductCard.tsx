@@ -37,6 +37,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
 	return (
 		<Card
+			data-cy="product-card"
 			component={RouterLink}
 			to={ROUTES.PRODUCT(product.slug)}
 			sx={{

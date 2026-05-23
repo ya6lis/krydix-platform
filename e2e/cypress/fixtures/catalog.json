@@ -1,0 +1,78 @@
+{
+	"categories": [
+		{
+			"id": "c1",
+			"slug": "outerwear",
+			"parentId": null,
+			"name": "Outerwear",
+			"description": null,
+			"productCount": 12,
+			"children": [
+				{
+					"id": "c2",
+					"slug": "jackets",
+					"parentId": "c1",
+					"name": "Jackets",
+					"productCount": 6,
+					"children": []
+				}
+			]
+		}
+	],
+	"productBrands": ["Heritage Co.", "Maru Studio", "Field Works"],
+	"products": {
+		"items": [
+			{
+				"id": "p1",
+				"slug": "heritage-field-jacket",
+				"sku": "HFJ-001",
+				"brand": "Heritage Co.",
+				"basePrice": 184,
+				"status": "APPROVED",
+				"isAvailable": true,
+				"title": "Heritage Field Jacket",
+				"description": "A rugged jacket for the outdoors.",
+				"metaTitle": null,
+				"metaDescription": null,
+				"mainImage": null,
+				"media": [],
+				"variants": [
+					{ "id": "v1", "sku": "V-M", "options": { "size": "M" }, "price": null, "stock": 5, "isActive": true }
+				],
+				"categories": [{ "id": "c1", "slug": "outerwear", "name": "Outerwear" }],
+				"seller": { "id": "s1", "name": "Northern Atelier" },
+				"rating": 4.8,
+				"reviewCount": 24,
+				"totalStock": 5,
+				"createdAt": "2020-01-01T00:00:00.000Z"
+			},
+			{
+				"id": "p2",
+				"slug": "canvas-tote",
+				"sku": "CT-002",
+				"brand": "Maru Studio",
+				"basePrice": 58,
+				"status": "APPROVED",
+				"isAvailable": true,
+				"title": "Canvas Tote Bag",
+				"description": "Minimal daily carry.",
+				"metaTitle": null,
+				"metaDescription": null,
+				"mainImage": null,
+				"media": [],
+				"variants": [
+					{ "id": "v2", "sku": "V-ONE", "options": {}, "price": null, "stock": 20, "isActive": true }
+				],
+				"categories": [],
+				"seller": { "id": "s2", "name": "Maru Studio" },
+				"rating": 4.2,
+				"reviewCount": 8,
+				"totalStock": 20,
+				"createdAt": "2020-06-01T00:00:00.000Z"
+			}
+		],
+		"total": 2,
+		"page": 1,
+		"pageSize": 24
+	}
+}
