@@ -70,7 +70,7 @@ describe('Login page', () => {
 	it('successful login redirects away from login page', () => {
 		stubLoginSuccess();
 		cy.get('input[type="text"], input[autocomplete="email"]').first().type('test@krydix.co');
-		cy.get('input[type="password"]').type('Password1!');
+		cy.get('input[type="password"]').type('Password12!!');
 		cy.contains('button', 'Sign In').click();
 		cy.url().should('not.include', '/auth/login');
 	});
@@ -117,7 +117,7 @@ describe('Register page', () => {
 		cy.get('input[autocomplete="given-name"]').type('Jane');
 		cy.get('input[autocomplete="family-name"]').type('Doe');
 		cy.get('input[autocomplete="email"]').type('jane@krydix.co');
-		cy.get('input[autocomplete="new-password"]').type('Password1!');
+		cy.get('input[autocomplete="new-password"]').type('Password12!!');
 		cy.contains('button', 'Sign Up').click();
 		cy.contains('You must accept the terms').should('be.visible');
 	});
@@ -127,7 +127,7 @@ describe('Register page', () => {
 		cy.get('input[autocomplete="given-name"]').type('Jane');
 		cy.get('input[autocomplete="family-name"]').type('Doe');
 		cy.get('input[autocomplete="email"]').type('jane@krydix.co');
-		cy.get('input[autocomplete="new-password"]').type('Password1!');
+		cy.get('input[autocomplete="new-password"]').type('Password12!!');
 		cy.contains('I agree').parent().find('input[type="checkbox"]').check({ force: true });
 		cy.contains('button', 'Sign Up').click();
 		cy.contains('Account created').should('be.visible');
