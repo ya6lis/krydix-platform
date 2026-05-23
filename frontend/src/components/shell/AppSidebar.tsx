@@ -50,7 +50,7 @@ const NAV_GROUPS: NavGroup[] = [
 				id: 'catalog',
 				labelKey: 'nav.catalog',
 				icon: Icons.products,
-				href: '/catalog',
+				href: '/products',
 				roles: ['BUYER', 'SELLER', 'MODERATOR', 'ADMINISTRATOR'],
 			},
 			{
@@ -71,7 +71,7 @@ const NAV_GROUPS: NavGroup[] = [
 				id: 'verification',
 				labelKey: 'nav.verification',
 				icon: Icons.shield,
-				href: '/seller/apply',
+				href: '/seller-cabinet/verification',
 				roles: ['BUYER', 'SELLER', 'ADMINISTRATOR'],
 			},
 		],
@@ -84,7 +84,7 @@ const NAV_GROUPS: NavGroup[] = [
 				id: 'queue',
 				labelKey: 'nav.queue',
 				icon: Icons.clipboardCheck,
-				href: '/moderator/queue',
+				href: '/moderator/products',
 				badge: { count: 12, variant: 'warn' },
 				roles: ['MODERATOR', 'ADMINISTRATOR'],
 			},
@@ -141,7 +141,7 @@ const NAV_GROUPS: NavGroup[] = [
 				id: 'verifications',
 				labelKey: 'nav.verifications',
 				icon: Icons.userShield,
-				href: '/admin/verifications',
+				href: '/moderator/verification',
 				badge: { count: 7, variant: 'warn' },
 				roles: ['MODERATOR', 'ADMINISTRATOR'],
 			},
@@ -149,7 +149,7 @@ const NAV_GROUPS: NavGroup[] = [
 				id: 'platform',
 				labelKey: 'nav.platform',
 				icon: Icons.settings,
-				href: '/admin/platform',
+				href: '/admin/settings',
 				roles: ['ADMINISTRATOR'],
 			},
 			{
@@ -169,7 +169,7 @@ const NAV_GROUPS: NavGroup[] = [
 				id: 'settings',
 				labelKey: 'nav.settings',
 				icon: Icons.settings,
-				href: '/account/settings',
+				href: '/account/profile',
 				roles: ['BUYER', 'SELLER', 'MODERATOR', 'ADMINISTRATOR'],
 			},
 			{
@@ -296,7 +296,7 @@ export default function AppSidebar() {
 			{/* ── user footer ── */}
 			<Box
 				component={NavLink}
-				to="/account/settings"
+				to="/account/profile"
 				sx={{
 					marginTop: 'auto',
 					padding: '10px',
