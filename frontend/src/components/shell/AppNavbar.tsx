@@ -153,19 +153,6 @@ export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
 				<Box component="span" sx={{ flex: 1 }}>
 					{t('shell.search.placeholder')}
 				</Box>
-				<Box
-					component="span"
-					sx={{
-						fontFamily: tokens.fontMono,
-						fontSize: '10.5px',
-						background: tokens.surface2,
-						padding: '2px 6px',
-						borderRadius: 4,
-						color: tokens.ink2,
-					}}
-				>
-					⌘ K
-				</Box>
 			</Box>
 
 			{/* ── lang switcher ── */}

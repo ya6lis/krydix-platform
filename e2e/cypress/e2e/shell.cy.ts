@@ -129,10 +129,6 @@ describe('App shell — topbar', () => {
 		cy.contains('Search products, orders, users').should('be.visible');
 	});
 
-	it('shows ⌘ K shortcut chip in search bar', () => {
-		cy.contains('⌘ K').should('be.visible');
-	});
-
 	it('shows language switcher button', () => {
 		cy.contains('EN').should('be.visible');
 	});

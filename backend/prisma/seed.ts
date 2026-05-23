@@ -8,6 +8,20 @@ const prisma = new PrismaClient();
  * and a handful of approved products with translations, media and variants.
  */
 async function main() {
+	// ── Buyer ──
+	const buyerHash = await hashPassword('Buyer123!');
+	await prisma.user.upsert({
+		where: { email: 'buyer@krydix.dev' },
+		update: {},
+		create: {
+			email: 'buyer@krydix.dev',
+			passwordHash: buyerHash,
+			role: 'BUYER',
+			isEmailVerified: true,
+			profile: { create: { firstName: 'Jane', lastName: 'Doe' } },
+		},
+	});
+
 	// ── Seller ──
 	const passwordHash = await hashPassword('Seller123!');
 	const seller = await prisma.user.upsert({
