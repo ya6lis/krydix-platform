@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { MockedProvider } from '@apollo/client/testing';
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { MemoryRouter } from 'react-router-dom';
 import LoginPage from '../LoginPage';
 import { LOGIN_MUTATION } from '@/graphql/operations/auth';
@@ -19,7 +19,7 @@ jest.mock('@/store/authStore', () => ({
 		selector({ setAuth: mockSetAuth }),
 }));
 
-const loginSuccessMock = {
+const loginSuccessMock: MockedResponse = {
 	request: {
 		query: LOGIN_MUTATION,
 		variables: { input: { email: 'user@example.com', password: 'ValidPass12!!' } },
@@ -41,7 +41,7 @@ const loginSuccessMock = {
 	},
 };
 
-const loginErrorMock = {
+const loginErrorMock: MockedResponse = {
 	request: {
 		query: LOGIN_MUTATION,
 		variables: { input: { email: 'bad@bad.co', password: 'WrongPass12!!' } },
