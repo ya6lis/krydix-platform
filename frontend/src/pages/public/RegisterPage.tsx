@@ -17,7 +17,7 @@ import {
 	RoleChooser,
 	PasswordStrength,
 } from '@/components/ui';
-import { AuthLayout } from '@/components/auth/AuthLayout';
+import { AuthLayout, REGISTER_GRADIENT } from '@/components/auth/AuthLayout';
 import { Icons } from '@/constants/icons';
 import { REGISTER_MUTATION } from '@/graphql/operations/auth';
 import { ROUTES } from '@/constants/routes';
@@ -27,7 +27,7 @@ const schema = z.object({
 	firstName: z.string().min(1).max(50),
 	lastName: z.string().min(1).max(50),
 	email: z.string().email(),
-	password: z.string().min(8),
+	password: z.string().min(12),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -75,7 +75,7 @@ export default function RegisterPage() {
 	};
 
 	const requirements = [
-		{ key: 'length', met: password.length >= 8 },
+		{ key: 'length', met: password.length >= 12 },
 		{ key: 'uppercase', met: /[A-Z]/.test(password) },
 		{ key: 'number', met: /\d/.test(password) },
 		{ key: 'symbol', met: /[^A-Za-z0-9]/.test(password) },
@@ -100,6 +100,7 @@ export default function RegisterPage() {
 			artTag={t('auth.art.registerTag')}
 			artHeadline={t('auth.art.registerHeadline')}
 			artChildren={<RegisterArt />}
+			artGradient={REGISTER_GRADIENT}
 			titleSize={32}
 		>
 			{success ? (
@@ -278,7 +279,53 @@ export default function RegisterPage() {
 
 					<Box>
 						<AppCheckbox
-							label={t('auth.termsAgree')}
+							label={
+								<Box
+									component="span"
+									sx={{ fontSize: 12.5, color: 'text.secondary', lineHeight: 1.5 }}
+								>
+									{t('auth.termsAgreePrefix')}{' '}
+									<Box
+										component="a"
+										href="#"
+										sx={{
+											color: 'primary.dark',
+											fontWeight: 700,
+											textDecoration: 'none',
+											'&:hover': { textDecoration: 'underline' },
+										}}
+									>
+										{t('auth.art.termsOfService')}
+									</Box>
+									{', '}
+									<Box
+										component="a"
+										href="#"
+										sx={{
+											color: 'primary.dark',
+											fontWeight: 700,
+											textDecoration: 'none',
+											'&:hover': { textDecoration: 'underline' },
+										}}
+									>
+										{t('auth.art.privacyPolicy')}
+									</Box>
+									{t('auth.termsAgreeMid')}{' '}
+									<Box
+										component="a"
+										href="#"
+										sx={{
+											color: 'primary.dark',
+											fontWeight: 700,
+											textDecoration: 'none',
+											'&:hover': { textDecoration: 'underline' },
+										}}
+									>
+										{t('auth.art.sellerCode')}
+									</Box>
+									.
+								</Box>
+							}
 							checked={agreed}
 							onChange={(checked) => {
 								setAgreed(checked);
@@ -326,6 +373,13 @@ function RegisterArt() {
 		{ title: t('auth.art.benefit3Title'), desc: t('auth.art.benefit3Desc') },
 	];
 
+	const AVATAR_STYLES = [
+		{ bg: `linear-gradient(135deg, ${tokens.accent}, ${tokens.cyan})`, label: 'LO' },
+		{ bg: `linear-gradient(135deg, ${tokens.coral}, ${tokens.amber})`, label: 'SD' },
+		{ bg: `linear-gradient(135deg, ${tokens.cyan}, ${tokens.purpleSoft})`, label: 'CH' },
+		{ bg: `linear-gradient(135deg, ${tokens.amber}, ${tokens.coral})`, label: '+9k' },
+	];
+
 	return (
 		<Stack spacing={2.25}>
 			<Stack spacing={1.5}>
@@ -340,6 +394,7 @@ function RegisterArt() {
 							borderRadius: 1.5,
 							bgcolor: 'rgba(255,255,255,0.04)',
 							border: '1px solid rgba(255,255,255,0.12)',
+							backdropFilter: 'blur(8px)',
 						}}
 					>
 						<Box
@@ -368,9 +423,36 @@ function RegisterArt() {
 				))}
 			</Stack>
 
-			<Typography sx={{ fontSize: 12.5, color: 'rgba(255,255,255,0.55)' }}>
-				{t('auth.art.footnote')}
-			</Typography>
+			{/* footnote: avatar stack + joined count */}
+			<Stack direction="row" alignItems="center" spacing={1.75}>
+				<Box sx={{ display: 'flex' }}>
+					{AVATAR_STYLES.map((av, i) => (
+						<Box
+							key={av.label}
+							sx={{
+								width: 28,
+								height: 28,
+								borderRadius: '50%',
+								border: `2px solid ${tokens.indigo}`,
+								ml: i === 0 ? 0 : '-8px',
+								display: 'grid',
+								placeItems: 'center',
+								fontSize: 10.5,
+								fontWeight: 700,
+								color: '#fff',
+								background: av.bg,
+								zIndex: AVATAR_STYLES.length - i,
+								position: 'relative',
+							}}
+						>
+							{av.label}
+						</Box>
+					))}
+				</Box>
+				<Typography sx={{ fontSize: 12.5, color: 'rgba(255,255,255,0.55)' }}>
+					{t('auth.art.footnote')}
+				</Typography>
+			</Stack>
 		</Stack>
 	);
 }

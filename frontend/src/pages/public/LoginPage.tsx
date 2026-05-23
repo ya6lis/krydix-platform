@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
+import React from 'react';
 import { Box, Typography, InputAdornment, IconButton, Stack } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { AppInput, AppButton, AppCheckbox, AppAlert, AppLabel, AppTooltip } from '@/components/ui';
@@ -194,66 +195,150 @@ export default function LoginPage() {
 	);
 }
 
-/** Right-panel decorative content for the login page. */
+/** Right-panel glass card stack — matches Login.html .card-stack design. */
 function LoginArt() {
 	const { t } = useTranslation();
-	const trust = [
-		{ title: t('auth.art.trust1Title'), desc: t('auth.art.trust1Desc') },
-		{ title: t('auth.art.trust2Title'), desc: t('auth.art.trust2Desc') },
-		{ title: t('auth.art.trust3Title'), desc: t('auth.art.trust3Desc') },
-	];
+
+	const GLASS: React.CSSProperties = {
+		position: 'absolute',
+		background: 'rgba(255,255,255,0.06)',
+		border: '1px solid rgba(255,255,255,0.16)',
+		borderRadius: 16,
+		padding: '22px 26px',
+		backdropFilter: 'blur(20px)',
+	};
 
 	return (
 		<Stack spacing={2.25}>
-			<Stack spacing={1.5}>
-				{trust.map((item) => (
-					<Box
-						key={item.title}
+			{/* card stack */}
+			<Box sx={{ position: 'relative', minHeight: 320, my: 2.5 }}>
+				{/* c1 — sales stat */}
+				<Box sx={{ ...GLASS, top: 0, left: 0, right: 60, transform: 'rotate(-2deg)' }}>
+					<Typography
 						sx={{
-							display: 'flex',
-							gap: 1.75,
-							alignItems: 'flex-start',
-							p: 2,
-							borderRadius: 1.5,
-							bgcolor: 'rgba(255,255,255,0.04)',
-							border: '1px solid rgba(255,255,255,0.12)',
+							fontSize: 10.5,
+							fontWeight: 700,
+							letterSpacing: '0.1em',
+							textTransform: 'uppercase',
+							color: tokens.purpleSoft,
+							mb: 1,
 						}}
 					>
+						{t('auth.art.card1Label')}
+					</Typography>
+					<Typography sx={{ fontSize: 32, fontWeight: 800, letterSpacing: '-0.02em' }}>
+						$18,765
+					</Typography>
+					<Typography sx={{ fontSize: 12.5, color: 'rgba(255,255,255,0.6)', mt: 0.5 }}>
+						{t('auth.art.card1Sub')}
+					</Typography>
+				</Box>
+
+				{/* c2 — verified seller */}
+				<Box
+					sx={{
+						...GLASS,
+						top: 110,
+						left: 80,
+						right: 0,
+						transform: 'rotate(1.5deg)',
+						background: 'rgba(255,255,255,0.10)',
+					}}
+				>
+					<Stack direction="row" alignItems="center" spacing={1.75}>
 						<Box
 							sx={{
-								width: 28,
-								height: 28,
+								width: 36,
+								height: 36,
 								borderRadius: '50%',
 								flexShrink: 0,
 								display: 'grid',
 								placeItems: 'center',
-								bgcolor: 'rgba(187,160,236,0.16)',
-								color: tokens.purpleSoft,
-								fontSize: 12,
+								fontWeight: 700,
+								fontSize: 13,
+								background: `linear-gradient(135deg, ${tokens.accent}, ${tokens.cyan})`,
 							}}
 						>
-							<FontAwesomeIcon icon={Icons.check} />
+							NA
 						</Box>
-						<Box>
-							<Typography sx={{ fontWeight: 700, fontSize: 14.5 }}>{item.title}</Typography>
+						<Box sx={{ flex: 1 }}>
+							<Typography sx={{ fontWeight: 700, fontSize: 15 }}>
+								{t('auth.art.card2Name')}
+							</Typography>
 							<Typography sx={{ fontSize: 12.5, color: 'rgba(255,255,255,0.6)', mt: 0.5 }}>
-								{item.desc}
+								{t('auth.art.card2Sub')}
 							</Typography>
 						</Box>
-					</Box>
-				))}
-			</Stack>
+						<Box
+							sx={{
+								fontSize: 11,
+								fontWeight: 700,
+								px: '10px',
+								py: '3px',
+								borderRadius: 999,
+								background: 'rgba(0,184,217,0.18)',
+								color: tokens.cyan,
+							}}
+						>
+							{t('auth.art.card2Pill')}
+						</Box>
+					</Stack>
+				</Box>
 
+				{/* c3 — new order */}
+				<Box sx={{ ...GLASS, top: 220, left: 20, right: 80, transform: 'rotate(-1deg)' }}>
+					<Typography
+						sx={{
+							fontSize: 10.5,
+							fontWeight: 700,
+							letterSpacing: '0.1em',
+							textTransform: 'uppercase',
+							color: tokens.purpleSoft,
+							mb: 1,
+						}}
+					>
+						{t('auth.art.card3Label')}
+					</Typography>
+					<Stack direction="row" alignItems="center" spacing={1.75} sx={{ mt: 1 }}>
+						<Box
+							sx={{
+								width: 36,
+								height: 36,
+								borderRadius: '50%',
+								flexShrink: 0,
+								display: 'grid',
+								placeItems: 'center',
+								fontWeight: 700,
+								fontSize: 13,
+								background: `linear-gradient(135deg, ${tokens.coral}, ${tokens.amber})`,
+							}}
+						>
+							LO
+						</Box>
+						<Box sx={{ flex: 1 }}>
+							<Typography sx={{ fontWeight: 700, fontSize: 14 }}>
+								{t('auth.art.card3Name')}
+							</Typography>
+							<Typography sx={{ fontSize: 12.5, color: 'rgba(255,255,255,0.6)', mt: 0.5 }}>
+								{t('auth.art.card3Sub')}
+							</Typography>
+						</Box>
+					</Stack>
+				</Box>
+			</Box>
+
+			{/* testimonial */}
 			<Box
 				sx={{
 					p: 3,
 					borderRadius: 2,
 					bgcolor: 'rgba(255,255,255,0.06)',
 					border: '1px solid rgba(255,255,255,0.14)',
+					backdropFilter: 'blur(12px)',
 				}}
 			>
 				<Typography sx={{ fontSize: 15, fontStyle: 'italic', lineHeight: 1.55, mb: 2 }}>
-					“{t('auth.art.quote')}”
+					&ldquo;{t('auth.art.quote')}&rdquo;
 				</Typography>
 				<Stack direction="row" spacing={1.25} alignItems="center">
 					<Box
@@ -261,6 +346,7 @@ function LoginArt() {
 							width: 30,
 							height: 30,
 							borderRadius: '50%',
+							flexShrink: 0,
 							display: 'grid',
 							placeItems: 'center',
 							fontSize: 11,
