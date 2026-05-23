@@ -41,11 +41,13 @@
 		"alreadyHaveOne": "Already have one?",
 		"workEmail": "Work email",
 		"emailVerifyHint": "We'll send a verification link.",
-		"passwordHint": "At least 8 characters",
+		"passwordHint": "At least 12 characters",
 		"keepSignedIn": "Keep me signed in",
 		"showPassword": "Show password",
 		"hidePassword": "Hide password",
 		"termsAgree": "I agree to the Terms of Service and Privacy Policy.",
+		"termsAgreePrefix": "I agree to the",
+		"termsAgreeMid": ", and the",
 		"termsRequired": "You must accept the terms to continue.",
 		"roleBuyerTitle": "Buy on Krydix",
 		"roleBuyerDesc": "Browse verified sellers, place orders, leave reviews.",
@@ -53,7 +55,7 @@
 		"roleSellerDesc": "Apply for seller status after sign-up. Verification required.",
 		"copyright": "© 2026 Krydix",
 		"passwordReq": {
-			"length": "At least 8 characters",
+			"length": "At least 12 characters",
 			"uppercase": "One uppercase letter",
 			"number": "One number",
 			"symbol": "One symbol"
@@ -83,7 +85,19 @@
 			"trust3Desc": "Real-time shipment tracking from order to doorstep.",
 			"quote": "The verification flow is the reason buyers actually trust the listings.",
 			"quoteAuthor": "Elena Wren",
-			"quoteRole": "Founder · Atelier Studio"
+			"quoteRole": "Founder · Atelier Studio",
+			"card1Label": "Today's sales",
+			"card1Sub": "+9.2% vs. yesterday",
+			"card2Name": "Northern Atelier",
+			"card2Sub": "Verified · 1,284 sales · 4.9 ★",
+			"card2Pill": "Verified",
+			"card3Label": "New order",
+			"card3Name": "Lucia O'Brien",
+			"card3Sub": "#KX-6011 · $83.74 · 2m ago",
+			"footnoteCount": "Joined by {{count}} people across {{countries}} countries.",
+			"termsOfService": "Terms of Service",
+			"privacyPolicy": "Privacy Policy",
+			"sellerCode": "Seller code of conduct"
 		}
 	},
 	"common": {

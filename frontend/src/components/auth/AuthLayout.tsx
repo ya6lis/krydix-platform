@@ -18,7 +18,17 @@ export interface AuthLayoutProps {
 	artChildren: React.ReactNode;
 	/** Title font size at the desktop breakpoint (design: 36 login, 32 register). */
 	titleSize?: number;
+	/**
+	 * CSS gradient string for the decorative overlay on the right art panel.
+	 * Defaults to login variant (purple + cyan).
+	 */
+	artGradient?: string;
 }
+
+const LOGIN_GRADIENT = `radial-gradient(circle at 85% 25%, ${tokens.purple} 0%, transparent 50%), radial-gradient(circle at 15% 85%, ${tokens.cyan} 0%, transparent 40%)`;
+const REGISTER_GRADIENT = `radial-gradient(circle at 80% 30%, ${tokens.purple} 0%, transparent 50%), radial-gradient(circle at 20% 80%, ${tokens.coral} 0%, transparent 40%)`;
+
+export { LOGIN_GRADIENT, REGISTER_GRADIENT };
 
 /** Split-screen shell for pre-auth pages — form left, indigo brand panel right. */
 export function AuthLayout({
@@ -30,6 +40,7 @@ export function AuthLayout({
 	artHeadline,
 	artChildren,
 	titleSize = 36,
+	artGradient = LOGIN_GRADIENT,
 }: AuthLayoutProps) {
 	const { t } = useTranslation();
 
@@ -142,9 +153,20 @@ export function AuthLayout({
 				>
 					<span>{t('auth.copyright')}</span>
 					<Stack direction="row" spacing={2}>
-						<span>{t('auth.legal.privacy')}</span>
-						<span>{t('auth.legal.terms')}</span>
-						<span>{t('auth.legal.help')}</span>
+						{(['privacy', 'terms', 'help'] as const).map((key) => (
+							<Box
+								key={key}
+								component="a"
+								href="#"
+								sx={{
+									color: 'text.secondary',
+									textDecoration: 'none',
+									'&:hover': { color: 'text.primary' },
+								}}
+							>
+								{t(`auth.legal.${key}`)}
+							</Box>
+						))}
 					</Stack>
 				</Box>
 			</Box>
@@ -168,7 +190,7 @@ export function AuthLayout({
 						position: 'absolute',
 						inset: 0,
 						opacity: 0.4,
-						background: `radial-gradient(circle at 85% 25%, ${tokens.purple} 0%, transparent 50%), radial-gradient(circle at 15% 85%, ${tokens.cyan} 0%, transparent 40%)`,
+						background: artGradient,
 					}}
 				/>
 				<Box sx={{ position: 'relative' }}>
