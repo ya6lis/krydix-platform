@@ -4,7 +4,7 @@ import { onError } from '@apollo/client/link/error';
 import { useAuthStore } from '@/store/authStore';
 
 const httpLink = createHttpLink({
-	uri: import.meta.env.VITE_GRAPHQL_URL ?? 'http://localhost:4000/graphql',
+	uri: import.meta.env.VITE_GRAPHQL_URL ?? 'http://localhost:5000/graphql',
 });
 
 const authLink = setContext((_, { headers }) => {
