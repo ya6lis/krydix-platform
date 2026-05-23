@@ -670,8 +670,9 @@ export default function ProductPage() {
 							<Box
 								component="button"
 								type="button"
-								onClick={() => setQty((q) => Math.max(QTY_MIN, q - 1))}
-								disabled={qty <= QTY_MIN}
+								data-cy="qty-decrement"
+							onClick={() => setQty((q) => Math.max(QTY_MIN, q - 1))}
+							disabled={qty <= QTY_MIN}
 								sx={{
 									width: 36,
 									height: 38,
@@ -691,6 +692,7 @@ export default function ProductPage() {
 								component="input"
 								type="text"
 								readOnly
+								data-cy="qty-value"
 								value={qty}
 								sx={{
 									width: 44,
@@ -707,6 +709,7 @@ export default function ProductPage() {
 							<Box
 								component="button"
 								type="button"
+								data-cy="qty-increment"
 								onClick={() => setQty((q) => Math.min(QTY_MAX, q + 1))}
 								disabled={qty >= QTY_MAX || stock === 0}
 								sx={{
