@@ -208,6 +208,7 @@ export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
 						},
 					}}
 				>
+					<Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
 					{(['EN', 'UK'] as const).map((code) => (
 						<Box
 							key={code}
@@ -237,6 +238,7 @@ export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
 							)}
 						</Box>
 					))}
+					</Box>
 				</Popover>
 			</Box>
 
