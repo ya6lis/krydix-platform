@@ -198,13 +198,13 @@ export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
 					transformOrigin={{ vertical: 'top', horizontal: 'right' }}
 					PaperProps={{
 						sx: {
-							minWidth: 80,
-							borderRadius: '10px',
+							minWidth: 170,
+							borderRadius: '12px',
 							border: `1px solid ${tokens.line}`,
 							boxShadow: tokens.shadowMd,
 							mt: '6px',
 							overflow: 'hidden',
-							padding: '4px',
+							padding: '6px',
 						},
 					}}
 				>
@@ -218,12 +218,13 @@ export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
 								display: 'flex',
 								alignItems: 'center',
 								justifyContent: 'space-between',
-								padding: '7px 12px',
-								borderRadius: '7px',
+								gap: '24px',
+								padding: '9px 14px',
+								borderRadius: '8px',
 								border: 'none',
 								background: lang === code ? tokens.accentSoft : 'transparent',
 								color: lang === code ? tokens.accentInk : tokens.ink1,
-								fontSize: 12,
+								fontSize: 13,
 								fontWeight: lang === code ? 700 : 500,
 								cursor: 'pointer',
 								transition: 'background 100ms',
@@ -232,7 +233,7 @@ export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
 						>
 							{code === 'EN' ? 'English' : 'Українська'}
 							{lang === code && (
-								<Box component="span" sx={{ fontSize: 10, color: tokens.accent }}>✓</Box>
+								<Box component="span" sx={{ fontSize: 12, color: tokens.accent }}>✓</Box>
 							)}
 						</Box>
 					))}
