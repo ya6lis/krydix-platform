@@ -121,4 +121,33 @@ describe('AppSidebar', () => {
 		const icons = screen.getAllByTestId('icon');
 		expect(icons.length).toBeGreaterThan(3);
 	});
+
+	describe('guest (unauthenticated) state', () => {
+		beforeEach(() => {
+			mockAuthUser = null;
+		});
+
+		it('shows catalog nav item for guest', () => {
+			renderSidebar('/products');
+			expect(screen.getByText('nav.catalog')).toBeInTheDocument();
+		});
+
+		it('hides account-only nav items for guest', () => {
+			renderSidebar('/products');
+			expect(screen.queryByText('nav.dashboard')).not.toBeInTheDocument();
+			expect(screen.queryByText('nav.orders')).not.toBeInTheDocument();
+			expect(screen.queryByText('nav.users')).not.toBeInTheDocument();
+		});
+
+		it('shows sign-in prompt in footer for guest', () => {
+			renderSidebar('/products');
+			expect(screen.getByText('shell.guest.signIn')).toBeInTheDocument();
+		});
+
+		it('does NOT render user name or email in footer for guest', () => {
+			renderSidebar('/products');
+			expect(screen.queryByText('Jane Doe')).not.toBeInTheDocument();
+			expect(screen.queryByText('buyer@example.com')).not.toBeInTheDocument();
+		});
+	});
 });

@@ -52,6 +52,10 @@
 			"checkout": "Checkout",
 			"remove": "Remove"
 		},
+		"guest": {
+			"signIn": "Sign in",
+			"subtitle": "Access your account"
+		},
 		"notif": {
 			"title": "Notifications",
 			"unread": "{{count}} unread",

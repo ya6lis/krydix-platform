@@ -6,9 +6,13 @@ import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { Icons } from '@/constants/icons';
 import { tokens } from '@/theme';
 import { useAuthStore } from '@/store/authStore';
+import { ROUTES } from '@/constants/routes';
 
 /* ── width constant shared with AppShell ─────────────────────── */
 export const SIDEBAR_WIDTH = 248;
+
+/* ── role constant for unauthenticated visitors ──────────────── */
+const GUEST = 'GUEST';
 
 /* ── nav config ──────────────────────────────────────────────── */
 type BadgeVariant = 'default' | 'warn' | 'danger';
@@ -51,7 +55,8 @@ const NAV_GROUPS: NavGroup[] = [
 				labelKey: 'nav.catalog',
 				icon: Icons.products,
 				href: '/products',
-				roles: ['BUYER', 'SELLER', 'MODERATOR', 'ADMINISTRATOR'],
+				// guests can browse catalog
+				roles: [GUEST, 'BUYER', 'SELLER', 'MODERATOR', 'ADMINISTRATOR'],
 			},
 			{
 				id: 'orders',
@@ -177,7 +182,8 @@ const NAV_GROUPS: NavGroup[] = [
 				labelKey: 'nav.help',
 				icon: Icons.question,
 				href: '/support',
-				roles: ['BUYER', 'SELLER', 'MODERATOR', 'ADMINISTRATOR'],
+				// guests can access help too
+				roles: [GUEST, 'BUYER', 'SELLER', 'MODERATOR', 'ADMINISTRATOR'],
 			},
 		],
 	},
@@ -194,9 +200,10 @@ const BADGE_STYLES: Record<BadgeVariant, { bg: string; color: string }> = {
 export default function AppSidebar() {
 	const { t } = useTranslation();
 	const user = useAuthStore((s) => s.user);
-	const role = user?.role ?? '';
+	// treat unauthenticated visitors as GUEST so role filter works cleanly
+	const role = user?.role ?? GUEST;
 
-	// initials from name
+	// initials from profile name, fall back to first char of email
 	const initials = user?.profile
 		? `${user.profile.firstName[0]}${user.profile.lastName[0]}`.toUpperCase()
 		: (user?.email?.[0] ?? '?').toUpperCase();
@@ -225,10 +232,10 @@ export default function AppSidebar() {
 				},
 			}}
 		>
-			{/* ── brand ── */}
+			{/* ── brand — always links to home ── */}
 			<Box
 				component={NavLink}
-				to="/account"
+				to={ROUTES.HOME}
 				sx={{
 					display: 'flex',
 					alignItems: 'center',
@@ -268,9 +275,9 @@ export default function AppSidebar() {
 				</Typography>
 			</Box>
 
-			{/* ── nav groups ── */}
+			{/* ── nav groups — filtered by role ── */}
 			{NAV_GROUPS.map((group) => {
-				const visibleItems = group.items.filter((item) => !role || item.roles.includes(role));
+				const visibleItems = group.items.filter((item) => item.roles.includes(role));
 				if (visibleItems.length === 0) return null;
 				return (
 					<Box key={group.id} sx={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
@@ -287,82 +294,149 @@ export default function AppSidebar() {
 							{t(group.labelKey)}
 						</Typography>
 						{visibleItems.map((item) => (
-							<NavItem key={item.id} item={item} />
+							<SidebarNavItem key={item.id} item={item} />
 						))}
 					</Box>
 				);
 			})}
 
-			{/* ── user footer ── */}
-			<Box
-				component={NavLink}
-				to="/account/profile"
-				sx={{
-					marginTop: 'auto',
-					padding: '10px',
-					borderRadius: '12px',
-					background: tokens.surface,
-					border: `1px solid ${tokens.line}`,
-					display: 'flex',
-					alignItems: 'center',
-					gap: '10px',
-					textDecoration: 'none',
-					color: 'inherit',
-					transition: 'border-color 120ms, transform 120ms',
-					'&:hover': {
-						borderColor: tokens.accent,
-						transform: 'translateY(-1px)',
-						'& .foot-chev': { color: tokens.accent },
-					},
-				}}
-			>
+			{/* ── footer: user profile link or guest sign-in prompt ── */}
+			{user ? (
 				<Box
+					component={NavLink}
+					to="/account/profile"
 					sx={{
-						width: 32,
-						height: 32,
-						borderRadius: '50%',
-						background: `linear-gradient(135deg, ${tokens.accent}, ${tokens.cyan})`,
-						color: '#fff',
-						display: 'grid',
-						placeItems: 'center',
-						fontSize: 12,
-						fontWeight: 700,
-						flexShrink: 0,
+						marginTop: 'auto',
+						padding: '10px',
+						borderRadius: '12px',
+						background: tokens.surface,
+						border: `1px solid ${tokens.line}`,
+						display: 'flex',
+						alignItems: 'center',
+						gap: '10px',
+						textDecoration: 'none',
+						color: 'inherit',
+						transition: 'border-color 120ms, transform 120ms',
+						'&:hover': {
+							borderColor: tokens.accent,
+							transform: 'translateY(-1px)',
+							'& .foot-chev': { color: tokens.accent },
+						},
 					}}
 				>
-					{initials}
-				</Box>
-				<Box sx={{ flex: 1, lineHeight: 1.3, minWidth: 0 }}>
-					<Typography sx={{ fontSize: 13, fontWeight: 600, color: tokens.ink1 }}>
-						{user?.profile
-							? `${user.profile.firstName} ${user.profile.lastName}`
-							: (user?.email ?? '')}
-					</Typography>
-					<Typography
+					<Box
 						sx={{
-							fontSize: 11,
-							color: tokens.ink3,
-							whiteSpace: 'nowrap',
-							overflow: 'hidden',
-							textOverflow: 'ellipsis',
+							width: 32,
+							height: 32,
+							borderRadius: '50%',
+							background: `linear-gradient(135deg, ${tokens.accent}, ${tokens.cyan})`,
+							color: '#fff',
+							display: 'grid',
+							placeItems: 'center',
+							fontSize: 12,
+							fontWeight: 700,
+							flexShrink: 0,
 						}}
 					>
-						{user?.email ?? ''}
-					</Typography>
+						{initials}
+					</Box>
+					<Box sx={{ flex: 1, lineHeight: 1.3, minWidth: 0 }}>
+						<Typography sx={{ fontSize: 13, fontWeight: 600, color: tokens.ink1 }}>
+							{user.profile
+								? `${user.profile.firstName} ${user.profile.lastName}`
+								: user.email}
+						</Typography>
+						<Typography
+							sx={{
+								fontSize: 11,
+								color: tokens.ink3,
+								whiteSpace: 'nowrap',
+								overflow: 'hidden',
+								textOverflow: 'ellipsis',
+							}}
+						>
+							{user.email}
+						</Typography>
+					</Box>
+					<Box
+						className="foot-chev"
+						sx={{ color: tokens.ink3, transition: 'color 120ms', fontSize: 13 }}
+					>
+						<FontAwesomeIcon icon={faChevronRight} />
+					</Box>
 				</Box>
+			) : (
+				/* Guest sign-in prompt */
 				<Box
-					className="foot-chev"
-					sx={{ color: tokens.ink3, transition: 'color 120ms', fontSize: 13 }}
+					component={NavLink}
+					to={ROUTES.LOGIN}
+					sx={{
+						marginTop: 'auto',
+						padding: '10px',
+						borderRadius: '12px',
+						background: tokens.surface,
+						border: `1px solid ${tokens.line}`,
+						display: 'flex',
+						alignItems: 'center',
+						gap: '10px',
+						textDecoration: 'none',
+						color: 'inherit',
+						transition: 'border-color 120ms, background 120ms, transform 120ms',
+						'&:hover': {
+							borderColor: tokens.accent,
+							background: tokens.accentSoft,
+							transform: 'translateY(-1px)',
+							'& .sign-in-label': { color: tokens.accentInk },
+							'& .sign-in-chev': { color: tokens.accent },
+						},
+					}}
 				>
-					<FontAwesomeIcon icon={faChevronRight} />
+					<Box
+						sx={{
+							width: 32,
+							height: 32,
+							borderRadius: '50%',
+							background: tokens.surface2,
+							border: `1px solid ${tokens.line}`,
+							color: tokens.ink3,
+							display: 'grid',
+							placeItems: 'center',
+							fontSize: 13,
+							flexShrink: 0,
+						}}
+					>
+						<FontAwesomeIcon icon={Icons.signIn} />
+					</Box>
+					<Box sx={{ flex: 1, lineHeight: 1.3, minWidth: 0 }}>
+						<Typography
+							className="sign-in-label"
+							sx={{
+								fontSize: 13,
+								fontWeight: 600,
+								color: tokens.ink1,
+								transition: 'color 120ms',
+							}}
+						>
+							{t('shell.guest.signIn')}
+						</Typography>
+						<Typography sx={{ fontSize: 11, color: tokens.ink3 }}>
+							{t('shell.guest.subtitle')}
+						</Typography>
+					</Box>
+					<Box
+						className="sign-in-chev"
+						sx={{ color: tokens.ink3, transition: 'color 120ms', fontSize: 13 }}
+					>
+						<FontAwesomeIcon icon={faChevronRight} />
+					</Box>
 				</Box>
-			</Box>
+			)}
 		</Box>
 	);
 }
 
-/* ── NavItem ─────────────────────────────────────────────────── */
-function NavItem({ item }: { item: NavItem }) {
+/* ── SidebarNavItem ──────────────────────────────────────────── */
+function SidebarNavItem({ item }: { item: NavItem }) {
 	const { t } = useTranslation();
 	const badgeStyle = item.badge ? BADGE_STYLES[item.badge.variant] : null;
 

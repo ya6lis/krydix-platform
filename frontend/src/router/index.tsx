@@ -7,6 +7,7 @@ import BuyerLayout from '@/layouts/BuyerLayout';
 import SellerLayout from '@/layouts/SellerLayout';
 import ModeratorLayout from '@/layouts/ModeratorLayout';
 import AdminLayout from '@/layouts/AdminLayout';
+import AppShell from '@/components/shell/AppShell';
 
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import LoginPage from '@/pages/public/LoginPage';
@@ -23,25 +24,37 @@ const Placeholder = ({ name }: { name: string }) => (
 );
 
 export const router = createBrowserRouter([
-	// Full-screen pre-auth pages — no public chrome
+	// ── Full-screen auth pages — no layout, no shell ──────────────
 	{ path: ROUTES.LOGIN, element: <LoginPage /> },
 	{ path: ROUTES.REGISTER, element: <RegisterPage /> },
+
+	// ── Auth-flow pages — minimal public header, no shell ─────────
 	{
 		element: <PublicLayout />,
+		children: [
+			{ path: ROUTES.VERIFY_EMAIL, element: <VerifyEmailPage /> },
+			{ path: ROUTES.FORGOT_PASSWORD, element: <Placeholder name="Forgot Password" /> },
+			{ path: ROUTES.RESET_PASSWORD, element: <Placeholder name="Reset Password" /> },
+		],
+	},
+
+	// ── Public content + error pages — AppShell visible to all ────
+	// Guests see minimal sidebar (catalog only); auth'd users see full nav.
+	{
+		element: <AppShell />,
 		children: [
 			{ path: ROUTES.HOME, element: <Placeholder name="Home" /> },
 			{ path: ROUTES.PRODUCTS, element: <CatalogPage /> },
 			{ path: '/products/:slug', element: <ProductPage /> },
 			{ path: ROUTES.SEARCH, element: <Placeholder name="Search" /> },
 			{ path: '/seller/:id', element: <Placeholder name="Seller Profile" /> },
-			{ path: ROUTES.VERIFY_EMAIL, element: <VerifyEmailPage /> },
-			{ path: ROUTES.FORGOT_PASSWORD, element: <Placeholder name="Forgot Password" /> },
-			{ path: ROUTES.RESET_PASSWORD, element: <Placeholder name="Reset Password" /> },
 			{ path: ROUTES.NOT_FOUND, element: <Placeholder name="404 Not Found" /> },
 			{ path: ROUTES.FORBIDDEN, element: <Placeholder name="403 Forbidden" /> },
 			{ path: '*', element: <Placeholder name="404 Not Found" /> },
 		],
 	},
+
+	// ── Protected: buyer account ───────────────────────────────────
 	{
 		path: '/account',
 		element: (
@@ -60,6 +73,8 @@ export const router = createBrowserRouter([
 			{ path: 'notifications', element: <Placeholder name="Notifications" /> },
 		],
 	},
+
+	// ── Protected: seller cabinet ──────────────────────────────────
 	{
 		path: '/seller-cabinet',
 		element: (
@@ -80,6 +95,8 @@ export const router = createBrowserRouter([
 			{ path: 'settings', element: <Placeholder name="Seller Settings" /> },
 		],
 	},
+
+	// ── Protected: moderator panel ─────────────────────────────────
 	{
 		path: '/moderator',
 		element: (
@@ -95,6 +112,8 @@ export const router = createBrowserRouter([
 			{ path: 'verification', element: <Placeholder name="Seller Verification Queue" /> },
 		],
 	},
+
+	// ── Protected: admin panel ─────────────────────────────────────
 	{
 		path: '/admin',
 		element: (
