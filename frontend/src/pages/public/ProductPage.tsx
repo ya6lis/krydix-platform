@@ -4,13 +4,7 @@ import { useQuery } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
 import { Box, Typography, Stack } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-	AppLoader,
-	EmptyState,
-	AppCard,
-	AppTabs,
-	AppButton,
-} from '@/components/ui';
+import { AppLoader, EmptyState, AppCard, AppTabs, AppButton } from '@/components/ui';
 import { PRODUCT_QUERY } from '@/graphql/operations/catalog';
 import { Icons } from '@/constants/icons';
 import { ROUTES } from '@/constants/routes';
@@ -70,11 +64,11 @@ function getInitialOptions(variants: CatalogProductVariant[]): SelectedOptions {
 
 function findVariant(
 	variants: CatalogProductVariant[],
-	selected: SelectedOptions,
+	selected: SelectedOptions
 ): CatalogProductVariant | null {
 	return (
 		variants.find((v) =>
-			Object.entries(selected).every(([k, val]) => String(v.options[k]) === val),
+			Object.entries(selected).every(([k, val]) => String(v.options[k]) === val)
 		) ?? null
 	);
 }
@@ -83,11 +77,11 @@ function isOptionAvailable(
 	variants: CatalogProductVariant[],
 	selected: SelectedOptions,
 	key: string,
-	value: string,
+	value: string
 ): boolean {
 	const test = { ...selected, [key]: value };
 	return variants.some((v) =>
-		Object.entries(test).every(([k, val]) => String(v.options[k]) === val),
+		Object.entries(test).every(([k, val]) => String(v.options[k]) === val)
 	);
 }
 
@@ -167,7 +161,8 @@ export default function ProductPage() {
 	const selectOption = (key: string, value: string) =>
 		setSelectedOptions((prev) => ({ ...prev, [key]: value }));
 
-	const prevImage = () => setActiveImage((i) => (i - 1 + Math.max(images.length, 1)) % Math.max(images.length, 1));
+	const prevImage = () =>
+		setActiveImage((i) => (i - 1 + Math.max(images.length, 1)) % Math.max(images.length, 1));
 	const nextImage = () => setActiveImage((i) => (i + 1) % Math.max(images.length, 1));
 
 	const handleAddToCart = () => {
@@ -384,7 +379,11 @@ export default function ProductPage() {
 						<Box
 							component={RouterLink}
 							to={ROUTES.PRODUCTS}
-							sx={{ color: tokens.ink2, textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
+							sx={{
+								color: tokens.ink2,
+								textDecoration: 'none',
+								'&:hover': { textDecoration: 'underline' },
+							}}
 						>
 							{t('nav.products')}
 						</Box>
@@ -516,9 +515,7 @@ export default function ProductPage() {
 						>
 							{product.rating.toFixed(1)} ★
 						</Box>
-						<Box component="span">
-							({t('product.reviewCount', { count: product.reviewCount })})
-						</Box>
+						<Box component="span">({t('product.reviewCount', { count: product.reviewCount })})</Box>
 						<Box
 							sx={{ width: 3, height: 3, borderRadius: '50%', bgcolor: tokens.ink3, flexShrink: 0 }}
 						/>
@@ -671,8 +668,8 @@ export default function ProductPage() {
 								component="button"
 								type="button"
 								data-cy="qty-decrement"
-							onClick={() => setQty((q) => Math.max(QTY_MIN, q - 1))}
-							disabled={qty <= QTY_MIN}
+								onClick={() => setQty((q) => Math.max(QTY_MIN, q - 1))}
+								disabled={qty <= QTY_MIN}
 								sx={{
 									width: 36,
 									height: 38,
@@ -867,11 +864,7 @@ export default function ProductPage() {
 											{t('product.reviewsSummary', { count: product.reviewCount })}
 										</Box>
 									</Box>
-									<EmptyState
-										icon={Icons.star}
-										title={t('product.noReviews')}
-										description=""
-									/>
+									<EmptyState icon={Icons.star} title={t('product.noReviews')} description="" />
 								</Box>
 							) : (
 								<EmptyState

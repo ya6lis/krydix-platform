@@ -37,7 +37,14 @@
 				"mainImage": null,
 				"media": [],
 				"variants": [
-					{ "id": "v1", "sku": "V-M", "options": { "size": "M" }, "price": null, "stock": 5, "isActive": true }
+					{
+						"id": "v1",
+						"sku": "V-M",
+						"options": { "size": "M" },
+						"price": null,
+						"stock": 5,
+						"isActive": true
+					}
 				],
 				"categories": [{ "id": "c1", "slug": "outerwear", "name": "Outerwear" }],
 				"seller": { "id": "s1", "name": "Northern Atelier" },
@@ -61,7 +68,14 @@
 				"mainImage": null,
 				"media": [],
 				"variants": [
-					{ "id": "v2", "sku": "V-ONE", "options": {}, "price": null, "stock": 20, "isActive": true }
+					{
+						"id": "v2",
+						"sku": "V-ONE",
+						"options": {},
+						"price": null,
+						"stock": 20,
+						"isActive": true
+					}
 				],
 				"categories": [],
 				"seller": { "id": "s2", "name": "Maru Studio" },
