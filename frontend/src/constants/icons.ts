@@ -70,12 +70,15 @@ import {
 	faSignInAlt,
 	faUserPlus,
 	faUserShield,
+	faUsers,
 	faComment,
 	faComments,
 	faPaperPlane,
 	faArrowLeft,
 	faArrowRight,
 	faExternalLinkAlt,
+	faLayerGroup,
+	faClipboardCheck,
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -163,6 +166,7 @@ export const Icons = {
 	signOut: faSignOutAlt,
 	userPlus: faUserPlus,
 	userShield: faUserShield,
+	users: faUsers,
 
 	// Review
 	star: faStar,
@@ -184,4 +188,6 @@ export const Icons = {
 	checkCircle: faCircleCheck,
 	globe: faGlobe,
 	settings: faCog,
+	layers: faLayerGroup,
+	clipboardCheck: faClipboardCheck,
 } as const;
