@@ -6,7 +6,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
 	faSearch,
 	faBell,
-	faChevronDown,
 	faTrash,
 	faArrowRight,
 	faShoppingCart,
@@ -16,7 +15,6 @@ import {
 import { tokens } from '@/theme';
 import { useCartStore } from '@/store/cartStore';
 import { useTranslation as useI18n } from 'react-i18next';
-import i18n from '@/i18n';
 
 /* ── breadcrumb types ────────────────────────────────────────── */
 export interface Breadcrumb {
@@ -64,19 +62,10 @@ export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
 
 	const [cartAnchor, setCartAnchor] = useState<HTMLElement | null>(null);
 	const [notifAnchor, setNotifAnchor] = useState<HTMLElement | null>(null);
-	const [langAnchor, setLangAnchor] = useState<HTMLElement | null>(null);
 	const [notifTab, setNotifTab] = useState(0);
-	const [lang, setLang] = useState(i18n.language.startsWith('uk') ? 'UK' : 'EN');
 
 	const cartOpen = Boolean(cartAnchor);
 	const notifOpen = Boolean(notifAnchor);
-	const langOpen = Boolean(langAnchor);
-
-	const selectLang = (code: 'EN' | 'UK') => {
-		i18n.changeLanguage(code === 'EN' ? 'en' : 'uk');
-		setLang(code);
-		setLangAnchor(null);
-	};
 
 	const groups = sellerGroups();
 	const sellerCount = Object.keys(groups).length;
@@ -158,88 +147,6 @@ export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
 				<Box component="span" sx={{ flex: 1 }}>
 					{t('shell.search.placeholder')}
 				</Box>
-			</Box>
-
-			{/* ── lang switcher ── */}
-			<Box sx={{ position: 'relative' }}>
-				<Box
-					component="button"
-					onClick={(e) => setLangAnchor(e.currentTarget)}
-					sx={{
-						...iconBtnSx,
-						width: 'auto',
-						padding: '0 10px',
-						display: 'inline-flex',
-						alignItems: 'center',
-						gap: '6px',
-						fontSize: 12,
-						fontWeight: 600,
-						color: langOpen ? tokens.accentInk : tokens.ink2,
-						borderColor: langOpen ? tokens.accent : undefined,
-						background: langOpen ? tokens.accentSoft : tokens.surface,
-					}}
-				>
-					{lang}
-					<FontAwesomeIcon
-						icon={faChevronDown}
-						style={{
-							width: 10,
-							height: 10,
-							transform: langOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-							transition: 'transform 150ms',
-						}}
-					/>
-				</Box>
-				<Popover
-					open={langOpen}
-					anchorEl={langAnchor}
-					onClose={() => setLangAnchor(null)}
-					anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-					transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-					PaperProps={{
-						sx: {
-							minWidth: 170,
-							borderRadius: '12px',
-							border: `1px solid ${tokens.line}`,
-							boxShadow: tokens.shadowMd,
-							mt: '6px',
-							overflow: 'hidden',
-							padding: '6px',
-						},
-					}}
-				>
-					<Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-					{(['EN', 'UK'] as const).map((code) => (
-						<Box
-							key={code}
-							component="button"
-							onClick={() => selectLang(code)}
-							sx={{
-								width: '100%',
-								display: 'flex',
-								alignItems: 'center',
-								justifyContent: 'space-between',
-								gap: '24px',
-								padding: '9px 14px',
-								borderRadius: '8px',
-								border: 'none',
-								background: lang === code ? tokens.accentSoft : 'transparent',
-								color: lang === code ? tokens.accentInk : tokens.ink1,
-								fontSize: 13,
-								fontWeight: lang === code ? 700 : 500,
-								cursor: 'pointer',
-								transition: 'background 100ms',
-								'&:hover': lang !== code ? { background: tokens.surface2 } : {},
-							}}
-						>
-							{code === 'EN' ? 'English' : 'Українська'}
-							{lang === code && (
-								<Box component="span" sx={{ fontSize: 12, color: tokens.accent }}>✓</Box>
-							)}
-						</Box>
-					))}
-					</Box>
-				</Popover>
 			</Box>
 
 			{/* ── cart button ── */}

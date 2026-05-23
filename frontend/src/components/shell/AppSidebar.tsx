@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Box, Typography, Popover, Divider } from '@mui/material';
 import { useTranslation } from 'react-i18next';
@@ -540,7 +540,18 @@ function UserMenu({ user, onClose }: { user: AuthUser; onClose: () => void }) {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const clearAuth = useAuthStore((s) => s.clearAuth);
-	const currentLang = i18n.language.startsWith('uk') ? 'Українська' : 'English';
+	const [langSubAnchor, setLangSubAnchor] = useState<HTMLElement | null>(null);
+	const [currentLangCode, setCurrentLangCode] = useState<'en' | 'uk'>(
+		i18n.language.startsWith('uk') ? 'uk' : 'en'
+	);
+	const langRowRef = useRef<HTMLDivElement>(null);
+	const langDisplay = currentLangCode === 'uk' ? 'Українська' : 'English';
+
+	const changeLang = (code: 'en' | 'uk') => {
+		i18n.changeLanguage(code);
+		setCurrentLangCode(code);
+		setLangSubAnchor(null);
+	};
 
 	const initials = user.profile
 		? `${user.profile.firstName[0]}${user.profile.lastName[0]}`.toUpperCase()
@@ -647,7 +658,63 @@ function UserMenu({ user, onClose }: { user: AuthUser; onClose: () => void }) {
 
 			{/* ── group 2: language / help / what's new / feedback ── */}
 			<Box sx={{ padding: '4px 0' }}>
-				<MenuRow icon={Icons.globe} label={t('shell.menu.language')} meta={currentLang} />
+				<Box ref={langRowRef}>
+					<MenuRow
+						icon={Icons.globe}
+						label={t('shell.menu.language')}
+						meta={langDisplay}
+						onClick={() => setLangSubAnchor(langRowRef.current)}
+					/>
+				</Box>
+				<Popover
+					open={Boolean(langSubAnchor)}
+					anchorEl={langSubAnchor}
+					onClose={() => setLangSubAnchor(null)}
+					anchorOrigin={{ vertical: 'center', horizontal: 'right' }}
+					transformOrigin={{ vertical: 'center', horizontal: 'left' }}
+					PaperProps={{
+						sx: {
+							minWidth: 160,
+							borderRadius: '12px',
+							border: `1px solid ${tokens.line}`,
+							boxShadow: tokens.shadowMd,
+							ml: '8px',
+							overflow: 'hidden',
+							padding: '6px',
+						},
+					}}
+				>
+					<Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+						{(['en', 'uk'] as const).map((code) => (
+							<Box
+								key={code}
+								component="button"
+								onClick={() => changeLang(code)}
+								sx={{
+									width: '100%',
+									display: 'flex',
+									alignItems: 'center',
+									justifyContent: 'space-between',
+									padding: '9px 14px',
+									borderRadius: '8px',
+									border: 'none',
+									background: currentLangCode === code ? tokens.accentSoft : 'transparent',
+									color: currentLangCode === code ? tokens.accentInk : tokens.ink1,
+									fontSize: 13,
+									fontWeight: currentLangCode === code ? 700 : 500,
+									cursor: 'pointer',
+									transition: 'background 100ms',
+									'&:hover': currentLangCode !== code ? { background: tokens.surface2 } : {},
+								}}
+							>
+								{code === 'en' ? 'English' : 'Українська'}
+								{currentLangCode === code && (
+									<Box component="span" sx={{ fontSize: 12, color: tokens.accent }}>✓</Box>
+								)}
+							</Box>
+						))}
+					</Box>
+				</Popover>
 				<MenuRow icon={Icons.question} label={t('shell.menu.help')} onClick={() => go('/support')} />
 				<MenuRow icon={Icons.bolt} label={t('shell.menu.whatsNew')} tag={newTag} onClick={() => onClose()} />
 				<MenuRow icon={Icons.chat} label={t('shell.menu.feedback')} onClick={() => onClose()} />

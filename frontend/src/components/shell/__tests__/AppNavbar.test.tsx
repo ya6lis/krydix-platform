@@ -12,11 +12,6 @@ jest.mock('@fortawesome/react-fontawesome', () => ({
 	FontAwesomeIcon: () => <span data-testid="fa-icon" />,
 }));
 
-jest.mock('@/i18n', () => ({
-	language: 'en',
-	changeLanguage: jest.fn(),
-}));
-
 function renderNavbar(breadcrumbs?: Array<{ label: string; href?: string }>) {
 	return render(
 		<MemoryRouter>
@@ -35,12 +30,6 @@ describe('AppNavbar', () => {
 	it('renders search bar with placeholder i18n key', () => {
 		renderNavbar();
 		expect(screen.getByText('shell.search.placeholder')).toBeInTheDocument();
-	});
-
-	it('renders language switcher button', () => {
-		renderNavbar();
-		// Lang button shows 'EN' (mocked i18n.language = 'en')
-		expect(screen.getByText('EN')).toBeInTheDocument();
 	});
 
 	it('renders cart icon button', () => {
