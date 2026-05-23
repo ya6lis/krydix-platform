@@ -64,16 +64,18 @@ export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
 
 	const [cartAnchor, setCartAnchor] = useState<HTMLElement | null>(null);
 	const [notifAnchor, setNotifAnchor] = useState<HTMLElement | null>(null);
+	const [langAnchor, setLangAnchor] = useState<HTMLElement | null>(null);
 	const [notifTab, setNotifTab] = useState(0);
 	const [lang, setLang] = useState(i18n.language.startsWith('uk') ? 'UK' : 'EN');
 
 	const cartOpen = Boolean(cartAnchor);
 	const notifOpen = Boolean(notifAnchor);
+	const langOpen = Boolean(langAnchor);
 
-	const toggleLang = () => {
-		const next = lang === 'EN' ? 'uk' : 'en';
-		i18n.changeLanguage(next);
-		setLang(lang === 'EN' ? 'UK' : 'EN');
+	const selectLang = (code: 'EN' | 'UK') => {
+		i18n.changeLanguage(code === 'EN' ? 'en' : 'uk');
+		setLang(code);
+		setLangAnchor(null);
 	};
 
 	const groups = sellerGroups();
@@ -135,18 +137,21 @@ export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
 			<Box
 				sx={{
 					marginLeft: 'auto',
+					flex: 1,
+					maxWidth: 520,
 					display: 'flex',
 					alignItems: 'center',
 					gap: '8px',
 					background: tokens.surface,
 					border: `1px solid ${tokens.line}`,
 					borderRadius: '10px',
-					padding: '7px 12px',
-					width: 280,
+					padding: '7px 14px',
 					color: tokens.ink3,
 					fontSize: 13,
 					cursor: 'text',
 					userSelect: 'none',
+					transition: 'border-color 120ms',
+					'&:hover': { borderColor: tokens.ink3 },
 				}}
 			>
 				<FontAwesomeIcon icon={faSearch} style={{ width: 14, height: 14 }} />
@@ -156,23 +161,82 @@ export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
 			</Box>
 
 			{/* ── lang switcher ── */}
-			<Box
-				component="button"
-				onClick={toggleLang}
-				sx={{
-					...iconBtnSx,
-					width: 'auto',
-					padding: '0 10px',
-					display: 'inline-flex',
-					alignItems: 'center',
-					gap: '6px',
-					fontSize: 12,
-					fontWeight: 600,
-					color: tokens.ink2,
-				}}
-			>
-				{lang}
-				<FontAwesomeIcon icon={faChevronDown} style={{ width: 12, height: 12 }} />
+			<Box sx={{ position: 'relative' }}>
+				<Box
+					component="button"
+					onClick={(e) => setLangAnchor(e.currentTarget)}
+					sx={{
+						...iconBtnSx,
+						width: 'auto',
+						padding: '0 10px',
+						display: 'inline-flex',
+						alignItems: 'center',
+						gap: '6px',
+						fontSize: 12,
+						fontWeight: 600,
+						color: langOpen ? tokens.accentInk : tokens.ink2,
+						borderColor: langOpen ? tokens.accent : undefined,
+						background: langOpen ? tokens.accentSoft : tokens.surface,
+					}}
+				>
+					{lang}
+					<FontAwesomeIcon
+						icon={faChevronDown}
+						style={{
+							width: 10,
+							height: 10,
+							transform: langOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+							transition: 'transform 150ms',
+						}}
+					/>
+				</Box>
+				<Popover
+					open={langOpen}
+					anchorEl={langAnchor}
+					onClose={() => setLangAnchor(null)}
+					anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+					transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+					PaperProps={{
+						sx: {
+							minWidth: 80,
+							borderRadius: '10px',
+							border: `1px solid ${tokens.line}`,
+							boxShadow: tokens.shadowMd,
+							mt: '6px',
+							overflow: 'hidden',
+							padding: '4px',
+						},
+					}}
+				>
+					{(['EN', 'UK'] as const).map((code) => (
+						<Box
+							key={code}
+							component="button"
+							onClick={() => selectLang(code)}
+							sx={{
+								width: '100%',
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'space-between',
+								padding: '7px 12px',
+								borderRadius: '7px',
+								border: 'none',
+								background: lang === code ? tokens.accentSoft : 'transparent',
+								color: lang === code ? tokens.accentInk : tokens.ink1,
+								fontSize: 12,
+								fontWeight: lang === code ? 700 : 500,
+								cursor: 'pointer',
+								transition: 'background 100ms',
+								'&:hover': lang !== code ? { background: tokens.surface2 } : {},
+							}}
+						>
+							{code === 'EN' ? 'English' : 'Українська'}
+							{lang === code && (
+								<Box component="span" sx={{ fontSize: 10, color: tokens.accent }}>✓</Box>
+							)}
+						</Box>
+					))}
+				</Popover>
 			</Box>
 
 			{/* ── cart button ── */}
