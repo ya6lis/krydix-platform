@@ -30,11 +30,12 @@ jobs:
       - name: Run Cypress E2E
         uses: cypress-io/github-action@v6
         with:
-          working-directory: e2e
+          install: false
           start: npm run preview --workspace=frontend
           wait-on: 'http://localhost:4173'
           wait-on-timeout: 60
           browser: chrome
           headed: false
+          command: npm test --workspace=e2e
         env:
           CYPRESS_BASE_URL: http://localhost:4173
