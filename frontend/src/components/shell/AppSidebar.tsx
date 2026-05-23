@@ -1,14 +1,20 @@
-import { NavLink } from 'react-router-dom';
-import { Box, Typography } from '@mui/material';
+import { useState, useRef } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { Box, Typography, Popover, Divider } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { faChevronRight, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import { Icons } from '@/constants/icons';
 import { tokens } from '@/theme';
-import { useAuthStore } from '@/store/authStore';
+import { useAuthStore, type AuthUser } from '@/store/authStore';
+import { ROUTES } from '@/constants/routes';
+import i18n from '@/i18n';
 
-/* ── width constant shared with AppShell ─────────────────────── */
+/* ── width constant ──────────────────────────────────────────── */
 export const SIDEBAR_WIDTH = 248;
+
+/* ── role constant for guests ────────────────────────────────── */
+const GUEST = 'GUEST';
 
 /* ── nav config ──────────────────────────────────────────────── */
 type BadgeVariant = 'default' | 'warn' | 'danger';
@@ -51,7 +57,7 @@ const NAV_GROUPS: NavGroup[] = [
 				labelKey: 'nav.catalog',
 				icon: Icons.products,
 				href: '/products',
-				roles: ['BUYER', 'SELLER', 'MODERATOR', 'ADMINISTRATOR'],
+				roles: [GUEST, 'BUYER', 'SELLER', 'MODERATOR', 'ADMINISTRATOR'],
 			},
 			{
 				id: 'orders',
@@ -177,7 +183,7 @@ const NAV_GROUPS: NavGroup[] = [
 				labelKey: 'nav.help',
 				icon: Icons.question,
 				href: '/support',
-				roles: ['BUYER', 'SELLER', 'MODERATOR', 'ADMINISTRATOR'],
+				roles: [GUEST, 'BUYER', 'SELLER', 'MODERATOR', 'ADMINISTRATOR'],
 			},
 		],
 	},
@@ -190,13 +196,21 @@ const BADGE_STYLES: Record<BadgeVariant, { bg: string; color: string }> = {
 	danger: { bg: tokens.coral, color: '#fff' },
 };
 
+/* ── role badge map ──────────────────────────────────────────── */
+const ROLE_BADGE: Record<string, { bg: string; color: string; label: string }> = {
+	BUYER: { bg: tokens.accentSoft, color: tokens.accentInk, label: 'Buyer' },
+	SELLER: { bg: '#ede9fe', color: '#5b21b6', label: 'Seller' },
+	MODERATOR: { bg: tokens.amber, color: tokens.amberInk, label: 'Moderator' },
+	ADMINISTRATOR: { bg: tokens.coralSoft, color: tokens.coralInk, label: 'Admin' },
+};
+
 /* ── component ───────────────────────────────────────────────── */
 export default function AppSidebar() {
 	const { t } = useTranslation();
 	const user = useAuthStore((s) => s.user);
-	const role = user?.role ?? '';
+	const role = user?.role ?? GUEST;
+	const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
 
-	// initials from name
 	const initials = user?.profile
 		? `${user.profile.firstName[0]}${user.profile.lastName[0]}`.toUpperCase()
 		: (user?.email?.[0] ?? '?').toUpperCase();
@@ -219,16 +233,13 @@ export default function AppSidebar() {
 				borderRight: `1px solid ${tokens.line}`,
 				flexShrink: 0,
 				'&::-webkit-scrollbar': { width: 6 },
-				'&::-webkit-scrollbar-thumb': {
-					background: tokens.line,
-					borderRadius: 3,
-				},
+				'&::-webkit-scrollbar-thumb': { background: tokens.line, borderRadius: 3 },
 			}}
 		>
 			{/* ── brand ── */}
 			<Box
 				component={NavLink}
-				to="/account"
+				to={ROUTES.HOME}
 				sx={{
 					display: 'flex',
 					alignItems: 'center',
@@ -270,7 +281,7 @@ export default function AppSidebar() {
 
 			{/* ── nav groups ── */}
 			{NAV_GROUPS.map((group) => {
-				const visibleItems = group.items.filter((item) => !role || item.roles.includes(role));
+				const visibleItems = group.items.filter((item) => item.roles.includes(role));
 				if (visibleItems.length === 0) return null;
 				return (
 					<Box key={group.id} sx={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
@@ -287,82 +298,172 @@ export default function AppSidebar() {
 							{t(group.labelKey)}
 						</Typography>
 						{visibleItems.map((item) => (
-							<NavItem key={item.id} item={item} />
+							<SidebarNavItem key={item.id} item={item} />
 						))}
 					</Box>
 				);
 			})}
 
-			{/* ── user footer ── */}
-			<Box
-				component={NavLink}
-				to="/account/profile"
-				sx={{
-					marginTop: 'auto',
-					padding: '10px',
-					borderRadius: '12px',
-					background: tokens.surface,
-					border: `1px solid ${tokens.line}`,
-					display: 'flex',
-					alignItems: 'center',
-					gap: '10px',
-					textDecoration: 'none',
-					color: 'inherit',
-					transition: 'border-color 120ms, transform 120ms',
-					'&:hover': {
-						borderColor: tokens.accent,
-						transform: 'translateY(-1px)',
-						'& .foot-chev': { color: tokens.accent },
-					},
-				}}
-			>
-				<Box
-					sx={{
-						width: 32,
-						height: 32,
-						borderRadius: '50%',
-						background: `linear-gradient(135deg, ${tokens.accent}, ${tokens.cyan})`,
-						color: '#fff',
-						display: 'grid',
-						placeItems: 'center',
-						fontSize: 12,
-						fontWeight: 700,
-						flexShrink: 0,
-					}}
-				>
-					{initials}
-				</Box>
-				<Box sx={{ flex: 1, lineHeight: 1.3, minWidth: 0 }}>
-					<Typography sx={{ fontSize: 13, fontWeight: 600, color: tokens.ink1 }}>
-						{user?.profile
-							? `${user.profile.firstName} ${user.profile.lastName}`
-							: (user?.email ?? '')}
-					</Typography>
-					<Typography
+			{/* ── footer ── */}
+			{user ? (
+				<>
+					{/* Authenticated footer — opens user menu */}
+					<Box
+						component="button"
+						onClick={(e) => setMenuAnchor(e.currentTarget)}
 						sx={{
-							fontSize: 11,
-							color: tokens.ink3,
-							whiteSpace: 'nowrap',
-							overflow: 'hidden',
-							textOverflow: 'ellipsis',
+							marginTop: 'auto',
+							padding: '10px',
+							borderRadius: '12px',
+							background: menuAnchor ? tokens.accentSoft : tokens.surface,
+							border: `1px solid ${menuAnchor ? tokens.accent : tokens.line}`,
+							display: 'flex',
+							alignItems: 'center',
+							gap: '10px',
+							cursor: 'pointer',
+							textAlign: 'left',
+							width: '100%',
+							transition: 'border-color 120ms, background 120ms',
+							'&:hover': {
+								borderColor: tokens.accent,
+								background: tokens.accentSoft,
+								'& .foot-chev': { color: tokens.accent },
+							},
 						}}
 					>
-						{user?.email ?? ''}
-					</Typography>
-				</Box>
+						<Box
+							sx={{
+								width: 32,
+								height: 32,
+								borderRadius: '50%',
+								background: `linear-gradient(135deg, ${tokens.accent}, ${tokens.cyan})`,
+								color: '#fff',
+								display: 'grid',
+								placeItems: 'center',
+								fontSize: 12,
+								fontWeight: 700,
+								flexShrink: 0,
+							}}
+						>
+							{initials}
+						</Box>
+						<Box sx={{ flex: 1, lineHeight: 1.3, minWidth: 0 }}>
+							<Typography sx={{ fontSize: 13, fontWeight: 600, color: tokens.ink1 }}>
+								{user.profile ? `${user.profile.firstName} ${user.profile.lastName}` : user.email}
+							</Typography>
+							<Typography
+								sx={{
+									fontSize: 11,
+									color: tokens.ink3,
+									whiteSpace: 'nowrap',
+									overflow: 'hidden',
+									textOverflow: 'ellipsis',
+								}}
+							>
+								{user.email}
+							</Typography>
+						</Box>
+						<Box
+							className="foot-chev"
+							sx={{
+								color: menuAnchor ? tokens.accent : tokens.ink3,
+								transition: 'color 120ms',
+								fontSize: 12,
+							}}
+						>
+							<FontAwesomeIcon icon={menuAnchor ? faChevronUp : faChevronRight} />
+						</Box>
+					</Box>
+
+					{/* User menu popover */}
+					<Popover
+						open={Boolean(menuAnchor)}
+						anchorEl={menuAnchor}
+						onClose={() => setMenuAnchor(null)}
+						anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+						transformOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+						PaperProps={{
+							sx: {
+								width: 288,
+								borderRadius: '16px',
+								border: `1px solid ${tokens.line}`,
+								boxShadow: tokens.shadowMd,
+								ml: '8px',
+								mb: '8px',
+								overflow: 'hidden',
+							},
+						}}
+					>
+						<UserMenu user={user} onClose={() => setMenuAnchor(null)} />
+					</Popover>
+				</>
+			) : (
+				/* Guest sign-in prompt */
 				<Box
-					className="foot-chev"
-					sx={{ color: tokens.ink3, transition: 'color 120ms', fontSize: 13 }}
+					component={NavLink}
+					to={ROUTES.LOGIN}
+					sx={{
+						marginTop: 'auto',
+						padding: '10px',
+						borderRadius: '12px',
+						background: tokens.surface,
+						border: `1px solid ${tokens.line}`,
+						display: 'flex',
+						alignItems: 'center',
+						gap: '10px',
+						textDecoration: 'none',
+						color: 'inherit',
+						transition: 'border-color 120ms, background 120ms, transform 120ms',
+						'&:hover': {
+							borderColor: tokens.accent,
+							background: tokens.accentSoft,
+							transform: 'translateY(-1px)',
+							'& .sign-in-label': { color: tokens.accentInk },
+							'& .sign-in-chev': { color: tokens.accent },
+						},
+					}}
 				>
-					<FontAwesomeIcon icon={faChevronRight} />
+					<Box
+						sx={{
+							width: 32,
+							height: 32,
+							borderRadius: '50%',
+							background: tokens.surface2,
+							border: `1px solid ${tokens.line}`,
+							color: tokens.ink3,
+							display: 'grid',
+							placeItems: 'center',
+							fontSize: 13,
+							flexShrink: 0,
+						}}
+					>
+						<FontAwesomeIcon icon={Icons.signIn} />
+					</Box>
+					<Box sx={{ flex: 1, lineHeight: 1.3, minWidth: 0 }}>
+						<Typography
+							className="sign-in-label"
+							sx={{ fontSize: 13, fontWeight: 600, color: tokens.ink1, transition: 'color 120ms' }}
+						>
+							{t('shell.guest.signIn')}
+						</Typography>
+						<Typography sx={{ fontSize: 11, color: tokens.ink3 }}>
+							{t('shell.guest.subtitle')}
+						</Typography>
+					</Box>
+					<Box
+						className="sign-in-chev"
+						sx={{ color: tokens.ink3, transition: 'color 120ms', fontSize: 13 }}
+					>
+						<FontAwesomeIcon icon={faChevronRight} />
+					</Box>
 				</Box>
-			</Box>
+			)}
 		</Box>
 	);
 }
 
-/* ── NavItem ─────────────────────────────────────────────────── */
-function NavItem({ item }: { item: NavItem }) {
+/* ── SidebarNavItem ──────────────────────────────────────────── */
+function SidebarNavItem({ item }: { item: NavItem }) {
 	const { t } = useTranslation();
 	const badgeStyle = item.badge ? BADGE_STYLES[item.badge.variant] : null;
 
@@ -393,10 +494,7 @@ function NavItem({ item }: { item: NavItem }) {
 					color: tokens.accentInk,
 					fontWeight: 600,
 					'& .nav-icon': { color: tokens.accent },
-					'& .nav-badge-default': {
-						background: tokens.accent,
-						color: '#fff',
-					},
+					'& .nav-badge-default': { background: tokens.accent, color: '#fff' },
 				},
 			}}
 		>
@@ -426,6 +524,306 @@ function NavItem({ item }: { item: NavItem }) {
 					}}
 				>
 					{item.badge.count}
+				</Box>
+			)}
+		</Box>
+	);
+}
+
+/* ── MenuTag type ────────────────────────────────────────────── */
+interface MenuTag {
+	label: string;
+	bg: string;
+	color: string;
+}
+
+/* ── UserMenu ────────────────────────────────────────────────── */
+function UserMenu({ user, onClose }: { user: AuthUser; onClose: () => void }) {
+	const { t } = useTranslation();
+	const navigate = useNavigate();
+	const clearAuth = useAuthStore((s) => s.clearAuth);
+	const [langSubAnchor, setLangSubAnchor] = useState<HTMLElement | null>(null);
+	const [currentLangCode, setCurrentLangCode] = useState<'en' | 'uk'>(
+		i18n.language.startsWith('uk') ? 'uk' : 'en'
+	);
+	const langRowRef = useRef<HTMLDivElement>(null);
+	const langDisplay = currentLangCode === 'uk' ? 'Українська' : 'English';
+
+	const changeLang = (code: 'en' | 'uk') => {
+		i18n.changeLanguage(code);
+		setCurrentLangCode(code);
+		setLangSubAnchor(null);
+	};
+
+	const initials = user.profile
+		? `${user.profile.firstName[0]}${user.profile.lastName[0]}`.toUpperCase()
+		: user.email[0].toUpperCase();
+	const fullName = user.profile ? `${user.profile.firstName} ${user.profile.lastName}` : user.email;
+
+	const badge = ROLE_BADGE[user.role] ?? ROLE_BADGE.BUYER;
+
+	const verifiedTag: MenuTag | undefined =
+		user.role === 'SELLER'
+			? { label: 'Verified', bg: tokens.accentSoft, color: tokens.accentInk }
+			: undefined;
+
+	const newTag: MenuTag = { label: '3 new', bg: tokens.amber, color: tokens.amberInk };
+
+	const handleLogout = () => {
+		clearAuth();
+		onClose();
+		navigate(ROUTES.LOGIN);
+	};
+
+	const go = (to: string) => {
+		navigate(to);
+		onClose();
+	};
+
+	return (
+		<Box sx={{ padding: '6px' }}>
+			{/* ── header ── */}
+			<Box
+				sx={{
+					padding: '10px 12px 14px',
+					display: 'flex',
+					alignItems: 'center',
+					gap: '12px',
+				}}
+			>
+				<Box
+					sx={{
+						width: 38,
+						height: 38,
+						borderRadius: '50%',
+						background: `linear-gradient(135deg, ${tokens.accent}, ${tokens.cyan})`,
+						color: '#fff',
+						display: 'grid',
+						placeItems: 'center',
+						fontSize: 13,
+						fontWeight: 700,
+						flexShrink: 0,
+					}}
+				>
+					{initials}
+				</Box>
+				<Box sx={{ flex: 1, minWidth: 0 }}>
+					<Typography sx={{ fontSize: 13.5, fontWeight: 700, color: tokens.ink1, lineHeight: 1.3 }}>
+						{fullName}
+					</Typography>
+					<Typography
+						sx={{
+							fontSize: 11.5,
+							color: tokens.ink3,
+							whiteSpace: 'nowrap',
+							overflow: 'hidden',
+							textOverflow: 'ellipsis',
+						}}
+					>
+						{user.email}
+					</Typography>
+				</Box>
+				<Box
+					sx={{
+						padding: '3px 9px',
+						borderRadius: '999px',
+						background: badge.bg,
+						color: badge.color,
+						fontSize: 11,
+						fontWeight: 700,
+						flexShrink: 0,
+					}}
+				>
+					{badge.label}
+				</Box>
+			</Box>
+
+			<Divider sx={{ borderColor: tokens.line, mx: '6px' }} />
+
+			{/* ── group 1: profile / settings / verification ── */}
+			<Box sx={{ padding: '4px 0' }}>
+				<MenuRow
+					icon={Icons.user}
+					label={t('shell.menu.profile')}
+					onClick={() => go('/account/profile')}
+				/>
+				<MenuRow
+					icon={Icons.settings}
+					label={t('shell.menu.settings')}
+					onClick={() => go('/account/profile')}
+				/>
+				{(user.role === 'BUYER' || user.role === 'SELLER') && (
+					<MenuRow
+						icon={Icons.shield}
+						label={t('shell.menu.verification')}
+						tag={verifiedTag}
+						onClick={() => go('/seller-cabinet/verification')}
+					/>
+				)}
+			</Box>
+
+			<Divider sx={{ borderColor: tokens.line, mx: '6px' }} />
+
+			{/* ── group 2: language / help / what's new / feedback ── */}
+			<Box sx={{ padding: '4px 0' }}>
+				<Box ref={langRowRef}>
+					<MenuRow
+						icon={Icons.globe}
+						label={t('shell.menu.language')}
+						meta={langDisplay}
+						onClick={() => setLangSubAnchor(langRowRef.current)}
+					/>
+				</Box>
+				<Popover
+					open={Boolean(langSubAnchor)}
+					anchorEl={langSubAnchor}
+					onClose={() => setLangSubAnchor(null)}
+					anchorOrigin={{ vertical: 'center', horizontal: 'right' }}
+					transformOrigin={{ vertical: 'center', horizontal: 'left' }}
+					PaperProps={{
+						sx: {
+							minWidth: 160,
+							borderRadius: '12px',
+							border: `1px solid ${tokens.line}`,
+							boxShadow: tokens.shadowMd,
+							ml: '8px',
+							overflow: 'hidden',
+							padding: '6px',
+						},
+					}}
+				>
+					<Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+						{(['en', 'uk'] as const).map((code) => (
+							<Box
+								key={code}
+								component="button"
+								onClick={() => changeLang(code)}
+								sx={{
+									width: '100%',
+									display: 'flex',
+									alignItems: 'center',
+									justifyContent: 'space-between',
+									padding: '9px 14px',
+									borderRadius: '8px',
+									border: 'none',
+									background: currentLangCode === code ? tokens.accentSoft : 'transparent',
+									color: currentLangCode === code ? tokens.accentInk : tokens.ink1,
+									fontSize: 13,
+									fontWeight: currentLangCode === code ? 700 : 500,
+									cursor: 'pointer',
+									transition: 'background 100ms',
+									'&:hover': currentLangCode !== code ? { background: tokens.surface2 } : {},
+								}}
+							>
+								{code === 'en' ? 'English' : 'Українська'}
+								{currentLangCode === code && (
+									<Box component="span" sx={{ fontSize: 12, color: tokens.accent }}>
+										✓
+									</Box>
+								)}
+							</Box>
+						))}
+					</Box>
+				</Popover>
+				<MenuRow
+					icon={Icons.question}
+					label={t('shell.menu.help')}
+					onClick={() => go('/support')}
+				/>
+				<MenuRow
+					icon={Icons.bolt}
+					label={t('shell.menu.whatsNew')}
+					tag={newTag}
+					onClick={() => onClose()}
+				/>
+				<MenuRow icon={Icons.chat} label={t('shell.menu.feedback')} onClick={() => onClose()} />
+			</Box>
+
+			<Divider sx={{ borderColor: tokens.line, mx: '6px' }} />
+
+			{/* ── footer: sign out ── */}
+			<Box sx={{ padding: '4px 0' }}>
+				<MenuRow
+					icon={Icons.signOut}
+					label={t('shell.menu.signOut')}
+					onClick={handleLogout}
+					danger
+				/>
+			</Box>
+		</Box>
+	);
+}
+
+/* ── MenuRow ─────────────────────────────────────────────────── */
+function MenuRow({
+	icon,
+	label,
+	onClick,
+	danger,
+	tag,
+	meta,
+}: {
+	icon: (typeof Icons)[keyof typeof Icons];
+	label: string;
+	onClick?: () => void;
+	danger?: boolean;
+	tag?: MenuTag;
+	meta?: string;
+}) {
+	return (
+		<Box
+			component={onClick ? 'button' : 'div'}
+			onClick={onClick}
+			sx={{
+				width: '100%',
+				display: 'flex',
+				alignItems: 'center',
+				gap: '10px',
+				padding: '7px 12px',
+				borderRadius: '8px',
+				border: 'none',
+				background: 'transparent',
+				color: danger ? tokens.coral : tokens.ink1,
+				fontSize: 13,
+				fontWeight: 400,
+				cursor: onClick ? 'pointer' : 'default',
+				textAlign: 'left',
+				transition: 'background 100ms',
+				'&:hover': onClick ? { background: danger ? tokens.coralSoft : tokens.surface2 } : {},
+			}}
+		>
+			<Box
+				sx={{
+					width: 16,
+					textAlign: 'center',
+					color: danger ? tokens.coral : tokens.ink3,
+					fontSize: 13,
+					flexShrink: 0,
+				}}
+			>
+				<FontAwesomeIcon icon={icon} />
+			</Box>
+			<Box component="span" sx={{ flex: 1 }}>
+				{label}
+			</Box>
+			{meta && (
+				<Box component="span" sx={{ fontSize: 12, color: tokens.ink3 }}>
+					{meta}
+				</Box>
+			)}
+			{tag && (
+				<Box
+					component="span"
+					sx={{
+						fontSize: 10.5,
+						fontWeight: 700,
+						background: tag.bg,
+						color: tag.color,
+						padding: '2px 7px',
+						borderRadius: '999px',
+					}}
+				>
+					{tag.label}
 				</Box>
 			)}
 		</Box>

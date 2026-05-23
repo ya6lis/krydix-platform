@@ -52,6 +52,25 @@
 			"checkout": "Checkout",
 			"remove": "Remove"
 		},
+		"guest": {
+			"signIn": "Sign in",
+			"subtitle": "Access your account"
+		},
+		"menu": {
+			"profile": "My profile",
+			"settings": "Account settings",
+			"verification": "Verification",
+			"switchRole": "Switch role",
+			"sellerWorkspace": "Seller workspace",
+			"buyerView": "Buyer view",
+			"preferences": "Preferences",
+			"appearance": "Appearance",
+			"language": "Language",
+			"help": "Help & support",
+			"whatsNew": "What's new",
+			"feedback": "Send feedback",
+			"signOut": "Sign out"
+		},
 		"notif": {
 			"title": "Notifications",
 			"unread": "{{count}} unread",

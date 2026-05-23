@@ -6,7 +6,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
 	faSearch,
 	faBell,
-	faChevronDown,
 	faTrash,
 	faArrowRight,
 	faShoppingCart,
@@ -16,7 +15,6 @@ import {
 import { tokens } from '@/theme';
 import { useCartStore } from '@/store/cartStore';
 import { useTranslation as useI18n } from 'react-i18next';
-import i18n from '@/i18n';
 
 /* ── breadcrumb types ────────────────────────────────────────── */
 export interface Breadcrumb {
@@ -65,16 +63,9 @@ export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
 	const [cartAnchor, setCartAnchor] = useState<HTMLElement | null>(null);
 	const [notifAnchor, setNotifAnchor] = useState<HTMLElement | null>(null);
 	const [notifTab, setNotifTab] = useState(0);
-	const [lang, setLang] = useState(i18n.language.startsWith('uk') ? 'UK' : 'EN');
 
 	const cartOpen = Boolean(cartAnchor);
 	const notifOpen = Boolean(notifAnchor);
-
-	const toggleLang = () => {
-		const next = lang === 'EN' ? 'uk' : 'en';
-		i18n.changeLanguage(next);
-		setLang(lang === 'EN' ? 'UK' : 'EN');
-	};
 
 	const groups = sellerGroups();
 	const sellerCount = Object.keys(groups).length;
@@ -135,57 +126,27 @@ export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
 			<Box
 				sx={{
 					marginLeft: 'auto',
+					flex: 1,
+					maxWidth: 520,
 					display: 'flex',
 					alignItems: 'center',
 					gap: '8px',
 					background: tokens.surface,
 					border: `1px solid ${tokens.line}`,
 					borderRadius: '10px',
-					padding: '7px 12px',
-					width: 280,
+					padding: '7px 14px',
 					color: tokens.ink3,
 					fontSize: 13,
 					cursor: 'text',
 					userSelect: 'none',
+					transition: 'border-color 120ms',
+					'&:hover': { borderColor: tokens.ink3 },
 				}}
 			>
 				<FontAwesomeIcon icon={faSearch} style={{ width: 14, height: 14 }} />
 				<Box component="span" sx={{ flex: 1 }}>
 					{t('shell.search.placeholder')}
 				</Box>
-				<Box
-					component="span"
-					sx={{
-						fontFamily: tokens.fontMono,
-						fontSize: '10.5px',
-						background: tokens.surface2,
-						padding: '2px 6px',
-						borderRadius: 4,
-						color: tokens.ink2,
-					}}
-				>
-					⌘ K
-				</Box>
-			</Box>
-
-			{/* ── lang switcher ── */}
-			<Box
-				component="button"
-				onClick={toggleLang}
-				sx={{
-					...iconBtnSx,
-					width: 'auto',
-					padding: '0 10px',
-					display: 'inline-flex',
-					alignItems: 'center',
-					gap: '6px',
-					fontSize: 12,
-					fontWeight: 600,
-					color: tokens.ink2,
-				}}
-			>
-				{lang}
-				<FontAwesomeIcon icon={faChevronDown} style={{ width: 12, height: 12 }} />
 			</Box>
 
 			{/* ── cart button ── */}

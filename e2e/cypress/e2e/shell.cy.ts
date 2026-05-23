@@ -129,10 +129,6 @@ describe('App shell — topbar', () => {
 		cy.contains('Search products, orders, users').should('be.visible');
 	});
 
-	it('shows ⌘ K shortcut chip in search bar', () => {
-		cy.contains('⌘ K').should('be.visible');
-	});
-
 	it('shows language switcher button', () => {
 		cy.contains('EN').should('be.visible');
 	});
@@ -201,9 +197,36 @@ describe('App shell — auth guard', () => {
 		cy.url().should('include', '/auth/login');
 	});
 
-	it('sidebar is NOT visible on public auth pages', () => {
+	it('sidebar is NOT visible on full-screen auth pages (login/register)', () => {
 		cy.visit('/auth/login');
-		cy.contains('K').should('not.exist'); // brand mark only in sidebar
+		cy.contains('K').should('not.exist'); // login page has no AppShell
+	});
+});
+
+// ─── Guest sidebar ────────────────────────────────────────────────────────────
+
+describe('App shell — guest sidebar', () => {
+	beforeEach(() => {
+		// No auth stub — visit public content page with AppShell
+		cy.visit('/products');
+	});
+
+	it('shows sidebar brand mark on public pages', () => {
+		cy.contains('K').should('be.visible');
+	});
+
+	it('shows catalog nav item for guest', () => {
+		cy.contains('Catalog').should('be.visible');
+	});
+
+	it('shows sign-in prompt in footer for guest', () => {
+		cy.contains('Sign in').should('be.visible');
+	});
+
+	it('does NOT show account-only nav items for guest', () => {
+		cy.contains('Dashboard').should('not.exist');
+		cy.contains('Orders').should('not.exist');
+		cy.contains('Users & roles').should('not.exist');
 	});
 });
 
