@@ -70,7 +70,12 @@ export function AppPagination({
 	};
 
 	return (
-		<Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ py: 1.75, px: 2.5 }}>
+		<Stack
+			direction="row"
+			alignItems="center"
+			justifyContent="space-between"
+			sx={{ py: 1.75, px: 2.5 }}
+		>
 			{/* Left: result count */}
 			<Typography sx={{ fontSize: 12.5, color: tokens.ink3 }}>
 				{t('pagination.showing', {
@@ -95,7 +100,10 @@ export function AppPagination({
 
 				{pages.map((p, i) =>
 					p === '…' ? (
-						<Box key={`ellipsis-${i}`} sx={{ ...PAGE_BTN_SX, border: 'none', bgcolor: 'transparent', cursor: 'default' }}>
+						<Box
+							key={`ellipsis-${i}`}
+							sx={{ ...PAGE_BTN_SX, border: 'none', bgcolor: 'transparent', cursor: 'default' }}
+						>
 							…
 						</Box>
 					) : (
@@ -108,7 +116,7 @@ export function AppPagination({
 						>
 							{p}
 						</Box>
-					),
+					)
 				)}
 
 				{/* Next */}

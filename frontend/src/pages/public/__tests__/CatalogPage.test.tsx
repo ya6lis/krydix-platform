@@ -80,7 +80,7 @@ function renderCatalog(mocks: MockedResponse[] = []) {
 			<MemoryRouter>
 				<CatalogPage />
 			</MemoryRouter>
-		</MockedProvider>,
+		</MockedProvider>
 	);
 }
 

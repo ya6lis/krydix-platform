@@ -33,7 +33,11 @@ export default function VerifyEmailPage() {
 		<Box maxWidth={440} mx="auto" mt={8} px={3} textAlign="center">
 			{status === 'success' ? (
 				<>
-					<AppAlert severity="success" title={t('common.success')} sx={{ mb: 3, textAlign: 'left' }}>
+					<AppAlert
+						severity="success"
+						title={t('common.success')}
+						sx={{ mb: 3, textAlign: 'left' }}
+					>
 						{t('auth.verifyEmailSuccess')}
 					</AppAlert>
 					<AppButton tone="primary" size="large" fullWidth onClick={() => navigate(ROUTES.LOGIN)}>

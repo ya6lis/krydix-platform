@@ -80,7 +80,14 @@ export default function PublicLayout() {
 				<Box
 					component={RouterLink}
 					to={ROUTES.HOME}
-					sx={{ display: 'flex', alignItems: 'center', gap: 1.25, textDecoration: 'none', color: 'inherit', flexShrink: 0 }}
+					sx={{
+						display: 'flex',
+						alignItems: 'center',
+						gap: 1.25,
+						textDecoration: 'none',
+						color: 'inherit',
+						flexShrink: 0,
+					}}
 				>
 					<Box
 						sx={{
@@ -100,7 +107,9 @@ export default function PublicLayout() {
 					</Box>
 					<Typography sx={{ fontWeight: 800, fontSize: 17, letterSpacing: '-0.02em' }}>
 						Krydix
-						<Box component="span" sx={{ color: 'primary.main' }}>.</Box>
+						<Box component="span" sx={{ color: 'primary.main' }}>
+							.
+						</Box>
 					</Typography>
 				</Box>
 
@@ -148,12 +157,17 @@ export default function PublicLayout() {
 						<>
 							<Box
 								component="button"
-								onClick={(e: React.MouseEvent<HTMLButtonElement>) => setAccountAnchor(e.currentTarget)}
+								onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
+									setAccountAnchor(e.currentTarget)
+								}
 								sx={{ background: 'none', border: 'none', cursor: 'pointer', p: 0 }}
 								aria-label={t('nav.account')}
 							>
 								<AppAvatar
-									name={`${user.profile?.firstName ?? ''} ${user.profile?.lastName ?? ''}`.trim() || user.email}
+									name={
+										`${user.profile?.firstName ?? ''} ${user.profile?.lastName ?? ''}`.trim() ||
+										user.email
+									}
 									size="sm"
 								/>
 							</Box>
@@ -167,9 +181,7 @@ export default function PublicLayout() {
 								<MenuItem component={RouterLink} to={ROUTES.ACCOUNT} onClick={handleAccountClose}>
 									{t('nav.account')}
 								</MenuItem>
-								<MenuItem onClick={handleLogout}>
-									{t('auth.logout')}
-								</MenuItem>
+								<MenuItem onClick={handleLogout}>{t('auth.logout')}</MenuItem>
 							</Menu>
 						</>
 					) : (

@@ -52,7 +52,11 @@ describe('AppButton', () => {
 	});
 
 	it('disabled + tone still disables button', () => {
-		render(<AppButton tone="primary" disabled>Locked</AppButton>);
+		render(
+			<AppButton tone="primary" disabled>
+				Locked
+			</AppButton>
+		);
 		expect(screen.getByRole('button')).toBeDisabled();
 	});
 });

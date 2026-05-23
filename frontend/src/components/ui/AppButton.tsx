@@ -71,11 +71,7 @@ export function AppButton({
 			color={tone ? undefined : color}
 			disabled={disabled || loading}
 			startIcon={loading ? <CircularProgress size={16} color="inherit" /> : startIcon}
-			sx={[
-				{ minWidth: 80 },
-				toneSx ?? {},
-				...(Array.isArray(sx) ? sx : [sx ?? {}]),
-			]}
+			sx={[{ minWidth: 80 }, toneSx ?? {}, ...(Array.isArray(sx) ? sx : [sx ?? {}])]}
 			{...props}
 		>
 			{children}

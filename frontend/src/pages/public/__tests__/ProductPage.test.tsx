@@ -39,9 +39,30 @@ function makeProduct(overrides: Partial<CatalogProduct> = {}): CatalogProduct {
 			{ id: 'm2', url: 'https://img/thumb.jpg', type: 'IMAGE', isMain: false, sortOrder: 1 },
 		],
 		variants: [
-			{ id: 'v1', sku: 'V-S-OLV', options: { size: 'S', color: 'Olive' }, price: null, stock: 3, isActive: true },
-			{ id: 'v2', sku: 'V-M-OLV', options: { size: 'M', color: 'Olive' }, price: null, stock: 5, isActive: true },
-			{ id: 'v3', sku: 'V-S-NAT', options: { size: 'S', color: 'Natural' }, price: null, stock: 0, isActive: true },
+			{
+				id: 'v1',
+				sku: 'V-S-OLV',
+				options: { size: 'S', color: 'Olive' },
+				price: null,
+				stock: 3,
+				isActive: true,
+			},
+			{
+				id: 'v2',
+				sku: 'V-M-OLV',
+				options: { size: 'M', color: 'Olive' },
+				price: null,
+				stock: 5,
+				isActive: true,
+			},
+			{
+				id: 'v3',
+				sku: 'V-S-NAT',
+				options: { size: 'S', color: 'Natural' },
+				price: null,
+				stock: 0,
+				isActive: true,
+			},
 		],
 		categories: [{ id: 'c1', slug: 'outerwear', name: 'Outerwear' }],
 		seller: { id: 's1', name: 'Jane Doe' },
@@ -68,7 +89,7 @@ function renderPage(mocks: MockedResponse[]) {
 					<Route path="/products/:slug" element={<ProductPage />} />
 				</Routes>
 			</MemoryRouter>
-		</MockedProvider>,
+		</MockedProvider>
 	);
 }
 
@@ -143,7 +164,9 @@ describe('ProductPage — product loaded', () => {
 		expect(wishlistBtn).toBeInTheDocument();
 		fireEvent.click(wishlistBtn);
 		await waitFor(() => {
-			expect(screen.getByRole('button', { name: 'product.removeFromWishlist' })).toBeInTheDocument();
+			expect(
+				screen.getByRole('button', { name: 'product.removeFromWishlist' })
+			).toBeInTheDocument();
 		});
 	});
 
