@@ -8,7 +8,7 @@ const config = {
 		'^.+\.ts$': ['ts-jest', { tsconfig: 'tsconfig.json', useESM: false }],
 	},
 	moduleNameMapper: {
-		'^(\.{1,2}/.*)\.js$': '$1',
+		'^(\\.{1,2}/.*)\\.js$': '$1',
 	},
 	clearMocks: true,
 };
