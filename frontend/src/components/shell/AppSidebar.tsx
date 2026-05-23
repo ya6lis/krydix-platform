@@ -1,17 +1,19 @@
-import { NavLink } from 'react-router-dom';
-import { Box, Typography } from '@mui/material';
+import { useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { Box, Typography, Popover, Divider } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { faChevronRight, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import { Icons } from '@/constants/icons';
 import { tokens } from '@/theme';
-import { useAuthStore } from '@/store/authStore';
+import { useAuthStore, type AuthUser } from '@/store/authStore';
 import { ROUTES } from '@/constants/routes';
+import i18n from '@/i18n';
 
-/* ── width constant shared with AppShell ─────────────────────── */
+/* ── width constant ──────────────────────────────────────────── */
 export const SIDEBAR_WIDTH = 248;
 
-/* ── role constant for unauthenticated visitors ──────────────── */
+/* ── role constant for guests ────────────────────────────────── */
 const GUEST = 'GUEST';
 
 /* ── nav config ──────────────────────────────────────────────── */
@@ -55,7 +57,6 @@ const NAV_GROUPS: NavGroup[] = [
 				labelKey: 'nav.catalog',
 				icon: Icons.products,
 				href: '/products',
-				// guests can browse catalog
 				roles: [GUEST, 'BUYER', 'SELLER', 'MODERATOR', 'ADMINISTRATOR'],
 			},
 			{
@@ -182,7 +183,6 @@ const NAV_GROUPS: NavGroup[] = [
 				labelKey: 'nav.help',
 				icon: Icons.question,
 				href: '/support',
-				// guests can access help too
 				roles: [GUEST, 'BUYER', 'SELLER', 'MODERATOR', 'ADMINISTRATOR'],
 			},
 		],
@@ -196,14 +196,21 @@ const BADGE_STYLES: Record<BadgeVariant, { bg: string; color: string }> = {
 	danger: { bg: tokens.coral, color: '#fff' },
 };
 
+/* ── role badge map ──────────────────────────────────────────── */
+const ROLE_BADGE: Record<string, { bg: string; color: string; label: string }> = {
+	BUYER: { bg: tokens.accentSoft, color: tokens.accentInk, label: 'Buyer' },
+	SELLER: { bg: '#ede9fe', color: '#5b21b6', label: 'Seller' },
+	MODERATOR: { bg: tokens.amber, color: tokens.amberInk, label: 'Moderator' },
+	ADMINISTRATOR: { bg: tokens.coralSoft, color: tokens.coralInk, label: 'Admin' },
+};
+
 /* ── component ───────────────────────────────────────────────── */
 export default function AppSidebar() {
 	const { t } = useTranslation();
 	const user = useAuthStore((s) => s.user);
-	// treat unauthenticated visitors as GUEST so role filter works cleanly
 	const role = user?.role ?? GUEST;
+	const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
 
-	// initials from profile name, fall back to first char of email
 	const initials = user?.profile
 		? `${user.profile.firstName[0]}${user.profile.lastName[0]}`.toUpperCase()
 		: (user?.email?.[0] ?? '?').toUpperCase();
@@ -226,13 +233,10 @@ export default function AppSidebar() {
 				borderRight: `1px solid ${tokens.line}`,
 				flexShrink: 0,
 				'&::-webkit-scrollbar': { width: 6 },
-				'&::-webkit-scrollbar-thumb': {
-					background: tokens.line,
-					borderRadius: 3,
-				},
+				'&::-webkit-scrollbar-thumb': { background: tokens.line, borderRadius: 3 },
 			}}
 		>
-			{/* ── brand — always links to home ── */}
+			{/* ── brand ── */}
 			<Box
 				component={NavLink}
 				to={ROUTES.HOME}
@@ -275,7 +279,7 @@ export default function AppSidebar() {
 				</Typography>
 			</Box>
 
-			{/* ── nav groups — filtered by role ── */}
+			{/* ── nav groups ── */}
 			{NAV_GROUPS.map((group) => {
 				const visibleItems = group.items.filter((item) => item.roles.includes(role));
 				if (visibleItems.length === 0) return null;
@@ -300,71 +304,101 @@ export default function AppSidebar() {
 				);
 			})}
 
-			{/* ── footer: user profile link or guest sign-in prompt ── */}
+			{/* ── footer ── */}
 			{user ? (
-				<Box
-					component={NavLink}
-					to="/account/profile"
-					sx={{
-						marginTop: 'auto',
-						padding: '10px',
-						borderRadius: '12px',
-						background: tokens.surface,
-						border: `1px solid ${tokens.line}`,
-						display: 'flex',
-						alignItems: 'center',
-						gap: '10px',
-						textDecoration: 'none',
-						color: 'inherit',
-						transition: 'border-color 120ms, transform 120ms',
-						'&:hover': {
-							borderColor: tokens.accent,
-							transform: 'translateY(-1px)',
-							'& .foot-chev': { color: tokens.accent },
-						},
-					}}
-				>
+				<>
+					{/* Authenticated footer — opens user menu */}
 					<Box
+						component="button"
+						onClick={(e) => setMenuAnchor(e.currentTarget)}
 						sx={{
-							width: 32,
-							height: 32,
-							borderRadius: '50%',
-							background: `linear-gradient(135deg, ${tokens.accent}, ${tokens.cyan})`,
-							color: '#fff',
-							display: 'grid',
-							placeItems: 'center',
-							fontSize: 12,
-							fontWeight: 700,
-							flexShrink: 0,
+							marginTop: 'auto',
+							padding: '10px',
+							borderRadius: '12px',
+							background: menuAnchor ? tokens.accentSoft : tokens.surface,
+							border: `1px solid ${menuAnchor ? tokens.accent : tokens.line}`,
+							display: 'flex',
+							alignItems: 'center',
+							gap: '10px',
+							cursor: 'pointer',
+							textAlign: 'left',
+							width: '100%',
+							transition: 'border-color 120ms, background 120ms',
+							'&:hover': {
+								borderColor: tokens.accent,
+								background: tokens.accentSoft,
+								'& .foot-chev': { color: tokens.accent },
+							},
 						}}
 					>
-						{initials}
-					</Box>
-					<Box sx={{ flex: 1, lineHeight: 1.3, minWidth: 0 }}>
-						<Typography sx={{ fontSize: 13, fontWeight: 600, color: tokens.ink1 }}>
-							{user.profile
-								? `${user.profile.firstName} ${user.profile.lastName}`
-								: user.email}
-						</Typography>
-						<Typography
+						<Box
 							sx={{
-								fontSize: 11,
-								color: tokens.ink3,
-								whiteSpace: 'nowrap',
-								overflow: 'hidden',
-								textOverflow: 'ellipsis',
+								width: 32,
+								height: 32,
+								borderRadius: '50%',
+								background: `linear-gradient(135deg, ${tokens.accent}, ${tokens.cyan})`,
+								color: '#fff',
+								display: 'grid',
+								placeItems: 'center',
+								fontSize: 12,
+								fontWeight: 700,
+								flexShrink: 0,
 							}}
 						>
-							{user.email}
-						</Typography>
+							{initials}
+						</Box>
+						<Box sx={{ flex: 1, lineHeight: 1.3, minWidth: 0 }}>
+							<Typography sx={{ fontSize: 13, fontWeight: 600, color: tokens.ink1 }}>
+								{user.profile
+									? `${user.profile.firstName} ${user.profile.lastName}`
+									: user.email}
+							</Typography>
+							<Typography
+								sx={{
+									fontSize: 11,
+									color: tokens.ink3,
+									whiteSpace: 'nowrap',
+									overflow: 'hidden',
+									textOverflow: 'ellipsis',
+								}}
+							>
+								{user.email}
+							</Typography>
+						</Box>
+						<Box
+							className="foot-chev"
+							sx={{
+								color: menuAnchor ? tokens.accent : tokens.ink3,
+								transition: 'color 120ms',
+								fontSize: 12,
+							}}
+						>
+							<FontAwesomeIcon icon={menuAnchor ? faChevronUp : faChevronRight} />
+						</Box>
 					</Box>
-					<Box
-						className="foot-chev"
-						sx={{ color: tokens.ink3, transition: 'color 120ms', fontSize: 13 }}
+
+					{/* User menu popover */}
+					<Popover
+						open={Boolean(menuAnchor)}
+						anchorEl={menuAnchor}
+						onClose={() => setMenuAnchor(null)}
+						anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+						transformOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+						PaperProps={{
+							sx: {
+								width: 288,
+								borderRadius: '16px',
+								border: `1px solid ${tokens.line}`,
+								boxShadow: tokens.shadowMd,
+								ml: '8px',
+								mb: '8px',
+								overflow: 'hidden',
+							},
+						}}
 					>
-						<FontAwesomeIcon icon={faChevronRight} />
-					</Box>
-				</Box>
+						<UserMenu user={user} onClose={() => setMenuAnchor(null)} />
+					</Popover>
+				</>
 			) : (
 				/* Guest sign-in prompt */
 				<Box
@@ -410,12 +444,7 @@ export default function AppSidebar() {
 					<Box sx={{ flex: 1, lineHeight: 1.3, minWidth: 0 }}>
 						<Typography
 							className="sign-in-label"
-							sx={{
-								fontSize: 13,
-								fontWeight: 600,
-								color: tokens.ink1,
-								transition: 'color 120ms',
-							}}
+							sx={{ fontSize: 13, fontWeight: 600, color: tokens.ink1, transition: 'color 120ms' }}
 						>
 							{t('shell.guest.signIn')}
 						</Typography>
@@ -467,18 +496,11 @@ function SidebarNavItem({ item }: { item: NavItem }) {
 					color: tokens.accentInk,
 					fontWeight: 600,
 					'& .nav-icon': { color: tokens.accent },
-					'& .nav-badge-default': {
-						background: tokens.accent,
-						color: '#fff',
-					},
+					'& .nav-badge-default': { background: tokens.accent, color: '#fff' },
 				},
 			}}
 		>
-			<Box
-				component="span"
-				className="nav-icon"
-				sx={{ width: 18, flexShrink: 0, textAlign: 'center' }}
-			>
+			<Box component="span" className="nav-icon" sx={{ width: 18, flexShrink: 0, textAlign: 'center' }}>
 				<FontAwesomeIcon icon={item.icon} style={{ width: 18, height: 18 }} />
 			</Box>
 			<Box component="span" sx={{ flex: 1 }}>
@@ -503,5 +525,302 @@ function SidebarNavItem({ item }: { item: NavItem }) {
 				</Box>
 			)}
 		</Box>
+	);
+}
+
+/* ── UserMenu ────────────────────────────────────────────────── */
+function UserMenu({ user, onClose }: { user: AuthUser; onClose: () => void }) {
+	const { t } = useTranslation();
+	const navigate = useNavigate();
+	const clearAuth = useAuthStore((s) => s.clearAuth);
+	const currentLang = i18n.language.startsWith('uk') ? 'Українська' : 'English';
+
+	const initials = user.profile
+		? `${user.profile.firstName[0]}${user.profile.lastName[0]}`.toUpperCase()
+		: user.email[0].toUpperCase();
+	const fullName = user.profile
+		? `${user.profile.firstName} ${user.profile.lastName}`
+		: user.email;
+
+	const badge = ROLE_BADGE[user.role] ?? ROLE_BADGE.BUYER;
+
+	const handleLogout = () => {
+		clearAuth();
+		onClose();
+		navigate(ROUTES.LOGIN);
+	};
+
+	const go = (to: string) => {
+		navigate(to);
+		onClose();
+	};
+
+	return (
+		<Box sx={{ padding: '6px' }}>
+			{/* ── header ── */}
+			<Box
+				sx={{
+					padding: '10px 12px 12px',
+					display: 'flex',
+					alignItems: 'center',
+					gap: '12px',
+				}}
+			>
+				<Box
+					sx={{
+						width: 38,
+						height: 38,
+						borderRadius: '50%',
+						background: `linear-gradient(135deg, ${tokens.accent}, ${tokens.cyan})`,
+						color: '#fff',
+						display: 'grid',
+						placeItems: 'center',
+						fontSize: 13,
+						fontWeight: 700,
+						flexShrink: 0,
+					}}
+				>
+					{initials}
+				</Box>
+				<Box sx={{ flex: 1, minWidth: 0 }}>
+					<Typography sx={{ fontSize: 13.5, fontWeight: 700, color: tokens.ink1, lineHeight: 1.3 }}>
+						{fullName}
+					</Typography>
+					<Typography
+						sx={{
+							fontSize: 11.5,
+							color: tokens.ink3,
+							whiteSpace: 'nowrap',
+							overflow: 'hidden',
+							textOverflow: 'ellipsis',
+						}}
+					>
+						{user.email}
+					</Typography>
+				</Box>
+				<Box
+					sx={{
+						padding: '3px 9px',
+						borderRadius: '999px',
+						background: badge.bg,
+						color: badge.color,
+						fontSize: 11,
+						fontWeight: 700,
+						flexShrink: 0,
+					}}
+				>
+					{badge.label}
+				</Box>
+			</Box>
+
+			<Divider sx={{ borderColor: tokens.line, mx: '6px' }} />
+
+			{/* ── main nav ── */}
+			<Box sx={{ padding: '6px 0' }}>
+				<MenuRow icon={Icons.user} label={t('shell.menu.profile')} onClick={() => go('/account/profile')} />
+				<MenuRow icon={Icons.settings} label={t('shell.menu.settings')} onClick={() => go('/account/profile')} />
+				{(user.role === 'BUYER' || user.role === 'SELLER') && (
+					<MenuRow
+						icon={Icons.shield}
+						label={t('shell.menu.verification')}
+						onClick={() => go('/seller-cabinet/verification')}
+					/>
+				)}
+			</Box>
+
+			{/* ── role switch (seller only) ── */}
+			{user.role === 'SELLER' && (
+				<>
+					<Divider sx={{ borderColor: tokens.line, mx: '6px' }} />
+					<Box sx={{ padding: '6px 0' }}>
+						<MenuSectionLabel label={t('shell.menu.switchRole')} />
+						<MenuRow
+							icon={Icons.store}
+							label={t('shell.menu.sellerWorkspace')}
+							active
+							onClick={() => go('/seller-cabinet/dashboard')}
+						/>
+						<MenuRow
+							icon={Icons.cart}
+							label={t('shell.menu.buyerView')}
+							onClick={() => go('/account')}
+						/>
+					</Box>
+				</>
+			)}
+
+			<Divider sx={{ borderColor: tokens.line, mx: '6px' }} />
+
+			{/* ── preferences ── */}
+			<Box sx={{ padding: '6px 0' }}>
+				<MenuSectionLabel label={t('shell.menu.preferences')} />
+
+				{/* Appearance */}
+				<Box
+					sx={{
+						display: 'flex',
+						alignItems: 'center',
+						gap: '10px',
+						padding: '7px 12px',
+						borderRadius: '8px',
+					}}
+				>
+					<Box sx={{ width: 16, textAlign: 'center', color: tokens.ink3, fontSize: 13 }}>
+						<FontAwesomeIcon icon={Icons.sun} />
+					</Box>
+					<Box component="span" sx={{ flex: 1, fontSize: 13, color: tokens.ink1 }}>
+						{t('shell.menu.appearance')}
+					</Box>
+					<Box sx={{ display: 'flex', borderRadius: '7px', border: `1px solid ${tokens.line}`, overflow: 'hidden' }}>
+						{(['Light', 'Dark', 'Auto'] as const).map((mode, i) => (
+							<Box
+								key={mode}
+								component="button"
+								sx={{
+									padding: '3px 8px',
+									fontSize: 11,
+									fontWeight: mode === 'Light' ? 700 : 500,
+									background: mode === 'Light' ? tokens.ink1 : 'transparent',
+									color: mode === 'Light' ? '#fff' : tokens.ink3,
+									border: 'none',
+									borderLeft: i > 0 ? `1px solid ${tokens.line}` : 'none',
+									cursor: 'pointer',
+									transition: 'background 100ms',
+									'&:hover': mode !== 'Light' ? { background: tokens.surface2, color: tokens.ink1 } : {},
+								}}
+							>
+								{mode}
+							</Box>
+						))}
+					</Box>
+				</Box>
+
+				{/* Language */}
+				<Box
+					sx={{
+						display: 'flex',
+						alignItems: 'center',
+						gap: '10px',
+						padding: '7px 12px',
+						borderRadius: '8px',
+					}}
+				>
+					<Box sx={{ width: 16, textAlign: 'center', color: tokens.ink3, fontSize: 13 }}>
+						<FontAwesomeIcon icon={Icons.globe} />
+					</Box>
+					<Box component="span" sx={{ flex: 1, fontSize: 13, color: tokens.ink1 }}>
+						{t('shell.menu.language')}
+					</Box>
+					<Box component="span" sx={{ fontSize: 12, color: tokens.ink3 }}>{currentLang}</Box>
+				</Box>
+			</Box>
+
+			<Divider sx={{ borderColor: tokens.line, mx: '6px' }} />
+
+			{/* ── misc ── */}
+			<Box sx={{ padding: '6px 0' }}>
+				<MenuRow icon={Icons.question} label={t('shell.menu.help')} onClick={() => go('/support')} />
+				<MenuRow
+					icon={Icons.bolt}
+					label={t('shell.menu.whatsNew')}
+					badge={3}
+					onClick={() => onClose()}
+				/>
+				<MenuRow icon={Icons.send} label={t('shell.menu.feedback')} onClick={() => onClose()} />
+			</Box>
+
+			<Divider sx={{ borderColor: tokens.line, mx: '6px' }} />
+
+			{/* ── sign out ── */}
+			<Box sx={{ padding: '6px 0' }}>
+				<MenuRow icon={Icons.signOut} label={t('shell.menu.signOut')} onClick={handleLogout} danger />
+			</Box>
+		</Box>
+	);
+}
+
+/* ── MenuRow ─────────────────────────────────────────────────── */
+function MenuRow({
+	icon,
+	label,
+	onClick,
+	active,
+	danger,
+	badge,
+}: {
+	icon: (typeof Icons)[keyof typeof Icons];
+	label: string;
+	onClick?: () => void;
+	active?: boolean;
+	danger?: boolean;
+	badge?: number;
+}) {
+	return (
+		<Box
+			component="button"
+			onClick={onClick}
+			sx={{
+				width: '100%',
+				display: 'flex',
+				alignItems: 'center',
+				gap: '10px',
+				padding: '7px 12px',
+				borderRadius: '8px',
+				border: 'none',
+				background: active ? tokens.accentSoft : 'transparent',
+				color: danger ? tokens.coral : active ? tokens.accentInk : tokens.ink1,
+				fontSize: 13,
+				fontWeight: active ? 600 : 400,
+				cursor: 'pointer',
+				textAlign: 'left',
+				transition: 'background 100ms',
+				'&:hover': !active
+					? { background: danger ? tokens.coralSoft : tokens.surface2 }
+					: {},
+			}}
+		>
+			<Box sx={{ width: 16, textAlign: 'center', color: danger ? tokens.coral : active ? tokens.accent : tokens.ink3, fontSize: 13, flexShrink: 0 }}>
+				<FontAwesomeIcon icon={icon} />
+			</Box>
+			<Box component="span" sx={{ flex: 1 }}>
+				{label}
+			</Box>
+			{badge !== undefined && (
+				<Box
+					component="span"
+					sx={{
+						fontSize: 10,
+						fontWeight: 700,
+						background: tokens.accent,
+						color: '#fff',
+						padding: '1px 6px',
+						borderRadius: '999px',
+					}}
+				>
+					{badge} new
+				</Box>
+			)}
+			{active && (
+				<Box component="span" sx={{ fontSize: 12, color: tokens.accent }}>✓</Box>
+			)}
+		</Box>
+	);
+}
+
+/* ── MenuSectionLabel ────────────────────────────────────────── */
+function MenuSectionLabel({ label }: { label: string }) {
+	return (
+		<Typography
+			sx={{
+				fontSize: '10px',
+				fontWeight: 700,
+				letterSpacing: '0.1em',
+				textTransform: 'uppercase',
+				color: tokens.ink3,
+				padding: '2px 12px 6px',
+			}}
+		>
+			{label}
+		</Typography>
 	);
 }

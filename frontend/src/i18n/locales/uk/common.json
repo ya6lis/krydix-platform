@@ -56,6 +56,21 @@
 			"signIn": "Увійти",
 			"subtitle": "Доступ до акаунту"
 		},
+		"menu": {
+			"profile": "Мій профіль",
+			"settings": "Налаштування акаунту",
+			"verification": "Верифікація",
+			"switchRole": "Змінити роль",
+			"sellerWorkspace": "Кабінет продавця",
+			"buyerView": "Режим покупця",
+			"preferences": "Налаштування",
+			"appearance": "Зовнішній вигляд",
+			"language": "Мова",
+			"help": "Допомога та підтримка",
+			"whatsNew": "Що нового",
+			"feedback": "Надіслати відгук",
+			"signOut": "Вийти"
+		},
 		"notif": {
 			"title": "Сповіщення",
 			"unread": "{{count}} непрочитаних",

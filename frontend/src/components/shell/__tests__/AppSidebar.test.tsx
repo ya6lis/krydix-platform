@@ -6,6 +6,16 @@ jest.mock('react-i18next', () => ({
 	useTranslation: () => ({ t: (key: string) => key }),
 }));
 
+jest.mock('@/i18n', () => ({
+	language: 'en',
+	changeLanguage: jest.fn(),
+}));
+
+jest.mock('react-router-dom', () => ({
+	...jest.requireActual('react-router-dom'),
+	useNavigate: () => jest.fn(),
+}));
+
 jest.mock('@fortawesome/react-fontawesome', () => ({
 	FontAwesomeIcon: () => <span data-testid="icon" />,
 }));
@@ -21,8 +31,8 @@ const mockUser = {
 let mockAuthUser: typeof mockUser | null = mockUser;
 
 jest.mock('@/store/authStore', () => ({
-	useAuthStore: (selector: (s: { user: typeof mockUser | null }) => unknown) =>
-		selector({ user: mockAuthUser }),
+	useAuthStore: (selector: (s: { user: typeof mockUser | null; clearAuth: () => void }) => unknown) =>
+		selector({ user: mockAuthUser, clearAuth: jest.fn() }),
 }));
 
 function renderSidebar(initialRoute = '/account') {

@@ -79,6 +79,8 @@ import {
 	faExternalLinkAlt,
 	faLayerGroup,
 	faClipboardCheck,
+	faSun,
+	faBolt,
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -190,4 +192,6 @@ export const Icons = {
 	settings: faCog,
 	layers: faLayerGroup,
 	clipboardCheck: faClipboardCheck,
+	sun: faSun,
+	bolt: faBolt,
 } as const;
