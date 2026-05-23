@@ -349,9 +349,7 @@ export default function AppSidebar() {
 						</Box>
 						<Box sx={{ flex: 1, lineHeight: 1.3, minWidth: 0 }}>
 							<Typography sx={{ fontSize: 13, fontWeight: 600, color: tokens.ink1 }}>
-								{user.profile
-									? `${user.profile.firstName} ${user.profile.lastName}`
-									: user.email}
+								{user.profile ? `${user.profile.firstName} ${user.profile.lastName}` : user.email}
 							</Typography>
 							<Typography
 								sx={{
@@ -500,7 +498,11 @@ function SidebarNavItem({ item }: { item: NavItem }) {
 				},
 			}}
 		>
-			<Box component="span" className="nav-icon" sx={{ width: 18, flexShrink: 0, textAlign: 'center' }}>
+			<Box
+				component="span"
+				className="nav-icon"
+				sx={{ width: 18, flexShrink: 0, textAlign: 'center' }}
+			>
 				<FontAwesomeIcon icon={item.icon} style={{ width: 18, height: 18 }} />
 			</Box>
 			<Box component="span" sx={{ flex: 1 }}>
@@ -556,9 +558,7 @@ function UserMenu({ user, onClose }: { user: AuthUser; onClose: () => void }) {
 	const initials = user.profile
 		? `${user.profile.firstName[0]}${user.profile.lastName[0]}`.toUpperCase()
 		: user.email[0].toUpperCase();
-	const fullName = user.profile
-		? `${user.profile.firstName} ${user.profile.lastName}`
-		: user.email;
+	const fullName = user.profile ? `${user.profile.firstName} ${user.profile.lastName}` : user.email;
 
 	const badge = ROLE_BADGE[user.role] ?? ROLE_BADGE.BUYER;
 
@@ -642,8 +642,16 @@ function UserMenu({ user, onClose }: { user: AuthUser; onClose: () => void }) {
 
 			{/* ── group 1: profile / settings / verification ── */}
 			<Box sx={{ padding: '4px 0' }}>
-				<MenuRow icon={Icons.user} label={t('shell.menu.profile')} onClick={() => go('/account/profile')} />
-				<MenuRow icon={Icons.settings} label={t('shell.menu.settings')} onClick={() => go('/account/profile')} />
+				<MenuRow
+					icon={Icons.user}
+					label={t('shell.menu.profile')}
+					onClick={() => go('/account/profile')}
+				/>
+				<MenuRow
+					icon={Icons.settings}
+					label={t('shell.menu.settings')}
+					onClick={() => go('/account/profile')}
+				/>
 				{(user.role === 'BUYER' || user.role === 'SELLER') && (
 					<MenuRow
 						icon={Icons.shield}
@@ -709,14 +717,25 @@ function UserMenu({ user, onClose }: { user: AuthUser; onClose: () => void }) {
 							>
 								{code === 'en' ? 'English' : 'Українська'}
 								{currentLangCode === code && (
-									<Box component="span" sx={{ fontSize: 12, color: tokens.accent }}>✓</Box>
+									<Box component="span" sx={{ fontSize: 12, color: tokens.accent }}>
+										✓
+									</Box>
 								)}
 							</Box>
 						))}
 					</Box>
 				</Popover>
-				<MenuRow icon={Icons.question} label={t('shell.menu.help')} onClick={() => go('/support')} />
-				<MenuRow icon={Icons.bolt} label={t('shell.menu.whatsNew')} tag={newTag} onClick={() => onClose()} />
+				<MenuRow
+					icon={Icons.question}
+					label={t('shell.menu.help')}
+					onClick={() => go('/support')}
+				/>
+				<MenuRow
+					icon={Icons.bolt}
+					label={t('shell.menu.whatsNew')}
+					tag={newTag}
+					onClick={() => onClose()}
+				/>
 				<MenuRow icon={Icons.chat} label={t('shell.menu.feedback')} onClick={() => onClose()} />
 			</Box>
 
@@ -724,7 +743,12 @@ function UserMenu({ user, onClose }: { user: AuthUser; onClose: () => void }) {
 
 			{/* ── footer: sign out ── */}
 			<Box sx={{ padding: '4px 0' }}>
-				<MenuRow icon={Icons.signOut} label={t('shell.menu.signOut')} onClick={handleLogout} danger />
+				<MenuRow
+					icon={Icons.signOut}
+					label={t('shell.menu.signOut')}
+					onClick={handleLogout}
+					danger
+				/>
 			</Box>
 		</Box>
 	);
@@ -765,9 +789,7 @@ function MenuRow({
 				cursor: onClick ? 'pointer' : 'default',
 				textAlign: 'left',
 				transition: 'background 100ms',
-				'&:hover': onClick
-					? { background: danger ? tokens.coralSoft : tokens.surface2 }
-					: {},
+				'&:hover': onClick ? { background: danger ? tokens.coralSoft : tokens.surface2 } : {},
 			}}
 		>
 			<Box

@@ -31,8 +31,9 @@ const mockUser = {
 let mockAuthUser: typeof mockUser | null = mockUser;
 
 jest.mock('@/store/authStore', () => ({
-	useAuthStore: (selector: (s: { user: typeof mockUser | null; clearAuth: () => void }) => unknown) =>
-		selector({ user: mockAuthUser, clearAuth: jest.fn() }),
+	useAuthStore: (
+		selector: (s: { user: typeof mockUser | null; clearAuth: () => void }) => unknown
+	) => selector({ user: mockAuthUser, clearAuth: jest.fn() }),
 }));
 
 function renderSidebar(initialRoute = '/account') {
