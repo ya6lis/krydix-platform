@@ -528,6 +528,13 @@ function SidebarNavItem({ item }: { item: NavItem }) {
 	);
 }
 
+/* ── MenuTag type ────────────────────────────────────────────── */
+interface MenuTag {
+	label: string;
+	bg: string;
+	color: string;
+}
+
 /* ── UserMenu ────────────────────────────────────────────────── */
 function UserMenu({ user, onClose }: { user: AuthUser; onClose: () => void }) {
 	const { t } = useTranslation();
@@ -543,6 +550,13 @@ function UserMenu({ user, onClose }: { user: AuthUser; onClose: () => void }) {
 		: user.email;
 
 	const badge = ROLE_BADGE[user.role] ?? ROLE_BADGE.BUYER;
+
+	const verifiedTag: MenuTag | undefined =
+		user.role === 'SELLER'
+			? { label: 'Verified', bg: tokens.accentSoft, color: tokens.accentInk }
+			: undefined;
+
+	const newTag: MenuTag = { label: '3 new', bg: tokens.amber, color: tokens.amberInk };
 
 	const handleLogout = () => {
 		clearAuth();
@@ -560,7 +574,7 @@ function UserMenu({ user, onClose }: { user: AuthUser; onClose: () => void }) {
 			{/* ── header ── */}
 			<Box
 				sx={{
-					padding: '10px 12px 12px',
+					padding: '10px 12px 14px',
 					display: 'flex',
 					alignItems: 'center',
 					gap: '12px',
@@ -615,124 +629,34 @@ function UserMenu({ user, onClose }: { user: AuthUser; onClose: () => void }) {
 
 			<Divider sx={{ borderColor: tokens.line, mx: '6px' }} />
 
-			{/* ── main nav ── */}
-			<Box sx={{ padding: '6px 0' }}>
+			{/* ── group 1: profile / settings / verification ── */}
+			<Box sx={{ padding: '4px 0' }}>
 				<MenuRow icon={Icons.user} label={t('shell.menu.profile')} onClick={() => go('/account/profile')} />
 				<MenuRow icon={Icons.settings} label={t('shell.menu.settings')} onClick={() => go('/account/profile')} />
 				{(user.role === 'BUYER' || user.role === 'SELLER') && (
 					<MenuRow
 						icon={Icons.shield}
 						label={t('shell.menu.verification')}
+						tag={verifiedTag}
 						onClick={() => go('/seller-cabinet/verification')}
 					/>
 				)}
 			</Box>
 
-			{/* ── role switch (seller only) ── */}
-			{user.role === 'SELLER' && (
-				<>
-					<Divider sx={{ borderColor: tokens.line, mx: '6px' }} />
-					<Box sx={{ padding: '6px 0' }}>
-						<MenuSectionLabel label={t('shell.menu.switchRole')} />
-						<MenuRow
-							icon={Icons.store}
-							label={t('shell.menu.sellerWorkspace')}
-							active
-							onClick={() => go('/seller-cabinet/dashboard')}
-						/>
-						<MenuRow
-							icon={Icons.cart}
-							label={t('shell.menu.buyerView')}
-							onClick={() => go('/account')}
-						/>
-					</Box>
-				</>
-			)}
-
 			<Divider sx={{ borderColor: tokens.line, mx: '6px' }} />
 
-			{/* ── preferences ── */}
-			<Box sx={{ padding: '6px 0' }}>
-				<MenuSectionLabel label={t('shell.menu.preferences')} />
-
-				{/* Appearance */}
-				<Box
-					sx={{
-						display: 'flex',
-						alignItems: 'center',
-						gap: '10px',
-						padding: '7px 12px',
-						borderRadius: '8px',
-					}}
-				>
-					<Box sx={{ width: 16, textAlign: 'center', color: tokens.ink3, fontSize: 13 }}>
-						<FontAwesomeIcon icon={Icons.sun} />
-					</Box>
-					<Box component="span" sx={{ flex: 1, fontSize: 13, color: tokens.ink1 }}>
-						{t('shell.menu.appearance')}
-					</Box>
-					<Box sx={{ display: 'flex', borderRadius: '7px', border: `1px solid ${tokens.line}`, overflow: 'hidden' }}>
-						{(['Light', 'Dark', 'Auto'] as const).map((mode, i) => (
-							<Box
-								key={mode}
-								component="button"
-								sx={{
-									padding: '3px 8px',
-									fontSize: 11,
-									fontWeight: mode === 'Light' ? 700 : 500,
-									background: mode === 'Light' ? tokens.ink1 : 'transparent',
-									color: mode === 'Light' ? '#fff' : tokens.ink3,
-									border: 'none',
-									borderLeft: i > 0 ? `1px solid ${tokens.line}` : 'none',
-									cursor: 'pointer',
-									transition: 'background 100ms',
-									'&:hover': mode !== 'Light' ? { background: tokens.surface2, color: tokens.ink1 } : {},
-								}}
-							>
-								{mode}
-							</Box>
-						))}
-					</Box>
-				</Box>
-
-				{/* Language */}
-				<Box
-					sx={{
-						display: 'flex',
-						alignItems: 'center',
-						gap: '10px',
-						padding: '7px 12px',
-						borderRadius: '8px',
-					}}
-				>
-					<Box sx={{ width: 16, textAlign: 'center', color: tokens.ink3, fontSize: 13 }}>
-						<FontAwesomeIcon icon={Icons.globe} />
-					</Box>
-					<Box component="span" sx={{ flex: 1, fontSize: 13, color: tokens.ink1 }}>
-						{t('shell.menu.language')}
-					</Box>
-					<Box component="span" sx={{ fontSize: 12, color: tokens.ink3 }}>{currentLang}</Box>
-				</Box>
-			</Box>
-
-			<Divider sx={{ borderColor: tokens.line, mx: '6px' }} />
-
-			{/* ── misc ── */}
-			<Box sx={{ padding: '6px 0' }}>
+			{/* ── group 2: language / help / what's new / feedback ── */}
+			<Box sx={{ padding: '4px 0' }}>
+				<MenuRow icon={Icons.globe} label={t('shell.menu.language')} meta={currentLang} />
 				<MenuRow icon={Icons.question} label={t('shell.menu.help')} onClick={() => go('/support')} />
-				<MenuRow
-					icon={Icons.bolt}
-					label={t('shell.menu.whatsNew')}
-					badge={3}
-					onClick={() => onClose()}
-				/>
-				<MenuRow icon={Icons.send} label={t('shell.menu.feedback')} onClick={() => onClose()} />
+				<MenuRow icon={Icons.bolt} label={t('shell.menu.whatsNew')} tag={newTag} onClick={() => onClose()} />
+				<MenuRow icon={Icons.chat} label={t('shell.menu.feedback')} onClick={() => onClose()} />
 			</Box>
 
 			<Divider sx={{ borderColor: tokens.line, mx: '6px' }} />
 
-			{/* ── sign out ── */}
-			<Box sx={{ padding: '6px 0' }}>
+			{/* ── footer: sign out ── */}
+			<Box sx={{ padding: '4px 0' }}>
 				<MenuRow icon={Icons.signOut} label={t('shell.menu.signOut')} onClick={handleLogout} danger />
 			</Box>
 		</Box>
@@ -744,20 +668,20 @@ function MenuRow({
 	icon,
 	label,
 	onClick,
-	active,
 	danger,
-	badge,
+	tag,
+	meta,
 }: {
 	icon: (typeof Icons)[keyof typeof Icons];
 	label: string;
 	onClick?: () => void;
-	active?: boolean;
 	danger?: boolean;
-	badge?: number;
+	tag?: MenuTag;
+	meta?: string;
 }) {
 	return (
 		<Box
-			component="button"
+			component={onClick ? 'button' : 'div'}
 			onClick={onClick}
 			sx={{
 				width: '100%',
@@ -767,60 +691,52 @@ function MenuRow({
 				padding: '7px 12px',
 				borderRadius: '8px',
 				border: 'none',
-				background: active ? tokens.accentSoft : 'transparent',
-				color: danger ? tokens.coral : active ? tokens.accentInk : tokens.ink1,
+				background: 'transparent',
+				color: danger ? tokens.coral : tokens.ink1,
 				fontSize: 13,
-				fontWeight: active ? 600 : 400,
-				cursor: 'pointer',
+				fontWeight: 400,
+				cursor: onClick ? 'pointer' : 'default',
 				textAlign: 'left',
 				transition: 'background 100ms',
-				'&:hover': !active
+				'&:hover': onClick
 					? { background: danger ? tokens.coralSoft : tokens.surface2 }
 					: {},
 			}}
 		>
-			<Box sx={{ width: 16, textAlign: 'center', color: danger ? tokens.coral : active ? tokens.accent : tokens.ink3, fontSize: 13, flexShrink: 0 }}>
+			<Box
+				sx={{
+					width: 16,
+					textAlign: 'center',
+					color: danger ? tokens.coral : tokens.ink3,
+					fontSize: 13,
+					flexShrink: 0,
+				}}
+			>
 				<FontAwesomeIcon icon={icon} />
 			</Box>
 			<Box component="span" sx={{ flex: 1 }}>
 				{label}
 			</Box>
-			{badge !== undefined && (
+			{meta && (
+				<Box component="span" sx={{ fontSize: 12, color: tokens.ink3 }}>
+					{meta}
+				</Box>
+			)}
+			{tag && (
 				<Box
 					component="span"
 					sx={{
-						fontSize: 10,
+						fontSize: 10.5,
 						fontWeight: 700,
-						background: tokens.accent,
-						color: '#fff',
-						padding: '1px 6px',
+						background: tag.bg,
+						color: tag.color,
+						padding: '2px 7px',
 						borderRadius: '999px',
 					}}
 				>
-					{badge} new
+					{tag.label}
 				</Box>
 			)}
-			{active && (
-				<Box component="span" sx={{ fontSize: 12, color: tokens.accent }}>✓</Box>
-			)}
 		</Box>
-	);
-}
-
-/* ── MenuSectionLabel ────────────────────────────────────────── */
-function MenuSectionLabel({ label }: { label: string }) {
-	return (
-		<Typography
-			sx={{
-				fontSize: '10px',
-				fontWeight: 700,
-				letterSpacing: '0.1em',
-				textTransform: 'uppercase',
-				color: tokens.ink3,
-				padding: '2px 12px 6px',
-			}}
-		>
-			{label}
-		</Typography>
 	);
 }
