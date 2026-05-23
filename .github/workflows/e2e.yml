@@ -1,0 +1,40 @@
+name: E2E Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+  push:
+    branches:
+      - develop
+
+jobs:
+  e2e:
+    name: Cypress E2E
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build --workspace=frontend
+
+      - name: Run Cypress E2E
+        uses: cypress-io/github-action@v6
+        with:
+          working-directory: e2e
+          start: npm run preview --workspace=frontend
+          wait-on: 'http://localhost:4173'
+          wait-on-timeout: 60
+          browser: chrome
+          headed: false
+        env:
+          CYPRESS_BASE_URL: http://localhost:4173

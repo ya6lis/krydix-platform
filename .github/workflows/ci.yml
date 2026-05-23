@@ -25,6 +25,7 @@ jobs:
 
   typecheck:
     name: TypeScript Check
+    needs: lint-format
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -37,6 +38,7 @@ jobs:
 
   backend-tests:
     name: Backend Tests
+    needs: lint-format
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -71,6 +73,7 @@ jobs:
 
   frontend-tests:
     name: Frontend Tests
+    needs: lint-format
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
