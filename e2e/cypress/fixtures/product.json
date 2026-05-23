@@ -13,14 +13,54 @@
 		"metaDescription": null,
 		"mainImage": null,
 		"media": [
-			{ "id": "m1", "url": "https://placehold.co/600x600", "type": "IMAGE", "isMain": true, "sortOrder": 0 },
-			{ "id": "m2", "url": "https://placehold.co/600x600/eee", "type": "IMAGE", "isMain": false, "sortOrder": 1 }
+			{
+				"id": "m1",
+				"url": "https://placehold.co/600x600",
+				"type": "IMAGE",
+				"isMain": true,
+				"sortOrder": 0
+			},
+			{
+				"id": "m2",
+				"url": "https://placehold.co/600x600/eee",
+				"type": "IMAGE",
+				"isMain": false,
+				"sortOrder": 1
+			}
 		],
 		"variants": [
-			{ "id": "v1", "sku": "V-S-OLV", "options": { "size": "S", "color": "Olive" }, "price": null, "stock": 3, "isActive": true },
-			{ "id": "v2", "sku": "V-M-OLV", "options": { "size": "M", "color": "Olive" }, "price": null, "stock": 5, "isActive": true },
-			{ "id": "v3", "sku": "V-L-OLV", "options": { "size": "L", "color": "Olive" }, "price": null, "stock": 0, "isActive": true },
-			{ "id": "v4", "sku": "V-S-NAT", "options": { "size": "S", "color": "Natural" }, "price": null, "stock": 2, "isActive": true }
+			{
+				"id": "v1",
+				"sku": "V-S-OLV",
+				"options": { "size": "S", "color": "Olive" },
+				"price": null,
+				"stock": 3,
+				"isActive": true
+			},
+			{
+				"id": "v2",
+				"sku": "V-M-OLV",
+				"options": { "size": "M", "color": "Olive" },
+				"price": null,
+				"stock": 5,
+				"isActive": true
+			},
+			{
+				"id": "v3",
+				"sku": "V-L-OLV",
+				"options": { "size": "L", "color": "Olive" },
+				"price": null,
+				"stock": 0,
+				"isActive": true
+			},
+			{
+				"id": "v4",
+				"sku": "V-S-NAT",
+				"options": { "size": "S", "color": "Natural" },
+				"price": null,
+				"stock": 2,
+				"isActive": true
+			}
 		],
 		"categories": [{ "id": "c1", "slug": "outerwear", "name": "Outerwear" }],
 		"seller": { "id": "s1", "name": "Jane Doe" },
