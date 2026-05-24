@@ -316,6 +316,123 @@
 			"clearAll": "Clear all filters"
 		}
 	},
+	"cart": {
+		"title": "Your cart",
+		"subtitle": "{{count}} items from {{sellers}} sellers",
+		"subtitleOne": "1 item from 1 seller",
+		"continueShopping": "Continue shopping",
+		"empty": "Your cart is empty",
+		"emptyDesc": "Browse the catalog and add products to your cart.",
+		"browseProducts": "Browse products",
+		"messageSeller": "Message seller",
+		"inStock": "In stock",
+		"lowStock": "Only {{count}} left",
+		"outOfStock": "Out of stock",
+		"sku": "SKU",
+		"remove": "Remove item",
+		"delivery": "Delivery method",
+		"deliveryCourier": "Courier",
+		"deliveryBranch": "Branch pickup",
+		"deliverySelf": "Self pickup",
+		"deliveryFree": "Free",
+		"deliveryUnavailable": "Unavailable",
+		"sellerSubtotal_one": "Subtotal · {{count}} item",
+		"sellerSubtotal_other": "Subtotal · {{count}} items",
+		"summary": {
+			"title": "Order summary",
+			"subtitle": "{{count}} items · {{sellers}} shipments",
+			"subtotal": "Subtotal",
+			"discount": "Item discounts",
+			"promo": "Promo code",
+			"shipping": "Shipping",
+			"shippingCalc": "Calculated at checkout",
+			"tax": "Estimated tax",
+			"total": "Total"
+		},
+		"promo": {
+			"placeholder": "Add promo code",
+			"anotherPlaceholder": "Add another promo code",
+			"apply": "Apply",
+			"applied": "{{code}} applied — {{percent}}% off",
+			"invalid": "Invalid or expired promo code",
+			"minAmount": "Minimum order amount not met",
+			"remove": "Remove promo"
+		},
+		"checkout": "Proceed to checkout",
+		"trust": {
+			"secure": "Secure checkout",
+			"secureSub": "256-bit TLS",
+			"returns": "14-day returns",
+			"returnsSub": "on every order",
+			"protection": "Buyer protection",
+			"protectionSub": "via Krydix mediation"
+		},
+		"recommended": "You might also like"
+	},
+	"checkout": {
+		"title": "Checkout",
+		"step": {
+			"contact": "Contact",
+			"delivery": "Delivery",
+			"payment": "Payment",
+			"confirmation": "Confirmed"
+		},
+		"contact": {
+			"title": "Contact information",
+			"firstName": "First name",
+			"lastName": "Last name",
+			"email": "Email",
+			"phone": "Phone number"
+		},
+		"delivery": {
+			"title": "Delivery method",
+			"courier": "Courier",
+			"branch": "Branch pickup",
+			"self": "Self pickup",
+			"address": "Delivery address",
+			"addressPlaceholder": "Street, city, postal code",
+			"addressRequired": "Delivery address is required for courier delivery"
+		},
+		"payment": {
+			"title": "Payment method",
+			"card": "Bank card",
+			"cod": "Cash on delivery",
+			"bank": "Bank transfer",
+			"notes": "Order notes",
+			"notesPlaceholder": "Any special instructions or requests..."
+		},
+		"promo": {
+			"label": "Promo code",
+			"placeholder": "Enter promo code",
+			"apply": "Apply",
+			"applied": "{{code}} applied",
+			"remove": "Remove"
+		},
+		"summary": {
+			"title": "Order summary",
+			"items": "{{count}} items",
+			"subtotal": "Subtotal",
+			"discount": "Discount",
+			"shipping": "Shipping",
+			"shippingCalc": "Calculated",
+			"total": "Total"
+		},
+		"placeOrder": "Place order",
+		"back": "Back",
+		"next": "Next step",
+		"processing": "Processing...",
+		"confirmed": {
+			"title": "Order placed!",
+			"subtitle": "Thank you for your order. We'll send you a confirmation email shortly.",
+			"orderId": "Order ID",
+			"viewOrders": "View my orders",
+			"continueShopping": "Continue shopping"
+		},
+		"errors": {
+			"stockUnavailable": "Some items in your cart are no longer available",
+			"generic": "Failed to place order. Please try again."
+		}
+	},
 	"product": {
 		"variant": "Variant",
 		"reviewCount": "{{count}} reviews",

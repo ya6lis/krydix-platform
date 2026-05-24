@@ -8,6 +8,7 @@ export type CartItemRecord = Prisma.CartItemGetPayload<{
 				translations: true;
 				media: true;
 				variants: true;
+				seller: { include: { profile: true } };
 			};
 		};
 		variant: true;
@@ -23,6 +24,7 @@ export async function findCartByUser(userId: string): Promise<CartItemRecord[]> 
 					translations: true,
 					media: { where: { isMain: true }, take: 1 },
 					variants: true,
+					seller: { include: { profile: true } },
 				},
 			},
 			variant: true,

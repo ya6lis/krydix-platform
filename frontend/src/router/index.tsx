@@ -15,6 +15,8 @@ import RegisterPage from '@/pages/public/RegisterPage';
 import VerifyEmailPage from '@/pages/public/VerifyEmailPage';
 import CatalogPage from '@/pages/public/CatalogPage';
 import ProductPage from '@/pages/public/ProductPage';
+import CartPage from '@/pages/public/CartPage';
+import CheckoutPage from '@/pages/public/CheckoutPage';
 
 const Placeholder = ({ name }: { name: string }) => (
 	<div style={{ padding: 32 }}>
@@ -47,6 +49,15 @@ export const router = createBrowserRouter([
 			{ path: ROUTES.PRODUCTS, element: <CatalogPage /> },
 			{ path: '/catalog/:slug', element: <ProductPage /> },
 			{ path: ROUTES.SEARCH, element: <Placeholder name="Search" /> },
+			{ path: ROUTES.CART, element: <CartPage /> },
+			{
+				path: ROUTES.CHECKOUT,
+				element: (
+					<ProtectedRoute allowedRoles={[Role.BUYER, Role.SELLER, Role.MODERATOR, Role.ADMIN]}>
+						<CheckoutPage />
+					</ProtectedRoute>
+				),
+			},
 			{ path: '/seller/:id', element: <Placeholder name="Seller Profile" /> },
 			{ path: ROUTES.NOT_FOUND, element: <Placeholder name="404 Not Found" /> },
 			{ path: ROUTES.FORBIDDEN, element: <Placeholder name="403 Forbidden" /> },

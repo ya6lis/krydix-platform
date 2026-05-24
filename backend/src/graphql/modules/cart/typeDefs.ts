@@ -9,6 +9,8 @@ export const cartTypeDefs = `#graphql
 		id: ID!
 		productId: ID!
 		variantId: ID
+		sellerId: ID!
+		sellerName: String!
 		quantity: Int!
 		unitPrice: Float!
 		totalPrice: Float!

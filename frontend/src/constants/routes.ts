@@ -13,6 +13,10 @@ export const ROUTES = {
 	FORGOT_PASSWORD: '/auth/forgot-password',
 	RESET_PASSWORD: '/auth/reset-password',
 
+	// Cart & Checkout (public — guest accessible)
+	CART: '/cart',
+	CHECKOUT: '/checkout',
+
 	// Buyer cabinet
 	ACCOUNT: '/account',
 	ACCOUNT_ORDERS: '/account/orders',

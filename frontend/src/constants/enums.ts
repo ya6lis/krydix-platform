@@ -59,6 +59,12 @@ export enum DeliveryMethod {
 	SELF_PICKUP = 'SELF_PICKUP',
 }
 
+export enum PaymentMethod {
+	CARD = 'CARD',
+	CASH_ON_DELIVERY = 'CASH_ON_DELIVERY',
+	BANK_TRANSFER = 'BANK_TRANSFER',
+}
+
 export enum ComplaintStatus {
 	NEW = 'NEW',
 	IN_REVIEW = 'IN_REVIEW',
