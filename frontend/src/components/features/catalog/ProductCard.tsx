@@ -238,9 +238,6 @@ export function ProductCard({ product }: ProductCardProps) {
 				{/* CTA row */}
 				<Box sx={{ display: 'flex', gap: '8px', mt: 'auto', pt: '12px' }}>
 					<Box
-						component={RouterLink}
-						to={ROUTES.PRODUCT(product.slug)}
-						onClick={(e: React.MouseEvent) => e.stopPropagation()}
 						sx={{
 							flex: 1,
 							display: 'grid',
