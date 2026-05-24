@@ -58,6 +58,7 @@ describe('AppNavbar', () => {
 				name: 'Test Item',
 				price: 100,
 				qty: 7, // use 7 to distinguish from static notif badge (3)
+				stock: 10,
 			});
 		});
 		renderNavbar();
