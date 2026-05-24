@@ -1,8 +1,8 @@
 export const ROUTES = {
 	// Public
 	HOME: '/',
-	PRODUCTS: '/products',
-	PRODUCT: (slug: string) => `/products/${slug}`,
+	PRODUCTS: '/catalog',
+	PRODUCT: (slug: string) => `/catalog/${slug}`,
 	SEARCH: '/search',
 	SELLER_PUBLIC: (id: string) => `/seller/${id}`,
 

@@ -45,7 +45,7 @@ export const router = createBrowserRouter([
 		children: [
 			{ path: ROUTES.HOME, element: <Placeholder name="Home" /> },
 			{ path: ROUTES.PRODUCTS, element: <CatalogPage /> },
-			{ path: '/products/:slug', element: <ProductPage /> },
+			{ path: '/catalog/:slug', element: <ProductPage /> },
 			{ path: ROUTES.SEARCH, element: <Placeholder name="Search" /> },
 			{ path: '/seller/:id', element: <Placeholder name="Seller Profile" /> },
 			{ path: ROUTES.NOT_FOUND, element: <Placeholder name="404 Not Found" /> },

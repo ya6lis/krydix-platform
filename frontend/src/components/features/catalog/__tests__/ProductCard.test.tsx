@@ -57,7 +57,7 @@ describe('ProductCard', () => {
 		renderCard(makeProduct());
 		expect(screen.getByText('Heritage Field Jacket').closest('a')).toHaveAttribute(
 			'href',
-			'/products/field-jacket'
+			'/catalog/field-jacket'
 		);
 	});
 

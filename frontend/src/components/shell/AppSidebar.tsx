@@ -56,7 +56,7 @@ const NAV_GROUPS: NavGroup[] = [
 				id: 'catalog',
 				labelKey: 'nav.catalog',
 				icon: Icons.products,
-				href: '/products',
+				href: ROUTES.PRODUCTS,
 				roles: [GUEST, 'BUYER', 'SELLER', 'MODERATOR', 'ADMINISTRATOR'],
 			},
 			{

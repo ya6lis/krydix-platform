@@ -291,6 +291,7 @@
 		"lowStock": "Закінчується",
 		"outOfStock": "Немає в наявності",
 		"inStockCount": "{{count}} в наявності",
+		"quickView": "Швидкий перегляд",
 		"sort": {
 			"newest": "Найновіші",
 			"popularity": "Популярність",
