@@ -56,3 +56,4 @@ CLAUDE.md
 
 # Local scripts (machine-specific, not for repo)
 local/
+.github/scripts

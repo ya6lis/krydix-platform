@@ -1,4 +1,4 @@
-import { Prisma, DeliveryMethod, PaymentMethod } from '@prisma/client';
+import { Prisma, DeliveryMethod, PaymentMethod, OrderStatus } from '@prisma/client';
 import { prisma } from '../utils/prisma.js';
 
 export type OrderRecord = Prisma.OrderGetPayload<{
@@ -27,6 +27,25 @@ export interface CreateOrderInput {
 		unitPrice: number;
 		productTitle: string;
 	}>;
+}
+
+export interface FindOrdersFilter {
+	status?: OrderStatus;
+	dateFrom?: Date;
+	dateTo?: Date;
+	search?: string;
+}
+
+export interface Pagination {
+	page: number;
+	pageSize: number;
+}
+
+export interface PaginatedOrders {
+	items: OrderRecord[];
+	total: number;
+	page: number;
+	pageSize: number;
 }
 
 export async function createOrder(input: CreateOrderInput): Promise<OrderRecord> {
@@ -86,12 +105,41 @@ export async function createOrder(input: CreateOrderInput): Promise<OrderRecord>
 	});
 }
 
-export async function findOrdersByBuyer(buyerId: string): Promise<OrderRecord[]> {
-	return prisma.order.findMany({
-		where: { buyerId, deletedAt: null },
-		include: { items: true, payment: true, delivery: true, promoCode: true },
-		orderBy: { createdAt: 'desc' },
-	});
+export async function findOrdersByBuyer(
+	buyerId: string,
+	filter?: FindOrdersFilter,
+	pagination?: Pagination
+): Promise<PaginatedOrders> {
+	const page = pagination?.page ?? 1;
+	const pageSize = pagination?.pageSize ?? 10;
+	const skip = (page - 1) * pageSize;
+
+	const where: Prisma.OrderWhereInput = {
+		buyerId,
+		deletedAt: null,
+		...(filter?.status && { status: filter.status }),
+		...(filter?.dateFrom || filter?.dateTo
+			? {
+					createdAt: {
+						...(filter.dateFrom && { gte: filter.dateFrom }),
+						...(filter.dateTo && { lte: filter.dateTo }),
+					},
+				}
+			: {}),
+	};
+
+	const [items, total] = await Promise.all([
+		prisma.order.findMany({
+			where,
+			include: { items: true, payment: true, delivery: true, promoCode: true },
+			orderBy: { createdAt: 'desc' },
+			skip,
+			take: pageSize,
+		}),
+		prisma.order.count({ where }),
+	]);
+
+	return { items, total, page, pageSize };
 }
 
 export async function findOrderById(id: string): Promise<OrderRecord | null> {
@@ -99,4 +147,44 @@ export async function findOrderById(id: string): Promise<OrderRecord | null> {
 		where: { id, deletedAt: null },
 		include: { items: true, payment: true, delivery: true, promoCode: true },
 	});
+}
+
+export async function findOrderByIdAndBuyer(
+	id: string,
+	buyerId: string
+): Promise<OrderRecord | null> {
+	return prisma.order.findFirst({
+		where: { id, buyerId, deletedAt: null },
+		include: { items: true, payment: true, delivery: true, promoCode: true },
+	});
+}
+
+export async function updateOrderStatus(id: string, status: OrderStatus): Promise<OrderRecord> {
+	return prisma.order.update({
+		where: { id },
+		data: { status },
+		include: { items: true, payment: true, delivery: true, promoCode: true },
+	});
+}
+
+export async function updatePaymentStatus(orderId: string, status: string): Promise<void> {
+	await prisma.paymentRecord.updateMany({
+		where: { orderId },
+		data: { status: status as never },
+	});
+}
+
+export async function countOrdersByBuyerAndStatus(buyerId: string): Promise<{
+	all: number;
+	pending: number;
+	completed: number;
+	refunded: number;
+}> {
+	const [all, pending, completed, refunded] = await Promise.all([
+		prisma.order.count({ where: { buyerId, deletedAt: null } }),
+		prisma.order.count({ where: { buyerId, deletedAt: null, status: 'PENDING' } }),
+		prisma.order.count({ where: { buyerId, deletedAt: null, status: 'DELIVERED' } }),
+		prisma.order.count({ where: { buyerId, deletedAt: null, status: 'REFUNDED' } }),
+	]);
+	return { all, pending, completed, refunded };
 }
