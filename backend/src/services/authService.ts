@@ -5,6 +5,7 @@ import * as tokenRepo from '../repositories/tokenRepository.js';
 import { hashPassword, comparePassword } from '../utils/hash.js';
 import { signAccessToken } from '../utils/jwt.js';
 import { sendVerificationEmail } from '../utils/email.js';
+import { env } from '../config/env.js';
 import { Role } from '../constants/enums.js';
 
 function generateToken(): string {
@@ -27,6 +28,11 @@ export async function register(
 	const passwordHash = await hashPassword(password);
 	const user = await userRepo.createUser({ email, passwordHash, role: Role.BUYER });
 	await userRepo.createUserProfile(user.id, { firstName, lastName });
+
+	if (env.DISABLE_EMAIL) {
+		await userRepo.updateUserEmailVerified(user.id);
+		return true;
+	}
 
 	const verifyToken = generateToken();
 	await tokenRepo.createEmailVerification(user.id, verifyToken);
