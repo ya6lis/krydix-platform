@@ -299,6 +299,8 @@
 			"priceDesc": "Price: high to low",
 			"rating": "Rating"
 		},
+		"export": "Export",
+		"newProduct": "New product",
 		"empty": {
 			"title": "No products found",
 			"description": "Try adjusting your filters or clearing them."
