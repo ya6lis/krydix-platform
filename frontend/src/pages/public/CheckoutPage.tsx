@@ -36,10 +36,17 @@ const contactSchema = z.object({
 });
 type ContactForm = z.infer<typeof contactSchema>;
 
-const deliverySchema = z.object({
-	deliveryMethod: z.nativeEnum(DeliveryMethod),
-	deliveryAddress: z.string().optional(),
-});
+const deliverySchema = z
+	.object({
+		deliveryMethod: z.nativeEnum(DeliveryMethod),
+		deliveryAddress: z.string().optional(),
+	})
+	.refine(
+		(d) =>
+			d.deliveryMethod !== DeliveryMethod.COURIER ||
+			(!!d.deliveryAddress && d.deliveryAddress.trim().length > 0),
+		{ message: 'Delivery address is required', path: ['deliveryAddress'] }
+	);
 type DeliveryForm = z.infer<typeof deliverySchema>;
 
 const paymentSchema = z.object({
@@ -625,9 +632,9 @@ export default function CheckoutPage() {
 				variables: {
 					paymentMethod: data.paymentMethod,
 					deliveryMethod: stepData.delivery?.deliveryMethod ?? DeliveryMethod.COURIER,
-					deliveryAddress: stepData.delivery?.deliveryAddress ?? undefined,
-					promoCode: promoCode ?? undefined,
-					notes: data.notes ?? undefined,
+					deliveryAddress: stepData.delivery?.deliveryAddress || undefined,
+					promoCode: promoCode || undefined,
+					notes: data.notes || undefined,
 				},
 			});
 			if (resp?.createOrder) {

@@ -62,6 +62,7 @@ export const checkoutTypeDefs = `#graphql
 		status: OrderStatus!
 		totalAmount: Float!
 		discount: Float
+		notes: String
 		items: [OrderItemOut!]!
 		payment: PaymentOut
 		delivery: DeliveryOut

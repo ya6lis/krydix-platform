@@ -16,6 +16,7 @@ export interface OrderOut {
 	status: string;
 	totalAmount: number;
 	discount: number | null;
+	notes: string | null;
 	items: Array<{
 		id: string;
 		productId: string;
@@ -77,6 +78,7 @@ function mapOrder(order: orderRepo.OrderRecord): OrderOut {
 		status: order.status,
 		totalAmount: Number(order.totalAmount),
 		discount: order.discount !== null ? Number(order.discount) : null,
+		notes: order.notes ?? null,
 		items: order.items.map((i) => ({
 			id: i.id,
 			productId: i.productId,
