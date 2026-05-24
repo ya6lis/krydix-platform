@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     rootDir: backend
-    buildCommand: npm install && npx prisma generate && npm run build
+    buildCommand: npm install --include=dev && npx prisma generate && npm run build
     startCommand: node dist/index.js
     healthCheckPath: /health
     envVars:
@@ -40,7 +40,7 @@ services:
         value: '587'
       - key: EMAIL_USER
         sync: false
-      - key: EMAIL_PASSWORD
+      - key: EMAIL_PASS
         sync: false
       - key: EMAIL_FROM
         value: 'Krydix <noreply@krydix.com>'
