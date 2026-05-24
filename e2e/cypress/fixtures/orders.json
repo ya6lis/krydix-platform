@@ -1,0 +1,280 @@
+{
+	"refreshToken": {
+		"refreshToken": {
+			"accessToken": "stub-access-token",
+			"refreshToken": "stub-refresh-token"
+		}
+	},
+	"orderStats": {
+		"myOrderStats": {
+			"all": 4,
+			"pending": 1,
+			"completed": 2,
+			"refunded": 1
+		}
+	},
+	"ordersAll": {
+		"myOrders": {
+			"items": [
+				{
+					"id": "order-pending-001",
+					"status": "PENDING",
+					"totalAmount": 184.0,
+					"discount": 0,
+					"notes": null,
+					"createdAt": "2026-05-01T10:00:00.000Z",
+					"updatedAt": "2026-05-01T10:00:00.000Z",
+					"items": [
+						{
+							"id": "item-1",
+							"productId": "p1",
+							"variantId": null,
+							"sellerId": "s1",
+							"quantity": 2,
+							"unitPrice": 92.0,
+							"totalPrice": 184.0,
+							"productTitle": "Heritage Field Jacket"
+						}
+					],
+					"payment": {
+						"id": "pay-1",
+						"amount": 184.0,
+						"method": "CARD",
+						"status": "PAID",
+						"transactionId": "txn-001",
+						"createdAt": "2026-05-01T10:05:00.000Z"
+					},
+					"delivery": null,
+					"promoCode": null
+				},
+				{
+					"id": "order-shipped-002",
+					"status": "SHIPPED",
+					"totalAmount": 99.0,
+					"discount": 0,
+					"notes": null,
+					"createdAt": "2026-05-10T09:00:00.000Z",
+					"updatedAt": "2026-05-11T08:00:00.000Z",
+					"items": [
+						{
+							"id": "item-2",
+							"productId": "p2",
+							"variantId": null,
+							"sellerId": "s1",
+							"quantity": 1,
+							"unitPrice": 99.0,
+							"totalPrice": 99.0,
+							"productTitle": "Canvas Tote Bag"
+						}
+					],
+					"payment": {
+						"id": "pay-2",
+						"amount": 99.0,
+						"method": "CARD",
+						"status": "PAID",
+						"transactionId": "txn-002",
+						"createdAt": "2026-05-10T09:05:00.000Z"
+					},
+					"delivery": {
+						"id": "del-2",
+						"method": "COURIER",
+						"status": "IN_TRANSIT",
+						"address": "12 Main St, Kyiv",
+						"trackingCode": "TTN-00200",
+						"createdAt": "2026-05-10T10:00:00.000Z"
+					},
+					"promoCode": null
+				}
+			],
+			"total": 2,
+			"page": 1,
+			"pageSize": 8
+		}
+	},
+	"ordersPending": {
+		"myOrders": {
+			"items": [
+				{
+					"id": "order-pending-001",
+					"status": "PENDING",
+					"totalAmount": 184.0,
+					"discount": 0,
+					"notes": null,
+					"createdAt": "2026-05-01T10:00:00.000Z",
+					"updatedAt": "2026-05-01T10:00:00.000Z",
+					"items": [
+						{
+							"id": "item-1",
+							"productId": "p1",
+							"variantId": null,
+							"sellerId": "s1",
+							"quantity": 2,
+							"unitPrice": 92.0,
+							"totalPrice": 184.0,
+							"productTitle": "Heritage Field Jacket"
+						}
+					],
+					"payment": {
+						"id": "pay-1",
+						"amount": 184.0,
+						"method": "CARD",
+						"status": "PAID",
+						"transactionId": "txn-001",
+						"createdAt": "2026-05-01T10:05:00.000Z"
+					},
+					"delivery": null,
+					"promoCode": null
+				}
+			],
+			"total": 1,
+			"page": 1,
+			"pageSize": 8
+		}
+	},
+	"orderDetail": {
+		"myOrder": {
+			"id": "order-pending-001",
+			"status": "PENDING",
+			"totalAmount": 184.0,
+			"discount": 0,
+			"notes": null,
+			"createdAt": "2026-05-01T10:00:00.000Z",
+			"updatedAt": "2026-05-01T10:00:00.000Z",
+			"items": [
+				{
+					"id": "item-1",
+					"productId": "p1",
+					"variantId": null,
+					"sellerId": "s1",
+					"quantity": 2,
+					"unitPrice": 92.0,
+					"totalPrice": 184.0,
+					"productTitle": "Heritage Field Jacket"
+				}
+			],
+			"payment": {
+				"id": "pay-1",
+				"amount": 184.0,
+				"method": "CARD",
+				"status": "PAID",
+				"transactionId": "txn-001",
+				"createdAt": "2026-05-01T10:05:00.000Z"
+			},
+			"delivery": null,
+			"promoCode": null
+		}
+	},
+	"orderDetailShipped": {
+		"myOrder": {
+			"id": "order-shipped-002",
+			"status": "SHIPPED",
+			"totalAmount": 99.0,
+			"discount": 0,
+			"notes": null,
+			"createdAt": "2026-05-10T09:00:00.000Z",
+			"updatedAt": "2026-05-11T08:00:00.000Z",
+			"items": [
+				{
+					"id": "item-2",
+					"productId": "p2",
+					"variantId": null,
+					"sellerId": "s1",
+					"quantity": 1,
+					"unitPrice": 99.0,
+					"totalPrice": 99.0,
+					"productTitle": "Canvas Tote Bag"
+				}
+			],
+			"payment": {
+				"id": "pay-2",
+				"amount": 99.0,
+				"method": "CARD",
+				"status": "PAID",
+				"transactionId": "txn-002",
+				"createdAt": "2026-05-10T09:05:00.000Z"
+			},
+			"delivery": {
+				"id": "del-2",
+				"method": "COURIER",
+				"status": "IN_TRANSIT",
+				"address": "12 Main St, Kyiv",
+				"trackingCode": "TTN-00200",
+				"createdAt": "2026-05-10T10:00:00.000Z"
+			},
+			"promoCode": null
+		}
+	},
+	"confirmDelivery": {
+		"confirmDelivery": {
+			"id": "order-shipped-002",
+			"status": "DELIVERED",
+			"totalAmount": 99.0,
+			"discount": 0,
+			"notes": null,
+			"createdAt": "2026-05-10T09:00:00.000Z",
+			"updatedAt": "2026-05-12T14:00:00.000Z",
+			"items": [
+				{
+					"id": "item-2",
+					"productId": "p2",
+					"variantId": null,
+					"sellerId": "s1",
+					"quantity": 1,
+					"unitPrice": 99.0,
+					"totalPrice": 99.0,
+					"productTitle": "Canvas Tote Bag"
+				}
+			],
+			"payment": {
+				"id": "pay-2",
+				"amount": 99.0,
+				"method": "CARD",
+				"status": "PAID",
+				"transactionId": "txn-002",
+				"createdAt": "2026-05-10T09:05:00.000Z"
+			},
+			"delivery": {
+				"id": "del-2",
+				"method": "COURIER",
+				"status": "DELIVERED",
+				"address": "12 Main St, Kyiv",
+				"trackingCode": "TTN-00200",
+				"createdAt": "2026-05-10T10:00:00.000Z"
+			},
+			"promoCode": null
+		}
+	},
+	"cancelOrder": {
+		"cancelOrder": {
+			"id": "order-pending-001",
+			"status": "CANCELLED",
+			"totalAmount": 184.0,
+			"discount": 0,
+			"notes": null,
+			"createdAt": "2026-05-01T10:00:00.000Z",
+			"updatedAt": "2026-05-01T11:00:00.000Z",
+			"items": [
+				{
+					"id": "item-1",
+					"productId": "p1",
+					"variantId": null,
+					"sellerId": "s1",
+					"quantity": 2,
+					"unitPrice": 92.0,
+					"totalPrice": 184.0,
+					"productTitle": "Heritage Field Jacket"
+				}
+			],
+			"payment": {
+				"id": "pay-1",
+				"amount": 184.0,
+				"method": "CARD",
+				"status": "PAID",
+				"transactionId": "txn-001",
+				"createdAt": "2026-05-01T10:05:00.000Z"
+			},
+			"delivery": null,
+			"promoCode": null
+		}
+	}
+}
