@@ -23,6 +23,8 @@ const envSchema = z.object({
 	EMAIL_USER: z.string().optional(),
 	EMAIL_PASSWORD: z.string().optional(),
 	EMAIL_FROM: z.string().default('Krydix <noreply@krydix.com>'),
+	RESEND_API_KEY: z.string().optional(),
+	RESEND_FROM: z.string().optional(),
 
 	RATE_LIMIT_WINDOW_MS: z.coerce.number().default(900000),
 	RATE_LIMIT_MAX_REQUESTS: z.coerce.number().default(100),

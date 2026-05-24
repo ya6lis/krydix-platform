@@ -40,7 +40,7 @@ services:
         value: '587'
       - key: EMAIL_USER
         sync: false
-      - key: EMAIL_PASS
+      - key: EMAIL_PASSWORD
         sync: false
       - key: EMAIL_FROM
         value: 'Krydix <noreply@krydix.com>'
