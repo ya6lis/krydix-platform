@@ -58,6 +58,28 @@ export async function distinctBrands(visibleWhere: Prisma.ProductWhereInput): Pr
 	return rows.map((r) => r.brand).filter((b): b is string => Boolean(b));
 }
 
+/** Find a product by id (for cart/checkout validation). */
+export async function findProductById(id: string): Promise<ProductRecord | null> {
+	return prisma.product.findFirst({
+		where: { id, deletedAt: null },
+		include: productInclude,
+	});
+}
+
+/** Find an active variant by id. */
+export async function findVariantById(id: string): Promise<{
+	id: string;
+	productId: string;
+	stock: number;
+	price: Prisma.Decimal | null;
+	sku: string | null;
+} | null> {
+	return prisma.productVariant.findFirst({
+		where: { id, isActive: true },
+		select: { id: true, productId: true, stock: true, price: true, sku: true },
+	});
+}
+
 /** Brand names with product counts across visible products. */
 export async function brandsWithCounts(
 	visibleWhere: Prisma.ProductWhereInput

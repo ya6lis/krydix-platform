@@ -70,6 +70,12 @@ enum DeliveryMethod {
   SELF_PICKUP
 }
 
+enum PaymentMethod {
+  CARD
+  CASH_ON_DELIVERY
+  BANK_TRANSFER
+}
+
 enum ComplaintStatus {
   NEW
   IN_REVIEW
@@ -460,7 +466,7 @@ model PaymentRecord {
   orderId       String        @unique
   status        PaymentStatus @default(PENDING)
   amount        Decimal       @db.Decimal(10, 2)
-  method        String?
+  method        PaymentMethod?
   transactionId String?
   paidAt        DateTime?
   createdAt     DateTime      @default(now())
@@ -487,9 +493,10 @@ model DeliveryRecord {
 model PromoCode {
   id              String    @id @default(cuid())
   code            String    @unique
-  discountPercent Decimal?  @db.Decimal(5, 2)
-  discountFixed   Decimal?  @db.Decimal(10, 2)
-  maxUses         Int?
+  discountPercent  Decimal?  @db.Decimal(5, 2)
+  discountFixed    Decimal?  @db.Decimal(10, 2)
+  minOrderAmount   Decimal?  @db.Decimal(10, 2)
+  maxUses          Int?
   usedCount       Int       @default(0)
   expiresAt       DateTime?
   isActive        Boolean   @default(true)
