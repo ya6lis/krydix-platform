@@ -544,6 +544,7 @@
 		"history": "History",
 		"sidebar": {
 			"customer": "Customer",
+			"seller": "Seller",
 			"delivery": "Delivery",
 			"shipping": "Shipping",
 			"payment": "Payment"

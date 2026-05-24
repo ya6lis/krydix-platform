@@ -544,6 +544,7 @@
 		"history": "Історія",
 		"sidebar": {
 			"customer": "Покупець",
+			"seller": "Продавець",
 			"delivery": "Доставка",
 			"shipping": "Адреса доставки",
 			"payment": "Оплата"
