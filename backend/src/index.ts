@@ -8,10 +8,24 @@ import { schema } from './graphql/schema.js';
 import { extractAuthUser } from './middleware/auth.js';
 import type { GraphQLContext } from './types/context.js';
 
+const allowedOrigins = env.FRONTEND_URL.split(',').map((o) => o.trim());
+
 async function bootstrap() {
 	const app = express();
 
-	app.use(cors({ origin: env.FRONTEND_URL, credentials: true }));
+	app.use(
+		cors({
+			origin: (origin, callback) => {
+				if (!origin || allowedOrigins.includes(origin)) {
+					callback(null, true);
+				} else {
+					logger.warn({ origin }, 'CORS blocked origin');
+					callback(new Error('Not allowed by CORS'));
+				}
+			},
+			credentials: true,
+		})
+	);
 	app.use(express.json());
 
 	app.get('/health', (_req, res) => {
@@ -31,6 +45,7 @@ async function bootstrap() {
 	app.listen(env.PORT, () => {
 		logger.info(`Server running on http://localhost:${env.PORT}`);
 		logger.info(`GraphQL endpoint: http://localhost:${env.PORT}/graphql`);
+		logger.info({ allowedOrigins }, 'CORS allowed origins');
 	});
 }
 
