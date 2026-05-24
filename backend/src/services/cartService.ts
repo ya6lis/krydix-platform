@@ -7,6 +7,8 @@ export interface CartItemOut {
 	id: string;
 	productId: string;
 	variantId: string | null;
+	sellerId: string;
+	sellerName: string;
 	quantity: number;
 	unitPrice: number;
 	totalPrice: number;
@@ -32,11 +34,17 @@ function mapItem(item: cartRepo.CartItemRecord, language: Language): CartItemOut
 	const unitPrice = variant?.price ? Number(variant.price) : Number(item.product.basePrice);
 
 	const stock = variant ? variant.stock : item.product.variants.reduce((s, v) => s + v.stock, 0);
+	const profile = item.product.seller.profile;
+	const sellerName = profile
+		? `${profile.firstName} ${profile.lastName}`.trim()
+		: item.product.sellerId;
 
 	return {
 		id: item.id,
 		productId: item.productId,
 		variantId: item.variantId ?? null,
+		sellerId: item.product.sellerId,
+		sellerName,
 		quantity: item.quantity,
 		unitPrice,
 		totalPrice: unitPrice * item.quantity,
