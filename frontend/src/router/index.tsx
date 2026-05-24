@@ -17,6 +17,9 @@ import CatalogPage from '@/pages/public/CatalogPage';
 import ProductPage from '@/pages/public/ProductPage';
 import CartPage from '@/pages/public/CartPage';
 import CheckoutPage from '@/pages/public/CheckoutPage';
+import BuyerOrdersPage from '@/pages/buyer/BuyerOrdersPage';
+import BuyerOrderDetailPage from '@/pages/buyer/BuyerOrderDetailPage';
+import BuyerSettingsPage from '@/pages/buyer/BuyerSettingsPage';
 
 const Placeholder = ({ name }: { name: string }) => (
 	<div style={{ padding: 32 }}>
@@ -75,9 +78,10 @@ export const router = createBrowserRouter([
 		),
 		children: [
 			{ index: true, element: <Placeholder name="Account Home" /> },
-			{ path: 'orders', element: <Placeholder name="My Orders" /> },
-			{ path: 'orders/:id', element: <Placeholder name="Order Detail" /> },
+			{ path: 'orders', element: <BuyerOrdersPage /> },
+			{ path: 'orders/:id', element: <BuyerOrderDetailPage /> },
 			{ path: 'profile', element: <Placeholder name="Profile" /> },
+			{ path: 'settings', element: <BuyerSettingsPage /> },
 			{ path: 'reviews', element: <Placeholder name="My Reviews" /> },
 			{ path: 'cart', element: <Placeholder name="Cart" /> },
 			{ path: 'checkout', element: <Placeholder name="Checkout" /> },
