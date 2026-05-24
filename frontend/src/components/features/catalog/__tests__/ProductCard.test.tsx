@@ -18,6 +18,7 @@ function makeProduct(overrides: Partial<CatalogProduct> = {}): CatalogProduct {
 		sku: 'SKU-1',
 		brand: 'Heritage Co.',
 		basePrice: 184,
+		comparePrice: null,
 		status: 'APPROVED',
 		isAvailable: true,
 		title: 'Heritage Field Jacket',
@@ -57,7 +58,7 @@ describe('ProductCard', () => {
 		renderCard(makeProduct());
 		expect(screen.getByText('Heritage Field Jacket').closest('a')).toHaveAttribute(
 			'href',
-			'/products/field-jacket'
+			'/catalog/field-jacket'
 		);
 	});
 
@@ -74,5 +75,17 @@ describe('ProductCard', () => {
 	it('shows the new badge for recently created products with stock', () => {
 		renderCard(makeProduct({ createdAt: new Date().toISOString(), totalStock: 50 }));
 		expect(screen.getByText('catalog.new')).toBeInTheDocument();
+	});
+
+	it('shows sale badge and strike-through price when comparePrice > basePrice', () => {
+		renderCard(makeProduct({ basePrice: 184, comparePrice: 224, totalStock: 10 }));
+		// discount = round((224 - 184) / 224 * 100) = round(17.86) = 18
+		expect(screen.getByText('−18%')).toBeInTheDocument();
+		expect(screen.getByText('$224.00')).toBeInTheDocument();
+	});
+
+	it('does not show sale badge when comparePrice is null', () => {
+		renderCard(makeProduct({ basePrice: 184, comparePrice: null, totalStock: 10 }));
+		expect(screen.queryByText(/−\d+%/)).not.toBeInTheDocument();
 	});
 });

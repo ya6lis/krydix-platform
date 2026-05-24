@@ -81,6 +81,7 @@ import {
 	faClipboardCheck,
 	faSun,
 	faBolt,
+	faBars,
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -194,4 +195,5 @@ export const Icons = {
 	clipboardCheck: faClipboardCheck,
 	sun: faSun,
 	bolt: faBolt,
+	listView: faBars,
 } as const;

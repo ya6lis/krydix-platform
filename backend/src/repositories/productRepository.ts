@@ -57,3 +57,18 @@ export async function distinctBrands(visibleWhere: Prisma.ProductWhereInput): Pr
 	});
 	return rows.map((r) => r.brand).filter((b): b is string => Boolean(b));
 }
+
+/** Brand names with product counts across visible products. */
+export async function brandsWithCounts(
+	visibleWhere: Prisma.ProductWhereInput
+): Promise<{ name: string; count: number }[]> {
+	const rows = await prisma.product.groupBy({
+		by: ['brand'],
+		where: { ...visibleWhere, brand: { not: null } },
+		_count: { id: true },
+		orderBy: { brand: 'asc' },
+	});
+	return rows
+		.filter((r): r is typeof r & { brand: string } => Boolean(r.brand))
+		.map((r) => ({ name: r.brand, count: r._count.id }));
+}

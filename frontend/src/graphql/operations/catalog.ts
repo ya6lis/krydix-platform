@@ -6,6 +6,7 @@ const CATALOG_PRODUCT_FIELDS = `
 	sku
 	brand
 	basePrice
+	comparePrice
 	status
 	isAvailable
 	title
@@ -73,6 +74,15 @@ export const CATEGORIES_QUERY = gql`
 export const PRODUCT_BRANDS_QUERY = gql`
 	query ProductBrands {
 		productBrands
+	}
+`;
+
+export const PRODUCT_BRANDS_WITH_COUNTS_QUERY = gql`
+	query ProductBrandsWithCounts {
+		productBrandsWithCounts {
+			name
+			count
+		}
 	}
 `;
 

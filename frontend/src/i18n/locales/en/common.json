@@ -291,6 +291,7 @@
 		"lowStock": "Low stock",
 		"outOfStock": "Out of stock",
 		"inStockCount": "{{count}} in stock",
+		"quickView": "Quick view",
 		"sort": {
 			"newest": "Newest",
 			"popularity": "Popularity",

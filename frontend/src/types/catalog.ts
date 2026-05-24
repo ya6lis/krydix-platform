@@ -42,12 +42,18 @@ export interface ProductSellerRef {
 	name: string;
 }
 
+export interface BrandCount {
+	name: string;
+	count: number;
+}
+
 export interface CatalogProduct {
 	id: string;
 	slug: string;
 	sku: string;
 	brand: string | null;
 	basePrice: number;
+	comparePrice: number | null;
 	status: string;
 	isAvailable: boolean;
 	title: string;

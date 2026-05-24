@@ -310,8 +310,9 @@ model Product {
   slug        String        @unique
   sku         String
   brand       String?
-  basePrice   Decimal       @db.Decimal(10, 2)
-  status      ProductStatus @default(DRAFT)
+  basePrice    Decimal       @db.Decimal(10, 2)
+  comparePrice Decimal?      @db.Decimal(10, 2)
+  status       ProductStatus @default(DRAFT)
   isAvailable Boolean       @default(true)
   deletedAt   DateTime?
   createdAt   DateTime      @default(now())

@@ -44,6 +44,7 @@ function makeProduct(id: string, slug: string, title: string) {
 		sku: `SKU-${id}`,
 		brand: 'Heritage Co.',
 		basePrice: 184,
+		comparePrice: null,
 		status: 'APPROVED',
 		isAvailable: true,
 		sellerId: 's1',
@@ -189,5 +190,45 @@ describe('catalogService.getProductBrands', () => {
 		mockProductRepo.distinctBrands.mockResolvedValue(['Heritage Co.', 'Maru Studio']);
 		const brands = await catalogService.getProductBrands();
 		expect(brands).toEqual(['Heritage Co.', 'Maru Studio']);
+	});
+});
+
+describe('catalogService.getProductBrandsWithCounts', () => {
+	it('returns brands with product counts', async () => {
+		mockProductRepo.brandsWithCounts.mockResolvedValue([
+			{ name: 'Heritage Co.', count: 12 },
+			{ name: 'Maru Studio', count: 5 },
+		]);
+		const result = await catalogService.getProductBrandsWithCounts();
+		expect(result).toEqual([
+			{ name: 'Heritage Co.', count: 12 },
+			{ name: 'Maru Studio', count: 5 },
+		]);
+	});
+});
+
+describe('catalogService.getProducts — comparePrice mapping', () => {
+	it('maps comparePrice as null when not set', async () => {
+		mockProductRepo.findProducts.mockResolvedValue([makeProduct('p1', 'jacket', 'Jacket')]);
+		mockProductRepo.countProducts.mockResolvedValue(1);
+		mockProductRepo.ratingsByProductIds.mockResolvedValue([]);
+		const result = await catalogService.getProducts(
+			{ sort: 'NEWEST' as never, page: 1, pageSize: 20 },
+			Language.EN
+		);
+		expect(result.items[0].comparePrice).toBeNull();
+	});
+
+	it('maps comparePrice as number when set on product', async () => {
+		const p = makeProduct('p2', 'vest', 'Vest');
+		(p as unknown as Record<string, unknown>).comparePrice = 220;
+		mockProductRepo.findProducts.mockResolvedValue([p]);
+		mockProductRepo.countProducts.mockResolvedValue(1);
+		mockProductRepo.ratingsByProductIds.mockResolvedValue([]);
+		const result = await catalogService.getProducts(
+			{ sort: 'NEWEST' as never, page: 1, pageSize: 20 },
+			Language.EN
+		);
+		expect(result.items[0].comparePrice).toBe(220);
 	});
 });

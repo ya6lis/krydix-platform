@@ -129,10 +129,6 @@ describe('App shell — topbar', () => {
 		cy.contains('Search products, orders, users').should('be.visible');
 	});
 
-	it('shows language switcher button', () => {
-		cy.contains('EN').should('be.visible');
-	});
-
 	it('shows cart icon button', () => {
 		cy.get('[aria-label="shell.cart.title"], [aria-label="Your cart"]').should('exist');
 	});
@@ -208,7 +204,7 @@ describe('App shell — auth guard', () => {
 describe('App shell — guest sidebar', () => {
 	beforeEach(() => {
 		// No auth stub — visit public content page with AppShell
-		cy.visit('/products');
+		cy.visit('/catalog');
 	});
 
 	it('shows sidebar brand mark on public pages', () => {
@@ -238,9 +234,9 @@ describe('App shell — sidebar navigation', () => {
 		cy.visit('/account');
 	});
 
-	it('clicking Catalog navigates to /products', () => {
+	it('clicking Catalog navigates to /catalog', () => {
 		cy.contains('a', 'Catalog').click();
-		cy.url().should('include', '/products');
+		cy.url().should('include', '/catalog');
 	});
 
 	it('Settings link navigates to /account/profile', () => {

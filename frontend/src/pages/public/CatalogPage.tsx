@@ -1,14 +1,9 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
-import { Box, Typography, Stack } from '@mui/material';
-import {
-	AppLoader,
-	AppSelect,
-	AppPagination,
-	EmptyState,
-	PageSectionWrapper,
-} from '@/components/ui';
+import { Box, Typography } from '@mui/material';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { AppLoader, AppPagination, EmptyState } from '@/components/ui';
 import { ProductCard } from '@/components/features/catalog/ProductCard';
 import {
 	CatalogFilters,
@@ -19,10 +14,12 @@ import {
 import {
 	CATEGORIES_QUERY,
 	PRODUCTS_QUERY,
-	PRODUCT_BRANDS_QUERY,
+	PRODUCT_BRANDS_WITH_COUNTS_QUERY,
 } from '@/graphql/operations/catalog';
 import { Icons } from '@/constants/icons';
+import { tokens } from '@/theme';
 import type {
+	BrandCount,
 	CatalogProduct,
 	CategoryNode,
 	ProductFilterInput,
@@ -50,6 +47,28 @@ function buildFilterInput(f: CatalogFilterState): ProductFilterInput {
 	return input;
 }
 
+type ViewMode = 'grid' | 'list';
+
+const VIEW_ICONS: Record<ViewMode, (typeof Icons)[keyof typeof Icons]> = {
+	grid: Icons.grip,
+	list: Icons.listView,
+};
+
+/** Build active filter context string — e.g. "· Outerwear · Heritage Co." */
+function buildFilterContext(filters: CatalogFilterState, categories: CategoryNode[]): string {
+	const parts: string[] = [];
+
+	if (filters.categorySlug) {
+		const flatCats = categories.flatMap((c) => [c, ...c.children]);
+		const cat = flatCats.find((c) => c.slug === filters.categorySlug);
+		if (cat) parts.push(cat.name);
+	}
+
+	filters.brands.forEach((b) => parts.push(b));
+
+	return parts.length > 0 ? ' · ' + parts.join(' · ') : '';
+}
+
 export default function CatalogPage() {
 	const { t, i18n } = useTranslation();
 	const language = i18n.language === 'uk' ? 'UK' : 'EN';
@@ -58,13 +77,16 @@ export default function CatalogPage() {
 	const [sort, setSort] = useState<ProductSort>('NEWEST');
 	const [page, setPage] = useState(1);
 	const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
+	const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
 	const filterInput = useMemo(() => buildFilterInput(filters), [filters]);
 
 	const { data: categoryData } = useQuery<{ categories: CategoryNode[] }>(CATEGORIES_QUERY, {
 		variables: { language },
 	});
-	const { data: brandData } = useQuery<{ productBrands: string[] }>(PRODUCT_BRANDS_QUERY);
+	const { data: brandData } = useQuery<{ productBrandsWithCounts: BrandCount[] }>(
+		PRODUCT_BRANDS_WITH_COUNTS_QUERY
+	);
 	const { data, loading } = useQuery<{ products: ProductListResult }>(PRODUCTS_QUERY, {
 		variables: { filter: filterInput, sort, page, pageSize, language },
 	});
@@ -72,6 +94,11 @@ export default function CatalogPage() {
 	const result = data?.products;
 	const products: CatalogProduct[] = result?.items ?? [];
 	const total = result?.total ?? 0;
+	const pageStart = (page - 1) * pageSize + 1;
+	const pageEnd = Math.min(page * pageSize, total);
+
+	const categories = categoryData?.categories ?? [];
+	const brands = brandData?.productBrandsWithCounts ?? [];
 
 	const updateFilters = (next: CatalogFilterState) => {
 		setFilters(next);
@@ -86,86 +113,221 @@ export default function CatalogPage() {
 		{ value: 'RATING', label: t('catalog.sort.rating') },
 	];
 
-	return (
-		<Box sx={{ maxWidth: 1500, mx: 'auto', px: { xs: 2, md: 4 }, py: 4 }}>
-			<PageSectionWrapper title={t('catalog.title')} subtitle={t('catalog.subtitle')}>
-				<Box
-					sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '240px 1fr' }, gap: 3.5 }}
-				>
-					<Box component="aside">
-						<CatalogFilters
-							categories={categoryData?.categories ?? []}
-							brands={brandData?.productBrands ?? []}
-							value={filters}
-							onChange={updateFilters}
-							onClear={() => updateFilters(INITIAL_FILTERS)}
-						/>
-					</Box>
+	const filterContext = buildFilterContext(filters, categories);
 
-					<Box sx={{ minWidth: 0 }}>
-						<Stack
-							direction="row"
-							alignItems="center"
-							justifyContent="space-between"
-							flexWrap="wrap"
-							gap={1.5}
-							mb={2.25}
-						>
-							<Typography data-cy="results-count" variant="body2" color="text.secondary">
-								{t('catalog.resultsCount', { count: total })}
-							</Typography>
-							<Box sx={{ width: 200 }}>
-								<AppSelect
-									data-cy="sort-select"
-									label={t('catalog.sortLabel')}
-									options={sortOptions}
+	return (
+		<Box sx={{ px: { xs: 2, md: 4 }, py: 4 }}>
+			{/* ── page head ── */}
+			<Box
+				sx={{
+					display: 'flex',
+					alignItems: 'flex-start',
+					justifyContent: 'space-between',
+					mb: '28px',
+					gap: 2,
+				}}
+			>
+				<Box>
+					<Typography
+						component="h1"
+						sx={{
+							fontSize: 26,
+							fontWeight: 800,
+							letterSpacing: '-0.02em',
+							color: tokens.ink1,
+							lineHeight: 1.2,
+						}}
+					>
+						{t('catalog.title')}
+					</Typography>
+					<Typography sx={{ fontSize: 14, color: tokens.ink3, mt: '4px' }}>
+						{t('catalog.subtitle')}
+					</Typography>
+				</Box>
+			</Box>
+
+			{/* ── content grid: 240px filters | 1fr listing ── */}
+			<Box
+				sx={{
+					display: 'grid',
+					gridTemplateColumns: { xs: '1fr', md: '240px 1fr' },
+					gap: '28px',
+					alignItems: 'start',
+				}}
+			>
+				{/* ── filters sidebar (sticky) ── */}
+				<Box component="aside" sx={{ alignSelf: 'start', position: 'sticky', top: '84px' }}>
+					<CatalogFilters
+						categories={categories}
+						brands={brands}
+						value={filters}
+						onChange={updateFilters}
+						onClear={() => updateFilters(INITIAL_FILTERS)}
+					/>
+				</Box>
+
+				{/* ── listing ── */}
+				<Box sx={{ minWidth: 0 }}>
+					{/* listing head */}
+					<Box
+						sx={{
+							display: 'flex',
+							alignItems: 'center',
+							justifyContent: 'space-between',
+							mb: '18px',
+							gap: '12px',
+							flexWrap: 'wrap',
+						}}
+					>
+						{/* meta — "Showing 1–12 of 4,328 · Outerwear · Heritage Co." */}
+						<Typography data-cy="results-count" sx={{ fontSize: 13, color: tokens.ink3 }}>
+							{total > 0 ? (
+								<>
+									{t('pagination.showing', { from: pageStart, to: pageEnd, total })}
+									{filterContext && (
+										<Box component="span" sx={{ color: tokens.ink1, fontWeight: 700 }}>
+											{filterContext}
+										</Box>
+									)}
+								</>
+							) : (
+								t('catalog.resultsCount', { count: total })
+							)}
+						</Typography>
+
+						{/* controls */}
+						<Box sx={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+							{/* grid / list toggle */}
+							<Box
+								sx={{
+									display: 'inline-flex',
+									background: tokens.bg,
+									borderRadius: '8px',
+									padding: '3px',
+									border: `1px solid ${tokens.line}`,
+								}}
+							>
+								{(['grid', 'list'] as const).map((mode) => (
+									<Box
+										key={mode}
+										component="button"
+										onClick={() => setViewMode(mode)}
+										sx={{
+											background: viewMode === mode ? tokens.surface : 'transparent',
+											color: viewMode === mode ? tokens.ink1 : tokens.ink3,
+											boxShadow: viewMode === mode ? tokens.shadowSm : 'none',
+											border: 'none',
+											padding: '5px 10px',
+											borderRadius: '6px',
+											cursor: 'pointer',
+											display: 'grid',
+											placeItems: 'center',
+											fontSize: 13,
+											transition: 'background 100ms',
+										}}
+									>
+										<FontAwesomeIcon icon={VIEW_ICONS[mode]} style={{ width: 14, height: 14 }} />
+									</Box>
+								))}
+							</Box>
+
+							{/* sort — native select styled as ghost button */}
+							<Box sx={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+								<Box
+									component="select"
 									value={sort}
-									onChange={(e) => {
+									onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
 										setSort(e.target.value as ProductSort);
 										setPage(1);
 									}}
-								/>
-							</Box>
-						</Stack>
-
-						{loading ? (
-							<AppLoader />
-						) : products.length === 0 ? (
-							<EmptyState
-								icon={Icons.products}
-								title={t('catalog.empty.title')}
-								description={t('catalog.empty.description')}
-							/>
-						) : (
-							<>
-								<Box
+									data-cy="sort-select"
 									sx={{
-										display: 'grid',
-										gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', lg: '1fr 1fr 1fr' },
-										gap: 2.5,
+										appearance: 'none',
+										border: `1px solid ${tokens.line}`,
+										borderRadius: '8px',
+										background: tokens.surface,
+										color: tokens.ink1,
+										fontSize: '12px',
+										fontWeight: 600,
+										fontFamily: 'inherit',
+										padding: '5px 28px 5px 10px',
+										cursor: 'pointer',
+										outline: 'none',
+										transition: 'border-color 120ms',
+										'&:hover': { borderColor: tokens.ink3 },
 									}}
 								>
-									{products.map((product) => (
-										<ProductCard key={product.id} product={product} />
+									{sortOptions.map((o) => (
+										<option key={o.value} value={o.value}>
+											{`${t('catalog.sortLabel')}: ${o.label}`}
+										</option>
 									))}
 								</Box>
-								<Box mt={3}>
-									<AppPagination
-										page={page - 1}
-										pageSize={pageSize}
-										total={total}
-										pageSizeOptions={PAGE_SIZE_OPTIONS}
-										onChange={(nextPage, nextSize) => {
-											setPageSize(nextSize);
-											setPage(nextSize !== pageSize ? 1 : nextPage + 1);
-										}}
-									/>
+								<Box
+									sx={{
+										position: 'absolute',
+										right: 8,
+										pointerEvents: 'none',
+										fontSize: 11,
+										color: tokens.ink3,
+									}}
+								>
+									<FontAwesomeIcon icon={Icons.angleDown} />
 								</Box>
-							</>
-						)}
+							</Box>
+						</Box>
 					</Box>
+
+					{/* products */}
+					{loading ? (
+						<AppLoader />
+					) : products.length === 0 ? (
+						<EmptyState
+							icon={Icons.products}
+							title={t('catalog.empty.title')}
+							description={t('catalog.empty.description')}
+						/>
+					) : (
+						<>
+							<Box
+								sx={{
+									display: 'grid',
+									gridTemplateColumns:
+										viewMode === 'grid'
+											? { xs: '1fr', sm: '1fr 1fr', lg: 'repeat(3, 1fr)' }
+											: '1fr',
+									gap: '20px',
+								}}
+							>
+								{products.map((product) => (
+									<ProductCard key={product.id} product={product} />
+								))}
+							</Box>
+
+							{/* pagination */}
+							<Box
+								sx={{
+									mt: '20px',
+									border: `1px solid ${tokens.line}`,
+									borderRadius: `${tokens.radius}px`,
+									background: tokens.surface,
+								}}
+							>
+								<AppPagination
+									page={page - 1}
+									pageSize={pageSize}
+									total={total}
+									pageSizeOptions={PAGE_SIZE_OPTIONS}
+									onChange={(nextPage, nextSize) => {
+										setPageSize(nextSize);
+										setPage(nextSize !== pageSize ? 1 : nextPage + 1);
+									}}
+								/>
+							</Box>
+						</>
+					)}
 				</Box>
-			</PageSectionWrapper>
+			</Box>
 		</Box>
 	);
 }
