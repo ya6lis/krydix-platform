@@ -18,8 +18,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-      - run: npm ci
+      - run: npm install
       - run: npm run format:check
       - run: npm run lint
 
@@ -31,8 +30,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-      - run: npm ci
+      - run: npm install
       - run: npm run typecheck
 
   backend-tests:
@@ -54,6 +52,7 @@ jobs:
           - 5432:5432
     env:
       DATABASE_URL: postgresql://krydix:krydix@localhost:5432/krydix_test
+      DIRECT_URL: postgresql://krydix:krydix@localhost:5432/krydix_test
       JWT_ACCESS_SECRET: test_access_secret_32_chars_minimum
       JWT_REFRESH_SECRET: test_refresh_secret_32_chars_minimum
       JWT_ACCESS_EXPIRES_IN: 15m
@@ -64,8 +63,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-      - run: npm ci
+      - run: npm install
       - run: npm run prisma:migrate --workspace=backend
       - run: npm test --workspace=backend
 
@@ -77,8 +75,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-      - run: npm ci
+      - run: npm install
       - run: npm test --workspace=frontend
 
   e2e:
@@ -89,18 +86,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-      - run: npm ci
-      - name: Start frontend dev server
-        run: npm run dev --workspace=frontend &
-        env:
-          VITE_GRAPHQL_URL: http://localhost:5000/graphql
+      - run: npm install
       - uses: cypress-io/github-action@v6
         with:
           working-directory: e2e
-          wait-on: 'http://localhost:5173'
-          wait-on-timeout: 60
           browser: chrome
           install: false
         env:
-          CYPRESS_BASE_URL: http://localhost:5173
+          CYPRESS_BASE_URL: https://krydix-platform-frontend.vercel.app
