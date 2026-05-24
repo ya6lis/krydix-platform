@@ -80,3 +80,27 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm test --workspace=frontend
+
+  e2e:
+    name: Cypress E2E
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - name: Start frontend dev server
+        run: npm run dev --workspace=frontend &
+        env:
+          VITE_GRAPHQL_URL: http://localhost:5000/graphql
+      - uses: cypress-io/github-action@v6
+        with:
+          working-directory: e2e
+          wait-on: 'http://localhost:5173'
+          wait-on-timeout: 60
+          browser: chrome
+          install: false
+        env:
+          CYPRESS_BASE_URL: http://localhost:5173
