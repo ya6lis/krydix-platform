@@ -52,12 +52,18 @@ export const catalogTypeDefs = `#graphql
 		name: String!
 	}
 
+	type BrandCount {
+		name: String!
+		count: Int!
+	}
+
 	type CatalogProduct {
 		id: ID!
 		slug: String!
 		sku: String!
 		brand: String
 		basePrice: Float!
+		comparePrice: Float
 		status: String!
 		isAvailable: Boolean!
 		title: String!
@@ -105,5 +111,6 @@ export const catalogTypeDefs = `#graphql
 		): ProductList!
 		product(slug: String!, language: Language): CatalogProduct
 		productBrands: [String!]!
+		productBrandsWithCounts: [BrandCount!]!
 	}
 `;

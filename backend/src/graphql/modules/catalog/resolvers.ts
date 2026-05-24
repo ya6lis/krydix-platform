@@ -50,5 +50,9 @@ export const catalogResolvers = {
 		productBrands: async () => {
 			return catalogService.getProductBrands();
 		},
+
+		productBrandsWithCounts: async () => {
+			return catalogService.getProductBrandsWithCounts();
+		},
 	},
 };

@@ -9,6 +9,8 @@ function stubCatalogGraphQL() {
 			req.reply({ data: { categories: catalogFixture.categories } });
 		} else if (operationName === 'ProductBrands') {
 			req.reply({ data: { productBrands: catalogFixture.productBrands } });
+		} else if (operationName === 'ProductBrandsWithCounts') {
+			req.reply({ data: { productBrandsWithCounts: catalogFixture.productBrandsWithCounts } });
 		} else if (operationName === 'Products') {
 			req.reply({ data: { products: catalogFixture.products } });
 		} else {
@@ -42,19 +44,40 @@ describe('Catalog page', () => {
 
 	it('navigates to product page when card is clicked', () => {
 		cy.get('[data-cy="product-card"]').first().click();
-		cy.url().should('include', '/products/heritage-field-jacket');
+		cy.url().should('include', '/catalog/heritage-field-jacket');
 	});
 
-	it('shows category filter with categories from API', () => {
+	it('shows category filter with categories and counts from API', () => {
 		cy.contains('Outerwear').should('be.visible');
 		cy.contains('Jackets').should('be.visible');
+		cy.contains('1,115').should('be.visible');
 	});
 
-	it('shows brand filter options', () => {
+	it('shows brand filter options with counts', () => {
 		cy.contains('Heritage Co.').should('be.visible');
+		cy.contains('128').should('be.visible');
+		cy.contains('Maru Studio').should('be.visible');
 	});
 
 	it('has a sort select', () => {
 		cy.get('[data-cy="sort-select"]').should('exist');
+	});
+
+	it('shows sale badge and strike-through price for discounted product', () => {
+		// Heritage Field Jacket has basePrice 184, comparePrice 224 → −18%
+		cy.contains('−18%').should('be.visible');
+		cy.contains('$224.00').should('be.visible');
+	});
+
+	it('shows grid and list view toggle buttons', () => {
+		cy.get('[data-cy="product-card"]').should('have.length', 2);
+	});
+
+	it('shows Clear all filters button', () => {
+		cy.contains('Clear all filters').should('be.visible');
+	});
+
+	it('shows rating filter stars', () => {
+		cy.contains('★★★★★').should('exist');
 	});
 });

@@ -27,6 +27,7 @@ function makeProduct(overrides: Partial<CatalogProduct> = {}): CatalogProduct {
 		sku: 'SKU-001',
 		brand: 'Heritage Co.',
 		basePrice: 184,
+		comparePrice: null,
 		status: 'APPROVED',
 		isAvailable: true,
 		title: 'Heritage Field Jacket',

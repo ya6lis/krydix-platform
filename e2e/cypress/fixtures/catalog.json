@@ -6,20 +6,25 @@
 			"parentId": null,
 			"name": "Outerwear",
 			"description": null,
-			"productCount": 12,
+			"productCount": 1115,
 			"children": [
 				{
 					"id": "c2",
 					"slug": "jackets",
 					"parentId": "c1",
 					"name": "Jackets",
-					"productCount": 6,
+					"productCount": 312,
 					"children": []
 				}
 			]
 		}
 	],
 	"productBrands": ["Heritage Co.", "Maru Studio", "Field Works"],
+	"productBrandsWithCounts": [
+		{ "name": "Heritage Co.", "count": 128 },
+		{ "name": "Maru Studio", "count": 94 },
+		{ "name": "Field Works", "count": 73 }
+	],
 	"products": {
 		"items": [
 			{
@@ -28,6 +33,7 @@
 				"sku": "HFJ-001",
 				"brand": "Heritage Co.",
 				"basePrice": 184,
+				"comparePrice": 224,
 				"status": "APPROVED",
 				"isAvailable": true,
 				"title": "Heritage Field Jacket",
@@ -59,6 +65,7 @@
 				"sku": "CT-002",
 				"brand": "Maru Studio",
 				"basePrice": 58,
+				"comparePrice": null,
 				"status": "APPROVED",
 				"isAvailable": true,
 				"title": "Canvas Tote Bag",

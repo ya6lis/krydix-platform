@@ -94,6 +94,7 @@ export interface CatalogProduct {
 	sku: string;
 	brand: string | null;
 	basePrice: number;
+	comparePrice: number | null;
 	status: string;
 	isAvailable: boolean;
 	title: string;
@@ -137,6 +138,7 @@ function mapProduct(
 		sku: product.sku,
 		brand: product.brand,
 		basePrice: Number(product.basePrice),
+		comparePrice: product.comparePrice !== null ? Number(product.comparePrice) : null,
 		status: product.status,
 		isAvailable: product.isAvailable,
 		title: tr?.title ?? product.slug,
@@ -278,4 +280,9 @@ export async function getProductBySlug(
 /** Distinct brand names across the visible catalog. */
 export async function getProductBrands(): Promise<string[]> {
 	return productRepo.distinctBrands(VISIBLE_PRODUCT_WHERE);
+}
+
+/** Brand names with product counts across the visible catalog. */
+export async function getProductBrandsWithCounts(): Promise<{ name: string; count: number }[]> {
+	return productRepo.brandsWithCounts(VISIBLE_PRODUCT_WHERE);
 }

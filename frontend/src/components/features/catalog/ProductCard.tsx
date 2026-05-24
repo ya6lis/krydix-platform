@@ -32,13 +32,23 @@ export function ProductCard({ product }: ProductCardProps) {
 	const outOfStock = product.totalStock === 0;
 	const lowStock = !outOfStock && product.totalStock < LOW_STOCK_THRESHOLD;
 
+	const onSale =
+		product.comparePrice !== null &&
+		product.comparePrice !== undefined &&
+		product.comparePrice > product.basePrice;
+	const discountPct = onSale
+		? Math.round(((product.comparePrice! - product.basePrice) / product.comparePrice!) * 100)
+		: 0;
+
 	const badge = outOfStock
 		? { label: t('catalog.outOfStock'), bg: tokens.ink3, fg: '#fff' }
-		: lowStock
-			? { label: t('catalog.lowStock'), bg: tokens.amber, fg: tokens.amberInk }
-			: isNew
-				? { label: t('catalog.new'), bg: tokens.accent, fg: '#fff' }
-				: null;
+		: onSale
+			? { label: `−${discountPct}%`, bg: tokens.coral, fg: '#fff' }
+			: lowStock
+				? { label: t('catalog.lowStock'), bg: tokens.amber, fg: tokens.amberInk }
+				: isNew
+					? { label: t('catalog.new'), bg: tokens.accent, fg: '#fff' }
+					: null;
 
 	return (
 		<Box
@@ -212,6 +222,17 @@ export function ProductCard({ product }: ProductCardProps) {
 					>
 						{formatPrice(product.basePrice)}
 					</Typography>
+					{onSale && (
+						<Typography
+							sx={{
+								fontSize: 13,
+								color: tokens.ink3,
+								textDecoration: 'line-through',
+							}}
+						>
+							{formatPrice(product.comparePrice!)}
+						</Typography>
+					)}
 				</Box>
 
 				{/* CTA row */}

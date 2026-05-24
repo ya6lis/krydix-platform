@@ -14,11 +14,12 @@ import {
 import {
 	CATEGORIES_QUERY,
 	PRODUCTS_QUERY,
-	PRODUCT_BRANDS_QUERY,
+	PRODUCT_BRANDS_WITH_COUNTS_QUERY,
 } from '@/graphql/operations/catalog';
 import { Icons } from '@/constants/icons';
 import { tokens } from '@/theme';
 import type {
+	BrandCount,
 	CatalogProduct,
 	CategoryNode,
 	ProductFilterInput,
@@ -53,6 +54,21 @@ const VIEW_ICONS: Record<ViewMode, (typeof Icons)[keyof typeof Icons]> = {
 	list: Icons.listView,
 };
 
+/** Build active filter context string — e.g. "· Outerwear · Heritage Co." */
+function buildFilterContext(filters: CatalogFilterState, categories: CategoryNode[]): string {
+	const parts: string[] = [];
+
+	if (filters.categorySlug) {
+		const flatCats = categories.flatMap((c) => [c, ...c.children]);
+		const cat = flatCats.find((c) => c.slug === filters.categorySlug);
+		if (cat) parts.push(cat.name);
+	}
+
+	filters.brands.forEach((b) => parts.push(b));
+
+	return parts.length > 0 ? ' · ' + parts.join(' · ') : '';
+}
+
 export default function CatalogPage() {
 	const { t, i18n } = useTranslation();
 	const language = i18n.language === 'uk' ? 'UK' : 'EN';
@@ -68,7 +84,9 @@ export default function CatalogPage() {
 	const { data: categoryData } = useQuery<{ categories: CategoryNode[] }>(CATEGORIES_QUERY, {
 		variables: { language },
 	});
-	const { data: brandData } = useQuery<{ productBrands: string[] }>(PRODUCT_BRANDS_QUERY);
+	const { data: brandData } = useQuery<{ productBrandsWithCounts: BrandCount[] }>(
+		PRODUCT_BRANDS_WITH_COUNTS_QUERY
+	);
 	const { data, loading } = useQuery<{ products: ProductListResult }>(PRODUCTS_QUERY, {
 		variables: { filter: filterInput, sort, page, pageSize, language },
 	});
@@ -78,6 +96,9 @@ export default function CatalogPage() {
 	const total = result?.total ?? 0;
 	const pageStart = (page - 1) * pageSize + 1;
 	const pageEnd = Math.min(page * pageSize, total);
+
+	const categories = categoryData?.categories ?? [];
+	const brands = brandData?.productBrandsWithCounts ?? [];
 
 	const updateFilters = (next: CatalogFilterState) => {
 		setFilters(next);
@@ -91,6 +112,8 @@ export default function CatalogPage() {
 		{ value: 'PRICE_DESC', label: t('catalog.sort.priceDesc') },
 		{ value: 'RATING', label: t('catalog.sort.rating') },
 	];
+
+	const filterContext = buildFilterContext(filters, categories);
 
 	return (
 		<Box sx={{ px: { xs: 2, md: 4 }, py: 4 }}>
@@ -135,8 +158,8 @@ export default function CatalogPage() {
 				{/* ── filters sidebar (sticky) ── */}
 				<Box component="aside" sx={{ alignSelf: 'start', position: 'sticky', top: '84px' }}>
 					<CatalogFilters
-						categories={categoryData?.categories ?? []}
-						brands={brandData?.productBrands ?? []}
+						categories={categories}
+						brands={brands}
 						value={filters}
 						onChange={updateFilters}
 						onClear={() => updateFilters(INITIAL_FILTERS)}
@@ -156,10 +179,17 @@ export default function CatalogPage() {
 							flexWrap: 'wrap',
 						}}
 					>
-						{/* meta */}
+						{/* meta — "Showing 1–12 of 4,328 · Outerwear · Heritage Co." */}
 						<Typography data-cy="results-count" sx={{ fontSize: 13, color: tokens.ink3 }}>
 							{total > 0 ? (
-								<>{t('pagination.showing', { from: pageStart, to: pageEnd, total })}</>
+								<>
+									{t('pagination.showing', { from: pageStart, to: pageEnd, total })}
+									{filterContext && (
+										<Box component="span" sx={{ color: tokens.ink1, fontWeight: 700 }}>
+											{filterContext}
+										</Box>
+									)}
+								</>
 							) : (
 								t('catalog.resultsCount', { count: total })
 							)}
