@@ -1,0 +1,43 @@
+{
+	"refreshToken": {
+		"refreshToken": {
+			"accessToken": "stub-access-token",
+			"refreshToken": "stub-refresh-token"
+		}
+	},
+	"applyPromoValid": {
+		"applyPromoCode": {
+			"valid": true,
+			"discount": 20,
+			"message": null
+		}
+	},
+	"applyPromoInvalid": {
+		"applyPromoCode": {
+			"valid": false,
+			"discount": 0,
+			"message": "Invalid or expired promo code"
+		}
+	},
+	"createOrder": {
+		"createOrder": {
+			"id": "ord-test-12345678",
+			"status": "PENDING",
+			"totalAmount": 200,
+			"discount": null,
+			"notes": null,
+			"createdAt": "2026-01-01T00:00:00.000Z",
+			"items": [
+				{
+					"id": "oi-1",
+					"productId": "p-1",
+					"variantId": null,
+					"productTitle": "Heritage Field Jacket",
+					"quantity": 2,
+					"unitPrice": 100,
+					"totalPrice": 200
+				}
+			]
+		}
+	}
+}
