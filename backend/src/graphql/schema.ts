@@ -10,6 +10,8 @@ import { checkoutTypeDefs } from './modules/checkout/typeDefs.js';
 import { checkoutResolvers } from './modules/checkout/resolvers.js';
 import { ordersTypeDefs } from './modules/orders/typeDefs.js';
 import { ordersResolvers } from './modules/orders/resolvers.js';
+import { sellerProductsTypeDefs } from './modules/sellerProducts/typeDefs.js';
+import { sellerProductsResolvers } from './modules/sellerProducts/resolvers.js';
 
 const rootTypeDefs = `#graphql
 	type Query
@@ -24,6 +26,7 @@ export const schema = makeExecutableSchema({
 		cartTypeDefs,
 		checkoutTypeDefs,
 		ordersTypeDefs,
+		sellerProductsTypeDefs,
 	]),
 	resolvers: mergeResolvers([
 		authResolvers,
@@ -31,5 +34,6 @@ export const schema = makeExecutableSchema({
 		cartResolvers,
 		checkoutResolvers,
 		ordersResolvers,
+		sellerProductsResolvers,
 	]),
 });
