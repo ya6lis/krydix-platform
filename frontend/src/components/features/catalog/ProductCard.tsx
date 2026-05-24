@@ -6,6 +6,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Icons } from '@/constants/icons';
 import { ROUTES } from '@/constants/routes';
 import { tokens } from '@/theme';
+import { useCartStore } from '@/store/cartStore';
+import { useAppToast } from '@/components/ui';
 import type { CatalogProduct } from '@/types/catalog';
 
 const NEW_PRODUCT_DAYS = 14;
@@ -26,6 +28,24 @@ const HATCH = `repeating-linear-gradient(135deg, ${tokens.surface2} 0 6px, trans
 export function ProductCard({ product }: ProductCardProps) {
 	const { t } = useTranslation();
 	const [wishlisted, setWishlisted] = useState(false);
+	const addItem = useCartStore((s) => s.addItem);
+	const { showToast } = useAppToast();
+
+	const handleAddToCart = (e: React.MouseEvent) => {
+		e.preventDefault();
+		e.stopPropagation();
+		addItem({
+			id: product.id,
+			productId: product.id,
+			sellerId: product.seller.id,
+			sellerName: product.seller.name,
+			name: product.title,
+			price: product.basePrice,
+			qty: 1,
+			imageUrl: product.mainImage ?? undefined,
+		});
+		showToast(t('cart.addedToCart', { name: product.title }), 'success');
+	};
 
 	const isNew =
 		Date.now() - new Date(product.createdAt).getTime() < NEW_PRODUCT_DAYS * 24 * 60 * 60 * 1000;
@@ -258,11 +278,7 @@ export function ProductCard({ product }: ProductCardProps) {
 					</Box>
 					<Box
 						component="button"
-						onClick={(e: React.MouseEvent) => {
-							e.preventDefault();
-							e.stopPropagation();
-							/* Phase 5 wires real cart */
-						}}
+						onClick={handleAddToCart}
 						sx={{
 							flex: 1,
 							display: 'grid',

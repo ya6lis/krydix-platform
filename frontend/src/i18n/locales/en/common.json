@@ -359,6 +359,7 @@
 			"remove": "Remove promo"
 		},
 		"checkout": "Proceed to checkout",
+		"addedToCart": "{{name}} added to cart",
 		"trust": {
 			"secure": "Secure checkout",
 			"secureSub": "256-bit TLS",

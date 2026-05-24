@@ -1,15 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate, useLocation, Link as RouterLink } from 'react-router-dom';
+import { useParams, useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
 import { Box, Typography, Stack } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { AppLoader, EmptyState, AppCard, AppTabs, AppButton } from '@/components/ui';
+import { AppLoader, EmptyState, AppCard, AppTabs, AppButton, useAppToast } from '@/components/ui';
 import { PRODUCT_QUERY } from '@/graphql/operations/catalog';
 import { Icons } from '@/constants/icons';
 import { ROUTES } from '@/constants/routes';
 import { tokens } from '@/theme';
-import { useAuth } from '@/hooks/useAuth';
+import { useCartStore } from '@/store/cartStore';
 import type { CatalogProduct, CatalogProductVariant } from '@/types/catalog';
 
 // ─── constants ────────────────────────────────────────────────────────────────
@@ -115,8 +115,8 @@ export default function ProductPage() {
 	const language = i18n.language === 'uk' ? 'UK' : 'EN';
 	const { slug = '' } = useParams();
 	const navigate = useNavigate();
-	const location = useLocation();
-	const { isAuthenticated } = useAuth();
+	const addItem = useCartStore((s) => s.addItem);
+	const { showToast } = useAppToast();
 
 	const [activeImage, setActiveImage] = useState(0);
 	const [tab, setTab] = useState('description');
@@ -166,11 +166,26 @@ export default function ProductPage() {
 	const nextImage = () => setActiveImage((i) => (i + 1) % Math.max(images.length, 1));
 
 	const handleAddToCart = () => {
-		if (!isAuthenticated) {
-			navigate(`${ROUTES.LOGIN}?returnTo=${encodeURIComponent(location.pathname)}`);
-			return;
-		}
-		navigate(ROUTES.ACCOUNT_CART);
+		if (!product) return;
+		const variantLabel =
+			Object.keys(selectedOptions).length > 0
+				? Object.entries(selectedOptions)
+						.map(([, v]) => v)
+						.join(' / ')
+				: undefined;
+		addItem({
+			id: selectedVariant?.id ?? product.id,
+			productId: product.id,
+			variantId: selectedVariant?.id,
+			sellerId: product.seller.id,
+			sellerName: product.seller.name,
+			name: product.title,
+			variant: variantLabel,
+			price,
+			qty,
+			imageUrl: images[activeImage]?.url ?? product.mainImage ?? undefined,
+		});
+		showToast(t('cart.addedToCart', { name: product.title }), 'success');
 	};
 
 	const tabs = [
