@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
 import { Box, Typography } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { AppLoader, AppPagination, EmptyState } from '@/components/ui';
 import { ProductCard } from '@/components/features/catalog/ProductCard';
@@ -17,7 +18,10 @@ import {
 	PRODUCT_BRANDS_WITH_COUNTS_QUERY,
 } from '@/graphql/operations/catalog';
 import { Icons } from '@/constants/icons';
+import { ROUTES } from '@/constants/routes';
+import { Role } from '@/constants/enums';
 import { tokens } from '@/theme';
+import { useAuth } from '@/hooks/useAuth';
 import type {
 	BrandCount,
 	CatalogProduct,
@@ -72,6 +76,8 @@ function buildFilterContext(filters: CatalogFilterState, categories: CategoryNod
 export default function CatalogPage() {
 	const { t, i18n } = useTranslation();
 	const language = i18n.language === 'uk' ? 'UK' : 'EN';
+	const { hasRole } = useAuth();
+	const isSellerOrAdmin = hasRole(Role.SELLER, Role.ADMIN);
 
 	const [filters, setFilters] = useState<CatalogFilterState>(INITIAL_FILTERS);
 	const [sort, setSort] = useState<ProductSort>('NEWEST');
@@ -144,6 +150,58 @@ export default function CatalogPage() {
 						{t('catalog.subtitle')}
 					</Typography>
 				</Box>
+
+				{/* ── page actions: Export + New product (SELLER / ADMIN only) ── */}
+				{isSellerOrAdmin && (
+					<Box sx={{ display: 'flex', gap: '10px', alignItems: 'center', flexShrink: 0 }}>
+						<Box
+							component="button"
+							sx={{
+								display: 'inline-flex',
+								alignItems: 'center',
+								gap: '6px',
+								border: `1px solid ${tokens.line}`,
+								borderRadius: '8px',
+								background: tokens.surface,
+								color: tokens.ink1,
+								fontSize: 13,
+								fontWeight: 600,
+								fontFamily: 'inherit',
+								padding: '7px 14px',
+								cursor: 'pointer',
+								transition: 'border-color 120ms',
+								'&:hover': { borderColor: tokens.ink3 },
+							}}
+						>
+							<FontAwesomeIcon icon={Icons.upload} style={{ width: 13, height: 13 }} />
+							{t('catalog.export')}
+						</Box>
+						<Box
+							component={RouterLink}
+							to={ROUTES.SELLER_PRODUCT_NEW}
+							sx={{
+								display: 'inline-flex',
+								alignItems: 'center',
+								gap: '6px',
+								border: 'none',
+								borderRadius: '8px',
+								background: tokens.accent,
+								color: '#fff',
+								fontSize: 13,
+								fontWeight: 600,
+								fontFamily: 'inherit',
+								padding: '7px 14px',
+								cursor: 'pointer',
+								textDecoration: 'none',
+								transition: 'opacity 120ms',
+								'&:hover': { opacity: 0.88 },
+							}}
+						>
+							<FontAwesomeIcon icon={Icons.add} style={{ width: 13, height: 13 }} />
+							{t('catalog.newProduct')}
+						</Box>
+					</Box>
+				)}
 			</Box>
 
 			{/* ── content grid: 240px filters | 1fr listing ── */}
