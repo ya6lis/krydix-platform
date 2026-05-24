@@ -52,6 +52,7 @@ jobs:
           - 5432:5432
     env:
       DATABASE_URL: postgresql://krydix:krydix@localhost:5432/krydix_test
+      DIRECT_URL: postgresql://krydix:krydix@localhost:5432/krydix_test
       JWT_ACCESS_SECRET: test_access_secret_32_chars_minimum
       JWT_REFRESH_SECRET: test_refresh_secret_32_chars_minimum
       JWT_ACCESS_EXPIRES_IN: 15m
