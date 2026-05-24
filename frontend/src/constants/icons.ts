@@ -85,6 +85,7 @@ import {
 	faClock,
 	faWallet,
 	faPrint,
+	faCalendar,
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -202,4 +203,5 @@ export const Icons = {
 	clock: faClock,
 	wallet: faWallet,
 	print: faPrint,
+	calendar: faCalendar,
 } as const;

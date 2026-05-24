@@ -177,14 +177,20 @@ export async function updatePaymentStatus(orderId: string, status: string): Prom
 export async function countOrdersByBuyerAndStatus(buyerId: string): Promise<{
 	all: number;
 	pending: number;
-	completed: number;
+	confirmed: number;
+	shipped: number;
+	delivered: number;
+	cancelled: number;
 	refunded: number;
 }> {
-	const [all, pending, completed, refunded] = await Promise.all([
+	const [all, pending, confirmed, shipped, delivered, cancelled, refunded] = await Promise.all([
 		prisma.order.count({ where: { buyerId, deletedAt: null } }),
 		prisma.order.count({ where: { buyerId, deletedAt: null, status: 'PENDING' } }),
+		prisma.order.count({ where: { buyerId, deletedAt: null, status: 'CONFIRMED' } }),
+		prisma.order.count({ where: { buyerId, deletedAt: null, status: 'SHIPPED' } }),
 		prisma.order.count({ where: { buyerId, deletedAt: null, status: 'DELIVERED' } }),
+		prisma.order.count({ where: { buyerId, deletedAt: null, status: 'CANCELLED' } }),
 		prisma.order.count({ where: { buyerId, deletedAt: null, status: 'REFUNDED' } }),
 	]);
-	return { all, pending, completed, refunded };
+	return { all, pending, confirmed, shipped, delivered, cancelled, refunded };
 }

@@ -67,7 +67,10 @@ export const MY_ORDER_STATS_QUERY = gql`
 		myOrderStats {
 			all
 			pending
-			completed
+			confirmed
+			shipped
+			delivered
+			cancelled
 			refunded
 		}
 	}

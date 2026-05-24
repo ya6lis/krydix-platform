@@ -78,7 +78,10 @@ export interface PaginatedOrders {
 export interface OrderStats {
 	all: number;
 	pending: number;
-	completed: number;
+	confirmed: number;
+	shipped: number;
+	delivered: number;
+	cancelled: number;
 	refunded: number;
 }
 
