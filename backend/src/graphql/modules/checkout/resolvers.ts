@@ -17,6 +17,7 @@ export const checkoutResolvers = {
 		createOrder: async (
 			_: unknown,
 			args: {
+				items?: Array<{ productId: string; variantId?: string | null; quantity: number }>;
 				paymentMethod: string;
 				deliveryMethod: string;
 				deliveryAddress?: string;
@@ -35,7 +36,8 @@ export const checkoutResolvers = {
 				input.deliveryMethod,
 				input.deliveryAddress,
 				input.promoCode,
-				input.notes
+				input.notes,
+				input.items
 			);
 		},
 	},

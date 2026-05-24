@@ -1,8 +1,15 @@
 import { z } from 'zod';
 import { DeliveryMethod, PaymentMethod } from '../constants/enums.js';
 
+const CartItemInputSchema = z.object({
+	productId: z.string().min(1),
+	variantId: z.string().optional().nullable(),
+	quantity: z.number().int().min(1).max(100),
+});
+
 export const CreateOrderSchema = z
 	.object({
+		items: z.array(CartItemInputSchema).optional(),
 		paymentMethod: z.nativeEnum(PaymentMethod),
 		deliveryMethod: z.nativeEnum(DeliveryMethod),
 		deliveryAddress: z.string().max(500).optional(),

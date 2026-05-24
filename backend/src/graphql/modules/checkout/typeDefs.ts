@@ -69,8 +69,15 @@ export const checkoutTypeDefs = `#graphql
 		createdAt: String!
 	}
 
+	input CartItemInput {
+		productId: ID!
+		variantId: ID
+		quantity: Int!
+	}
+
 	extend type Mutation {
 		createOrder(
+			items: [CartItemInput!]
 			paymentMethod: PaymentMethod!
 			deliveryMethod: DeliveryMethod!
 			deliveryAddress: String

@@ -82,6 +82,7 @@ export const APPLY_PROMO_CODE_MUTATION = gql`
 
 export const CREATE_ORDER_MUTATION = gql`
 	mutation CreateOrder(
+		$items: [CartItemInput!]
 		$paymentMethod: PaymentMethod!
 		$deliveryMethod: DeliveryMethod!
 		$deliveryAddress: String
@@ -89,6 +90,7 @@ export const CREATE_ORDER_MUTATION = gql`
 		$notes: String
 	) {
 		createOrder(
+			items: $items
 			paymentMethod: $paymentMethod
 			deliveryMethod: $deliveryMethod
 			deliveryAddress: $deliveryAddress

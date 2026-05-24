@@ -57,7 +57,13 @@ type PaymentForm = z.infer<typeof paymentSchema>;
 
 // ─── Step 1: Contact ──────────────────────────────────────────────────────────
 
-function ContactStep({ onNext }: { onNext: (data: ContactForm) => void }) {
+function ContactStep({
+	onNext,
+	defaultValues,
+}: {
+	onNext: (data: ContactForm) => void;
+	defaultValues?: ContactForm | null;
+}) {
 	const { t } = useTranslation();
 	const {
 		control,
@@ -65,6 +71,12 @@ function ContactStep({ onNext }: { onNext: (data: ContactForm) => void }) {
 		formState: { errors },
 	} = useForm<ContactForm>({
 		resolver: zodResolver(contactSchema),
+		defaultValues: defaultValues ?? {
+			firstName: '',
+			lastName: '',
+			email: '',
+			phone: '',
+		},
 	});
 
 	return (
@@ -76,7 +88,6 @@ function ContactStep({ onNext }: { onNext: (data: ContactForm) => void }) {
 				<Controller
 					name="firstName"
 					control={control}
-					defaultValue=""
 					render={({ field }) => (
 						<AppInput
 							{...field}
@@ -89,7 +100,6 @@ function ContactStep({ onNext }: { onNext: (data: ContactForm) => void }) {
 				<Controller
 					name="lastName"
 					control={control}
-					defaultValue=""
 					render={({ field }) => (
 						<AppInput
 							{...field}
@@ -104,7 +114,6 @@ function ContactStep({ onNext }: { onNext: (data: ContactForm) => void }) {
 				<Controller
 					name="email"
 					control={control}
-					defaultValue=""
 					render={({ field }) => (
 						<AppInput
 							{...field}
@@ -118,7 +127,6 @@ function ContactStep({ onNext }: { onNext: (data: ContactForm) => void }) {
 				<Controller
 					name="phone"
 					control={control}
-					defaultValue=""
 					render={({ field }) => (
 						<AppInput
 							{...field}
@@ -146,9 +154,11 @@ function ContactStep({ onNext }: { onNext: (data: ContactForm) => void }) {
 function DeliveryStep({
 	onNext,
 	onBack,
+	defaultValues,
 }: {
 	onNext: (data: DeliveryForm) => void;
 	onBack: () => void;
+	defaultValues?: DeliveryForm | null;
 }) {
 	const { t } = useTranslation();
 	const {
@@ -158,7 +168,7 @@ function DeliveryStep({
 		formState: { errors },
 	} = useForm<DeliveryForm>({
 		resolver: zodResolver(deliverySchema),
-		defaultValues: { deliveryMethod: DeliveryMethod.COURIER },
+		defaultValues: defaultValues ?? { deliveryMethod: DeliveryMethod.COURIER, deliveryAddress: '' },
 	});
 	const method = watch('deliveryMethod');
 
@@ -234,7 +244,6 @@ function DeliveryStep({
 				<Controller
 					name="deliveryAddress"
 					control={control}
-					defaultValue=""
 					render={({ field }) => (
 						<AppInput
 							{...field}
@@ -603,6 +612,7 @@ export default function CheckoutPage() {
 	const [confirmedOrder, setConfirmedOrder] = useState<OrderOut | null>(null);
 	const [submitError, setSubmitError] = useState<string | null>(null);
 
+	const cartItems = useCartStore((s) => s.items);
 	const clearCart = useCartStore((s) => s.clearCart);
 
 	const [createOrder, { loading: submitting }] = useMutation<{ createOrder: OrderOut }>(
@@ -630,6 +640,11 @@ export default function CheckoutPage() {
 		try {
 			const { data: resp } = await createOrder({
 				variables: {
+					items: cartItems.map((item) => ({
+						productId: item.productId,
+						variantId: item.variantId ?? null,
+						quantity: item.qty,
+					})),
 					paymentMethod: data.paymentMethod,
 					deliveryMethod: stepData.delivery?.deliveryMethod ?? DeliveryMethod.COURIER,
 					deliveryAddress: stepData.delivery?.deliveryAddress || undefined,
@@ -680,9 +695,15 @@ export default function CheckoutPage() {
 					p: 4,
 				}}
 			>
-				{activeStep === 0 && <ContactStep onNext={handleContact} />}
+				{activeStep === 0 && (
+					<ContactStep onNext={handleContact} defaultValues={stepData.contact} />
+				)}
 				{activeStep === 1 && (
-					<DeliveryStep onNext={handleDelivery} onBack={() => setActiveStep(0)} />
+					<DeliveryStep
+						onNext={handleDelivery}
+						onBack={() => setActiveStep(0)}
+						defaultValues={stepData.delivery}
+					/>
 				)}
 				{activeStep === 2 && (
 					<PaymentStep
