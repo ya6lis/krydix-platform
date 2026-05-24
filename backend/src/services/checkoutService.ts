@@ -109,60 +109,104 @@ function mapOrder(order: orderRepo.OrderRecord): OrderOut {
 	};
 }
 
+export interface CartItemInput {
+	productId: string;
+	variantId?: string | null;
+	quantity: number;
+}
+
 export async function createOrder(
 	userId: string,
 	paymentMethod: PaymentMethod,
 	deliveryMethod: DeliveryMethod,
 	deliveryAddress: string | undefined,
 	promoCode: string | undefined,
-	notes: string | undefined
+	notes: string | undefined,
+	clientItems?: CartItemInput[]
 ): Promise<OrderOut> {
-	// Load cart
-	const cartItems = await cartRepo.findCartByUser(userId);
-	if (cartItems.length === 0) {
-		throw new GraphQLError('Cart is empty', { extensions: { code: 'EMPTY_CART' } });
-	}
-
-	// Validate stock and build order items
 	const orderItems: orderRepo.CreateOrderInput['items'] = [];
 	let subtotal = 0;
 
-	for (const item of cartItems) {
-		if (!item.product.isAvailable) {
-			throw new GraphQLError(
-				`Product "${item.product.translations[0]?.title}" is no longer available`,
-				{ extensions: { code: 'PRODUCT_UNAVAILABLE' } }
-			);
+	if (clientItems && clientItems.length > 0) {
+		// Use items passed directly from the frontend (local cart)
+		for (const item of clientItems) {
+			const product = await productRepo.findProductById(item.productId);
+			if (!product || !product.isAvailable) {
+				throw new GraphQLError(`Product is no longer available`, {
+					extensions: { code: 'PRODUCT_UNAVAILABLE' },
+				});
+			}
+
+			let unitPrice = Number(product.basePrice);
+
+			if (item.variantId) {
+				const variant = await productRepo.findVariantById(item.variantId);
+				if (!variant || variant.stock < item.quantity) {
+					throw new GraphQLError(`Insufficient stock for product variant`, {
+						extensions: { code: 'OUT_OF_STOCK' },
+					});
+				}
+				if (variant.price !== null) unitPrice = Number(variant.price);
+			}
+
+			const translation =
+				product.translations.find((t) => t.language === Language.EN) ?? product.translations[0];
+
+			subtotal += unitPrice * item.quantity;
+
+			orderItems.push({
+				productId: item.productId,
+				variantId: item.variantId ?? undefined,
+				sellerId: product.sellerId,
+				quantity: item.quantity,
+				unitPrice,
+				productTitle: translation?.title ?? '',
+			});
+		}
+	} else {
+		// Fall back to DB cart
+		const cartItems = await cartRepo.findCartByUser(userId);
+		if (cartItems.length === 0) {
+			throw new GraphQLError('Cart is empty', { extensions: { code: 'EMPTY_CART' } });
 		}
 
-		if (item.variantId) {
-			const variant = await productRepo.findVariantById(item.variantId);
-			if (!variant || variant.stock < item.quantity) {
+		for (const item of cartItems) {
+			if (!item.product.isAvailable) {
 				throw new GraphQLError(
-					`Insufficient stock for variant in "${item.product.translations[0]?.title}"`,
-					{ extensions: { code: 'OUT_OF_STOCK' } }
+					`Product "${item.product.translations[0]?.title}" is no longer available`,
+					{ extensions: { code: 'PRODUCT_UNAVAILABLE' } }
 				);
 			}
+
+			if (item.variantId) {
+				const variant = await productRepo.findVariantById(item.variantId);
+				if (!variant || variant.stock < item.quantity) {
+					throw new GraphQLError(
+						`Insufficient stock for variant in "${item.product.translations[0]?.title}"`,
+						{ extensions: { code: 'OUT_OF_STOCK' } }
+					);
+				}
+			}
+
+			const translation =
+				item.product.translations.find((t) => t.language === Language.EN) ??
+				item.product.translations[0];
+
+			const unitPrice = item.variant?.price
+				? Number(item.variant.price)
+				: Number(item.product.basePrice);
+
+			subtotal += unitPrice * item.quantity;
+
+			orderItems.push({
+				productId: item.productId,
+				variantId: item.variantId ?? undefined,
+				sellerId: item.product.sellerId,
+				quantity: item.quantity,
+				unitPrice,
+				productTitle: translation?.title ?? '',
+			});
 		}
-
-		const translation =
-			item.product.translations.find((t) => t.language === Language.EN) ??
-			item.product.translations[0];
-
-		const unitPrice = item.variant?.price
-			? Number(item.variant.price)
-			: Number(item.product.basePrice);
-
-		subtotal += unitPrice * item.quantity;
-
-		orderItems.push({
-			productId: item.productId,
-			variantId: item.variantId ?? undefined,
-			sellerId: item.product.sellerId,
-			quantity: item.quantity,
-			unitPrice,
-			productTitle: translation?.title ?? '',
-		});
 	}
 
 	// Validate promo
