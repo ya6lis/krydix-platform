@@ -9,6 +9,7 @@ const makeItem = (overrides: Partial<CartItem> = {}): CartItem => ({
 	name: 'Heritage Jacket',
 	price: 184,
 	qty: 1,
+	stock: 10,
 	...overrides,
 });
 
@@ -47,6 +48,21 @@ describe('cartStore', () => {
 				getStore().addItem(makeItem({ id: 'item-2' }));
 			});
 			expect(getStore().items).toHaveLength(2);
+		});
+
+		it('caps merged qty at stock when same id added again', () => {
+			act(() => {
+				getStore().addItem(makeItem({ qty: 8, stock: 10 }));
+				getStore().addItem(makeItem({ qty: 5, stock: 10 })); // 8+5=13 > 10 → cap at 10
+			});
+			expect(getStore().items[0].qty).toBe(10);
+		});
+
+		it('caps initial qty at stock', () => {
+			act(() => {
+				getStore().addItem(makeItem({ qty: 50, stock: 3 })); // 50 > 3 → cap at 3
+			});
+			expect(getStore().items[0].qty).toBe(3);
 		});
 	});
 

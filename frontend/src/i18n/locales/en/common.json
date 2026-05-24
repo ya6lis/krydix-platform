@@ -360,6 +360,10 @@
 		},
 		"checkout": "Proceed to checkout",
 		"addedToCart": "{{name}} added to cart",
+		"errors": {
+			"outOfStock": "This item is out of stock",
+			"insufficientStock": "Only {{count}} left in stock"
+		},
 		"trust": {
 			"secure": "Secure checkout",
 			"secureSub": "256-bit TLS",

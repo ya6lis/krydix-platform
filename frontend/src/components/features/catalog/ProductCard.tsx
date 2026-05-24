@@ -29,11 +29,21 @@ export function ProductCard({ product }: ProductCardProps) {
 	const { t } = useTranslation();
 	const [wishlisted, setWishlisted] = useState(false);
 	const addItem = useCartStore((s) => s.addItem);
+	const cartItems = useCartStore((s) => s.items);
 	const { showToast } = useAppToast();
 
 	const handleAddToCart = (e: React.MouseEvent) => {
 		e.preventDefault();
 		e.stopPropagation();
+		if (product.totalStock === 0) {
+			showToast(t('cart.errors.outOfStock'), 'error');
+			return;
+		}
+		const existing = cartItems.find((i) => i.id === product.id);
+		if (existing && existing.qty >= product.totalStock) {
+			showToast(t('cart.errors.insufficientStock', { count: product.totalStock }), 'error');
+			return;
+		}
 		addItem({
 			id: product.id,
 			productId: product.id,
@@ -42,6 +52,7 @@ export function ProductCard({ product }: ProductCardProps) {
 			name: product.title,
 			price: product.basePrice,
 			qty: 1,
+			stock: product.totalStock,
 			imageUrl: product.mainImage ?? undefined,
 		});
 		showToast(t('cart.addedToCart', { name: product.title }), 'success');

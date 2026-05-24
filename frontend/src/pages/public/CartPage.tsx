@@ -159,7 +159,7 @@ function LineItem({ item }: { item: CartItem }) {
 			{/* Qty stepper */}
 			<QtyStepper
 				qty={item.qty}
-				stock={99}
+				stock={item.stock}
 				onDecrease={() => updateQty(item.id, item.qty - 1)}
 				onIncrease={() => updateQty(item.id, item.qty + 1)}
 			/>

@@ -2,6 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import ProductPage from '../ProductPage';
+import { AppToastProvider } from '@/components/ui';
 import { PRODUCT_QUERY } from '@/graphql/operations/catalog';
 import type { CatalogProduct } from '@/types/catalog';
 
@@ -84,13 +85,15 @@ function makeProductMock(product: CatalogProduct | null): MockedResponse {
 
 function renderPage(mocks: MockedResponse[]) {
 	return render(
-		<MockedProvider mocks={mocks} addTypename={false}>
-			<MemoryRouter initialEntries={['/products/field-jacket']}>
-				<Routes>
-					<Route path="/products/:slug" element={<ProductPage />} />
-				</Routes>
-			</MemoryRouter>
-		</MockedProvider>
+		<AppToastProvider>
+			<MockedProvider mocks={mocks} addTypename={false}>
+				<MemoryRouter initialEntries={['/products/field-jacket']}>
+					<Routes>
+						<Route path="/products/:slug" element={<ProductPage />} />
+					</Routes>
+				</MemoryRouter>
+			</MockedProvider>
+		</AppToastProvider>
 	);
 }
 

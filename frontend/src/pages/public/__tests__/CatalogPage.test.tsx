@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { MemoryRouter } from 'react-router-dom';
 import CatalogPage from '../CatalogPage';
+import { AppToastProvider } from '@/components/ui';
 import {
 	CATEGORIES_QUERY,
 	PRODUCTS_QUERY,
@@ -76,11 +77,13 @@ const productsMock: MockedResponse = {
 
 function renderCatalog(mocks: MockedResponse[] = []) {
 	return render(
-		<MockedProvider mocks={mocks} addTypename={false}>
-			<MemoryRouter>
-				<CatalogPage />
-			</MemoryRouter>
-		</MockedProvider>
+		<AppToastProvider>
+			<MockedProvider mocks={mocks} addTypename={false}>
+				<MemoryRouter>
+					<CatalogPage />
+				</MemoryRouter>
+			</MockedProvider>
+		</AppToastProvider>
 	);
 }
 

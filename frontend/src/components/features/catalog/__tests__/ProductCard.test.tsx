@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { ProductCard } from '../ProductCard';
+import { AppToastProvider } from '@/components/ui';
 import type { CatalogProduct } from '@/types/catalog';
 
 jest.mock('react-i18next', () => ({
@@ -41,7 +42,9 @@ function makeProduct(overrides: Partial<CatalogProduct> = {}): CatalogProduct {
 function renderCard(product: CatalogProduct) {
 	return render(
 		<MemoryRouter>
-			<ProductCard product={product} />
+			<AppToastProvider>
+				<ProductCard product={product} />
+			</AppToastProvider>
 		</MemoryRouter>
 	);
 }

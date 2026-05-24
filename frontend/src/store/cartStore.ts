@@ -11,6 +11,7 @@ export interface CartItem {
 	variant?: string;
 	price: number;
 	qty: number;
+	stock: number;
 	imageUrl?: string;
 }
 
@@ -50,13 +51,13 @@ export const useCartStore = create<CartState>()(
 				set((state) => {
 					const existing = state.items.find((i) => i.id === item.id);
 					if (existing) {
+						const merged = Math.min(existing.stock, existing.qty + item.qty);
+						if (merged === existing.qty) return state; // already at stock cap
 						return {
-							items: state.items.map((i) =>
-								i.id === item.id ? { ...i, qty: i.qty + item.qty } : i
-							),
+							items: state.items.map((i) => (i.id === item.id ? { ...i, qty: merged } : i)),
 						};
 					}
-					return { items: [...state.items, item] };
+					return { items: [...state.items, { ...item, qty: Math.min(item.stock, item.qty) }] };
 				}),
 
 			removeItem: (id) => set((state) => ({ items: state.items.filter((i) => i.id !== id) })),

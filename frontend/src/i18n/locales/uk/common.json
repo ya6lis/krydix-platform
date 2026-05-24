@@ -360,6 +360,10 @@
 		},
 		"checkout": "Перейти до оформлення",
 		"addedToCart": "{{name}} додано до кошика",
+		"errors": {
+			"outOfStock": "Цього товару немає в наявності",
+			"insufficientStock": "На складі залишилось лише {{count}} шт."
+		},
 		"trust": {
 			"secure": "Безпечна оплата",
 			"secureSub": "256-бітний TLS",

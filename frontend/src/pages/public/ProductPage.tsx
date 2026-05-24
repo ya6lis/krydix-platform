@@ -15,7 +15,6 @@ import type { CatalogProduct, CatalogProductVariant } from '@/types/catalog';
 // ─── constants ────────────────────────────────────────────────────────────────
 
 const QTY_MIN = 1;
-const QTY_MAX = 99;
 
 const SWATCH_COLORS: Record<string, string> = {
 	Olive: '#38503a',
@@ -116,6 +115,7 @@ export default function ProductPage() {
 	const { slug = '' } = useParams();
 	const navigate = useNavigate();
 	const addItem = useCartStore((s) => s.addItem);
+	const cartItems = useCartStore((s) => s.items);
 	const { showToast } = useAppToast();
 
 	const [activeImage, setActiveImage] = useState(0);
@@ -167,6 +167,17 @@ export default function ProductPage() {
 
 	const handleAddToCart = () => {
 		if (!product) return;
+		if (stock === 0) {
+			showToast(t('cart.errors.outOfStock'), 'error');
+			return;
+		}
+		const itemId = selectedVariant?.id ?? product.id;
+		const existing = cartItems.find((i) => i.id === itemId);
+		const existingQty = existing?.qty ?? 0;
+		if (existingQty + qty > stock) {
+			showToast(t('cart.errors.insufficientStock', { count: stock - existingQty }), 'error');
+			return;
+		}
 		const variantLabel =
 			Object.keys(selectedOptions).length > 0
 				? Object.entries(selectedOptions)
@@ -174,7 +185,7 @@ export default function ProductPage() {
 						.join(' / ')
 				: undefined;
 		addItem({
-			id: selectedVariant?.id ?? product.id,
+			id: itemId,
 			productId: product.id,
 			variantId: selectedVariant?.id,
 			sellerId: product.seller.id,
@@ -183,6 +194,7 @@ export default function ProductPage() {
 			variant: variantLabel,
 			price,
 			qty,
+			stock,
 			imageUrl: images[activeImage]?.url ?? product.mainImage ?? undefined,
 		});
 		showToast(t('cart.addedToCart', { name: product.title }), 'success');
@@ -722,15 +734,15 @@ export default function ProductPage() {
 								component="button"
 								type="button"
 								data-cy="qty-increment"
-								onClick={() => setQty((q) => Math.min(QTY_MAX, q + 1))}
-								disabled={qty >= QTY_MAX || stock === 0}
+								onClick={() => setQty((q) => Math.min(stock, q + 1))}
+								disabled={qty >= stock || stock === 0}
 								sx={{
 									width: 36,
 									height: 38,
 									border: 'none',
 									bgcolor: 'transparent',
-									cursor: qty >= QTY_MAX || stock === 0 ? 'default' : 'pointer',
-									color: qty >= QTY_MAX || stock === 0 ? tokens.ink3 : tokens.ink2,
+									cursor: qty >= stock || stock === 0 ? 'default' : 'pointer',
+									color: qty >= stock || stock === 0 ? tokens.ink3 : tokens.ink2,
 									fontSize: 16,
 									display: 'grid',
 									placeItems: 'center',
