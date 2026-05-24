@@ -508,16 +508,20 @@
 			"completed": "Completed",
 			"refunded": "Refunded"
 		},
+		"export": "Export CSV",
+		"printLabels": "Bulk print labels",
+		"cancelOrder": "Cancel order",
 		"table": {
 			"order": "Order",
-			"seller": "Seller",
+			"product": "Product",
 			"date": "Date",
 			"items": "Items",
 			"amount": "Amount",
 			"payment": "Payment",
-			"status": "Order status"
+			"status": "Order status",
+			"actions": ""
 		},
-		"search": "Search by order # or seller…",
+		"search": "Search by order # or product…",
 		"startDate": "Start date",
 		"endDate": "End date",
 		"filters": "Filters",

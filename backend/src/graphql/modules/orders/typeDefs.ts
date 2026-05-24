@@ -58,7 +58,10 @@ export const ordersTypeDefs = `#graphql
 	type OrderStats {
 		all: Int!
 		pending: Int!
-		completed: Int!
+		confirmed: Int!
+		shipped: Int!
+		delivered: Int!
+		cancelled: Int!
 		refunded: Int!
 	}
 
