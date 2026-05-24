@@ -1,6 +1,6 @@
 {
-	"buildCommand": "npm run build --workspace=frontend",
+	"buildCommand": "cd frontend && npm run build",
 	"outputDirectory": "frontend/dist",
-	"installCommand": "npm install",
+	"installCommand": "npm install && npm install",
 	"rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
