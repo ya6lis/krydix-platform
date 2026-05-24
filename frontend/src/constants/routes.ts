@@ -22,6 +22,7 @@ export const ROUTES = {
 	ACCOUNT_ORDERS: '/account/orders',
 	ACCOUNT_ORDER: (id: string) => `/account/orders/${id}`,
 	ACCOUNT_PROFILE: '/account/profile',
+	ACCOUNT_SETTINGS: '/account/settings',
 	ACCOUNT_REVIEWS: '/account/reviews',
 	ACCOUNT_CART: '/account/cart',
 	ACCOUNT_CHECKOUT: '/account/checkout',

@@ -203,7 +203,8 @@
 		"status": "Статус",
 		"actions": "Дії",
 		"createdAt": "Створено",
-		"updatedAt": "Оновлено"
+		"updatedAt": "Оновлено",
+		"discard": "Скасувати"
 	},
 	"status": {
 		"product": {
@@ -487,6 +488,176 @@
 			"deliverySub": "Кур'єр, відділення, самовивіз",
 			"returnsTitle": "Повернення за 14 днів",
 			"returnsSub": "Захист покупця на всі замовлення"
+		}
+	},
+	"orders": {
+		"title": "Замовлення",
+		"subtitle": "Керуйте замовленнями, відстежуйте доставки та запитуйте повернення.",
+		"tabs": {
+			"all": "Всі",
+			"pending": "Очікують",
+			"confirmed": "Підтверджені",
+			"shipped": "Відправлені",
+			"delivered": "Доставлені",
+			"cancelled": "Скасовані",
+			"refunded": "Повернені"
+		},
+		"stats": {
+			"all": "Всі замовлення",
+			"pending": "Очікують",
+			"completed": "Завершені",
+			"refunded": "Повернені"
+		},
+		"table": {
+			"order": "Замовлення",
+			"seller": "Продавець",
+			"date": "Дата",
+			"items": "Товари",
+			"amount": "Сума",
+			"payment": "Оплата",
+			"status": "Статус замовлення"
+		},
+		"search": "Пошук за № замовлення або продавцем…",
+		"startDate": "Дата від",
+		"endDate": "Дата до",
+		"filters": "Фільтри",
+		"empty": {
+			"title": "Замовлень ще немає",
+			"description": "Ваші замовлення з'являться тут."
+		},
+		"emptyFiltered": {
+			"title": "Замовлень не знайдено",
+			"description": "Спробуйте змінити фільтри."
+		},
+		"viewDetails": "Переглянути"
+	},
+	"orderDetail": {
+		"backToOrders": "Назад до замовлень",
+		"details": "Деталі",
+		"detailsSub_one": "{{count}} товар",
+		"detailsSub_other": "{{count}} товари",
+		"shipsFrom": "відправляє {{seller}}",
+		"history": "Історія",
+		"sidebar": {
+			"customer": "Покупець",
+			"delivery": "Доставка",
+			"shipping": "Адреса доставки",
+			"payment": "Оплата"
+		},
+		"summary": {
+			"subtotal": "Підсума",
+			"shipping": "Доставка",
+			"discount": "Знижка ({{code}})",
+			"tax": "Податки",
+			"total": "Разом"
+		},
+		"timeline": {
+			"orderPlaced": "Замовлення оформлено",
+			"paymentTime": "Час оплати",
+			"deliveryForCarrier": "Час доставки до перевізника",
+			"completionTime": "Час завершення",
+			"deliverySuccessful": "Доставку завершено",
+			"pickedUpByCarrier": "Передано перевізнику",
+			"orderCreated": "Замовлення створено"
+		},
+		"delivery": {
+			"shipBy": "Перевізник",
+			"speed": "Швидкість",
+			"tracking": "Трекінг"
+		},
+		"actions": {
+			"cancel": "Скасувати замовлення",
+			"confirmDelivery": "Підтвердити отримання",
+			"requestRefund": "Запросити повернення",
+			"print": "Друк"
+		},
+		"cancelConfirm": {
+			"title": "Скасувати замовлення?",
+			"message": "Цю дію не можна скасувати. Замовлення буде відхилено."
+		},
+		"confirmDeliveryConfirm": {
+			"title": "Підтвердити отримання?",
+			"message": "Підтвердіть, що ви отримали своє замовлення."
+		},
+		"refundConfirm": {
+			"title": "Запросити повернення?",
+			"message": "Буде подано запит на повернення коштів за це замовлення."
+		},
+		"qty": "×{{count}}",
+		"sku": "Артикул"
+	},
+	"account": {
+		"settings": {
+			"title": "Налаштування",
+			"subtitle": "Керуйте акаунтом, сповіщеннями та перевагами.",
+			"nav": {
+				"account": "Акаунт",
+				"selling": "Продаж",
+				"other": "Інше",
+				"profile": "Профіль",
+				"security": "Безпека",
+				"notifications": "Сповіщення",
+				"language": "Мова та регіон",
+				"verification": "Верифікація",
+				"payouts": "Виплати",
+				"shipping": "Способи доставки",
+				"api": "API та інтеграції",
+				"billing": "Платежі"
+			},
+			"profile": {
+				"title": "Профіль",
+				"subtitle": "Публічно відображається у вашому профілі.",
+				"firstName": "Ім'я",
+				"lastName": "Прізвище",
+				"displayName": "Відображуване ім'я",
+				"displayNameHelp": "Видно на оголошеннях і відгуках.",
+				"email": "Email",
+				"bio": "Публічна біографія",
+				"bioPlaceholder": "Розкажіть покупцям про себе…",
+				"uploadAvatar": "Завантажити нове",
+				"removeAvatar": "Видалити",
+				"avatarHelp": "JPG або PNG, квадратне співвідношення сторін, макс. 2 МБ.",
+				"saveChanges": "Зберегти зміни",
+				"saving": "Збереження…"
+			},
+			"security": {
+				"title": "Безпека",
+				"subtitle": "Пароль, сесії та двофакторна автентифікація.",
+				"currentPassword": "Поточний пароль",
+				"newPassword": "Новий пароль",
+				"confirmPassword": "Підтвердити новий пароль",
+				"changePassword": "Змінити пароль",
+				"passwordUpdated": "Пароль успішно оновлено."
+			},
+			"notifications": {
+				"title": "Сповіщення",
+				"subtitle": "Вирішіть, які події запускають сповіщення.",
+				"newOrder": "Нове замовлення отримано",
+				"newOrderDesc": "Push та email, коли покупець оформляє замовлення.",
+				"orderStatus": "Зміна статусу замовлення",
+				"orderStatusDesc": "Скановано, доставлено або підтверджено отримання.",
+				"newMessage": "Нове повідомлення в чаті",
+				"newMessageDesc": "Покупець або модератор надіслав повідомлення.",
+				"moderation": "Рішення модерації",
+				"moderationDesc": "Товар схвалено, відхилено або потребує правок.",
+				"verification": "Оновлення верифікації",
+				"verificationDesc": "Зміна статусу верифікації продавця.",
+				"complaint": "Статус скарги",
+				"complaintDesc": "Оновлення щодо скарг на вас або ваші оголошення.",
+				"weekly": "Щотижневий звіт",
+				"weeklyDesc": "Огляд продажів, повернень і рейтингів у понеділок вранці.",
+				"updates": "Оновлення Krydix",
+				"updatesDesc": "Нові функції, зміни платформи, розсилки.",
+				"savePreferences": "Зберегти налаштування"
+			},
+			"language": {
+				"title": "Мова та регіон",
+				"subtitle": "Мова інтерфейсу та параметри форматування.",
+				"interfaceLang": "Мова інтерфейсу",
+				"timezone": "Часовий пояс",
+				"currency": "Валюта",
+				"dateFormat": "Формат дати"
+			}
 		}
 	}
 }

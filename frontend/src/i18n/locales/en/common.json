@@ -203,7 +203,8 @@
 		"status": "Status",
 		"actions": "Actions",
 		"createdAt": "Created",
-		"updatedAt": "Updated"
+		"updatedAt": "Updated",
+		"discard": "Discard"
 	},
 	"status": {
 		"product": {
@@ -487,6 +488,176 @@
 			"deliverySub": "Courier, branch pickup, self pickup",
 			"returnsTitle": "14-day returns",
 			"returnsSub": "Buyer protection on all orders"
+		}
+	},
+	"orders": {
+		"title": "Orders",
+		"subtitle": "Manage your orders, track shipments, and request refunds.",
+		"tabs": {
+			"all": "All",
+			"pending": "Pending",
+			"confirmed": "Confirmed",
+			"shipped": "Shipped",
+			"delivered": "Delivered",
+			"cancelled": "Cancelled",
+			"refunded": "Refunded"
+		},
+		"stats": {
+			"all": "All orders",
+			"pending": "Pending",
+			"completed": "Completed",
+			"refunded": "Refunded"
+		},
+		"table": {
+			"order": "Order",
+			"seller": "Seller",
+			"date": "Date",
+			"items": "Items",
+			"amount": "Amount",
+			"payment": "Payment",
+			"status": "Order status"
+		},
+		"search": "Search by order # or seller…",
+		"startDate": "Start date",
+		"endDate": "End date",
+		"filters": "Filters",
+		"empty": {
+			"title": "No orders yet",
+			"description": "Your placed orders will appear here."
+		},
+		"emptyFiltered": {
+			"title": "No orders found",
+			"description": "Try adjusting your filters."
+		},
+		"viewDetails": "View details"
+	},
+	"orderDetail": {
+		"backToOrders": "Back to orders",
+		"details": "Details",
+		"detailsSub_one": "{{count}} item",
+		"detailsSub_other": "{{count}} items",
+		"shipsFrom": "ships from {{seller}}",
+		"history": "History",
+		"sidebar": {
+			"customer": "Customer",
+			"delivery": "Delivery",
+			"shipping": "Shipping",
+			"payment": "Payment"
+		},
+		"summary": {
+			"subtotal": "Subtotal",
+			"shipping": "Shipping",
+			"discount": "Discount ({{code}})",
+			"tax": "Taxes",
+			"total": "Total"
+		},
+		"timeline": {
+			"orderPlaced": "Order placed",
+			"paymentTime": "Payment time",
+			"deliveryForCarrier": "Delivery time for carrier",
+			"completionTime": "Completion time",
+			"deliverySuccessful": "Delivery successful",
+			"pickedUpByCarrier": "Picked up by carrier",
+			"orderCreated": "Order created"
+		},
+		"delivery": {
+			"shipBy": "Ship by",
+			"speed": "Speed",
+			"tracking": "Tracking"
+		},
+		"actions": {
+			"cancel": "Cancel order",
+			"confirmDelivery": "Confirm delivery",
+			"requestRefund": "Request refund",
+			"print": "Print"
+		},
+		"cancelConfirm": {
+			"title": "Cancel order?",
+			"message": "This action cannot be undone. The order will be cancelled."
+		},
+		"confirmDeliveryConfirm": {
+			"title": "Confirm delivery?",
+			"message": "Please confirm that you have received your order."
+		},
+		"refundConfirm": {
+			"title": "Request a refund?",
+			"message": "A refund request will be submitted for this order."
+		},
+		"qty": "×{{count}}",
+		"sku": "SKU"
+	},
+	"account": {
+		"settings": {
+			"title": "Settings",
+			"subtitle": "Manage your account, notifications, and preferences.",
+			"nav": {
+				"account": "Account",
+				"selling": "Selling",
+				"other": "Other",
+				"profile": "Profile",
+				"security": "Security",
+				"notifications": "Notifications",
+				"language": "Language & region",
+				"verification": "Verification",
+				"payouts": "Payouts",
+				"shipping": "Shipping methods",
+				"api": "API & integrations",
+				"billing": "Billing"
+			},
+			"profile": {
+				"title": "Profile",
+				"subtitle": "This is shown publicly on your profile.",
+				"firstName": "First name",
+				"lastName": "Last name",
+				"displayName": "Display name",
+				"displayNameHelp": "Shown on listings and reviews.",
+				"email": "Email",
+				"bio": "Public bio",
+				"bioPlaceholder": "Tell buyers about yourself…",
+				"uploadAvatar": "Upload new",
+				"removeAvatar": "Remove",
+				"avatarHelp": "JPG or PNG, square aspect ratio recommended, max 2MB.",
+				"saveChanges": "Save changes",
+				"saving": "Saving…"
+			},
+			"security": {
+				"title": "Security",
+				"subtitle": "Password, sessions, and two-factor auth.",
+				"currentPassword": "Current password",
+				"newPassword": "New password",
+				"confirmPassword": "Confirm new password",
+				"changePassword": "Change password",
+				"passwordUpdated": "Password updated successfully."
+			},
+			"notifications": {
+				"title": "Notifications",
+				"subtitle": "Decide which events trigger an in-app or email alert.",
+				"newOrder": "New order received",
+				"newOrderDesc": "In-app push and email when a buyer places an order.",
+				"orderStatus": "Order status change",
+				"orderStatusDesc": "Shipment scanned, delivered, or marked as received.",
+				"newMessage": "New message in chat",
+				"newMessageDesc": "Buyer or moderator sends you a message.",
+				"moderation": "Moderation decision",
+				"moderationDesc": "Product approved, rejected, or needs edits.",
+				"verification": "Verification updates",
+				"verificationDesc": "Seller verification status changes.",
+				"complaint": "Complaint progress",
+				"complaintDesc": "Updates on complaints filed against you or your listings.",
+				"weekly": "Weekly summary",
+				"weeklyDesc": "A Monday morning recap of sales, returns, and ratings.",
+				"updates": "Krydix product updates",
+				"updatesDesc": "New features, platform changes, occasional newsletters.",
+				"savePreferences": "Save preferences"
+			},
+			"language": {
+				"title": "Language & region",
+				"subtitle": "Interface and formatting preferences.",
+				"interfaceLang": "Interface language",
+				"timezone": "Timezone",
+				"currency": "Currency",
+				"dateFormat": "Date format"
+			}
 		}
 	}
 }

@@ -82,6 +82,9 @@ import {
 	faSun,
 	faBolt,
 	faBars,
+	faClock,
+	faWallet,
+	faPrint,
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -196,4 +199,7 @@ export const Icons = {
 	sun: faSun,
 	bolt: faBolt,
 	listView: faBars,
+	clock: faClock,
+	wallet: faWallet,
+	print: faPrint,
 } as const;
