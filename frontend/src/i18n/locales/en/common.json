@@ -888,5 +888,74 @@
 		"activateSuccess": "Product activated",
 		"deactivateError": "Failed to deactivate product",
 		"activateError": "Failed to activate product"
+	},
+	"sellerDashboard": {
+		"pageTitle": "Welcome back, {{name}}.",
+		"pageSubtitle": "Here's what's happening across your Krydix shop today.",
+		"addProduct": "Add product",
+		"viewAnalytics": "View analytics",
+		"period": {
+			"WEEK": "Week",
+			"MONTH": "Month",
+			"QUARTER": "Quarter",
+			"YEAR": "Year"
+		},
+		"hero": {
+			"eyebrow": "{{period}} performance",
+			"title": "Your total revenue is",
+			"revenueValue": "{{revenue}} this period",
+			"body": "Track your top products and fulfill orders on time to keep your ratings high.",
+			"cta": "Open products",
+			"statOrders": "Orders",
+			"statRevenue": "Net revenue"
+		},
+		"featureCard": {
+			"tag": "Low Stock",
+			"title": "{{count}} product(s) running low",
+			"body": "Restock before you miss sales opportunities.",
+			"cta": "View products",
+			"okTag": "All Good",
+			"okTitle": "All stocked up",
+			"okBody": "All your active products have sufficient inventory."
+		},
+		"stats": {
+			"activeProducts": "Active products",
+			"orders": "Orders this period",
+			"revenue": "Revenue",
+			"avgRating": "Avg rating",
+			"noRating": "—"
+		},
+		"chart": {
+			"title": "Sales performance",
+			"subtitle": "Revenue over the selected period",
+			"empty": "No revenue data for this period.",
+			"legendRevenue": "Gross revenue",
+			"granularity": {
+				"DAY": "Day",
+				"WEEK": "Week",
+				"MONTH": "Month"
+			}
+		},
+		"topProducts": {
+			"title": "Top products",
+			"subtitle": "Best performing by revenue",
+			"viewAll": "View all",
+			"col": {
+				"product": "Product",
+				"sku": "SKU",
+				"revenue": "Revenue",
+				"orders": "Orders"
+			},
+			"empty": "No sales yet",
+			"emptyDesc": "Your top-selling products will appear here once you have orders."
+		},
+		"lowStock": {
+			"title": "Low stock alerts",
+			"subtitle": "Stock at or below threshold",
+			"empty": "All stocked up",
+			"emptyDesc": "All products have sufficient inventory.",
+			"stockLabel": "in stock",
+			"variantLabel": "Variant"
+		}
 	}
 }

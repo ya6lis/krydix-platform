@@ -35,19 +35,59 @@ interface NavGroup {
 }
 
 const NAV_GROUPS: NavGroup[] = [
+	// ── Overview: one dashboard link per role ─────────────────────
 	{
 		id: 'overview',
 		labelKey: 'nav.group.overview',
 		items: [
 			{
+				id: 'dashboard-seller',
+				labelKey: 'nav.dashboard',
+				icon: Icons.chart,
+				href: ROUTES.SELLER_DASHBOARD,
+				roles: ['SELLER'],
+			},
+			{
 				id: 'dashboard',
 				labelKey: 'nav.dashboard',
 				icon: Icons.chart,
-				href: '/account',
-				roles: ['BUYER', 'SELLER', 'MODERATOR', 'ADMINISTRATOR'],
+				href: ROUTES.ACCOUNT,
+				roles: ['BUYER', 'MODERATOR', 'ADMINISTRATOR'],
 			},
 		],
 	},
+
+	// ── Selling: seller-only cabinet links ────────────────────────
+	{
+		id: 'selling',
+		labelKey: 'nav.group.selling',
+		items: [
+			{
+				id: 'seller-products',
+				labelKey: 'nav.products',
+				icon: Icons.store,
+				href: ROUTES.SELLER_PRODUCTS,
+				roles: ['SELLER'],
+			},
+			{
+				id: 'seller-orders',
+				labelKey: 'nav.orders',
+				icon: Icons.order,
+				href: ROUTES.SELLER_ORDERS,
+				badge: { variant: 'default' },
+				roles: ['SELLER'],
+			},
+			{
+				id: 'seller-verification',
+				labelKey: 'nav.verification',
+				icon: Icons.shield,
+				href: ROUTES.SELLER_VERIFICATION,
+				roles: ['SELLER'],
+			},
+		],
+	},
+
+	// ── Marketplace: catalog + buyer orders + messages ────────────
 	{
 		id: 'marketplace',
 		labelKey: 'nav.group.marketplace',
@@ -63,45 +103,10 @@ const NAV_GROUPS: NavGroup[] = [
 				id: 'orders',
 				labelKey: 'nav.orders',
 				icon: Icons.order,
-				href: '/account/orders',
+				href: ROUTES.ACCOUNT_ORDERS,
 				badge: { variant: 'default' },
-				roles: ['BUYER', 'SELLER', 'ADMINISTRATOR'],
+				roles: ['BUYER', 'ADMINISTRATOR'],
 			},
-		],
-	},
-	{
-		id: 'moderation',
-		labelKey: 'nav.group.moderation',
-		items: [
-			{
-				id: 'queue',
-				labelKey: 'nav.queue',
-				icon: Icons.clipboardCheck,
-				href: '/moderator/products',
-				badge: { variant: 'warn' },
-				roles: ['MODERATOR', 'ADMINISTRATOR'],
-			},
-			{
-				id: 'complaints',
-				labelKey: 'nav.complaints',
-				icon: Icons.warning,
-				href: '/moderator/complaints',
-				badge: { variant: 'danger' },
-				roles: ['MODERATOR', 'ADMINISTRATOR'],
-			},
-			{
-				id: 'reviews',
-				labelKey: 'nav.reviews',
-				icon: Icons.star,
-				href: '/moderator/reviews',
-				roles: ['MODERATOR', 'ADMINISTRATOR'],
-			},
-		],
-	},
-	{
-		id: 'communication',
-		labelKey: 'nav.group.communication',
-		items: [
 			{
 				id: 'messages',
 				labelKey: 'nav.messages',
@@ -112,6 +117,47 @@ const NAV_GROUPS: NavGroup[] = [
 			},
 		],
 	},
+
+	// ── Moderation: queue, complaints, reviews, verifications ─────
+	{
+		id: 'moderation',
+		labelKey: 'nav.group.moderation',
+		items: [
+			{
+				id: 'queue',
+				labelKey: 'nav.queue',
+				icon: Icons.clipboardCheck,
+				href: ROUTES.MODERATOR_PRODUCTS,
+				badge: { variant: 'warn' },
+				roles: ['MODERATOR', 'ADMINISTRATOR'],
+			},
+			{
+				id: 'complaints',
+				labelKey: 'nav.complaints',
+				icon: Icons.warning,
+				href: ROUTES.MODERATOR_COMPLAINTS,
+				badge: { variant: 'danger' },
+				roles: ['MODERATOR', 'ADMINISTRATOR'],
+			},
+			{
+				id: 'reviews',
+				labelKey: 'nav.reviews',
+				icon: Icons.star,
+				href: ROUTES.MODERATOR_REVIEWS,
+				roles: ['MODERATOR', 'ADMINISTRATOR'],
+			},
+			{
+				id: 'verifications',
+				labelKey: 'nav.verifications',
+				icon: Icons.userShield,
+				href: ROUTES.MODERATOR_VERIFICATION,
+				badge: { variant: 'warn' },
+				roles: ['MODERATOR', 'ADMINISTRATOR'],
+			},
+		],
+	},
+
+	// ── Admin: user mgmt, categories, platform, audit ─────────────
 	{
 		id: 'admin',
 		labelKey: 'nav.group.adminGroup',
@@ -120,57 +166,29 @@ const NAV_GROUPS: NavGroup[] = [
 				id: 'users',
 				labelKey: 'nav.users',
 				icon: Icons.users,
-				href: '/admin/users',
+				href: ROUTES.ADMIN_USERS,
 				roles: ['ADMINISTRATOR'],
 			},
 			{
 				id: 'categories',
 				labelKey: 'nav.categories',
 				icon: Icons.category,
-				href: '/admin/categories',
+				href: ROUTES.ADMIN_CATEGORIES,
 				roles: ['ADMINISTRATOR'],
-			},
-			{
-				id: 'verifications',
-				labelKey: 'nav.verifications',
-				icon: Icons.userShield,
-				href: '/moderator/verification',
-				badge: { variant: 'warn' },
-				roles: ['MODERATOR', 'ADMINISTRATOR'],
 			},
 			{
 				id: 'platform',
 				labelKey: 'nav.platform',
 				icon: Icons.settings,
-				href: '/admin/settings',
+				href: ROUTES.ADMIN_SETTINGS,
 				roles: ['ADMINISTRATOR'],
 			},
 			{
 				id: 'audit',
 				labelKey: 'nav.audit',
 				icon: Icons.file,
-				href: '/admin/audit',
+				href: ROUTES.ADMIN_AUDIT,
 				roles: ['ADMINISTRATOR'],
-			},
-		],
-	},
-	{
-		id: 'account',
-		labelKey: 'nav.group.account',
-		items: [
-			{
-				id: 'settings',
-				labelKey: 'nav.settings',
-				icon: Icons.settings,
-				href: '/account/profile',
-				roles: ['BUYER', 'SELLER', 'MODERATOR', 'ADMINISTRATOR'],
-			},
-			{
-				id: 'help',
-				labelKey: 'nav.help',
-				icon: Icons.question,
-				href: '/support',
-				roles: [GUEST, 'BUYER', 'SELLER', 'MODERATOR', 'ADMINISTRATOR'],
 			},
 		],
 	},
@@ -474,7 +492,7 @@ function SidebarNavItem({ item }: { item: NavItem }) {
 		<Box
 			component={NavLink}
 			to={item.href}
-			end={item.href === '/account'}
+			end={item.href === '/account' || item.href === ROUTES.SELLER_DASHBOARD}
 			sx={{
 				display: 'flex',
 				alignItems: 'center',
@@ -565,11 +583,6 @@ function UserMenu({ user, onClose }: { user: AuthUser; onClose: () => void }) {
 
 	const badge = ROLE_BADGE[user.role] ?? ROLE_BADGE.BUYER;
 
-	const verifiedTag: MenuTag | undefined =
-		user.role === 'SELLER'
-			? { label: 'Verified', bg: tokens.accentSoft, color: tokens.accentInk }
-			: undefined;
-
 	const newTag: MenuTag | undefined =
 		WHATS_NEW_COUNT > 0
 			? { label: String(WHATS_NEW_COUNT), bg: tokens.amber, color: tokens.amberInk }
@@ -646,26 +659,18 @@ function UserMenu({ user, onClose }: { user: AuthUser; onClose: () => void }) {
 
 			<Divider sx={{ borderColor: tokens.line, mx: '6px' }} />
 
-			{/* ── group 1: profile / settings / verification ── */}
+			{/* ── group 1: profile / settings ── */}
 			<Box sx={{ padding: '4px 0' }}>
 				<MenuRow
 					icon={Icons.user}
 					label={t('shell.menu.profile')}
-					onClick={() => go('/account/profile')}
+					onClick={() => go(ROUTES.ACCOUNT_PROFILE)}
 				/>
 				<MenuRow
 					icon={Icons.settings}
 					label={t('shell.menu.settings')}
-					onClick={() => go('/account/profile')}
+					onClick={() => go(ROUTES.ACCOUNT_SETTINGS)}
 				/>
-				{(user.role === 'BUYER' || user.role === 'SELLER') && (
-					<MenuRow
-						icon={Icons.shield}
-						label={t('shell.menu.verification')}
-						tag={verifiedTag}
-						onClick={() => go('/seller-cabinet/verification')}
-					/>
-				)}
 			</Box>
 
 			<Divider sx={{ borderColor: tokens.line, mx: '6px' }} />

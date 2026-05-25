@@ -1,0 +1,63 @@
+{
+	"sellerStats": {
+		"totalRevenue": 18765.5,
+		"totalOrders": 12,
+		"totalProducts": 8,
+		"averageRating": 4.5
+	},
+	"sellerRevenueSeries": [
+		{ "date": "2026-04-25", "revenue": 320.0 },
+		{ "date": "2026-04-26", "revenue": 580.5 },
+		{ "date": "2026-04-27", "revenue": 210.0 },
+		{ "date": "2026-04-28", "revenue": 940.0 },
+		{ "date": "2026-04-29", "revenue": 760.25 },
+		{ "date": "2026-04-30", "revenue": 1100.0 },
+		{ "date": "2026-05-01", "revenue": 850.0 }
+	],
+	"sellerTopProducts": [
+		{
+			"productId": "prod-1",
+			"titleEn": "Heritage Field Jacket",
+			"sku": "HFJ-001",
+			"imageUrl": null,
+			"revenue": 5400.0,
+			"orderCount": 18
+		},
+		{
+			"productId": "prod-2",
+			"titleEn": "Canvas Tote Bag",
+			"sku": "CTB-002",
+			"imageUrl": null,
+			"revenue": 2100.0,
+			"orderCount": 35
+		},
+		{
+			"productId": "prod-3",
+			"titleEn": "Wool Beanie",
+			"sku": "WB-003",
+			"imageUrl": null,
+			"revenue": 980.5,
+			"orderCount": 22
+		}
+	],
+	"sellerLowStockAlerts": [
+		{
+			"productId": "prod-1",
+			"titleEn": "Heritage Field Jacket",
+			"sku": "HFJ-001",
+			"imageUrl": null,
+			"variantId": "var-1",
+			"variantOptions": { "Size": "S", "Color": "Olive" },
+			"stock": 2
+		},
+		{
+			"productId": "prod-3",
+			"titleEn": "Wool Beanie",
+			"sku": "WB-003",
+			"imageUrl": null,
+			"variantId": "var-2",
+			"variantOptions": { "Color": "Navy" },
+			"stock": 4
+		}
+	]
+}
