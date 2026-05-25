@@ -197,7 +197,7 @@ export function ModerationReviewCard({
 				<Box sx={{ display: 'flex', gap: 1 }}>
 					<AppButton
 						tone="ghost"
-						size="sm"
+						size="small"
 						fullWidth
 						component={RouterLink}
 						to={ROUTES.PRODUCT(review.targetSlug)}
@@ -206,7 +206,7 @@ export function ModerationReviewCard({
 					</AppButton>
 					<AppButton
 						tone="danger"
-						size="sm"
+						size="small"
 						fullWidth
 						loading={hiding}
 						onClick={() => onHide(review.id)}
@@ -215,7 +215,7 @@ export function ModerationReviewCard({
 					</AppButton>
 					<AppButton
 						tone="success"
-						size="sm"
+						size="small"
 						fullWidth
 						loading={approving}
 						onClick={() => onApprove(review.id)}
