@@ -71,7 +71,7 @@ function LineItem({ item }: { item: CartItem }) {
 	const updateQty = useCartStore((s) => s.updateQty);
 	const removeItem = useCartStore((s) => s.removeItem);
 
-	const isLowStock = item.qty < 5;
+	const isLowStock = item.stock < 5;
 
 	return (
 		<Box
@@ -151,7 +151,7 @@ function LineItem({ item }: { item: CartItem }) {
 							},
 						}}
 					>
-						{isLowStock ? t('cart.lowStock', { count: item.qty }) : t('cart.inStock')}
+						{isLowStock ? t('cart.lowStock', { count: item.stock }) : t('cart.inStock')}
 					</Box>
 				</Box>
 			</Box>

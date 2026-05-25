@@ -1,4 +1,15 @@
 export const ordersTypeDefs = `#graphql
+	enum ReturnRequestStatus {
+		REQUESTED
+		UNDER_REVIEW
+		APPROVED
+		AWAITING_RETURN_SHIPPING
+		RECEIVED
+		REJECTED
+		REFUNDED
+		CLOSED
+	}
+
 	type OrderItem {
 		id: ID!
 		productId: String!
@@ -8,6 +19,7 @@ export const ordersTypeDefs = `#graphql
 		unitPrice: Float!
 		totalPrice: Float!
 		productTitle: String!
+		productMainImage: String
 	}
 
 	type PaymentRecord {
@@ -16,6 +28,8 @@ export const ordersTypeDefs = `#graphql
 		method: PaymentMethod!
 		status: PaymentStatus!
 		transactionId: String
+		cardBrand: String
+		cardLast4: String
 		createdAt: String!
 	}
 
@@ -34,6 +48,23 @@ export const ordersTypeDefs = `#graphql
 		discount: Float!
 	}
 
+	type ReturnRequest {
+		id: ID!
+		orderId: ID!
+		buyerId: ID!
+		sellerId: ID!
+		status: ReturnRequestStatus!
+		reason: String!
+		details: String
+		resolution: String
+		reviewedById: ID
+		reviewedAt: String
+		refundedAt: String
+		closedAt: String
+		createdAt: String!
+		updatedAt: String!
+	}
+
 	type Order {
 		id: ID!
 		status: OrderStatus!
@@ -43,6 +74,7 @@ export const ordersTypeDefs = `#graphql
 		items: [OrderItem!]!
 		payment: PaymentRecord
 		delivery: DeliveryRecord
+		returnRequest: ReturnRequest
 		promoCode: OrderPromoCode
 		createdAt: String!
 		updatedAt: String!
@@ -84,5 +116,6 @@ export const ordersTypeDefs = `#graphql
 		cancelOrder(orderId: ID!): Order!
 		confirmDelivery(orderId: ID!): Order!
 		requestRefund(orderId: ID!): Order!
+		requestReturn(orderId: ID!, reason: String!, details: String): ReturnRequest!
 	}
 `;

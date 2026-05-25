@@ -232,6 +232,16 @@
 			"FAILED": "Помилка",
 			"REFUNDED": "Повернено"
 		},
+		"returnRequest": {
+			"REQUESTED": "Запит створено",
+			"UNDER_REVIEW": "На перевірці",
+			"APPROVED": "Схвалено",
+			"AWAITING_RETURN_SHIPPING": "Очікує відправки товару",
+			"RECEIVED": "Товар отримано продавцем",
+			"REJECTED": "Відхилено",
+			"REFUNDED": "Повернено кошти",
+			"CLOSED": "Закрито"
+		},
 		"delivery": {
 			"PENDING": "Очікує",
 			"PACKED": "Упаковано",
@@ -385,6 +395,7 @@
 		},
 		"contact": {
 			"title": "Контактна інформація",
+			"autofillHint": "Ми підставляємо дані з вашого акаунта і зберігаємо останні дані оформлення локально.",
 			"firstName": "Ім'я",
 			"lastName": "Прізвище",
 			"email": "Електронна пошта",
@@ -395,15 +406,44 @@
 			"courier": "Кур'єр",
 			"branch": "Відділення",
 			"self": "Самовивіз",
+			"branches": {
+				"kyiv001": "Київ, відділення №001 - Хрещатик 12",
+				"lviv014": "Львів, відділення №014 - Шевченка 45",
+				"odesa022": "Одеса, відділення №022 - Дерибасівська 18",
+				"dnipro031": "Дніпро, відділення №031 - Яворницького 8"
+			},
 			"address": "Адреса доставки",
 			"addressPlaceholder": "Вулиця, місто, поштовий індекс",
-			"addressRequired": "Адреса доставки обов'язкова для кур'єрської доставки"
+			"addressRequired": "Адреса доставки обов'язкова для кур'єрської доставки",
+			"novaCourier": "Доставка кур'єром Nova Post",
+			"courierHint": "Доставка до вашої адреси через Nova Post",
+			"novaBranch": "Самовивіз з відділення Nova Post",
+			"branchHint": "Отримайте посилку у відділенні Nova Post",
+			"selfPickup": "Самовивіз",
+			"selfHint": "Заберіть замовлення безпосередньо у продавця",
+			"branchSelect": "Відділення отримання"
 		},
 		"payment": {
 			"title": "Спосіб оплати",
 			"card": "Банківська картка",
 			"cod": "Накладений платіж",
 			"bank": "Банківський переказ",
+			"cash": "Накладений платіж",
+			"cardHint": "Введіть дані картки. У MVP це мокова авторизація.",
+			"cashHint": "Оплата під час отримання у Nova Post або при самовивозі.",
+			"cardMockHint": "Картка перевіряється локально перед моковим оформленням замовлення.",
+			"transactionTitle": "Обробка платежу",
+			"processingValidating": "Перевіряємо дані картки...",
+			"processingAwaiting": "Очікуємо підтвердження банківської транзакції...",
+			"processingCash": "Готуємо підтвердження накладеного платежу...",
+			"processingFinalizing": "Завершуємо замовлення та резервуємо склад...",
+			"cardHolderName": "Ім'я на картці",
+			"cardNumber": "Номер картки",
+			"cardExpiry": "Термін дії",
+			"cardCvv": "CVV",
+			"cardExpiryPlaceholder": "ММ/РР",
+			"cardNumberPlaceholder": "1234 5678 9012 3456",
+			"cardCvvPlaceholder": "123",
 			"notes": "Примітки до замовлення",
 			"notesPlaceholder": "Будь-які особливі інструкції або побажання..."
 		},
@@ -412,16 +452,21 @@
 			"placeholder": "Введіть промокод",
 			"apply": "Застосувати",
 			"applied": "{{code}} застосовано",
-			"remove": "Видалити"
+			"remove": "Видалити",
+			"invalid": "Недійсний або прострочений промокод"
 		},
 		"summary": {
 			"title": "Підсумок замовлення",
 			"items": "{{count}} товарів",
 			"subtotal": "Підсумок",
+			"discountApplied": "Знижка ({{code}})",
 			"discount": "Знижка",
 			"shipping": "Доставка",
 			"shippingCalc": "Розраховується",
-			"total": "Разом"
+			"shippingFree": "Безкоштовно",
+			"total": "Разом",
+			"empty": "Поки не заповнено",
+			"quantityPrice": "{{qty}} × ${{price}}"
 		},
 		"placeOrder": "Оформити замовлення",
 		"back": "Назад",
@@ -435,8 +480,22 @@
 			"continueShopping": "Продовжити покупки"
 		},
 		"errors": {
+			"required": "Це поле обов'язкове",
+			"invalidEmail": "Введіть дійсну електронну пошту",
+			"invalidPhone": "Введіть дійсний номер телефону",
+			"deliveryAddressRequired": "Адреса доставки обов'язкова для кур'єрської доставки",
+			"branchRequired": "Оберіть відділення Nova Post",
+			"cardNumberInvalid": "Введіть дійсний номер картки",
+			"cardExpiryInvalid": "Введіть дійсний термін дії",
+			"cardCvvInvalid": "Введіть дійсний CVV",
+			"notesTooLong": "Примітки до замовлення занадто довгі",
 			"stockUnavailable": "Деякі товари у кошику більше недоступні",
 			"generic": "Не вдалося оформити замовлення. Спробуйте ще раз."
+		},
+		"subtitle": "Перевірте контакти, доставку Nova Post, оплату, промокод і підсумок замовлення на одній сторінці.",
+		"section": {
+			"expand": "Розгорнути",
+			"collapse": "Згорнути"
 		}
 	},
 	"product": {
@@ -536,21 +595,24 @@
 		"viewDetails": "Переглянути"
 	},
 	"orderDetail": {
+		"orderNumberPrefix": "Замовлення №",
 		"backToOrders": "Назад до замовлень",
 		"details": "Деталі",
 		"detailsSub_one": "{{count}} товар",
 		"detailsSub_other": "{{count}} товари",
-		"shipsFrom": "відправляє {{seller}}",
+		"shipsFromSeller": "відправляє продавець",
 		"history": "Історія",
 		"sidebar": {
 			"customer": "Покупець",
 			"seller": "Продавець",
+			"itemCount_one": "{{count}} товар",
+			"itemCount_other": "{{count}} товари",
 			"delivery": "Доставка",
 			"shipping": "Адреса доставки",
 			"payment": "Оплата"
 		},
 		"summary": {
-			"subtotal": "Підсума",
+			"subtotal": "Підсумок",
 			"shipping": "Доставка",
 			"discount": "Знижка ({{code}})",
 			"tax": "Податки",
@@ -568,12 +630,26 @@
 		"delivery": {
 			"shipBy": "Перевізник",
 			"speed": "Швидкість",
-			"tracking": "Трекінг"
+			"standard": "Стандарт",
+			"tracking": "Трекінг",
+			"methods": {
+				"courier": "Кур'єр",
+				"branchPickup": "Відділення",
+				"selfPickup": "Самовивіз"
+			}
+		},
+		"payment": {
+			"methods": {
+				"card": "Картка",
+				"cashOnDelivery": "Накладений платіж",
+				"bankTransfer": "Банківський переказ"
+			}
 		},
 		"actions": {
 			"cancel": "Скасувати замовлення",
 			"confirmDelivery": "Підтвердити отримання",
 			"requestRefund": "Запросити повернення",
+			"requestReturn": "Запросити повернення товару",
 			"print": "Друк"
 		},
 		"cancelConfirm": {
@@ -587,6 +663,12 @@
 		"refundConfirm": {
 			"title": "Запросити повернення?",
 			"message": "Буде подано запит на повернення коштів за це замовлення."
+		},
+		"returnConfirm": {
+			"title": "Запросити повернення товару?",
+			"reasonLabel": "Причина повернення",
+			"reasonPlaceholder": "Опишіть брак, проблему або іншу причину повернення",
+			"submit": "Надіслати запит на повернення"
 		},
 		"qty": "×{{count}}",
 		"sku": "Артикул"

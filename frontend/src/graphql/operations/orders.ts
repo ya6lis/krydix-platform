@@ -17,6 +17,7 @@ const ORDER_FIELDS = `
 		unitPrice
 		totalPrice
 		productTitle
+		productMainImage
 	}
 	payment {
 		id
@@ -24,6 +25,8 @@ const ORDER_FIELDS = `
 		method
 		status
 		transactionId
+		cardBrand
+		cardLast4
 		createdAt
 	}
 	delivery {
@@ -33,6 +36,22 @@ const ORDER_FIELDS = `
 		address
 		trackingCode
 		createdAt
+	}
+	returnRequest {
+		id
+		orderId
+		buyerId
+		sellerId
+		status
+		reason
+		details
+		resolution
+		reviewedById
+		reviewedAt
+		refundedAt
+		closedAt
+		createdAt
+		updatedAt
 	}
 	promoCode {
 		id
@@ -96,6 +115,27 @@ export const REQUEST_REFUND_MUTATION = gql`
 	mutation RequestRefund($orderId: ID!) {
 		requestRefund(orderId: $orderId) {
 			${ORDER_FIELDS}
+		}
+	}
+`;
+
+export const REQUEST_RETURN_MUTATION = gql`
+	mutation RequestReturn($orderId: ID!, $reason: String!, $details: String) {
+		requestReturn(orderId: $orderId, reason: $reason, details: $details) {
+			id
+			orderId
+			buyerId
+			sellerId
+			status
+			reason
+			details
+			resolution
+			reviewedById
+			reviewedAt
+			refundedAt
+			closedAt
+			createdAt
+			updatedAt
 		}
 	}
 `;

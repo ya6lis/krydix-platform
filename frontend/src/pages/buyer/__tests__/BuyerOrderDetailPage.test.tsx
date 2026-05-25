@@ -8,6 +8,7 @@ import {
 	MY_ORDERS_QUERY,
 	MY_ORDER_STATS_QUERY,
 	CANCEL_ORDER_MUTATION,
+	REQUEST_RETURN_MUTATION,
 } from '@/graphql/operations/orders';
 import type { Order } from '@/types/orders';
 
@@ -25,8 +26,9 @@ jest.mock('@fortawesome/react-fontawesome', () => ({
 // ── fixtures ──────────────────────────────────────────────────────────────────
 const ORDER_ID = 'abc123def456';
 
-function makeOrder(status: string = 'PENDING'): Order {
+function makeOrder(status: string = 'PENDING', overrides: Partial<Order> = {}): Order {
 	return {
+		__typename: 'Order',
 		id: ORDER_ID,
 		status: status as Order['status'],
 		totalAmount: 268.0,
@@ -36,6 +38,7 @@ function makeOrder(status: string = 'PENDING'): Order {
 		updatedAt: '2026-05-02T12:00:00.000Z',
 		items: [
 			{
+				__typename: 'OrderItem',
 				id: 'item-1',
 				productId: 'p1',
 				variantId: 'v1',
@@ -44,17 +47,23 @@ function makeOrder(status: string = 'PENDING'): Order {
 				unitPrice: 144,
 				totalPrice: 288,
 				productTitle: 'Heritage Field Jacket',
+				productMainImage: 'https://example.com/images/p1-main.jpg',
 			},
 		],
 		payment: {
+			__typename: 'Payment',
 			id: 'pay-1',
 			amount: 268,
 			method: 'CARD',
 			status: 'PAID',
 			transactionId: 'txn-001',
+			cardBrand: 'Mastercard',
+			cardLast4: '4242',
 			createdAt: '2026-05-01T10:05:00.000Z',
 		},
+		returnRequest: null,
 		delivery: {
+			__typename: 'Delivery',
 			id: 'del-1',
 			method: 'COURIER',
 			status: 'IN_TRANSIT',
@@ -63,6 +72,7 @@ function makeOrder(status: string = 'PENDING'): Order {
 			createdAt: '2026-05-01T11:00:00.000Z',
 		},
 		promoCode: null,
+		...overrides,
 	};
 }
 
@@ -75,18 +85,35 @@ function makeOrderMock(order: Order | null, id: string = ORDER_ID): MockedRespon
 
 const statsMock: MockedResponse = {
 	request: { query: MY_ORDER_STATS_QUERY, variables: {} },
-	result: { data: { myOrderStats: { all: 5, pending: 1, completed: 3, refunded: 1 } } },
+	result: {
+		data: {
+			myOrderStats: {
+				__typename: 'OrderStats',
+				all: 5,
+				pending: 1,
+				confirmed: 3,
+				shipped: 0,
+				delivered: 1,
+				cancelled: 0,
+				refunded: 1,
+			},
+		},
+	},
 };
 
 const ordersMock: MockedResponse = {
 	request: { query: MY_ORDERS_QUERY, variables: {} },
-	result: { data: { myOrders: { items: [], total: 0, page: 1, pageSize: 8 } } },
+	result: {
+		data: {
+			myOrders: { __typename: 'OrderConnection', items: [], total: 0, page: 1, pageSize: 8 },
+		},
+	},
 };
 
 function renderPage(mocks: MockedResponse[], id: string = ORDER_ID) {
 	return render(
 		<AppToastProvider>
-			<MockedProvider mocks={mocks} addTypename={false}>
+			<MockedProvider mocks={mocks}>
 				<MemoryRouter initialEntries={[`/account/orders/${id}`]}>
 					<Routes>
 						<Route path="/account/orders/:id" element={<BuyerOrderDetailPage />} />
@@ -219,6 +246,13 @@ describe('BuyerOrderDetailPage — action buttons visibility', () => {
 			expect(screen.queryByText('orderDetail.actions.requestRefund')).not.toBeInTheDocument();
 		});
 	});
+
+	it('shows Request Return button for DELIVERED order', async () => {
+		renderPage([makeOrderMock(makeOrder('DELIVERED'))]);
+		await waitFor(() => {
+			expect(screen.getByText('orderDetail.actions.requestReturn')).toBeInTheDocument();
+		});
+	});
 });
 
 describe('BuyerOrderDetailPage — confirm dialogs', () => {
@@ -262,6 +296,84 @@ describe('BuyerOrderDetailPage — confirm dialogs', () => {
 		fireEvent.click(screen.getByText('orderDetail.actions.requestRefund'));
 		await waitFor(() => {
 			expect(screen.getByText('orderDetail.refundConfirm.title')).toBeInTheDocument();
+		});
+	});
+
+	it('opens return dialog when Request Return button clicked', async () => {
+		renderPage([makeOrderMock(makeOrder('DELIVERED'))]);
+		await waitFor(() => screen.getByText('orderDetail.actions.requestReturn'));
+		fireEvent.click(screen.getByText('orderDetail.actions.requestReturn'));
+		await waitFor(() => {
+			expect(screen.getByText('orderDetail.returnConfirm.title')).toBeInTheDocument();
+		});
+	});
+
+	it('submits return request with reason', async () => {
+		const requestReturnMock: MockedResponse = {
+			request: {
+				query: REQUEST_RETURN_MUTATION,
+				variables: {
+					orderId: ORDER_ID,
+					reason: 'Broken zipper on arrival',
+					details: 'Broken zipper on arrival',
+				},
+			},
+			result: {
+				data: {
+					requestReturn: {
+						__typename: 'ReturnRequest',
+						id: 'rr-1',
+						orderId: ORDER_ID,
+						buyerId: 'buyer-1',
+						sellerId: 'seller-1',
+						status: 'REQUESTED',
+						reason: 'Broken zipper on arrival',
+						details: 'Broken zipper on arrival',
+						resolution: null,
+						reviewedById: null,
+						reviewedAt: null,
+						refundedAt: null,
+						closedAt: null,
+						createdAt: '2026-05-02T12:00:00.000Z',
+						updatedAt: '2026-05-02T12:00:00.000Z',
+					},
+				},
+			},
+		};
+		renderPage([
+			makeOrderMock(makeOrder('DELIVERED')),
+			requestReturnMock,
+			makeOrderMock(
+				makeOrder('DELIVERED', {
+					returnRequest: {
+						__typename: 'ReturnRequest',
+						id: 'rr-1',
+						orderId: ORDER_ID,
+						buyerId: 'buyer-1',
+						sellerId: 'seller-1',
+						status: 'REQUESTED',
+						reason: 'Broken zipper on arrival',
+						details: 'Broken zipper on arrival',
+						resolution: null,
+						reviewedById: null,
+						reviewedAt: null,
+						refundedAt: null,
+						closedAt: null,
+						createdAt: '2026-05-02T12:00:00.000Z',
+						updatedAt: '2026-05-02T12:00:00.000Z',
+					},
+				})
+			),
+		]);
+		await waitFor(() => screen.getByText('orderDetail.actions.requestReturn'));
+		fireEvent.click(screen.getByText('orderDetail.actions.requestReturn'));
+		await waitFor(() => screen.getByText('orderDetail.returnConfirm.title'));
+		fireEvent.change(screen.getByLabelText('orderDetail.returnConfirm.reasonLabel'), {
+			target: { value: 'Broken zipper on arrival' },
+		});
+		fireEvent.click(screen.getByText('orderDetail.returnConfirm.submit'));
+		await waitFor(() => {
+			expect(screen.getByText('status.returnRequest.REQUESTED')).toBeInTheDocument();
 		});
 	});
 });

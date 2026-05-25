@@ -1,530 +1,196 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
-import { useForm, Controller } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import {
-	Box,
-	Typography,
-	Radio,
-	RadioGroup,
-	FormControlLabel,
-	Stepper,
-	Step,
-	StepLabel,
-	Divider,
-} from '@mui/material';
+import { Box, Collapse, Divider, Stack, Typography } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { AppButton, AppInput, AppTextarea } from '@/components/ui';
+import { AppButton, AppCard, AppInput, AppRadio, AppSelect, AppTextarea } from '@/components/ui';
 import { APPLY_PROMO_CODE_MUTATION, CREATE_ORDER_MUTATION } from '@/graphql/operations/cart';
+import { useAuthStore } from '@/store/authStore';
 import { useCartStore } from '@/store/cartStore';
+import { DeliveryMethod, PaymentMethod } from '@/constants/enums';
 import { Icons } from '@/constants/icons';
 import { ROUTES } from '@/constants/routes';
 import { tokens } from '@/theme';
-import { DeliveryMethod, PaymentMethod } from '@/constants/enums';
 import type { OrderOut, PromoValidationResult } from '@/types/cart';
+import {
+	computeCheckoutTotal,
+	computeShippingAmount,
+	getCheckoutContactDefaults,
+	isValidCardCvv,
+	isValidCardExpiry,
+	isValidCardNumber,
+	NOVA_POST_BRANCHES,
+	readCheckoutContactDraft,
+	saveCheckoutContactDraft,
+} from './checkoutUtils';
 
-// ─── Step schemas ─────────────────────────────────────────────────────────────
-
-const contactSchema = z.object({
-	firstName: z.string().min(1, 'Required'),
-	lastName: z.string().min(1, 'Required'),
-	email: z.string().email('Invalid email'),
-	phone: z.string().min(7, 'Invalid phone'),
-});
-type ContactForm = z.infer<typeof contactSchema>;
-
-const deliverySchema = z
+const checkoutSchema = z
 	.object({
+		firstName: z.string().trim().min(1, 'checkout.errors.required'),
+		lastName: z.string().trim().min(1, 'checkout.errors.required'),
+		email: z.string().trim().email('checkout.errors.invalidEmail'),
+		phone: z.string().trim().min(7, 'checkout.errors.invalidPhone'),
 		deliveryMethod: z.nativeEnum(DeliveryMethod),
-		deliveryAddress: z.string().optional(),
+		deliveryAddress: z.string().trim().optional(),
+		branchPickupPoint: z.string().trim().optional(),
+		paymentMethod: z.nativeEnum(PaymentMethod),
+		cardHolderName: z.string().trim().optional(),
+		cardNumber: z.string().trim().optional(),
+		cardExpiry: z.string().trim().optional(),
+		cardCvv: z.string().trim().optional(),
+		notes: z.string().max(1000, 'checkout.errors.notesTooLong').optional(),
 	})
-	.refine(
-		(d) =>
-			d.deliveryMethod !== DeliveryMethod.COURIER ||
-			(!!d.deliveryAddress && d.deliveryAddress.trim().length > 0),
-		{ message: 'Delivery address is required', path: ['deliveryAddress'] }
-	);
-type DeliveryForm = z.infer<typeof deliverySchema>;
-
-const paymentSchema = z.object({
-	paymentMethod: z.nativeEnum(PaymentMethod),
-	notes: z.string().max(1000).optional(),
-});
-type PaymentForm = z.infer<typeof paymentSchema>;
-
-// ─── Step 1: Contact ──────────────────────────────────────────────────────────
-
-function ContactStep({
-	onNext,
-	defaultValues,
-}: {
-	onNext: (data: ContactForm) => void;
-	defaultValues?: ContactForm | null;
-}) {
-	const { t } = useTranslation();
-	const {
-		control,
-		handleSubmit,
-		formState: { errors },
-	} = useForm<ContactForm>({
-		resolver: zodResolver(contactSchema),
-		defaultValues: defaultValues ?? {
-			firstName: '',
-			lastName: '',
-			email: '',
-			phone: '',
-		},
-	});
-
-	return (
-		<Box component="form" onSubmit={handleSubmit(onNext)} noValidate>
-			<Typography sx={{ fontWeight: 700, fontSize: 16, mb: 3 }}>
-				{t('checkout.contact.title')}
-			</Typography>
-			<Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
-				<Controller
-					name="firstName"
-					control={control}
-					render={({ field }) => (
-						<AppInput
-							{...field}
-							label={t('checkout.contact.firstName')}
-							error={!!errors.firstName}
-							helperText={errors.firstName?.message}
-						/>
-					)}
-				/>
-				<Controller
-					name="lastName"
-					control={control}
-					render={({ field }) => (
-						<AppInput
-							{...field}
-							label={t('checkout.contact.lastName')}
-							error={!!errors.lastName}
-							helperText={errors.lastName?.message}
-						/>
-					)}
-				/>
-			</Box>
-			<Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 3 }}>
-				<Controller
-					name="email"
-					control={control}
-					render={({ field }) => (
-						<AppInput
-							{...field}
-							label={t('checkout.contact.email')}
-							type="email"
-							error={!!errors.email}
-							helperText={errors.email?.message}
-						/>
-					)}
-				/>
-				<Controller
-					name="phone"
-					control={control}
-					render={({ field }) => (
-						<AppInput
-							{...field}
-							label={t('checkout.contact.phone')}
-							type="tel"
-							error={!!errors.phone}
-							helperText={errors.phone?.message}
-						/>
-					)}
-				/>
-			</Box>
-			<AppButton
-				tone="primary"
-				type="submit"
-				endIcon={<FontAwesomeIcon icon={Icons.arrowRight} size="xs" />}
-			>
-				{t('checkout.next')}
-			</AppButton>
-		</Box>
-	);
-}
-
-// ─── Step 2: Delivery ─────────────────────────────────────────────────────────
-
-function DeliveryStep({
-	onNext,
-	onBack,
-	defaultValues,
-}: {
-	onNext: (data: DeliveryForm) => void;
-	onBack: () => void;
-	defaultValues?: DeliveryForm | null;
-}) {
-	const { t } = useTranslation();
-	const {
-		control,
-		handleSubmit,
-		watch,
-		formState: { errors },
-	} = useForm<DeliveryForm>({
-		resolver: zodResolver(deliverySchema),
-		defaultValues: defaultValues ?? { deliveryMethod: DeliveryMethod.COURIER, deliveryAddress: '' },
-	});
-	const method = watch('deliveryMethod');
-
-	return (
-		<Box component="form" onSubmit={handleSubmit(onNext)} noValidate>
-			<Typography sx={{ fontWeight: 700, fontSize: 16, mb: 3 }}>
-				{t('checkout.delivery.title')}
-			</Typography>
-
-			<Controller
-				name="deliveryMethod"
-				control={control}
-				render={({ field }) => (
-					<RadioGroup
-						{...field}
-						sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 1.5, mb: 3 }}
-					>
-						{[
-							{
-								value: DeliveryMethod.COURIER,
-								label: t('checkout.delivery.courier'),
-								icon: Icons.truck,
-							},
-							{
-								value: DeliveryMethod.BRANCH_PICKUP,
-								label: t('checkout.delivery.branch'),
-								icon: Icons.location,
-							},
-							{
-								value: DeliveryMethod.SELF_PICKUP,
-								label: t('checkout.delivery.self'),
-								icon: Icons.user,
-							},
-						].map(({ value, label, icon }) => (
-							<Box
-								key={value}
-								onClick={() => field.onChange(value)}
-								sx={{
-									display: 'flex',
-									alignItems: 'center',
-									gap: '10px',
-									p: '10px 12px',
-									border: `1px solid ${field.value === value ? tokens.accent : tokens.line}`,
-									borderRadius: '10px',
-									cursor: 'pointer',
-									bgcolor: field.value === value ? tokens.accentSoft : tokens.surface,
-									transition: 'all 100ms',
-								}}
-							>
-								<Radio
-									value={value}
-									sx={{ p: 0, color: tokens.ink3, '&.Mui-checked': { color: tokens.accent } }}
-								/>
-								<Box sx={{ color: field.value === value ? tokens.accentInk : tokens.ink3 }}>
-									<FontAwesomeIcon icon={icon} size="sm" />
-								</Box>
-								<Typography
-									sx={{
-										fontWeight: 700,
-										fontSize: 13,
-										color: field.value === value ? tokens.accentInk : tokens.ink1,
-									}}
-								>
-									{label}
-								</Typography>
-							</Box>
-						))}
-					</RadioGroup>
-				)}
-			/>
-
-			{method === DeliveryMethod.COURIER && (
-				<Controller
-					name="deliveryAddress"
-					control={control}
-					render={({ field }) => (
-						<AppInput
-							{...field}
-							label={t('checkout.delivery.address')}
-							placeholder={t('checkout.delivery.addressPlaceholder')}
-							error={!!errors.deliveryAddress}
-							helperText={errors.deliveryAddress?.message}
-							sx={{ mb: 3 }}
-						/>
-					)}
-				/>
-			)}
-
-			<Box sx={{ display: 'flex', gap: 1.5 }}>
-				<AppButton
-					tone="ghost"
-					onClick={onBack}
-					startIcon={<FontAwesomeIcon icon={Icons.chevronLeft} size="xs" />}
-				>
-					{t('checkout.back')}
-				</AppButton>
-				<AppButton
-					tone="primary"
-					type="submit"
-					endIcon={<FontAwesomeIcon icon={Icons.arrowRight} size="xs" />}
-				>
-					{t('checkout.next')}
-				</AppButton>
-			</Box>
-		</Box>
-	);
-}
-
-// ─── Step 3: Payment ──────────────────────────────────────────────────────────
-
-function PaymentStep({
-	onSubmit,
-	onBack,
-	submitting,
-	error,
-}: {
-	onSubmit: (data: PaymentForm, promoCode: string | null) => void;
-	onBack: () => void;
-	submitting: boolean;
-	error: string | null;
-}) {
-	const { t } = useTranslation();
-	const { control, handleSubmit } = useForm<PaymentForm>({
-		resolver: zodResolver(paymentSchema),
-		defaultValues: { paymentMethod: PaymentMethod.CARD },
-	});
-
-	const subtotal = useCartStore((s) => s.subtotal)();
-	const storePromo = useCartStore((s) => s.promoCode);
-
-	const [promoInput, setPromoInput] = useState('');
-	const [promoCode, setPromoCode] = useState<string | null>(storePromo);
-	const [promoDiscount, setPromoDiscount] = useState(0);
-	const [promoError, setPromoError] = useState<string | null>(null);
-	const [applyPromo, { loading: promoLoading }] = useMutation<{
-		applyPromoCode: PromoValidationResult;
-	}>(APPLY_PROMO_CODE_MUTATION);
-
-	const handleApplyPromo = async () => {
-		if (!promoInput.trim()) return;
-		setPromoError(null);
-		try {
-			const { data } = await applyPromo({ variables: { code: promoInput.trim().toUpperCase() } });
-			const result = data?.applyPromoCode;
-			if (result?.valid) {
-				setPromoCode(promoInput.trim().toUpperCase());
-				setPromoDiscount(result.discount);
-				setPromoInput('');
-			} else {
-				setPromoError(result?.message ?? t('cart.promo.invalid'));
-			}
-		} catch {
-			setPromoError(t('cart.promo.invalid'));
+	.superRefine((values, context) => {
+		if (values.deliveryMethod === DeliveryMethod.COURIER && !values.deliveryAddress?.trim()) {
+			context.addIssue({
+				code: z.ZodIssueCode.custom,
+				path: ['deliveryAddress'],
+				message: 'checkout.errors.deliveryAddressRequired',
+			});
 		}
-	};
 
-	const total = Math.max(0, subtotal - promoDiscount);
+		if (
+			values.deliveryMethod === DeliveryMethod.BRANCH_PICKUP &&
+			!values.branchPickupPoint?.trim()
+		) {
+			context.addIssue({
+				code: z.ZodIssueCode.custom,
+				path: ['branchPickupPoint'],
+				message: 'checkout.errors.branchRequired',
+			});
+		}
+
+		if (values.paymentMethod === PaymentMethod.CARD) {
+			if (!values.cardHolderName?.trim()) {
+				context.addIssue({
+					code: z.ZodIssueCode.custom,
+					path: ['cardHolderName'],
+					message: 'checkout.errors.required',
+				});
+			}
+
+			if (!values.cardNumber?.trim() || !isValidCardNumber(values.cardNumber)) {
+				context.addIssue({
+					code: z.ZodIssueCode.custom,
+					path: ['cardNumber'],
+					message: 'checkout.errors.cardNumberInvalid',
+				});
+			}
+
+			if (!values.cardExpiry?.trim() || !isValidCardExpiry(values.cardExpiry)) {
+				context.addIssue({
+					code: z.ZodIssueCode.custom,
+					path: ['cardExpiry'],
+					message: 'checkout.errors.cardExpiryInvalid',
+				});
+			}
+
+			if (!values.cardCvv?.trim() || !isValidCardCvv(values.cardCvv)) {
+				context.addIssue({
+					code: z.ZodIssueCode.custom,
+					path: ['cardCvv'],
+					message: 'checkout.errors.cardCvvInvalid',
+				});
+			}
+		}
+	});
+
+type CheckoutForm = z.infer<typeof checkoutSchema>;
+
+type PaymentStage = 'idle' | 'validating' | 'awaiting' | 'finalizing';
+
+function normalizeDigits(value: string) {
+	return value.replace(/\D/g, '');
+}
+
+function wait(ms: number) {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function toFieldMessage(
+	message: string | undefined,
+	t: (key: string, options?: Record<string, unknown>) => string
+) {
+	return message ? t(message) : undefined;
+}
+
+function getBranchLabel(value: string, t: (key: string) => string) {
+	const branch = NOVA_POST_BRANCHES.find((item) => item.value === value);
+	return branch ? t(branch.labelKey) : t('checkout.summary.empty');
+}
+
+function summarizeContact(values: CheckoutForm, t: (key: string) => string) {
+	const pieces = [values.firstName, values.lastName, values.email].filter(Boolean);
+	return pieces.length > 0 ? pieces.join(' · ') : t('checkout.summary.empty');
+}
+
+function summarizeDelivery(values: CheckoutForm, t: (key: string) => string) {
+	if (values.deliveryMethod === DeliveryMethod.COURIER) {
+		return values.deliveryAddress?.trim()
+			? values.deliveryAddress.trim()
+			: t('checkout.summary.empty');
+	}
+
+	if (values.deliveryMethod === DeliveryMethod.BRANCH_PICKUP) {
+		return values.branchPickupPoint?.trim()
+			? getBranchLabel(values.branchPickupPoint, t)
+			: t('checkout.summary.empty');
+	}
+
+	return t('checkout.delivery.selfPickup');
+}
+
+function summarizePayment(values: CheckoutForm, t: (key: string) => string) {
+	if (values.paymentMethod === PaymentMethod.CASH_ON_DELIVERY) {
+		return t('checkout.payment.cash');
+	}
+
+	const last4 = normalizeDigits(values.cardNumber ?? '').slice(-4);
+	return last4 ? `${t('checkout.payment.card')} · **** ${last4}` : t('checkout.payment.card');
+}
+
+function CheckoutSectionCard({
+	title,
+	subtitle,
+	expanded,
+	onToggle,
+	children,
+}: {
+	title: string;
+	subtitle?: string;
+	expanded: boolean;
+	onToggle: () => void;
+	children: ReactNode;
+}) {
+	const { t } = useTranslation();
 
 	return (
-		<Box component="form" onSubmit={handleSubmit((d) => onSubmit(d, promoCode))} noValidate>
-			<Typography sx={{ fontWeight: 700, fontSize: 16, mb: 2 }}>
-				{t('checkout.payment.title')}
-			</Typography>
-
-			<Controller
-				name="paymentMethod"
-				control={control}
-				render={({ field }) => (
-					<RadioGroup {...field} sx={{ mb: 3 }}>
-						{[
-							{ value: PaymentMethod.CARD, label: t('checkout.payment.card') },
-							{ value: PaymentMethod.CASH_ON_DELIVERY, label: t('checkout.payment.cod') },
-							{ value: PaymentMethod.BANK_TRANSFER, label: t('checkout.payment.bank') },
-						].map(({ value, label }) => (
-							<FormControlLabel
-								key={value}
-								value={value}
-								control={
-									<Radio sx={{ color: tokens.ink3, '&.Mui-checked': { color: tokens.accent } }} />
-								}
-								label={<Typography sx={{ fontSize: 14, fontWeight: 600 }}>{label}</Typography>}
-								sx={{
-									border: `1px solid ${field.value === value ? tokens.accent : tokens.line}`,
-									borderRadius: '10px',
-									mx: 0,
-									mb: 1,
-									px: 1.5,
-									py: 0.5,
-									bgcolor: field.value === value ? tokens.accentSoft : tokens.surface,
-								}}
-							/>
-						))}
-					</RadioGroup>
-				)}
-			/>
-
-			{/* Promo code */}
-			<Box sx={{ mb: 3 }}>
-				<Typography
-					sx={{
-						fontSize: 12,
-						fontWeight: 700,
-						letterSpacing: '0.08em',
-						textTransform: 'uppercase',
-						color: tokens.ink3,
-						mb: 1,
-					}}
-				>
-					{t('checkout.promo.label')}
-				</Typography>
-				{promoCode ? (
-					<Box
-						sx={{
-							display: 'flex',
-							alignItems: 'center',
-							gap: 1,
-							bgcolor: tokens.accentSoft,
-							px: 2,
-							py: 1.5,
-							borderRadius: '10px',
-						}}
-					>
-						<FontAwesomeIcon icon={Icons.check} size="sm" color={tokens.accentInk} />
-						<Typography sx={{ fontSize: 13, fontWeight: 700, color: tokens.accentInk, flex: 1 }}>
-							{t('checkout.promo.applied', { code: promoCode })}
-						</Typography>
-						<AppButton
-							tone="ghost"
-							size="small"
-							onClick={() => {
-								setPromoCode(null);
-								setPromoDiscount(0);
-							}}
-							sx={{ minWidth: 'auto', fontSize: 12 }}
-						>
-							{t('checkout.promo.remove')}
-						</AppButton>
-					</Box>
-				) : (
-					<Box sx={{ display: 'flex', gap: 1 }}>
-						<AppInput
-							size="small"
-							value={promoInput}
-							onChange={(e) => setPromoInput(e.target.value)}
-							placeholder={t('checkout.promo.placeholder')}
-							error={!!promoError}
-							helperText={promoError ?? undefined}
-							onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleApplyPromo())}
-							fullWidth={false}
-							sx={{ flex: 1 }}
-						/>
-						<AppButton
-							tone="ghost"
-							size="small"
-							onClick={handleApplyPromo}
-							loading={promoLoading}
-							sx={{ px: 2, whiteSpace: 'nowrap' }}
-						>
-							{t('checkout.promo.apply')}
-						</AppButton>
-					</Box>
-				)}
-			</Box>
-
-			{/* Notes */}
-			<Controller
-				name="notes"
-				control={control}
-				defaultValue=""
-				render={({ field }) => (
-					<AppTextarea
-						{...field}
-						label={t('checkout.payment.notes')}
-						placeholder={t('checkout.payment.notesPlaceholder')}
-						rows={3}
-						sx={{ mb: 3 }}
-					/>
-				)}
-			/>
-
-			{/* Mini summary */}
-			<Box
-				sx={{
-					bgcolor: tokens.bg,
-					border: `1px solid ${tokens.line}`,
-					borderRadius: '10px',
-					p: 2,
-					mb: 3,
-				}}
-			>
-				<Typography sx={{ fontWeight: 700, fontSize: 14, mb: 1.5 }}>
-					{t('checkout.summary.title')}
-				</Typography>
-				<Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-					<Typography sx={{ fontSize: 13, color: tokens.ink3 }}>
-						{t('checkout.summary.subtotal')}
-					</Typography>
-					<Typography sx={{ fontSize: 13, fontWeight: 600 }}>${subtotal.toFixed(2)}</Typography>
-				</Box>
-				{promoDiscount > 0 && (
-					<Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-						<Typography sx={{ fontSize: 13, color: tokens.ink3 }}>
-							{t('checkout.summary.discount')}
-						</Typography>
-						<Typography sx={{ fontSize: 13, fontWeight: 600, color: tokens.coralInk }}>
-							−${promoDiscount.toFixed(2)}
-						</Typography>
-					</Box>
-				)}
-				<Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-					<Typography sx={{ fontSize: 13, color: tokens.ink3 }}>
-						{t('checkout.summary.shipping')}
-					</Typography>
-					<Typography sx={{ fontSize: 13, color: tokens.ink3 }}>
-						{t('checkout.summary.shippingCalc')}
-					</Typography>
-				</Box>
-				<Divider sx={{ my: 1 }} />
-				<Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-					<Typography sx={{ fontSize: 15, fontWeight: 700 }}>
-						{t('checkout.summary.total')}
-					</Typography>
-					<Typography sx={{ fontSize: 18, fontWeight: 800, letterSpacing: '-0.02em' }}>
-						${total.toFixed(2)}
-					</Typography>
-				</Box>
-			</Box>
-
-			{error && (
-				<Typography sx={{ fontSize: 13, color: tokens.coralInk, mb: 2 }}>{error}</Typography>
-			)}
-
-			<Box sx={{ display: 'flex', gap: 1.5 }}>
+		<AppCard
+			title={title}
+			subtitle={subtitle}
+			headerAction={
 				<AppButton
 					tone="ghost"
-					onClick={onBack}
-					startIcon={<FontAwesomeIcon icon={Icons.chevronLeft} size="xs" />}
+					size="small"
+					onClick={onToggle}
+					endIcon={<FontAwesomeIcon icon={expanded ? Icons.angleUp : Icons.angleDown} size="xs" />}
 				>
-					{t('checkout.back')}
+					{expanded ? t('checkout.section.collapse') : t('checkout.section.expand')}
 				</AppButton>
-				<AppButton
-					tone="accent"
-					type="submit"
-					loading={submitting}
-					endIcon={!submitting ? <FontAwesomeIcon icon={Icons.check} size="xs" /> : undefined}
-				>
-					{submitting ? t('checkout.processing') : t('checkout.placeOrder')}
-				</AppButton>
-			</Box>
-		</Box>
+			}
+		>
+			<Collapse in={expanded} timeout="auto" unmountOnExit>
+				{children}
+			</Collapse>
+		</AppCard>
 	);
 }
 
-// ─── Step 4: Confirmation ─────────────────────────────────────────────────────
-
-function ConfirmationStep({ order }: { order: OrderOut }) {
+function CheckoutConfirmation({ order }: { order: OrderOut }) {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 
@@ -598,121 +264,665 @@ function ConfirmationStep({ order }: { order: OrderOut }) {
 	);
 }
 
-// ─── CheckoutPage ─────────────────────────────────────────────────────────────
-
-type StepData = {
-	contact: ContactForm | null;
-	delivery: DeliveryForm | null;
-};
-
 export default function CheckoutPage() {
 	const { t } = useTranslation();
-	const [activeStep, setActiveStep] = useState(0);
-	const [stepData, setStepData] = useState<StepData>({ contact: null, delivery: null });
+	const user = useAuthStore((state) => state.user);
+	const cartItems = useCartStore((state) => state.items);
+	const subtotal = useCartStore((state) => state.subtotal());
+	const clearCart = useCartStore((state) => state.clearCart);
+	const setPromoCodeInStore = useCartStore((state) => state.setPromoCode);
 	const [confirmedOrder, setConfirmedOrder] = useState<OrderOut | null>(null);
 	const [submitError, setSubmitError] = useState<string | null>(null);
-
-	const cartItems = useCartStore((s) => s.items);
-	const clearCart = useCartStore((s) => s.clearCart);
+	const [promoInput, setPromoInput] = useState('');
+	const [appliedPromoCode, setAppliedPromoCode] = useState<string | null>(null);
+	const [promoDiscount, setPromoDiscount] = useState(0);
+	const [promoError, setPromoError] = useState<string | null>(null);
+	const [sections, setSections] = useState({ contact: true, delivery: true, payment: true });
+	const [paymentStage, setPaymentStage] = useState<PaymentStage>('idle');
 
 	const [createOrder, { loading: submitting }] = useMutation<{ createOrder: OrderOut }>(
 		CREATE_ORDER_MUTATION
 	);
+	const [applyPromo, { loading: promoLoading }] = useMutation<{
+		applyPromoCode: PromoValidationResult;
+	}>(APPLY_PROMO_CODE_MUTATION);
 
-	const steps = [
-		t('checkout.step.contact'),
-		t('checkout.step.delivery'),
-		t('checkout.step.payment'),
-	];
+	const contactDefaults = getCheckoutContactDefaults(user, readCheckoutContactDraft());
 
-	const handleContact = (data: ContactForm) => {
-		setStepData((p) => ({ ...p, contact: data }));
-		setActiveStep(1);
-	};
+	const form = useForm<CheckoutForm>({
+		resolver: zodResolver(checkoutSchema),
+		defaultValues: {
+			...contactDefaults,
+			deliveryMethod: DeliveryMethod.COURIER,
+			deliveryAddress: '',
+			branchPickupPoint: NOVA_POST_BRANCHES[0].value,
+			paymentMethod: PaymentMethod.CARD,
+			cardHolderName: [contactDefaults.firstName, contactDefaults.lastName]
+				.filter(Boolean)
+				.join(' '),
+			cardNumber: '',
+			cardExpiry: '',
+			cardCvv: '',
+			notes: '',
+		},
+	});
 
-	const handleDelivery = (data: DeliveryForm) => {
-		setStepData((p) => ({ ...p, delivery: data }));
-		setActiveStep(2);
-	};
+	const {
+		register,
+		handleSubmit,
+		watch,
+		control,
+		resetField,
+		formState: { errors },
+	} = form;
 
-	const handlePayment = async (data: PaymentForm, promoCode: string | null) => {
-		setSubmitError(null);
+	const watchedFirstName = watch('firstName');
+	const watchedLastName = watch('lastName');
+	const watchedEmail = watch('email');
+	const watchedPhone = watch('phone');
+	const watchedDeliveryMethod = watch('deliveryMethod');
+	const watchedDeliveryAddress = watch('deliveryAddress');
+	const watchedBranchPickupPoint = watch('branchPickupPoint');
+	const watchedPaymentMethod = watch('paymentMethod');
+	const watchedCardNumber = watch('cardNumber');
+
+	useEffect(() => {
+		if (watchedFirstName || watchedLastName || watchedEmail || watchedPhone) {
+			saveCheckoutContactDraft({
+				firstName: watchedFirstName ?? '',
+				lastName: watchedLastName ?? '',
+				email: watchedEmail ?? '',
+				phone: watchedPhone ?? '',
+			});
+		}
+	}, [watchedEmail, watchedFirstName, watchedLastName, watchedPhone]);
+
+	useEffect(() => {
+		if (watchedDeliveryMethod !== DeliveryMethod.COURIER) {
+			resetField('deliveryAddress', { defaultValue: '' });
+		}
+		if (watchedDeliveryMethod !== DeliveryMethod.BRANCH_PICKUP) {
+			resetField('branchPickupPoint', { defaultValue: NOVA_POST_BRANCHES[0].value });
+		}
+	}, [resetField, watchedDeliveryMethod]);
+
+	const shipping = computeShippingAmount(watchedDeliveryMethod, subtotal);
+	const total = computeCheckoutTotal(subtotal, shipping, promoDiscount);
+
+	const branchLabel = useMemo(() => {
+		const branch = NOVA_POST_BRANCHES.find((item) => item.value === watchedBranchPickupPoint);
+		return branch ? t(branch.labelKey) : t('checkout.summary.empty');
+	}, [t, watchedBranchPickupPoint]);
+
+	const contactSummary = useMemo(
+		() =>
+			summarizeContact(
+				{
+					...form.getValues(),
+					firstName: watchedFirstName,
+					lastName: watchedLastName,
+					email: watchedEmail,
+					phone: watchedPhone,
+				} as CheckoutForm,
+				t
+			),
+		[form, t, watchedEmail, watchedFirstName, watchedLastName, watchedPhone]
+	);
+
+	const deliverySummary = useMemo(() => {
+		const deliveryValues = {
+			...form.getValues(),
+			deliveryMethod: watchedDeliveryMethod,
+			deliveryAddress: watchedDeliveryAddress,
+			branchPickupPoint: watchedBranchPickupPoint,
+		} as CheckoutForm;
+		return summarizeDelivery(deliveryValues, t);
+	}, [
+		branchLabel,
+		form,
+		t,
+		watchedBranchPickupPoint,
+		watchedDeliveryAddress,
+		watchedDeliveryMethod,
+	]);
+
+	const paymentSummary = useMemo(() => {
+		const paymentValues = {
+			...form.getValues(),
+			paymentMethod: watchedPaymentMethod,
+			cardNumber: watchedCardNumber,
+		} as CheckoutForm;
+		return summarizePayment(paymentValues, t);
+	}, [form, t, watchedCardNumber, watchedPaymentMethod]);
+
+	const paymentProgressMessage =
+		paymentStage === 'validating'
+			? t('checkout.payment.processingValidating')
+			: paymentStage === 'awaiting'
+				? t('checkout.payment.processingAwaiting')
+				: paymentStage === 'finalizing'
+					? t('checkout.payment.processingFinalizing')
+					: '';
+
+	const handleApplyPromo = async () => {
+		if (!promoInput.trim()) {
+			return;
+		}
+
+		setPromoError(null);
+
 		try {
-			const { data: resp } = await createOrder({
+			const { data } = await applyPromo({ variables: { code: promoInput.trim().toUpperCase() } });
+			const result = data?.applyPromoCode;
+			if (result?.valid) {
+				const code = promoInput.trim().toUpperCase();
+				setAppliedPromoCode(code);
+				setPromoDiscount(result.discount);
+				setPromoInput('');
+				setPromoCodeInStore(code);
+			} else {
+				setPromoError(result?.message ? t(result.message) : t('checkout.promo.invalid'));
+			}
+		} catch {
+			setPromoError(t('checkout.promo.invalid'));
+		}
+	};
+
+	const handleRemovePromo = () => {
+		setAppliedPromoCode(null);
+		setPromoDiscount(0);
+		setPromoInput('');
+		setPromoError(null);
+		setPromoCodeInStore(null);
+	};
+
+	const handleOrderSubmit = async (values: CheckoutForm) => {
+		setSubmitError(null);
+		setPaymentStage('idle');
+
+		try {
+			if (values.paymentMethod === PaymentMethod.CARD) {
+				setPaymentStage('validating');
+				await wait(2000);
+				setPaymentStage('awaiting');
+				await wait(2000);
+			} else {
+				setPaymentStage('finalizing');
+				await wait(2000);
+			}
+
+			setPaymentStage('finalizing');
+			await wait(2000);
+
+			const deliveryAddress =
+				values.deliveryMethod === DeliveryMethod.COURIER
+					? (values.deliveryAddress ?? '').trim()
+					: values.deliveryMethod === DeliveryMethod.BRANCH_PICKUP
+						? getBranchLabel(values.branchPickupPoint ?? '', t)
+						: undefined;
+
+			const { data } = await createOrder({
 				variables: {
 					items: cartItems.map((item) => ({
 						productId: item.productId,
 						variantId: item.variantId ?? null,
 						quantity: item.qty,
 					})),
-					paymentMethod: data.paymentMethod,
-					deliveryMethod: stepData.delivery?.deliveryMethod ?? DeliveryMethod.COURIER,
-					deliveryAddress: stepData.delivery?.deliveryAddress || undefined,
-					promoCode: promoCode || undefined,
-					notes: data.notes || undefined,
+					paymentMethod: values.paymentMethod,
+					deliveryMethod: values.deliveryMethod,
+					deliveryAddress,
+					promoCode: appliedPromoCode || undefined,
+					notes: (values.notes ?? '').trim() || undefined,
 				},
 			});
-			if (resp?.createOrder) {
+
+			if (data?.createOrder) {
 				clearCart();
-				setConfirmedOrder(resp.createOrder);
-				setActiveStep(3);
+				setAppliedPromoCode(null);
+				setPromoDiscount(0);
+				setPromoInput('');
+				setConfirmedOrder(data.createOrder);
 			}
-		} catch (err: unknown) {
-			const msg = err instanceof Error ? err.message : t('checkout.errors.generic');
-			setSubmitError(msg);
+		} catch (error: unknown) {
+			setSubmitError(error instanceof Error ? error.message : t('checkout.errors.generic'));
+		} finally {
+			setPaymentStage('idle');
 		}
 	};
 
 	if (confirmedOrder) {
 		return (
 			<Box sx={{ maxWidth: 680, mx: 'auto', px: { xs: 2, md: 3 }, py: 4 }}>
-				<ConfirmationStep order={confirmedOrder} />
+				<CheckoutConfirmation order={confirmedOrder} />
 			</Box>
 		);
 	}
 
 	return (
-		<Box sx={{ maxWidth: 800, mx: 'auto', px: { xs: 2, md: 3 }, py: 4 }}>
-			<Typography variant="h5" sx={{ fontWeight: 800, letterSpacing: '-0.02em', mb: 4 }}>
-				{t('checkout.title')}
-			</Typography>
+		<Box sx={{ maxWidth: 1320, mx: 'auto', px: { xs: 2, md: 3 }, py: 4 }}>
+			<Box sx={{ mb: 4 }}>
+				<Typography variant="h5" sx={{ fontWeight: 800, letterSpacing: '-0.02em', mb: 1 }}>
+					{t('checkout.title')}
+				</Typography>
+				<Typography sx={{ color: tokens.ink3, fontSize: 14, maxWidth: 760 }}>
+					{t('checkout.subtitle')}
+				</Typography>
+			</Box>
 
-			{/* Stepper */}
-			<Stepper activeStep={activeStep} sx={{ mb: 5 }}>
-				{steps.map((label) => (
-					<Step key={label}>
-						<StepLabel>{label}</StepLabel>
-					</Step>
-				))}
-			</Stepper>
-
-			{/* Step content */}
 			<Box
+				component="form"
+				id="checkout-form"
+				onSubmit={handleSubmit(handleOrderSubmit)}
+				noValidate
 				sx={{
-					bgcolor: tokens.surface,
-					border: `1px solid ${tokens.line}`,
-					borderRadius: '12px',
-					p: 4,
+					display: 'grid',
+					gridTemplateColumns: { xs: '1fr', xl: 'minmax(0, 1fr) 380px' },
+					gap: 3,
 				}}
 			>
-				{activeStep === 0 && (
-					<ContactStep onNext={handleContact} defaultValues={stepData.contact} />
-				)}
-				{activeStep === 1 && (
-					<DeliveryStep
-						onNext={handleDelivery}
-						onBack={() => setActiveStep(0)}
-						defaultValues={stepData.delivery}
-					/>
-				)}
-				{activeStep === 2 && (
-					<PaymentStep
-						onSubmit={handlePayment}
-						onBack={() => setActiveStep(1)}
-						submitting={submitting}
-						error={submitError}
-					/>
-				)}
+				<Stack spacing={2.5}>
+					<CheckoutSectionCard
+						title={t('checkout.contact.title')}
+						subtitle={contactSummary}
+						expanded={sections.contact}
+						onToggle={() => setSections((state) => ({ ...state, contact: !state.contact }))}
+					>
+						<Box sx={{ mb: 2 }}>
+							<Typography sx={{ fontSize: 13, color: tokens.ink3 }}>
+								{t('checkout.contact.autofillHint')}
+							</Typography>
+						</Box>
+						<Box
+							sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}
+						>
+							<AppInput
+								label={t('checkout.contact.firstName')}
+								placeholder={t('checkout.contact.firstName')}
+								autoComplete="given-name"
+								{...register('firstName')}
+								error={!!errors.firstName}
+								helperText={toFieldMessage(errors.firstName?.message, t)}
+							/>
+							<AppInput
+								label={t('checkout.contact.lastName')}
+								placeholder={t('checkout.contact.lastName')}
+								autoComplete="family-name"
+								{...register('lastName')}
+								error={!!errors.lastName}
+								helperText={toFieldMessage(errors.lastName?.message, t)}
+							/>
+						</Box>
+						<Box
+							sx={{
+								display: 'grid',
+								gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+								gap: 2,
+								mt: 2,
+							}}
+						>
+							<AppInput
+								label={t('checkout.contact.email')}
+								placeholder={t('checkout.contact.email')}
+								autoComplete="email"
+								type="email"
+								{...register('email')}
+								error={!!errors.email}
+								helperText={toFieldMessage(errors.email?.message, t)}
+							/>
+							<AppInput
+								label={t('checkout.contact.phone')}
+								placeholder={t('checkout.contact.phone')}
+								autoComplete="tel"
+								inputProps={{ inputMode: 'tel' }}
+								{...register('phone')}
+								error={!!errors.phone}
+								helperText={toFieldMessage(errors.phone?.message, t)}
+							/>
+						</Box>
+					</CheckoutSectionCard>
+
+					<CheckoutSectionCard
+						title={t('checkout.delivery.title')}
+						subtitle={deliverySummary}
+						expanded={sections.delivery}
+						onToggle={() => setSections((state) => ({ ...state, delivery: !state.delivery }))}
+					>
+						<Controller
+							name="deliveryMethod"
+							control={control}
+							render={({ field }) => (
+								<AppRadio
+									{...field}
+									sx={{ display: 'grid', gap: 1.25 }}
+									options={[
+										{
+											value: DeliveryMethod.COURIER,
+											label: (
+												<Box>
+													<Typography sx={{ fontSize: 14, fontWeight: 700 }}>
+														{t('checkout.delivery.novaCourier')}
+													</Typography>
+													<Typography sx={{ fontSize: 12, color: tokens.ink3 }}>
+														{t('checkout.delivery.courierHint')}
+													</Typography>
+												</Box>
+											),
+										},
+										{
+											value: DeliveryMethod.BRANCH_PICKUP,
+											label: (
+												<Box>
+													<Typography sx={{ fontSize: 14, fontWeight: 700 }}>
+														{t('checkout.delivery.novaBranch')}
+													</Typography>
+													<Typography sx={{ fontSize: 12, color: tokens.ink3 }}>
+														{t('checkout.delivery.branchHint')}
+													</Typography>
+												</Box>
+											),
+										},
+										{
+											value: DeliveryMethod.SELF_PICKUP,
+											label: (
+												<Box>
+													<Typography sx={{ fontSize: 14, fontWeight: 700 }}>
+														{t('checkout.delivery.selfPickup')}
+													</Typography>
+													<Typography sx={{ fontSize: 12, color: tokens.ink3 }}>
+														{t('checkout.delivery.selfHint')}
+													</Typography>
+												</Box>
+											),
+										},
+									]}
+								/>
+							)}
+						/>
+
+						{watchedDeliveryMethod === DeliveryMethod.COURIER && (
+							<Box sx={{ mt: 2 }}>
+								<AppInput
+									label={t('checkout.delivery.address')}
+									placeholder={t('checkout.delivery.addressPlaceholder')}
+									autoComplete="street-address"
+									{...register('deliveryAddress')}
+									error={!!errors.deliveryAddress}
+									helperText={toFieldMessage(errors.deliveryAddress?.message, t)}
+								/>
+							</Box>
+						)}
+
+						{watchedDeliveryMethod === DeliveryMethod.BRANCH_PICKUP && (
+							<Box sx={{ mt: 2 }}>
+								<Controller
+									name="branchPickupPoint"
+									control={control}
+									render={({ field }) => (
+										<AppSelect
+											label={t('checkout.delivery.branchSelect')}
+											options={NOVA_POST_BRANCHES.map((branch) => ({
+												value: branch.value,
+												label: t(branch.labelKey),
+											}))}
+											value={field.value}
+											onChange={field.onChange}
+											error={!!errors.branchPickupPoint}
+											helperText={toFieldMessage(errors.branchPickupPoint?.message, t)}
+										/>
+									)}
+								/>
+							</Box>
+						)}
+					</CheckoutSectionCard>
+
+					<CheckoutSectionCard
+						title={t('checkout.payment.title')}
+						subtitle={paymentSummary}
+						expanded={sections.payment}
+						onToggle={() => setSections((state) => ({ ...state, payment: !state.payment }))}
+					>
+						<Controller
+							name="paymentMethod"
+							control={control}
+							render={({ field }) => (
+								<AppRadio
+									{...field}
+									sx={{ display: 'grid', gap: 1.25 }}
+									options={[
+										{
+											value: PaymentMethod.CARD,
+											label: (
+												<Box>
+													<Typography sx={{ fontSize: 14, fontWeight: 700 }}>
+														{t('checkout.payment.card')}
+													</Typography>
+													<Typography sx={{ fontSize: 12, color: tokens.ink3 }}>
+														{t('checkout.payment.cardHint')}
+													</Typography>
+												</Box>
+											),
+										},
+										{
+											value: PaymentMethod.CASH_ON_DELIVERY,
+											label: (
+												<Box>
+													<Typography sx={{ fontSize: 14, fontWeight: 700 }}>
+														{t('checkout.payment.cash')}
+													</Typography>
+													<Typography sx={{ fontSize: 12, color: tokens.ink3 }}>
+														{t('checkout.payment.cashHint')}
+													</Typography>
+												</Box>
+											),
+										},
+									]}
+								/>
+							)}
+						/>
+
+						{watchedPaymentMethod === PaymentMethod.CARD && (
+							<Box sx={{ mt: 2, display: 'grid', gap: 2 }}>
+								<Typography sx={{ fontSize: 13, color: tokens.ink3 }}>
+									{t('checkout.payment.cardMockHint')}
+								</Typography>
+								<Box
+									sx={{
+										display: 'grid',
+										gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' },
+										gap: 2,
+									}}
+								>
+									<AppInput
+										label={t('checkout.payment.cardHolderName')}
+										placeholder={t('checkout.payment.cardHolderName')}
+										autoComplete="cc-name"
+										{...register('cardHolderName')}
+										error={!!errors.cardHolderName}
+										helperText={toFieldMessage(errors.cardHolderName?.message, t)}
+									/>
+									<AppInput
+										label={t('checkout.payment.cardExpiry')}
+										placeholder={t('checkout.payment.cardExpiryPlaceholder')}
+										autoComplete="cc-exp"
+										{...register('cardExpiry')}
+										error={!!errors.cardExpiry}
+										helperText={toFieldMessage(errors.cardExpiry?.message, t)}
+									/>
+								</Box>
+								<Box
+									sx={{
+										display: 'grid',
+										gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' },
+										gap: 2,
+									}}
+								>
+									<AppInput
+										label={t('checkout.payment.cardNumber')}
+										placeholder={t('checkout.payment.cardNumberPlaceholder')}
+										autoComplete="cc-number"
+										inputProps={{ inputMode: 'numeric' }}
+										{...register('cardNumber', { setValueAs: normalizeDigits })}
+										error={!!errors.cardNumber}
+										helperText={toFieldMessage(errors.cardNumber?.message, t)}
+									/>
+									<AppInput
+										label={t('checkout.payment.cardCvv')}
+										placeholder={t('checkout.payment.cardCvvPlaceholder')}
+										autoComplete="cc-csc"
+										inputProps={{ inputMode: 'numeric' }}
+										{...register('cardCvv')}
+										error={!!errors.cardCvv}
+										helperText={toFieldMessage(errors.cardCvv?.message, t)}
+									/>
+								</Box>
+							</Box>
+						)}
+
+						<Box sx={{ mt: 2 }}>
+							<AppTextarea
+								label={t('checkout.payment.notes')}
+								placeholder={t('checkout.payment.notesPlaceholder')}
+								rows={3}
+								{...register('notes')}
+								error={!!errors.notes}
+								helperText={toFieldMessage(errors.notes?.message, t)}
+							/>
+						</Box>
+					</CheckoutSectionCard>
+				</Stack>
+
+				<AppCard
+					title={t('checkout.summary.title')}
+					subtitle={t('checkout.summary.items', {
+						count: cartItems.reduce((count, item) => count + item.qty, 0),
+					})}
+					sx={{ position: 'sticky', top: 24, alignSelf: 'start' }}
+				>
+					{paymentStage !== 'idle' && (
+						<Box
+							sx={{
+								display: 'grid',
+								gap: 0.5,
+								mb: 2,
+								p: 1.5,
+								borderRadius: 1.5,
+								border: `1px solid ${tokens.line}`,
+								bgcolor: tokens.sand,
+							}}
+						>
+							<Typography sx={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.02em' }}>
+								{t('checkout.payment.transactionTitle')}
+							</Typography>
+							<Typography sx={{ fontSize: 13, color: tokens.ink3 }}>
+								{paymentProgressMessage}
+							</Typography>
+						</Box>
+					)}
+
+					<Box sx={{ display: 'grid', gap: 1.25, mb: 2 }}>
+						{cartItems.map((item) => (
+							<Box key={item.id} sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
+								<Box sx={{ minWidth: 0 }}>
+									<Typography sx={{ fontSize: 13, fontWeight: 700, lineHeight: 1.3 }} noWrap>
+										{item.name}
+									</Typography>
+									<Typography sx={{ fontSize: 12, color: tokens.ink3 }}>
+										{t('checkout.summary.quantityPrice', {
+											qty: item.qty,
+											price: item.price.toFixed(2),
+										})}
+									</Typography>
+								</Box>
+								<Typography sx={{ fontSize: 13, fontWeight: 700 }}>
+									${(item.price * item.qty).toFixed(2)}
+								</Typography>
+							</Box>
+						))}
+					</Box>
+
+					<Divider sx={{ mb: 2 }} />
+
+					<Box sx={{ display: 'grid', gap: 1 }}>
+						<Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
+							<Typography sx={{ fontSize: 13, color: tokens.ink3 }}>
+								{t('checkout.summary.subtotal')}
+							</Typography>
+							<Typography sx={{ fontSize: 13, fontWeight: 700 }}>${subtotal.toFixed(2)}</Typography>
+						</Box>
+						<Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
+							<Typography sx={{ fontSize: 13, color: tokens.ink3 }}>
+								{t('checkout.summary.shipping')}
+							</Typography>
+							<Typography sx={{ fontSize: 13, fontWeight: 700 }}>
+								{shipping === 0 ? t('checkout.summary.shippingFree') : `$${shipping.toFixed(2)}`}
+							</Typography>
+						</Box>
+						{promoDiscount > 0 && (
+							<Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
+								<Typography sx={{ fontSize: 13, color: tokens.ink3 }}>
+									{appliedPromoCode
+										? t('checkout.summary.discountApplied', { code: appliedPromoCode })
+										: t('checkout.summary.discount')}
+								</Typography>
+								<Typography sx={{ fontSize: 13, fontWeight: 700, color: tokens.coralInk }}>
+									−${promoDiscount.toFixed(2)}
+								</Typography>
+							</Box>
+						)}
+					</Box>
+
+					<Divider sx={{ my: 2 }} />
+
+					<Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, mb: 2 }}>
+						<Typography sx={{ fontSize: 15, fontWeight: 800 }}>
+							{t('checkout.summary.total')}
+						</Typography>
+						<Typography sx={{ fontSize: 18, fontWeight: 900, letterSpacing: '-0.02em' }}>
+							${total.toFixed(2)}
+						</Typography>
+					</Box>
+
+					{promoError && (
+						<Typography sx={{ fontSize: 13, color: tokens.coralInk, mb: 1.5 }}>
+							{promoError}
+						</Typography>
+					)}
+					{submitError && (
+						<Typography sx={{ fontSize: 13, color: tokens.coralInk, mb: 1.5 }}>
+							{submitError}
+						</Typography>
+					)}
+
+					<Box sx={{ display: 'grid', gap: 1.25 }}>
+						<AppInput
+							label={t('checkout.promo.label')}
+							placeholder={t('checkout.promo.placeholder')}
+							value={promoInput}
+							onChange={(event) => setPromoInput(event.target.value)}
+							error={!!promoError}
+							helperText={promoError ?? undefined}
+						/>
+						{appliedPromoCode ? (
+							<AppButton tone="ghost" onClick={handleRemovePromo}>
+								{t('checkout.promo.remove')}
+							</AppButton>
+						) : (
+							<AppButton tone="ghost" onClick={handleApplyPromo} loading={promoLoading}>
+								{t('checkout.promo.apply')}
+							</AppButton>
+						)}
+						<AppButton
+							tone="accent"
+							type="submit"
+							form="checkout-form"
+							loading={submitting}
+							endIcon={!submitting ? <FontAwesomeIcon icon={Icons.check} size="xs" /> : undefined}
+							disabled={cartItems.length === 0 || paymentStage !== 'idle'}
+						>
+							{submitting ? t('checkout.processing') : t('checkout.placeOrder')}
+						</AppButton>
+					</Box>
+				</AppCard>
 			</Box>
 		</Box>
 	);

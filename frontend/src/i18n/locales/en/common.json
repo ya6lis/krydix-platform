@@ -232,6 +232,16 @@
 			"FAILED": "Failed",
 			"REFUNDED": "Refunded"
 		},
+		"returnRequest": {
+			"REQUESTED": "Requested",
+			"UNDER_REVIEW": "Under Review",
+			"APPROVED": "Approved",
+			"AWAITING_RETURN_SHIPPING": "Awaiting Return Shipment",
+			"RECEIVED": "Returned Item Received",
+			"REJECTED": "Rejected",
+			"REFUNDED": "Refunded",
+			"CLOSED": "Closed"
+		},
 		"delivery": {
 			"PENDING": "Pending",
 			"PACKED": "Packed",
@@ -385,6 +395,7 @@
 		},
 		"contact": {
 			"title": "Contact information",
+			"autofillHint": "We prefill this from your account and remember your last checkout details locally.",
 			"firstName": "First name",
 			"lastName": "Last name",
 			"email": "Email",
@@ -395,15 +406,44 @@
 			"courier": "Courier",
 			"branch": "Branch pickup",
 			"self": "Self pickup",
+			"branches": {
+				"kyiv001": "Kyiv, branch #001 - Khreshchatyk 12",
+				"lviv014": "Lviv, branch #014 - Shevchenka 45",
+				"odesa022": "Odesa, branch #022 - Deribasivska 18",
+				"dnipro031": "Dnipro, branch #031 - Yavornytskoho 8"
+			},
 			"address": "Delivery address",
 			"addressPlaceholder": "Street, city, postal code",
-			"addressRequired": "Delivery address is required for courier delivery"
+			"addressRequired": "Delivery address is required for courier delivery",
+			"novaCourier": "Nova Post courier delivery",
+			"courierHint": "Delivered to your address by Nova Post",
+			"novaBranch": "Nova Post branch pickup",
+			"branchHint": "Pick up your parcel from a Nova Post branch",
+			"selfPickup": "Self pickup",
+			"selfHint": "Collect the order directly from the seller",
+			"branchSelect": "Pickup branch"
 		},
 		"payment": {
 			"title": "Payment method",
 			"card": "Bank card",
 			"cod": "Cash on delivery",
 			"bank": "Bank transfer",
+			"cash": "Cash on delivery",
+			"cardHint": "Enter card details. This is a mock authorization flow in the MVP.",
+			"cashHint": "Pay when the parcel arrives at Nova Post or at pickup.",
+			"cardMockHint": "The card is validated locally before the mock order is placed.",
+			"transactionTitle": "Payment processing",
+			"processingValidating": "Validating card details...",
+			"processingAwaiting": "Waiting for bank transaction approval...",
+			"processingCash": "Preparing cash on delivery confirmation...",
+			"processingFinalizing": "Finalizing order and reserving stock...",
+			"cardHolderName": "Cardholder name",
+			"cardNumber": "Card number",
+			"cardExpiry": "Expiry date",
+			"cardCvv": "CVV",
+			"cardExpiryPlaceholder": "MM/YY",
+			"cardNumberPlaceholder": "1234 5678 9012 3456",
+			"cardCvvPlaceholder": "123",
 			"notes": "Order notes",
 			"notesPlaceholder": "Any special instructions or requests..."
 		},
@@ -412,16 +452,21 @@
 			"placeholder": "Enter promo code",
 			"apply": "Apply",
 			"applied": "{{code}} applied",
-			"remove": "Remove"
+			"remove": "Remove",
+			"invalid": "Invalid or expired promo code"
 		},
 		"summary": {
 			"title": "Order summary",
 			"items": "{{count}} items",
 			"subtotal": "Subtotal",
+			"discountApplied": "Discount ({{code}})",
 			"discount": "Discount",
 			"shipping": "Shipping",
 			"shippingCalc": "Calculated",
-			"total": "Total"
+			"shippingFree": "Free",
+			"total": "Total",
+			"empty": "Not filled yet",
+			"quantityPrice": "{{qty}} x ${{price}}"
 		},
 		"placeOrder": "Place order",
 		"back": "Back",
@@ -435,8 +480,22 @@
 			"continueShopping": "Continue shopping"
 		},
 		"errors": {
+			"required": "This field is required",
+			"invalidEmail": "Enter a valid email address",
+			"invalidPhone": "Enter a valid phone number",
+			"deliveryAddressRequired": "Delivery address is required for courier delivery",
+			"branchRequired": "Select a Nova Post branch",
+			"cardNumberInvalid": "Enter a valid card number",
+			"cardExpiryInvalid": "Enter a valid expiry date",
+			"cardCvvInvalid": "Enter a valid CVV",
+			"notesTooLong": "Order notes are too long",
 			"stockUnavailable": "Some items in your cart are no longer available",
 			"generic": "Failed to place order. Please try again."
+		},
+		"subtitle": "Review contact, Nova Post delivery, payment, promo, and order summary on one page.",
+		"section": {
+			"expand": "Expand",
+			"collapse": "Collapse"
 		}
 	},
 	"product": {
@@ -536,15 +595,18 @@
 		"viewDetails": "View details"
 	},
 	"orderDetail": {
+		"orderNumberPrefix": "Order #",
 		"backToOrders": "Back to orders",
 		"details": "Details",
 		"detailsSub_one": "{{count}} item",
 		"detailsSub_other": "{{count}} items",
-		"shipsFrom": "ships from {{seller}}",
+		"shipsFromSeller": "ships from seller",
 		"history": "History",
 		"sidebar": {
 			"customer": "Customer",
 			"seller": "Seller",
+			"itemCount_one": "{{count}} item",
+			"itemCount_other": "{{count}} items",
 			"delivery": "Delivery",
 			"shipping": "Shipping",
 			"payment": "Payment"
@@ -568,12 +630,26 @@
 		"delivery": {
 			"shipBy": "Ship by",
 			"speed": "Speed",
-			"tracking": "Tracking"
+			"standard": "Standard",
+			"tracking": "Tracking",
+			"methods": {
+				"courier": "Courier",
+				"branchPickup": "Branch pickup",
+				"selfPickup": "Self pickup"
+			}
+		},
+		"payment": {
+			"methods": {
+				"card": "Card",
+				"cashOnDelivery": "Cash on delivery",
+				"bankTransfer": "Bank transfer"
+			}
 		},
 		"actions": {
 			"cancel": "Cancel order",
 			"confirmDelivery": "Confirm delivery",
 			"requestRefund": "Request refund",
+			"requestReturn": "Request return",
 			"print": "Print"
 		},
 		"cancelConfirm": {
@@ -587,6 +663,12 @@
 		"refundConfirm": {
 			"title": "Request a refund?",
 			"message": "A refund request will be submitted for this order."
+		},
+		"returnConfirm": {
+			"title": "Request a return?",
+			"reasonLabel": "Reason for return",
+			"reasonPlaceholder": "Describe the defect, issue, or other reason for the return",
+			"submit": "Submit return request"
 		},
 		"qty": "×{{count}}",
 		"sku": "SKU"

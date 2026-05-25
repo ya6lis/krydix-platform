@@ -65,11 +65,10 @@ describe('AppNavbar', () => {
 		expect(screen.getByText('7')).toBeInTheDocument();
 	});
 
-	it('always shows static notification badge of 3', () => {
+	it('hides notification badge when there are no unread notifications', () => {
 		renderNavbar();
-		// The static notif badge shows 3 (Phase 13 wires real data)
-		const badges = screen.getAllByText('3');
-		expect(badges.length).toBeGreaterThanOrEqual(1);
+		// MOCK_NOTIFICATIONS is empty so unreadCount = 0, badge not rendered
+		expect(screen.queryByText('3')).not.toBeInTheDocument();
 	});
 
 	it('renders breadcrumbs when provided', () => {
