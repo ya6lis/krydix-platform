@@ -40,6 +40,41 @@ export const UploadMediaSchema = z.object({
 	mediaType: z.enum(['IMAGE', 'VIDEO']).optional().default('IMAGE'),
 });
 
+export const ProductListFilterSchema = z.object({
+	status: z.enum(['DRAFT', 'PENDING_MODERATION', 'APPROVED', 'REJECTED', 'ARCHIVED', 'BLOCKED', 'DISABLED', 'ENABLED']).optional(),
+	search: z.string().max(200).optional(),
+});
+
+export const ProductListPaginationSchema = z.object({
+	page: z.number().int().min(1).default(1),
+	pageSize: z.number().int().min(1).max(100).default(20),
+});
+
+export const ImportPreviewSchema = z.object({
+	dataUrl: z.string().min(1),
+	fileType: z.enum(['xlsx', 'csv']).default('xlsx'),
+});
+
+export const ImportRowInputSchema = z.object({
+	titleEn: z.string().min(1).max(500),
+	titleUk: z.string().min(1).max(500),
+	descriptionEn: z.string().min(1).max(10000),
+	descriptionUk: z.string().min(1).max(10000),
+	slug: z.string().min(1).max(255).regex(/^[a-z0-9-]+$/),
+	sku: z.string().min(1).max(100),
+	brand: z.string().max(200).optional().nullable(),
+	basePrice: z.number().positive(),
+	comparePrice: z.number().positive().optional().nullable(),
+});
+
+export const ConfirmImportSchema = z.object({
+	rows: z.array(ImportRowInputSchema).min(1).max(500),
+});
+
 export type CreateProductInput = z.infer<typeof CreateProductSchema>;
 export type UpdateProductInput = z.infer<typeof UpdateProductSchema>;
 export type UploadMediaInput = z.infer<typeof UploadMediaSchema>;
+export type ProductListFilterInput = z.infer<typeof ProductListFilterSchema>;
+export type ProductListPaginationInput = z.infer<typeof ProductListPaginationSchema>;
+export type ImportRowInput = z.infer<typeof ImportRowInputSchema>;
+export type ConfirmImportInput = z.infer<typeof ConfirmImportSchema>;

@@ -229,3 +229,62 @@ export async function findMediaById(id: string): Promise<MediaRecord | null> {
 export async function deleteMediaById(id: string): Promise<void> {
 	await prisma.media.delete({ where: { id } });
 }
+
+export async function duplicateProduct(
+	originalId: string,
+	newSlug: string,
+	newSku: string
+): Promise<SellerProductRecord> {
+	const original = await prisma.product.findUnique({
+		where: { id: originalId },
+		include: sellerProductInclude,
+	});
+	if (!original) throw new Error('Product not found');
+
+	return prisma.product.create({
+		data: {
+			sellerId: original.sellerId,
+			slug: newSlug,
+			sku: newSku,
+			brand: original.brand,
+			basePrice: original.basePrice,
+			comparePrice: original.comparePrice,
+			status: ProductStatus.DRAFT,
+			isAvailable: false,
+			translations: {
+				create: original.translations.map((t) => ({
+					language: t.language,
+					title: t.title,
+					description: t.description,
+					metaTitle: null,
+					metaDescription: null,
+				})),
+			},
+			categories: {
+				create: original.categories.map((pc) => ({ categoryId: pc.categoryId })),
+			},
+			variants: {
+				create: original.variants
+					.filter((v) => v.isActive)
+					.map((v) => ({
+						sku: v.sku ? `${v.sku}-COPY` : null,
+						options: v.options as Prisma.InputJsonValue,
+						price: v.price,
+						stock: 0,
+					})),
+			},
+		},
+		include: sellerProductInclude,
+	});
+}
+
+export async function setProductStatus(
+	id: string,
+	status: ProductStatus
+): Promise<SellerProductRecord> {
+	return prisma.product.update({
+		where: { id },
+		data: { status },
+		include: sellerProductInclude,
+	});
+}

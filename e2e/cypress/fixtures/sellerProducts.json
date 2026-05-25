@@ -127,5 +127,96 @@
 				}
 			]
 		}
+	},
+	"myProducts": {
+		"myProducts": {
+			"items": [
+				{
+					"id": "prod-existing-1",
+					"slug": "existing-jacket",
+					"sku": "JKT-001",
+					"brand": "StyleCo",
+					"basePrice": 149.99,
+					"comparePrice": 199.99,
+					"status": "APPROVED",
+					"isAvailable": true,
+					"createdAt": "2026-05-01T10:00:00.000Z",
+					"updatedAt": "2026-05-25T10:00:00.000Z",
+					"titleEn": "Heritage Jacket",
+					"titleUk": "Куртка Heritage",
+					"categories": [{ "id": "cat-3", "slug": "clothing", "nameEn": "Clothing", "nameUk": "Одяг" }],
+					"variants": [{ "id": "var-1", "stock": 15, "isActive": true }],
+					"media": [{ "id": "media-1", "url": "https://res.cloudinary.com/demo/image/upload/sample.jpg", "isMain": true }]
+				},
+				{
+					"id": "prod-draft-1",
+					"slug": "draft-product",
+					"sku": "DRF-001",
+					"brand": null,
+					"basePrice": 49.99,
+					"comparePrice": null,
+					"status": "DRAFT",
+					"isAvailable": false,
+					"createdAt": "2026-05-20T10:00:00.000Z",
+					"updatedAt": "2026-05-20T10:00:00.000Z",
+					"titleEn": "Draft Product",
+					"titleUk": "Чернетка",
+					"categories": [],
+					"variants": [{ "id": "var-2", "stock": 0, "isActive": true }],
+					"media": []
+				}
+			],
+			"total": 2,
+			"page": 1,
+			"pageSize": 20
+		}
+	},
+	"duplicateProduct": {
+		"duplicateProduct": {
+			"id": "prod-existing-1-copy",
+			"slug": "existing-jacket-copy",
+			"status": "DRAFT",
+			"titleEn": "Heritage Jacket"
+		}
+	},
+	"archiveProduct": {
+		"archiveProduct": {
+			"id": "prod-existing-1",
+			"status": "ARCHIVED"
+		}
+	},
+	"previewImport": {
+		"previewImport": [
+			{
+				"rowIndex": 2,
+				"titleEn": "Imported Product A",
+				"titleUk": "Імпортований A",
+				"sku": "IMP-001",
+				"slug": "imported-product-a",
+				"basePrice": 29.99,
+				"brand": null,
+				"isValid": true,
+				"errors": []
+			},
+			{
+				"rowIndex": 3,
+				"titleEn": "",
+				"titleUk": "",
+				"sku": "",
+				"slug": "",
+				"basePrice": 0,
+				"brand": null,
+				"isValid": false,
+				"errors": ["Missing required field: titleEn", "Missing required field: sku"]
+			}
+		]
+	},
+	"confirmImport": {
+		"confirmImport": {
+			"created": 1,
+			"updated": 0,
+			"failed": 0,
+			"errors": []
+		}
 	}
 }

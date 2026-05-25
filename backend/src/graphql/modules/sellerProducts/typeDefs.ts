@@ -105,7 +105,61 @@ export const sellerProductsTypeDefs = `#graphql
 		metaDescriptionUk: String
 	}
 
+	type SellerProductList {
+		items: [SellerProduct!]!
+		total: Int!
+		page: Int!
+		pageSize: Int!
+	}
+
+	input ProductListFilterInput {
+		status: ProductStatus
+		search: String
+	}
+
+	input ProductListPaginationInput {
+		page: Int!
+		pageSize: Int!
+	}
+
+	type ImportPreviewRow {
+		rowIndex: Int!
+		titleEn: String!
+		titleUk: String!
+		sku: String!
+		slug: String!
+		basePrice: Float!
+		brand: String
+		isValid: Boolean!
+		errors: [String!]!
+	}
+
+	input ImportRowInput {
+		titleEn: String!
+		titleUk: String!
+		descriptionEn: String!
+		descriptionUk: String!
+		slug: String!
+		sku: String!
+		brand: String
+		basePrice: Float!
+		comparePrice: Float
+	}
+
+	type ImportResult {
+		created: Int!
+		updated: Int!
+		failed: Int!
+		errors: [ImportError!]!
+	}
+
+	type ImportError {
+		rowIndex: Int!
+		error: String!
+	}
+
 	extend type Query {
+		myProducts(filter: ProductListFilterInput, pagination: ProductListPaginationInput!): SellerProductList!
 		myProduct(id: ID!): SellerProduct
 	}
 
@@ -119,5 +173,11 @@ export const sellerProductsTypeDefs = `#graphql
 			mediaType: String
 		): MediaItem!
 		deleteProductMedia(mediaId: ID!): Boolean!
+		duplicateProduct(id: ID!): SellerProduct!
+		archiveProduct(id: ID!): SellerProduct!
+		deactivateProduct(id: ID!): SellerProduct!
+		activateProduct(id: ID!): SellerProduct!
+		previewImport(dataUrl: String!, fileType: String): [ImportPreviewRow!]!
+		confirmImport(rows: [ImportRowInput!]!): ImportResult!
 	}
 `;
