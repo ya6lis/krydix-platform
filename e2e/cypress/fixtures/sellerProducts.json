@@ -1,0 +1,131 @@
+{
+	"refreshToken": {
+		"refreshToken": {
+			"accessToken": "stub-access",
+			"refreshToken": "stub-rt",
+			"user": {
+				"id": "seller-1",
+				"email": "seller@krydix.co",
+				"role": "SELLER",
+				"isEmailVerified": true,
+				"profile": {
+					"firstName": "Anna",
+					"lastName": "Seller",
+					"avatarUrl": null
+				}
+			}
+		}
+	},
+	"me": {
+		"me": {
+			"id": "seller-1",
+			"email": "seller@krydix.co",
+			"role": "SELLER",
+			"isEmailVerified": true,
+			"profile": {
+				"firstName": "Anna",
+				"lastName": "Seller",
+				"avatarUrl": null
+			}
+		}
+	},
+	"categories": {
+		"categories": [
+			{
+				"id": "cat-1",
+				"slug": "electronics",
+				"parentId": null,
+				"name": "Electronics",
+				"productCount": 5,
+				"children": [
+					{
+						"id": "cat-2",
+						"slug": "smartphones",
+						"parentId": "cat-1",
+						"name": "Smartphones",
+						"productCount": 2,
+						"children": []
+					}
+				]
+			},
+			{
+				"id": "cat-3",
+				"slug": "clothing",
+				"parentId": null,
+				"name": "Clothing",
+				"productCount": 8,
+				"children": []
+			}
+		]
+	},
+	"createProduct": {
+		"createProduct": {
+			"id": "prod-new-1",
+			"slug": "wireless-earbuds-pro",
+			"sku": "WEP-001",
+			"brand": "TechBrand",
+			"basePrice": 79.99,
+			"comparePrice": null,
+			"status": "DRAFT",
+			"isAvailable": true,
+			"createdAt": "2026-05-25T10:00:00.000Z",
+			"updatedAt": "2026-05-25T10:00:00.000Z",
+			"titleEn": "Wireless Earbuds Pro",
+			"titleUk": "Бездротові навушники Pro",
+			"descriptionEn": "High quality wireless earbuds",
+			"descriptionUk": "Якісні бездротові навушники",
+			"metaTitleEn": null,
+			"metaTitleUk": null,
+			"metaDescriptionEn": null,
+			"metaDescriptionUk": null,
+			"categories": [
+				{ "id": "cat-1", "slug": "electronics", "nameEn": "Electronics", "nameUk": "Електроніка" }
+			],
+			"variants": [],
+			"media": []
+		}
+	},
+	"myProduct": {
+		"myProduct": {
+			"id": "prod-existing-1",
+			"slug": "existing-jacket",
+			"sku": "JKT-001",
+			"brand": "StyleCo",
+			"basePrice": 149.99,
+			"comparePrice": 199.99,
+			"status": "APPROVED",
+			"isAvailable": true,
+			"createdAt": "2026-05-01T10:00:00.000Z",
+			"updatedAt": "2026-05-25T10:00:00.000Z",
+			"titleEn": "Heritage Jacket",
+			"titleUk": "Куртка Heritage",
+			"descriptionEn": "A premium heritage jacket",
+			"descriptionUk": "Куртка преміум класу",
+			"metaTitleEn": "Buy Heritage Jacket",
+			"metaTitleUk": "Купити куртку Heritage",
+			"metaDescriptionEn": "Premium jacket for any occasion",
+			"metaDescriptionUk": "Куртка для будь-якого випадку",
+			"categories": [{ "id": "cat-3", "slug": "clothing", "nameEn": "Clothing", "nameUk": "Одяг" }],
+			"variants": [
+				{
+					"id": "var-1",
+					"sku": "JKT-001-M",
+					"options": { "Size": "M", "Color": "Black" },
+					"price": 159.99,
+					"stock": 15,
+					"isActive": true
+				}
+			],
+			"media": [
+				{
+					"id": "media-1",
+					"url": "https://res.cloudinary.com/demo/image/upload/sample.jpg",
+					"publicId": "krydix/products/sample",
+					"type": "IMAGE",
+					"isMain": true,
+					"sortOrder": 0
+				}
+			]
+		}
+	}
+}

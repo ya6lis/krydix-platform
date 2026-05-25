@@ -745,6 +745,78 @@
 				"currency": "Currency",
 				"dateFormat": "Date format"
 			}
+		},
+		"sellerProduct": {
+			"newTitle": "New Product",
+			"editTitle": "Edit Product",
+			"breadcrumbProducts": "My Products",
+			"breadcrumbNew": "New Product",
+			"breadcrumbEdit": "Edit",
+			"saveDraft": "Save Draft",
+			"saving": "Saving…",
+			"submitForReview": "Submit for Review",
+			"updateProduct": "Update Product",
+			"createSuccess": "Product created as draft",
+			"updateSuccess": "Product submitted for review",
+			"deleteMediaSuccess": "Image removed",
+			"slugTaken": "This slug is already taken",
+			"section": {
+				"basic": "Basic Information",
+				"basicSub": "Product title, description, and identifiers",
+				"pricing": "Pricing",
+				"pricingSub": "Base price and optional compare price",
+				"categories": "Categories",
+				"categoriesSub": "Assign product to one or more categories",
+				"variants": "Variants",
+				"variantsSub": "Add color, size, model options with individual stock levels",
+				"media": "Media",
+				"mediaSub": "1 main image + up to 8 gallery images + optional video",
+				"seo": "SEO",
+				"seoSub": "Meta title and description for search engines"
+			},
+			"field": {
+				"titleEn": "Title (English)",
+				"titleUk": "Title (Ukrainian)",
+				"descriptionEn": "Description (English)",
+				"descriptionUk": "Description (Ukrainian)",
+				"slug": "URL Slug",
+				"slugHint": "Auto-generated, can be edited. Lowercase, hyphens only.",
+				"sku": "SKU / Article",
+				"brand": "Brand",
+				"basePrice": "Base Price",
+				"comparePrice": "Compare Price",
+				"comparePriceHint": "Original price shown with strikethrough.",
+				"isAvailable": "Available for purchase",
+				"metaTitleEn": "Meta Title (English)",
+				"metaTitleUk": "Meta Title (Ukrainian)",
+				"metaDescriptionEn": "Meta Description (English)",
+				"metaDescriptionUk": "Meta Description (Ukrainian)"
+			},
+			"variant": {
+				"add": "Add Variant",
+				"remove": "Remove",
+				"sku": "Variant SKU",
+				"price": "Price",
+				"stock": "Stock",
+				"optionKey": "Option (e.g. Color)",
+				"optionValue": "Value (e.g. Red)",
+				"addOption": "Add Option",
+				"removeOption": "Remove"
+			},
+			"media": {
+				"mainLabel": "Main Image",
+				"galleryLabel": "Gallery",
+				"videoLabel": "Video",
+				"uploadMain": "Upload main image",
+				"uploadGallery": "Add gallery image",
+				"uploadVideo": "Add product video",
+				"removeImage": "Remove",
+				"setMain": "Set as main",
+				"dragHint": "Click or drag to upload",
+				"sizeHint": "Max 5MB per file. JPG, PNG, WEBP.",
+				"limitReached": "Maximum 9 images reached",
+				"uploading": "Uploading…"
+			}
 		}
 	}
 }

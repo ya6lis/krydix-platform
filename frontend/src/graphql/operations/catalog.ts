@@ -118,3 +118,18 @@ export const PRODUCT_QUERY = gql`
 		}
 	}
 `;
+
+// ─── Result types ─────────────────────────────────────────────────────────────
+
+export interface CategoryNodeResult {
+	id: string;
+	slug: string;
+	parentId: string | null;
+	name: string;
+	productCount: number;
+	children?: CategoryNodeResult[];
+}
+
+export interface CategoriesQueryResult {
+	categories: CategoryNodeResult[];
+}

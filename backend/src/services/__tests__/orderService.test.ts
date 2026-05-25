@@ -1,5 +1,5 @@
 import { GraphQLError } from 'graphql';
-import { OrderStatus, PaymentStatus } from '@prisma/client';
+import { OrderStatus } from '@prisma/client';
 
 jest.mock('../../repositories/orderRepository.js');
 jest.mock('../../repositories/returnRequestRepository.js');
