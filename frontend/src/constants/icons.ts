@@ -86,6 +86,7 @@ import {
 	faWallet,
 	faPrint,
 	faCalendar,
+	faCopy,
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -128,6 +129,8 @@ export const Icons = {
 
 	// Actions
 	edit: faEdit,
+	duplicate: faCopy,
+	archive: faBan,
 	delete: faTrash,
 	deleteSoft: faTrashAlt,
 	add: faPlus,

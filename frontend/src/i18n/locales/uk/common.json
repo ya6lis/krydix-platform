@@ -746,6 +746,68 @@
 				"dateFormat": "Формат дати"
 			}
 		},
+		"sellerProducts": {
+			"title": "Мої товари",
+			"createButton": "Додати товар",
+			"importButton": "Імпорт",
+			"downloadTemplate": "Завантажити шаблон",
+			"searchPlaceholder": "Пошук за назвою або SKU…",
+			"filterAll": "Усі",
+			"filterDraft": "Чернетки",
+			"filterPending": "На перевірці",
+			"filterApproved": "Схвалені",
+			"filterRejected": "Відхилені",
+			"filterArchived": "Архів",
+			"col": {
+				"product": "Товар",
+				"sku": "SKU",
+				"price": "Ціна",
+				"stock": "Залишок",
+				"status": "Статус",
+				"createdAt": "Дата",
+				"actions": "Дії"
+			},
+			"action": {
+				"edit": "Редагувати",
+				"duplicate": "Дублювати",
+				"archive": "Архівувати",
+				"unarchive": "З архіву"
+			},
+			"duplicateSuccess": "Товар продубльований як чернетка",
+			"archiveSuccess": "Товар архівовано",
+			"duplicateError": "Не вдалося дублювати товар",
+			"archiveError": "Не вдалося архівувати товар",
+			"empty": "Товарів ще немає",
+			"emptyFiltered": "Немає товарів за цим фільтром",
+			"emptyAction": "Додайте перший товар",
+			"import": {
+				"title": "Масовий імпорт",
+				"step1": "Завантажити файл",
+				"step2": "Перевірити рядки",
+				"step3": "Підтвердити",
+				"dropzone": "Перетягніть .xlsx або .csv, або натисніть",
+				"fileAccepted": "Файл прийнято",
+				"previewLoading": "Обробка файлу…",
+				"previewEmpty": "Рядків не знайдено",
+				"previewCol": {
+					"row": "#",
+					"titleEn": "Назва EN",
+					"sku": "SKU",
+					"slug": "Slug",
+					"price": "Ціна",
+					"status": "Статус"
+				},
+				"confirmBtn": "Імпортувати {{count}} рядків",
+				"cancelBtn": "Скасувати",
+				"resultTitle": "Імпорт завершено",
+				"created": "{{count}} товар(ів) створено",
+				"updated": "{{count}} товар(ів) оновлено",
+				"failed": "{{count}} рядків з помилками",
+				"doneBtn": "Готово",
+				"invalidRows": "{{count}} рядків з помилками — виправте та завантажте знову",
+				"noValidRows": "Немає валідних рядків для імпорту"
+			}
+		},
 		"sellerProduct": {
 			"newTitle": "Новий товар",
 			"editTitle": "Редагувати товар",

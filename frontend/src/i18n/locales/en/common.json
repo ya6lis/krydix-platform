@@ -746,6 +746,68 @@
 				"dateFormat": "Date format"
 			}
 		},
+		"sellerProducts": {
+			"title": "My Products",
+			"createButton": "Add Product",
+			"importButton": "Import",
+			"downloadTemplate": "Download Template",
+			"searchPlaceholder": "Search by title or SKU…",
+			"filterAll": "All",
+			"filterDraft": "Draft",
+			"filterPending": "Pending Review",
+			"filterApproved": "Approved",
+			"filterRejected": "Rejected",
+			"filterArchived": "Archived",
+			"col": {
+				"product": "Product",
+				"sku": "SKU",
+				"price": "Price",
+				"stock": "Stock",
+				"status": "Status",
+				"createdAt": "Created",
+				"actions": "Actions"
+			},
+			"action": {
+				"edit": "Edit",
+				"duplicate": "Duplicate",
+				"archive": "Archive",
+				"unarchive": "Unarchive"
+			},
+			"duplicateSuccess": "Product duplicated as draft",
+			"archiveSuccess": "Product archived",
+			"duplicateError": "Failed to duplicate product",
+			"archiveError": "Failed to archive product",
+			"empty": "No products yet",
+			"emptyFiltered": "No products match the current filter",
+			"emptyAction": "Add your first product",
+			"import": {
+				"title": "Bulk Import",
+				"step1": "Upload file",
+				"step2": "Review rows",
+				"step3": "Confirm",
+				"dropzone": "Drop .xlsx or .csv file here, or click to select",
+				"fileAccepted": "File accepted",
+				"previewLoading": "Parsing file…",
+				"previewEmpty": "No rows found",
+				"previewCol": {
+					"row": "#",
+					"titleEn": "Title EN",
+					"sku": "SKU",
+					"slug": "Slug",
+					"price": "Price",
+					"status": "Valid"
+				},
+				"confirmBtn": "Import {{count}} valid rows",
+				"cancelBtn": "Cancel",
+				"resultTitle": "Import complete",
+				"created": "{{count}} product(s) created",
+				"updated": "{{count}} product(s) updated",
+				"failed": "{{count}} row(s) failed",
+				"doneBtn": "Done",
+				"invalidRows": "{{count}} row(s) have errors — fix and re-upload",
+				"noValidRows": "No valid rows to import"
+			}
+		},
 		"sellerProduct": {
 			"newTitle": "New Product",
 			"editTitle": "Edit Product",
