@@ -99,4 +99,14 @@ export const ordersResolvers = {
 	DeliveryRecord: {
 		createdAt: (record: { createdAt: Date }) => record.createdAt.toISOString(),
 	},
+
+	OrderItem: {
+		productMainImage: (item: any) => {
+			// item.product may be included by repository; pick the main media url if available
+			const prod = (item as any).product;
+			if (!prod || !prod.media || prod.media.length === 0) return null;
+			const main = prod.media.find((m: any) => m.isMain) || prod.media[0];
+			return main?.url ?? null;
+		},
+	},
 };

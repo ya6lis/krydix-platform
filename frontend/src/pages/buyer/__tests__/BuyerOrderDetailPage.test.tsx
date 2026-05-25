@@ -27,6 +27,7 @@ const ORDER_ID = 'abc123def456';
 
 function makeOrder(status: string = 'PENDING'): Order {
 	return {
+		__typename: 'Order',
 		id: ORDER_ID,
 		status: status as Order['status'],
 		totalAmount: 268.0,
@@ -36,6 +37,7 @@ function makeOrder(status: string = 'PENDING'): Order {
 		updatedAt: '2026-05-02T12:00:00.000Z',
 		items: [
 			{
+				__typename: 'OrderItem',
 				id: 'item-1',
 				productId: 'p1',
 				variantId: 'v1',
@@ -44,9 +46,11 @@ function makeOrder(status: string = 'PENDING'): Order {
 				unitPrice: 144,
 				totalPrice: 288,
 				productTitle: 'Heritage Field Jacket',
+				productMainImage: 'https://example.com/images/p1-main.jpg',
 			},
 		],
 		payment: {
+			__typename: 'Payment',
 			id: 'pay-1',
 			amount: 268,
 			method: 'CARD',
@@ -55,6 +59,7 @@ function makeOrder(status: string = 'PENDING'): Order {
 			createdAt: '2026-05-01T10:05:00.000Z',
 		},
 		delivery: {
+			__typename: 'Delivery',
 			id: 'del-1',
 			method: 'COURIER',
 			status: 'IN_TRANSIT',
@@ -75,18 +80,20 @@ function makeOrderMock(order: Order | null, id: string = ORDER_ID): MockedRespon
 
 const statsMock: MockedResponse = {
 	request: { query: MY_ORDER_STATS_QUERY, variables: {} },
-	result: { data: { myOrderStats: { all: 5, pending: 1, completed: 3, refunded: 1 } } },
+	result: {
+		data: { myOrderStats: { __typename: 'OrderStats', all: 5, pending: 1, completed: 3, refunded: 1 } },
+	},
 };
 
 const ordersMock: MockedResponse = {
 	request: { query: MY_ORDERS_QUERY, variables: {} },
-	result: { data: { myOrders: { items: [], total: 0, page: 1, pageSize: 8 } } },
+	result: { data: { myOrders: { __typename: 'OrderConnection', items: [], total: 0, page: 1, pageSize: 8 } } },
 };
 
 function renderPage(mocks: MockedResponse[], id: string = ORDER_ID) {
 	return render(
 		<AppToastProvider>
-			<MockedProvider mocks={mocks} addTypename={false}>
+			<MockedProvider mocks={mocks}>
 				<MemoryRouter initialEntries={[`/account/orders/${id}`]}>
 					<Routes>
 						<Route path="/account/orders/:id" element={<BuyerOrderDetailPage />} />

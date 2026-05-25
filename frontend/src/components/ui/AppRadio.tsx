@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import {
 	FormControl,
 	FormControlLabel,
@@ -22,9 +23,12 @@ export interface AppRadioProps extends Omit<RadioGroupProps, 'children'> {
 	required?: boolean;
 }
 
-export function AppRadio({ options, label, error, helperText, required, ...props }: AppRadioProps) {
+export const AppRadio = forwardRef<HTMLDivElement, AppRadioProps>(function AppRadio(
+	{ options, label, error, helperText, required, ...props },
+	ref,
+) {
 	return (
-		<FormControl error={error} required={required}>
+		<FormControl ref={ref} error={error} required={required}>
 			{label && <FormLabel>{label}</FormLabel>}
 			<RadioGroup {...props}>
 				{options.map((opt) => (
@@ -40,4 +44,4 @@ export function AppRadio({ options, label, error, helperText, required, ...props
 			{helperText && <FormHelperText>{helperText}</FormHelperText>}
 		</FormControl>
 	);
-}
+});

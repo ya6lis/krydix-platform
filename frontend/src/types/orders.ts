@@ -28,6 +28,7 @@ export interface OrderItem {
 	unitPrice: number;
 	totalPrice: number;
 	productTitle: string;
+	productMainImage?: string | null;
 }
 
 export interface PaymentRecord {

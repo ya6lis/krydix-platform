@@ -326,7 +326,7 @@ export default function BuyerOrdersPage() {
 	}));
 
 	return (
-		<Box sx={{ maxWidth: 1200 }}>
+		<Box sx={{ width: '100%', maxWidth: 1200, mx: 'auto' }}>
 			{/* page head */}
 			<Box
 				sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 3 }}

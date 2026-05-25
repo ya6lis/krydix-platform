@@ -8,6 +8,7 @@ export const ordersTypeDefs = `#graphql
 		unitPrice: Float!
 		totalPrice: Float!
 		productTitle: String!
+		productMainImage: String
 	}
 
 	type PaymentRecord {

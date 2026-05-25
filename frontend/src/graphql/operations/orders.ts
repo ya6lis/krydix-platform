@@ -17,6 +17,7 @@ const ORDER_FIELDS = `
 		unitPrice
 		totalPrice
 		productTitle
+		productMainImage
 	}
 	payment {
 		id

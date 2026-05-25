@@ -34,6 +34,14 @@ const NOTIF_TABS = [
 	'shell.notif.tab.system',
 ];
 
+interface NavbarNotification {
+	id: string;
+	isRead: boolean;
+}
+
+// Phase 13 can replace this with API/store data.
+const MOCK_NOTIFICATIONS: NavbarNotification[] = [];
+
 /* ── icon button base sx ─────────────────────────────────────── */
 const iconBtnSx = {
 	width: 36,
@@ -70,6 +78,7 @@ export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
 	const groups = sellerGroups();
 	const sellerCount = Object.keys(groups).length;
 	const count = itemCount();
+	const unreadCount = MOCK_NOTIFICATIONS.filter((notification) => !notification.isRead).length;
 
 	return (
 		<Box
@@ -219,26 +228,27 @@ export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
 					aria-label={t('shell.notif.title')}
 				>
 					<FontAwesomeIcon icon={faBell} style={{ width: 16, height: 16 }} />
-					{/* static unread badge — Phase 13 wires real data */}
-					<Box
-						sx={{
-							position: 'absolute',
-							top: -4,
-							right: -4,
-							background: tokens.coral,
-							color: '#fff',
-							fontSize: 10,
-							fontWeight: 700,
-							height: 16,
-							minWidth: 16,
-							padding: '0 4px',
-							borderRadius: 8,
-							display: 'grid',
-							placeItems: 'center',
-						}}
-					>
-						3
-					</Box>
+					{unreadCount > 0 && (
+						<Box
+							sx={{
+								position: 'absolute',
+								top: -4,
+								right: -4,
+								background: tokens.coral,
+								color: '#fff',
+								fontSize: 10,
+								fontWeight: 700,
+								height: 16,
+								minWidth: 16,
+								padding: '0 4px',
+								borderRadius: 8,
+								display: 'grid',
+								placeItems: 'center',
+							}}
+						>
+							{unreadCount}
+						</Box>
+					)}
 				</Box>
 
 				{/* Notifications popover */}
@@ -259,7 +269,12 @@ export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
 						},
 					}}
 				>
-					<NotifDropdown activeTab={notifTab} onTabChange={setNotifTab} tabs={NOTIF_TABS} />
+					<NotifDropdown
+						activeTab={notifTab}
+						onTabChange={setNotifTab}
+						tabs={NOTIF_TABS}
+						unreadCount={unreadCount}
+					/>
 				</Popover>
 			</Box>
 		</Box>
@@ -521,10 +536,12 @@ function NotifDropdown({
 	activeTab,
 	onTabChange,
 	tabs,
+	unreadCount,
 }: {
 	activeTab: number;
 	onTabChange: (i: number) => void;
 	tabs: string[];
+	unreadCount: number;
 }) {
 	const { t } = useI18n();
 
@@ -542,7 +559,7 @@ function NotifDropdown({
 				<Box>
 					<Typography sx={{ fontWeight: 700, fontSize: 15 }}>{t('shell.notif.title')}</Typography>
 					<Typography sx={{ fontSize: 12, color: tokens.ink3, mt: '2px' }}>
-						{t('shell.notif.unread', { count: 3 })}
+						{t('shell.notif.unread', { count: unreadCount })}
 					</Typography>
 				</Box>
 				<Box
