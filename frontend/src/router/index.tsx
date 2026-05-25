@@ -20,6 +20,7 @@ import CheckoutPage from '@/pages/public/CheckoutPage';
 import BuyerOrdersPage from '@/pages/buyer/BuyerOrdersPage';
 import BuyerOrderDetailPage from '@/pages/buyer/BuyerOrderDetailPage';
 import BuyerSettingsPage from '@/pages/buyer/BuyerSettingsPage';
+import SellerProductFormPage from '@/pages/seller/SellerProductFormPage';
 
 const Placeholder = ({ name }: { name: string }) => (
 	<div style={{ padding: 32 }}>
@@ -101,8 +102,8 @@ export const router = createBrowserRouter([
 			{ index: true, element: <Placeholder name="Seller Home" /> },
 			{ path: 'dashboard', element: <Placeholder name="Seller Dashboard" /> },
 			{ path: 'products', element: <Placeholder name="My Products" /> },
-			{ path: 'products/new', element: <Placeholder name="New Product" /> },
-			{ path: 'products/:id/edit', element: <Placeholder name="Edit Product" /> },
+			{ path: 'products/new', element: <SellerProductFormPage /> },
+			{ path: 'products/:id/edit', element: <SellerProductFormPage /> },
 			{ path: 'orders', element: <Placeholder name="Seller Orders" /> },
 			{ path: 'orders/:id', element: <Placeholder name="Seller Order Detail" /> },
 			{ path: 'import', element: <Placeholder name="Bulk Import" /> },
