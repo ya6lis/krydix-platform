@@ -14,6 +14,8 @@ import { sellerProductsTypeDefs } from './modules/sellerProducts/typeDefs.js';
 import { sellerProductsResolvers } from './modules/sellerProducts/resolvers.js';
 import { sellerDashboardTypeDefs } from './modules/sellerDashboard/typeDefs.js';
 import { sellerDashboardResolvers } from './modules/sellerDashboard/resolvers.js';
+import { moderationTypeDefs } from './modules/moderation/typeDefs.js';
+import { moderationResolvers } from './modules/moderation/resolvers.js';
 
 const rootTypeDefs = `#graphql
 	type Query
@@ -30,6 +32,7 @@ export const schema = makeExecutableSchema({
 		ordersTypeDefs,
 		sellerProductsTypeDefs,
 		sellerDashboardTypeDefs,
+		moderationTypeDefs,
 	]),
 	resolvers: mergeResolvers([
 		authResolvers,
@@ -39,5 +42,6 @@ export const schema = makeExecutableSchema({
 		ordersResolvers,
 		sellerProductsResolvers,
 		sellerDashboardResolvers,
+		moderationResolvers,
 	]),
 });

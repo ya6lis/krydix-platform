@@ -21,6 +21,8 @@ export const CreateProductSchema = z.object({
 	brand: z.string().max(200).optional().nullable(),
 	basePrice: z.number().positive(),
 	comparePrice: z.number().positive().optional().nullable(),
+	isAvailable: z.boolean().optional(),
+	submitForReview: z.boolean().optional(),
 	categoryIds: z.array(z.string().min(1)).min(1, 'At least one category required'),
 	variants: z.array(VariantInputSchema).optional(),
 	metaTitleEn: z.string().max(200).optional().nullable(),
@@ -31,6 +33,7 @@ export const CreateProductSchema = z.object({
 
 export const UpdateProductSchema = CreateProductSchema.partial().extend({
 	isAvailable: z.boolean().optional(),
+	statusAction: z.enum(['SUBMIT_FOR_REVIEW', 'MAKE_DRAFT']).optional(),
 });
 
 export const UploadMediaSchema = z.object({

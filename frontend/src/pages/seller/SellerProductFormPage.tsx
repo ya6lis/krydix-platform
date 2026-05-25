@@ -374,6 +374,7 @@ export default function SellerProductFormPage() {
 	const [media, setMedia] = useState<MediaItem[]>([]);
 	const [uploadingMedia, setUploadingMedia] = useState(false);
 	const [deletingMediaId, setDeletingMediaId] = useState<string | null>(null);
+	const [productStatus, setProductStatus] = useState<string | null>(null);
 
 	// ── Form ────────────────────────────────────────────────────────────────
 
@@ -438,6 +439,7 @@ export default function SellerProductFormPage() {
 			if (!data?.myProduct) return;
 			const p = data.myProduct;
 			slugManualRef.current = true;
+			setProductStatus(p.status ?? null);
 			reset({
 				titleEn: p.titleEn,
 				titleUk: p.titleUk,
@@ -481,7 +483,10 @@ export default function SellerProductFormPage() {
 
 	// ── Submit ───────────────────────────────────────────────────────────────
 
-	const buildPayload = (values: ProductFormValues) => ({
+	const buildPayload = (
+		values: ProductFormValues,
+		options?: { submitForReview?: boolean; statusAction?: 'SUBMIT_FOR_REVIEW' | 'MAKE_DRAFT' }
+	) => ({
 		titleEn: values.titleEn,
 		titleUk: values.titleUk,
 		descriptionEn: values.descriptionEn,
@@ -492,6 +497,10 @@ export default function SellerProductFormPage() {
 		basePrice: Number(values.basePrice),
 		comparePrice: values.comparePrice ? Number(values.comparePrice) : null,
 		isAvailable: values.isAvailable,
+		...(options?.submitForReview !== undefined
+			? { submitForReview: options.submitForReview }
+			: {}),
+		...(options?.statusAction ? { statusAction: options.statusAction } : {}),
 		categoryIds: values.categoryIds,
 		variants: values.variants?.map((v) => ({
 			sku: v.sku || null,
@@ -505,14 +514,30 @@ export default function SellerProductFormPage() {
 		metaDescriptionUk: values.metaDescriptionUk || null,
 	});
 
-	const onSubmit = async (values: ProductFormValues) => {
+	const onSubmit = async (
+		values: ProductFormValues,
+		options?: { submitForReview?: boolean; statusAction?: 'SUBMIT_FOR_REVIEW' | 'MAKE_DRAFT' }
+	) => {
 		try {
 			if (isEdit && id) {
-				await updateProduct({ variables: { id, input: buildPayload(values) } });
+				await updateProduct({ variables: { id, input: buildPayload(values, options) } });
 				showToast(t('sellerProduct.updateSuccess'), 'success');
 			} else {
-				const { data } = await createProduct({ variables: { input: buildPayload(values) } });
-				showToast(t('sellerProduct.createSuccess'), 'success');
+				const { data } = await createProduct({
+					variables: { input: buildPayload(values, options) },
+				});
+				if (data?.createProduct?.slug && data.createProduct.slug !== values.slug) {
+					showToast(
+						t('sellerProduct.slugAutoUpdated', { slug: data.createProduct.slug }),
+						'warning'
+					);
+				}
+				showToast(
+					options?.submitForReview
+						? t('sellerProduct.updateSuccess')
+						: t('sellerProduct.createSuccess'),
+					'success'
+				);
 				navigate(ROUTES.SELLER_PRODUCT_EDIT(data.createProduct.id));
 			}
 		} catch (err: unknown) {
@@ -595,6 +620,8 @@ export default function SellerProductFormPage() {
 	const mainImage = media.find((m) => m.isMain);
 	const gallery = media.filter((m) => !m.isMain && m.type === 'IMAGE');
 	const canUploadMore = media.filter((m) => m.type === 'IMAGE').length < 9;
+	const isDraftEdit = isEdit && productStatus === 'DRAFT';
+	const isNonDraftEdit = isEdit && productStatus && productStatus !== 'DRAFT';
 
 	return (
 		<Box sx={{ maxWidth: 860, mx: 'auto' }}>
@@ -623,8 +650,50 @@ export default function SellerProductFormPage() {
 						>
 							{t('common.cancel')}
 						</AppButton>
-						<AppButton variant="contained" loading={isSubmitting} onClick={handleSubmit(onSubmit)}>
-							{isEdit ? t('sellerProduct.updateProduct') : t('sellerProduct.submitForReview')}
+						{!isEdit && (
+							<AppButton
+								variant="outlined"
+								loading={isSubmitting}
+								onClick={handleSubmit((values) => onSubmit(values, { submitForReview: false }))}
+							>
+								{t('sellerProduct.saveDraft')}
+							</AppButton>
+						)}
+						{isDraftEdit && (
+							<AppButton
+								variant="outlined"
+								loading={isSubmitting}
+								onClick={handleSubmit((values) => onSubmit(values))}
+							>
+								{t('sellerProduct.updateProduct')}
+							</AppButton>
+						)}
+						{isNonDraftEdit && (
+							<AppButton
+								variant="outlined"
+								loading={isSubmitting}
+								onClick={handleSubmit((values) => onSubmit(values))}
+							>
+								{t('sellerProduct.updateProduct')}
+							</AppButton>
+						)}
+						<AppButton
+							variant="contained"
+							loading={isSubmitting}
+							onClick={handleSubmit((values) =>
+								onSubmit(
+									values,
+									isNonDraftEdit
+										? { statusAction: 'MAKE_DRAFT' }
+										: isEdit
+											? { statusAction: 'SUBMIT_FOR_REVIEW' }
+											: { submitForReview: true }
+								)
+							)}
+						>
+							{isNonDraftEdit
+								? t('sellerProduct.makeDraft')
+								: t('sellerProduct.submitForReview')}
 						</AppButton>
 					</Stack>
 				</Box>
@@ -977,8 +1046,50 @@ export default function SellerProductFormPage() {
 					>
 						{t('common.cancel')}
 					</AppButton>
-					<AppButton variant="contained" loading={isSubmitting} onClick={handleSubmit(onSubmit)}>
-						{isEdit ? t('sellerProduct.updateProduct') : t('sellerProduct.submitForReview')}
+					{!isEdit && (
+						<AppButton
+							variant="outlined"
+							loading={isSubmitting}
+							onClick={handleSubmit((values) => onSubmit(values, { submitForReview: false }))}
+						>
+							{t('sellerProduct.saveDraft')}
+						</AppButton>
+					)}
+					{isDraftEdit && (
+						<AppButton
+							variant="outlined"
+							loading={isSubmitting}
+							onClick={handleSubmit((values) => onSubmit(values))}
+						>
+							{t('sellerProduct.updateProduct')}
+						</AppButton>
+					)}
+					{isNonDraftEdit && (
+						<AppButton
+							variant="outlined"
+							loading={isSubmitting}
+							onClick={handleSubmit((values) => onSubmit(values))}
+						>
+							{t('sellerProduct.updateProduct')}
+						</AppButton>
+					)}
+					<AppButton
+						variant="contained"
+						loading={isSubmitting}
+						onClick={handleSubmit((values) =>
+							onSubmit(
+								values,
+								isNonDraftEdit
+									? { statusAction: 'MAKE_DRAFT' }
+									: isEdit
+										? { statusAction: 'SUBMIT_FOR_REVIEW' }
+										: { submitForReview: true }
+							)
+						)}
+					>
+						{isNonDraftEdit
+							? t('sellerProduct.makeDraft')
+							: t('sellerProduct.submitForReview')}
 					</AppButton>
 				</Box>
 			</Stack>

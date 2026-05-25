@@ -757,10 +757,12 @@
 		"saving": "Saving…",
 		"submitForReview": "Submit for Review",
 		"updateProduct": "Update Product",
+		"makeDraft": "Make Draft",
 		"createSuccess": "Product created as draft",
 		"updateSuccess": "Product submitted for review",
 		"deleteMediaSuccess": "Image removed",
 		"slugTaken": "This slug is already taken",
+		"slugAutoUpdated": "Slug was already in use. Updated to {{slug}}.",
 		"section": {
 			"basic": "Basic Information",
 			"basicSub": "Product title, description, and identifiers",
@@ -956,6 +958,101 @@
 			"emptyDesc": "All products have sufficient inventory.",
 			"stockLabel": "in stock",
 			"variantLabel": "Variant"
+		}
+	},
+	"moderation": {
+		"pageTitle": "Moderation queue",
+		"pageSubtitle": "Review new and edited product submissions.",
+		"pageSubtitleCount": "{{count}} items pending.",
+		"filterBtn": "Filter",
+		"searchPlaceholder": "Search by product, SKU, or seller…",
+		"bulkApproveBtn": "Bulk approve ({{count}})",
+		"bulkBar": {
+			"selected": "{{count}} selected",
+			"approveAll": "Approve selected",
+			"clear": "Clear"
+		},
+		"tabs": {
+			"pending": "Pending",
+			"approved": "Approved today",
+			"rejected": "Rejected today"
+		},
+		"queue": {
+			"newProduct": "New product",
+			"editPending": "Edit pending",
+			"submitted": "Submitted {{time}}",
+			"waiting": "Waiting {{time}}",
+			"by": "by",
+			"inStock": "in stock",
+			"reviewBtn": "Review",
+			"empty": "No items in queue",
+			"emptyDesc": "All product submissions have been reviewed."
+		},
+		"preview": {
+			"noSelection": "Select an item from the queue to review",
+			"verified": "Verified",
+			"langEn": "English",
+			"langUk": "Ukrainian",
+			"comparePrice": "Compare price",
+			"allCategories": "Categories",
+			"specs": {
+				"category": "Category",
+				"brand": "Brand",
+				"price": "Price",
+				"stock": "Stock",
+				"photos": "Photos",
+				"acrossVariants": "across {{count}} variants"
+			},
+			"variants": {
+				"title": "Variants",
+				"noVariants": "No variants defined",
+				"col": {
+					"options": "Options",
+					"sku": "SKU",
+					"price": "Price",
+					"stock": "Stock",
+					"active": "Active"
+				}
+			},
+			"seo": {
+				"title": "SEO metadata",
+				"notSet": "Not set"
+			},
+			"rejectSection": {
+				"title": "If rejecting",
+				"reasons": {
+					"lowQualityPhotos": "Low-quality photos",
+					"misleadingDescription": "Misleading description",
+					"wrongCategory": "Wrong category",
+					"restrictedProduct": "Restricted product",
+					"other": "Other"
+				},
+				"notePlaceholder": "Internal note to seller (optional for approval, required for rejection)…"
+			},
+			"rejectBtn": "Reject",
+			"approveBtn": "Approve",
+			"rejecting": "Rejecting…",
+			"approving": "Approving…"
+		},
+		"toast": {
+			"approved": "Product approved successfully",
+			"rejected": "Product rejected",
+			"approveError": "Failed to approve product",
+			"rejectError": "Failed to reject product",
+			"reasonRequired": "Please enter a rejection reason",
+			"bulkApproved": "{{count}} product(s) approved",
+			"bulkApproveError": "Failed to approve some products"
+		},
+		"filter": {
+			"title": "Filter queue",
+			"searchLabel": "Search by product or seller",
+			"searchPlaceholder": "Type to search…",
+			"clearBtn": "Clear",
+			"applyBtn": "Apply"
+		},
+		"gallery": {
+			"photoOf": "{{current}} of {{total}}",
+			"viewOnSite": "View on site"
 		}
 	}
 }

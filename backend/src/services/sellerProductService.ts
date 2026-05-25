@@ -20,6 +20,21 @@ if (env.CLOUDINARY_CLOUD_NAME) {
 	});
 }
 
+async function resolveUniqueSlug(baseSlug: string, sellerId: string): Promise<string> {
+	if (!(await repo.slugExists(baseSlug))) return baseSlug;
+
+	const sellerPrefix = sellerId.slice(0, 8);
+	const prefixed = `${sellerPrefix}-${baseSlug}`;
+	if (!(await repo.slugExists(prefixed))) return prefixed;
+
+	let index = 2;
+	while (true) {
+		const candidate = `${prefixed}-${index}`;
+		if (!(await repo.slugExists(candidate))) return candidate;
+		index += 1;
+	}
+}
+
 function mapProduct(p: repo.SellerProductRecord) {
 	const enT = p.translations.find((t) => t.language === 'EN');
 	const ukT = p.translations.find((t) => t.language === 'UK');
@@ -114,20 +129,19 @@ async function validateCategories(categoryIds: string[]) {
 }
 
 export async function createProduct(sellerId: string, input: CreateProductInput) {
-	const slugTaken = await repo.slugExists(input.slug);
-	if (slugTaken) {
-		throw new GraphQLError('Slug already taken', { extensions: { code: 'SLUG_TAKEN' } });
-	}
+	const resolvedSlug = await resolveUniqueSlug(input.slug, sellerId);
 
 	await validateCategories(input.categoryIds);
 
 	const product = await repo.createProduct({
 		sellerId,
-		slug: input.slug,
+		slug: resolvedSlug,
 		sku: input.sku,
 		brand: input.brand,
 		basePrice: input.basePrice,
 		comparePrice: input.comparePrice,
+		isAvailable: input.isAvailable,
+		status: input.submitForReview ? ProductStatus.PENDING_MODERATION : ProductStatus.DRAFT,
 		categoryIds: input.categoryIds,
 		translations: [
 			{
@@ -190,6 +204,7 @@ export async function updateProduct(id: string, sellerId: string, input: UpdateP
 		});
 	}
 
+	const statusAction = input.statusAction;
 	const updated = await repo.updateProduct(id, {
 		slug: input.slug,
 		sku: input.sku,
@@ -197,7 +212,12 @@ export async function updateProduct(id: string, sellerId: string, input: UpdateP
 		basePrice: input.basePrice,
 		comparePrice: input.comparePrice,
 		isAvailable: input.isAvailable,
-		status: ProductStatus.PENDING_MODERATION,
+		status:
+			statusAction === 'SUBMIT_FOR_REVIEW'
+				? ProductStatus.PENDING_MODERATION
+				: statusAction === 'MAKE_DRAFT'
+					? ProductStatus.DRAFT
+					: undefined,
 		categoryIds: input.categoryIds,
 		translations: translations.length > 0 ? translations : undefined,
 		variants: input.variants,

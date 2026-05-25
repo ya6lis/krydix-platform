@@ -757,10 +757,12 @@
 		"saving": "Збереження…",
 		"submitForReview": "Надіслати на модерацію",
 		"updateProduct": "Оновити товар",
+		"makeDraft": "Зробити чернеткою",
 		"createSuccess": "Товар збережено як чернетку",
 		"updateSuccess": "Товар надіслано на модерацію",
 		"deleteMediaSuccess": "Зображення видалено",
 		"slugTaken": "Цей slug вже зайнятий",
+		"slugAutoUpdated": "Slug вже використовується. Оновлено на {{slug}}.",
 		"section": {
 			"basic": "Основна інформація",
 			"basicSub": "Назва, опис та ідентифікатори товару",
@@ -956,6 +958,101 @@
 			"emptyDesc": "Усі товари мають достатні запаси.",
 			"stockLabel": "в наявності",
 			"variantLabel": "Варіант"
+		}
+	},
+	"moderation": {
+		"pageTitle": "Черга модерації",
+		"pageSubtitle": "Перегляньте нові та відредаговані товари.",
+		"pageSubtitleCount": "{{count}} очікують.",
+		"filterBtn": "Фільтр",
+		"searchPlaceholder": "Пошук за товаром, SKU або продавцем…",
+		"bulkApproveBtn": "Масово затвердити ({{count}})",
+		"bulkBar": {
+			"selected": "{{count}} вибрано",
+			"approveAll": "Затвердити вибрані",
+			"clear": "Скасувати"
+		},
+		"tabs": {
+			"pending": "Очікують",
+			"approved": "Схвалено сьогодні",
+			"rejected": "Відхилено сьогодні"
+		},
+		"queue": {
+			"newProduct": "Новий товар",
+			"editPending": "Редагування",
+			"submitted": "Подано {{time}}",
+			"waiting": "Очікує {{time}}",
+			"by": "від",
+			"inStock": "в наявності",
+			"reviewBtn": "Переглянути",
+			"empty": "Черга порожня",
+			"emptyDesc": "Усі подані товари вже перевірено."
+		},
+		"preview": {
+			"noSelection": "Виберіть товар зі списку для перегляду",
+			"verified": "Верифікований",
+			"langEn": "Англійська",
+			"langUk": "Українська",
+			"comparePrice": "Порівняльна ціна",
+			"allCategories": "Категорії",
+			"specs": {
+				"category": "Категорія",
+				"brand": "Бренд",
+				"price": "Ціна",
+				"stock": "Склад",
+				"photos": "Фото",
+				"acrossVariants": "по {{count}} варіантах"
+			},
+			"variants": {
+				"title": "Варіанти",
+				"noVariants": "Варіанти не визначені",
+				"col": {
+					"options": "Параметри",
+					"sku": "SKU",
+					"price": "Ціна",
+					"stock": "Склад",
+					"active": "Активний"
+				}
+			},
+			"seo": {
+				"title": "SEO метадані",
+				"notSet": "Не вказано"
+			},
+			"rejectSection": {
+				"title": "При відхиленні",
+				"reasons": {
+					"lowQualityPhotos": "Неякісні фото",
+					"misleadingDescription": "Оманливий опис",
+					"wrongCategory": "Неправильна категорія",
+					"restrictedProduct": "Обмежений товар",
+					"other": "Інше"
+				},
+				"notePlaceholder": "Внутрішня нотатка для продавця (необов'язково при схваленні, обов'язково при відхиленні)…"
+			},
+			"rejectBtn": "Відхилити",
+			"approveBtn": "Схвалити",
+			"rejecting": "Відхилення…",
+			"approving": "Схвалення…"
+		},
+		"toast": {
+			"approved": "Товар успішно схвалено",
+			"rejected": "Товар відхилено",
+			"approveError": "Не вдалося схвалити товар",
+			"rejectError": "Не вдалося відхилити товар",
+			"reasonRequired": "Вкажіть причину відхилення",
+			"bulkApproved": "{{count}} товар(и) схвалено",
+			"bulkApproveError": "Не вдалося схвалити деякі товари"
+		},
+		"filter": {
+			"title": "Фільтр черги",
+			"searchLabel": "Пошук за товаром або продавцем",
+			"searchPlaceholder": "Введіть для пошуку…",
+			"clearBtn": "Очистити",
+			"applyBtn": "Застосувати"
+		},
+		"gallery": {
+			"photoOf": "{{current}} з {{total}}",
+			"viewOnSite": "Переглянути на сайті"
 		}
 	}
 }
