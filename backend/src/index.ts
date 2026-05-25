@@ -6,6 +6,7 @@ import { env } from './config/env.js';
 import { logger } from './utils/logger.js';
 import { schema } from './graphql/schema.js';
 import { extractAuthUser } from './middleware/auth.js';
+import { UPLOAD_MAX_FILE_SIZE_MB } from './constants/constants.js';
 import type { GraphQLContext } from './types/context.js';
 
 const allowedOrigins = env.FRONTEND_URL.split(',').map((o) => o.trim());
@@ -26,7 +27,16 @@ async function bootstrap() {
 			credentials: true,
 		})
 	);
-	app.use(express.json());
+	app.use(express.json({ limit: `${UPLOAD_MAX_FILE_SIZE_MB}mb` }));
+	app.use((err: unknown, _req: express.Request, res: express.Response, next: express.NextFunction) => {
+		if (err && typeof err === 'object' && 'type' in err && err.type === 'entity.too.large') {
+			return res.status(413).json({
+				error: 'PAYLOAD_TOO_LARGE',
+				message: `File is too large. Max size is ${UPLOAD_MAX_FILE_SIZE_MB}MB.`,
+			});
+		}
+		return next(err);
+	});
 
 	app.get('/health', (_req, res) => {
 		res.json({ status: 'ok', timestamp: new Date().toISOString() });

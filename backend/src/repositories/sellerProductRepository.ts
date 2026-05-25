@@ -59,6 +59,8 @@ export interface CreateProductData {
 	brand?: string | null;
 	basePrice: number;
 	comparePrice?: number | null;
+	isAvailable?: boolean;
+	status?: ProductStatus;
 	categoryIds: string[];
 	translations: Array<{
 		language: 'EN' | 'UK';
@@ -84,8 +86,8 @@ export async function createProduct(data: CreateProductData): Promise<SellerProd
 			brand: data.brand ?? null,
 			basePrice: data.basePrice,
 			comparePrice: data.comparePrice ?? null,
-			status: ProductStatus.DRAFT,
-			isAvailable: true,
+			status: data.status ?? ProductStatus.DRAFT,
+			isAvailable: data.isAvailable ?? true,
 			translations: {
 				create: data.translations,
 			},

@@ -23,6 +23,7 @@ import BuyerSettingsPage from '@/pages/buyer/BuyerSettingsPage';
 import SellerProductFormPage from '@/pages/seller/SellerProductFormPage';
 import SellerProductsPage from '@/pages/seller/SellerProductsPage';
 import SellerDashboardPage from '@/pages/seller/SellerDashboardPage';
+import ModerationQueuePage from '@/pages/moderator/ModerationQueuePage';
 
 const Placeholder = ({ name }: { name: string }) => (
 	<div style={{ padding: 32 }}>
@@ -124,7 +125,7 @@ export const router = createBrowserRouter([
 		),
 		children: [
 			{ index: true, element: <Placeholder name="Moderator Home" /> },
-			{ path: 'products', element: <Placeholder name="Product Moderation" /> },
+			{ path: 'products', element: <ModerationQueuePage /> },
 			{ path: 'complaints', element: <Placeholder name="Complaints" /> },
 			{ path: 'reviews', element: <Placeholder name="Review Moderation" /> },
 			{ path: 'verification', element: <Placeholder name="Seller Verification Queue" /> },

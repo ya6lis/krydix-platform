@@ -270,6 +270,12 @@ export async function getProductBySlug(
 ): Promise<CatalogProduct | null> {
 	const product = await productRepo.findProductBySlug(slug);
 	if (!product) return null;
+	if (
+		product.deletedAt ||
+		!VISIBLE_PRODUCT_WHERE.status?.in?.includes(product.status as ProductStatus)
+	) {
+		return null;
+	}
 	const ratings = await productRepo.ratingsByProductIds([product.id]);
 	const rating = ratings[0]
 		? { avg: Number(ratings[0]._avg.rating ?? 0), count: ratings[0]._count._all }

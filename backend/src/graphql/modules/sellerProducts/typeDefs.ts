@@ -12,6 +12,11 @@ export const sellerProductsTypeDefs = `#graphql
 		ENABLED
 	}
 
+	enum ProductStatusAction {
+		SUBMIT_FOR_REVIEW
+		MAKE_DRAFT
+	}
+
 	type CategoryRef {
 		id: ID!
 		slug: String!
@@ -78,6 +83,8 @@ export const sellerProductsTypeDefs = `#graphql
 		brand: String
 		basePrice: Float!
 		comparePrice: Float
+		isAvailable: Boolean
+		submitForReview: Boolean
 		categoryIds: [ID!]!
 		variants: [VariantInput!]
 		metaTitleEn: String
@@ -103,6 +110,7 @@ export const sellerProductsTypeDefs = `#graphql
 		metaTitleUk: String
 		metaDescriptionEn: String
 		metaDescriptionUk: String
+		statusAction: ProductStatusAction
 	}
 
 	type SellerProductList {
