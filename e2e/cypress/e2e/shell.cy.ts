@@ -88,7 +88,7 @@ describe('App shell — sidebar', () => {
 describe('App shell — sidebar moderator role', () => {
 	beforeEach(() => {
 		stubAuthenticatedSession('MODERATOR');
-		cy.visit('/moderator/products');
+		cy.visit('/moderator/product-moderation');
 	});
 
 	it('shows moderation nav group for MODERATOR', () => {

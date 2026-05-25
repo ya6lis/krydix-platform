@@ -26,6 +26,8 @@
 		"orders": "Orders",
 		"verification": "Verification",
 		"queue": "Queue",
+		"productModeration": "Product moderation",
+		"reviewModeration": "Review moderation",
 		"complaints": "Complaints",
 		"reviews": "Reviews",
 		"messages": "Messages",
@@ -961,8 +963,8 @@
 		}
 	},
 	"moderation": {
-		"pageTitle": "Moderation queue",
-		"pageSubtitle": "Review new and edited product submissions.",
+		"pageTitle": "Product moderation",
+		"pageSubtitle": "Approve, reject, and browse product submissions.",
 		"pageSubtitleCount": "{{count}} items pending.",
 		"filterBtn": "Filter",
 		"searchPlaceholder": "Search by product, SKU, or seller…",
@@ -1053,6 +1055,75 @@
 		"gallery": {
 			"photoOf": "{{current}} of {{total}}",
 			"viewOnSite": "View on site"
+		}
+	},
+	"reviewModeration": {
+		"pageTitle": "Review moderation",
+		"pageSubtitle": "Approve, block, and browse product reviews.",
+		"exportBtn": "Export",
+		"searchPlaceholder": "Search by reviewer, target, content…",
+		"tabs": {
+			"pending": "Pending",
+			"flagged": "Flagged",
+			"approved": "Approved",
+			"hidden": "Hidden"
+		},
+		"filters": {
+			"targetAll": "All targets",
+			"targetProduct": "Product reviews",
+			"targetSeller": "Seller reviews",
+			"targetBuyer": "Buyer reviews",
+			"ratingAll": "All ratings",
+			"rating5": "5 stars",
+			"rating4": "4 stars",
+			"rating3": "3 stars",
+			"ratingLow": "1–2 stars"
+		},
+		"card": {
+			"role": "Buyer · {{count}} prior reviews",
+			"submitted": "Submitted {{time}}",
+			"viaOrder": "via Order #{{orderId}}",
+			"photosAttached": "{{count}} photos attached",
+			"viewProduct": "View product",
+			"hideBtn": "Hide",
+			"approveBtn": "Approve"
+		},
+		"empty": {
+			"title": "No reviews in this tab",
+			"description": "Try another tab or adjust your filters."
+		},
+		"toast": {
+			"approved": "Review approved successfully",
+			"hidden": "Review hidden",
+			"approveError": "Failed to approve review",
+			"hideError": "Failed to hide review"
+		}
+	},
+	"reviews": {
+		"writeBtn": "Write a review",
+		"loading": "Loading reviews…",
+		"card": {
+			"role": "Buyer · {{count}} prior reviews",
+			"pendingModeration": "Pending moderation",
+			"sellerResponse": "Seller response",
+			"submitted": "Submitted {{time}}",
+			"viaOrder": "via Order #{{orderId}}",
+			"photosAttached": "{{count}} photos attached",
+			"flag": "Flag"
+		},
+		"modal": {
+			"title": "Write a review",
+			"ratingLabel": "Your rating",
+			"textLabel": "Your review",
+			"textPlaceholder": "Share your experience with this product…",
+			"photosLabel": "Photos (optional)",
+			"addPhoto": "Add photo",
+			"pendingNote": "Your review will be visible after moderation approval.",
+			"cancel": "Cancel",
+			"submit": "Submit review",
+			"success": "Review submitted — pending moderation",
+			"error": "Failed to submit review",
+			"ratingRequired": "Please select a rating"
 		}
 	}
 }

@@ -26,6 +26,8 @@
 		"orders": "Замовлення",
 		"verification": "Верифікація",
 		"queue": "Черга",
+		"productModeration": "Модерація товарів",
+		"reviewModeration": "Модерація відгуків",
 		"complaints": "Скарги",
 		"reviews": "Відгуки",
 		"messages": "Повідомлення",
@@ -961,8 +963,8 @@
 		}
 	},
 	"moderation": {
-		"pageTitle": "Черга модерації",
-		"pageSubtitle": "Перегляньте нові та відредаговані товари.",
+		"pageTitle": "Модерація товарів",
+		"pageSubtitle": "Схвалюйте, відхиляйте та переглядайте подані товари.",
 		"pageSubtitleCount": "{{count}} очікують.",
 		"filterBtn": "Фільтр",
 		"searchPlaceholder": "Пошук за товаром, SKU або продавцем…",
@@ -1053,6 +1055,75 @@
 		"gallery": {
 			"photoOf": "{{current}} з {{total}}",
 			"viewOnSite": "Переглянути на сайті"
+		}
+	},
+	"reviewModeration": {
+		"pageTitle": "Модерація відгуків",
+		"pageSubtitle": "Схвалюйте, блокуйте та переглядайте відгуки про товари.",
+		"exportBtn": "Експорт",
+		"searchPlaceholder": "Пошук за автором, об'єктом, текстом…",
+		"tabs": {
+			"pending": "Очікують",
+			"flagged": "Позначені",
+			"approved": "Схвалені",
+			"hidden": "Приховані"
+		},
+		"filters": {
+			"targetAll": "Усі типи",
+			"targetProduct": "Відгуки про товари",
+			"targetSeller": "Відгуки про продавців",
+			"targetBuyer": "Відгуки про покупців",
+			"ratingAll": "Усі оцінки",
+			"rating5": "5 зірок",
+			"rating4": "4 зірки",
+			"rating3": "3 зірки",
+			"ratingLow": "1–2 зірки"
+		},
+		"card": {
+			"role": "Покупець · {{count}} попередніх відгуків",
+			"submitted": "Надано {{time}}",
+			"viaOrder": "через замовлення #{{orderId}}",
+			"photosAttached": "{{count}} фото додано",
+			"viewProduct": "Переглянути товар",
+			"hideBtn": "Приховати",
+			"approveBtn": "Схвалити"
+		},
+		"empty": {
+			"title": "Немає відгуків у цій вкладці",
+			"description": "Спробуйте іншу вкладку або змініть фільтри."
+		},
+		"toast": {
+			"approved": "Відгук успішно схвалено",
+			"hidden": "Відгук приховано",
+			"approveError": "Не вдалося схвалити відгук",
+			"hideError": "Не вдалося приховати відгук"
+		}
+	},
+	"reviews": {
+		"writeBtn": "Написати відгук",
+		"loading": "Завантаження відгуків…",
+		"card": {
+			"role": "Покупець · {{count}} попередніх відгуків",
+			"pendingModeration": "Очікує модерації",
+			"sellerResponse": "Відповідь продавця",
+			"submitted": "Подано {{time}}",
+			"viaOrder": "через замовлення #{{orderId}}",
+			"photosAttached": "{{count}} фото додано",
+			"flag": "Поскаржитись"
+		},
+		"modal": {
+			"title": "Написати відгук",
+			"ratingLabel": "Ваша оцінка",
+			"textLabel": "Ваш відгук",
+			"textPlaceholder": "Поділіться враженнями про цей товар…",
+			"photosLabel": "Фото (необов'язково)",
+			"addPhoto": "Додати фото",
+			"pendingNote": "Ваш відгук буде опубліковано після схвалення модератором.",
+			"cancel": "Скасувати",
+			"submit": "Надіслати відгук",
+			"success": "Відгук надіслано — очікує модерації",
+			"error": "Не вдалося надіслати відгук",
+			"ratingRequired": "Оберіть оцінку"
 		}
 	}
 }

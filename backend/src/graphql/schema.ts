@@ -16,6 +16,10 @@ import { sellerDashboardTypeDefs } from './modules/sellerDashboard/typeDefs.js';
 import { sellerDashboardResolvers } from './modules/sellerDashboard/resolvers.js';
 import { moderationTypeDefs } from './modules/moderation/typeDefs.js';
 import { moderationResolvers } from './modules/moderation/resolvers.js';
+import { reviewsTypeDefs } from './modules/reviews/typeDefs.js';
+import { reviewsResolvers } from './modules/reviews/resolvers.js';
+import { reviewModerationTypeDefs } from './modules/reviewModeration/typeDefs.js';
+import { reviewModerationResolvers } from './modules/reviewModeration/resolvers.js';
 
 const rootTypeDefs = `#graphql
 	type Query
@@ -33,6 +37,8 @@ export const schema = makeExecutableSchema({
 		sellerProductsTypeDefs,
 		sellerDashboardTypeDefs,
 		moderationTypeDefs,
+		reviewsTypeDefs,
+		reviewModerationTypeDefs,
 	]),
 	resolvers: mergeResolvers([
 		authResolvers,
@@ -43,5 +49,7 @@ export const schema = makeExecutableSchema({
 		sellerProductsResolvers,
 		sellerDashboardResolvers,
 		moderationResolvers,
+		reviewsResolvers,
+		reviewModerationResolvers,
 	]),
 });

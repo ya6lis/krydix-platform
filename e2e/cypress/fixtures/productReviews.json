@@ -1,0 +1,45 @@
+{
+	"productReviews": {
+		"items": [
+			{
+				"id": "rev-1",
+				"productId": "prod-3",
+				"rating": 5,
+				"text": "Incredible quality. The waxed cotton is exactly as described.",
+				"photos": [],
+				"sellerReply": "Thank you for your feedback!",
+				"isApproved": true,
+				"isOwn": false,
+				"isPending": false,
+				"reviewerName": "Anna Bondarenko",
+				"reviewerInitials": "AB",
+				"reviewerAvatarUrl": null,
+				"reviewerReviewCount": 2,
+				"orderId": "order-1",
+				"createdAt": "2026-05-20T10:00:00Z",
+				"updatedAt": "2026-05-20T10:00:00Z"
+			}
+		],
+		"total": 1,
+		"page": 1,
+		"pageSize": 6,
+		"averageRating": 5,
+		"reviewCount": 1
+	},
+	"reviewEligibility": {
+		"canWrite": true,
+		"orderId": "order-new",
+		"existingReviewId": null
+	},
+	"createReview": {
+		"id": "rev-new",
+		"rating": 4,
+		"text": "Great jacket, fits well.",
+		"photos": [],
+		"isApproved": false,
+		"isOwn": true,
+		"isPending": true,
+		"reviewerName": "Anna Bondarenko",
+		"createdAt": "2026-05-26T10:00:00Z"
+	}
+}
