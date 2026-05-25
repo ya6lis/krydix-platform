@@ -122,7 +122,7 @@ export default function CatalogPage() {
 	const filterContext = buildFilterContext(filters, categories);
 
 	return (
-		<Box sx={{ px: { xs: 2, md: 4 }, py: 4 }}>
+		<Box sx={{ width: '100%', maxWidth: 1520, mx: 'auto', px: { xs: 2, md: 4 }, py: 4 }}>
 			{/* ── page head ── */}
 			<Box
 				sx={{
@@ -351,10 +351,9 @@ export default function CatalogPage() {
 								sx={{
 									display: 'grid',
 									gridTemplateColumns:
-										viewMode === 'grid'
-											? { xs: '1fr', sm: '1fr 1fr', lg: 'repeat(3, 1fr)' }
-											: '1fr',
+										viewMode === 'grid' ? { xs: '1fr', sm: 'repeat(auto-fit, 280px)' } : '1fr',
 									gap: '20px',
+									justifyContent: 'center',
 								}}
 							>
 								{products.map((product) => (

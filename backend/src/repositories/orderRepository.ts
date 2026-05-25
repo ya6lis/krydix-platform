@@ -6,6 +6,7 @@ export type OrderRecord = Prisma.OrderGetPayload<{
 		items: true;
 		payment: true;
 		delivery: true;
+		returnRequest: true;
 		promoCode: true;
 	};
 }>;
@@ -69,7 +70,7 @@ export async function createOrder(input: CreateOrderInput): Promise<OrderRecord>
 					})),
 				},
 			},
-			include: { items: true, payment: true, delivery: true, promoCode: true },
+			include: { items: true, payment: true, delivery: true, returnRequest: true, promoCode: true },
 		});
 
 		await tx.paymentRecord.create({
@@ -100,7 +101,13 @@ export async function createOrder(input: CreateOrderInput): Promise<OrderRecord>
 
 		return tx.order.findUniqueOrThrow({
 			where: { id: order.id },
-			include: { items: true, payment: true, delivery: true, promoCode: true },
+			include: {
+				items: { include: { product: { include: { media: true } }, variant: true, seller: true } },
+				payment: true,
+				delivery: true,
+				returnRequest: true,
+				promoCode: true,
+			},
 		});
 	});
 }
@@ -131,7 +138,13 @@ export async function findOrdersByBuyer(
 	const [items, total] = await Promise.all([
 		prisma.order.findMany({
 			where,
-			include: { items: true, payment: true, delivery: true, promoCode: true },
+			include: {
+				items: { include: { product: { include: { media: true } }, variant: true, seller: true } },
+				payment: true,
+				delivery: true,
+				returnRequest: true,
+				promoCode: true,
+			},
 			orderBy: { createdAt: 'desc' },
 			skip,
 			take: pageSize,
@@ -145,7 +158,13 @@ export async function findOrdersByBuyer(
 export async function findOrderById(id: string): Promise<OrderRecord | null> {
 	return prisma.order.findFirst({
 		where: { id, deletedAt: null },
-		include: { items: true, payment: true, delivery: true, promoCode: true },
+		include: {
+			items: { include: { product: { include: { media: true } }, variant: true, seller: true } },
+			payment: true,
+			delivery: true,
+			returnRequest: true,
+			promoCode: true,
+		},
 	});
 }
 
@@ -155,7 +174,13 @@ export async function findOrderByIdAndBuyer(
 ): Promise<OrderRecord | null> {
 	return prisma.order.findFirst({
 		where: { id, buyerId, deletedAt: null },
-		include: { items: true, payment: true, delivery: true, promoCode: true },
+		include: {
+			items: { include: { product: { include: { media: true } }, variant: true, seller: true } },
+			payment: true,
+			delivery: true,
+			returnRequest: true,
+			promoCode: true,
+		},
 	});
 }
 
@@ -163,7 +188,13 @@ export async function updateOrderStatus(id: string, status: OrderStatus): Promis
 	return prisma.order.update({
 		where: { id },
 		data: { status },
-		include: { items: true, payment: true, delivery: true, promoCode: true },
+		include: {
+			items: { include: { product: { include: { media: true } }, variant: true, seller: true } },
+			payment: true,
+			delivery: true,
+			returnRequest: true,
+			promoCode: true,
+		},
 	});
 }
 

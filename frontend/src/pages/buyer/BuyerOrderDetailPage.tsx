@@ -9,6 +9,8 @@ import {
 	EmptyState,
 	StatusBadge,
 	AppButton,
+	AppModal,
+	AppTextarea,
 	ConfirmDialog,
 	AppCard,
 	useAppToast,
@@ -21,10 +23,11 @@ import {
 	CANCEL_ORDER_MUTATION,
 	CONFIRM_DELIVERY_MUTATION,
 	REQUEST_REFUND_MUTATION,
+	REQUEST_RETURN_MUTATION,
 	MY_ORDERS_QUERY,
 	MY_ORDER_STATS_QUERY,
 } from '@/graphql/operations/orders';
-import type { Order } from '@/types/orders';
+import type { Order, DeliveryMethod, PaymentMethod } from '@/types/orders';
 
 function formatDateTime(iso: string) {
 	const d = new Date(iso);
@@ -37,13 +40,34 @@ function formatAmount(n: number) {
 	return `$${n.toFixed(2)}`;
 }
 
-function ProductInitials(title: string) {
-	return title
-		.split(' ')
-		.slice(0, 2)
-		.map((w) => w[0] ?? '')
-		.join('')
-		.toUpperCase();
+function formatOrderItemCode(item: Order['items'][number]) {
+	return (item.variantId ?? item.productId).slice(0, 12).toUpperCase();
+}
+
+function formatDeliveryMethod(method: DeliveryMethod) {
+	switch (method) {
+		case 'COURIER':
+			return 'orderDetail.delivery.methods.courier';
+		case 'BRANCH_PICKUP':
+			return 'orderDetail.delivery.methods.branchPickup';
+		case 'SELF_PICKUP':
+			return 'orderDetail.delivery.methods.selfPickup';
+		default:
+			return 'orderDetail.delivery.methods.courier';
+	}
+}
+
+function formatPaymentMethod(method: PaymentMethod) {
+	switch (method) {
+		case 'CARD':
+			return 'orderDetail.payment.methods.card';
+		case 'CASH_ON_DELIVERY':
+			return 'orderDetail.payment.methods.cashOnDelivery';
+		case 'BANK_TRANSFER':
+			return 'orderDetail.payment.methods.bankTransfer';
+		default:
+			return 'orderDetail.payment.methods.card';
+	}
 }
 
 interface TimelineEvent {
@@ -102,13 +126,14 @@ function buildDeliveryTimeline(order: Order, t: (k: string) => string): Timeline
 	];
 }
 
-type DialogType = 'cancel' | 'confirmDelivery' | 'refund' | null;
+type DialogType = 'cancel' | 'confirmDelivery' | 'refund' | 'return' | null;
 
 export default function BuyerOrderDetailPage() {
 	const { id } = useParams<{ id: string }>();
 	const { t } = useTranslation();
 	const { showToast } = useAppToast();
 	const [dialog, setDialog] = useState<DialogType>(null);
+	const [returnReason, setReturnReason] = useState('');
 
 	const { data, loading } = useQuery<{ myOrder: Order }>(MY_ORDER_QUERY, {
 		variables: { id },
@@ -148,6 +173,16 @@ export default function BuyerOrderDetailPage() {
 		onError: (err) => showToast(err.message, 'error'),
 	});
 
+	const [requestReturn, { loading: requestingReturn }] = useMutation(REQUEST_RETURN_MUTATION, {
+		refetchQueries,
+		onCompleted: () => {
+			showToast(t('common.success'), 'success');
+			setDialog(null);
+			setReturnReason('');
+		},
+		onError: (err) => showToast(err.message, 'error'),
+	});
+
 	if (loading) return <AppLoader />;
 
 	const order = data?.myOrder;
@@ -166,19 +201,26 @@ export default function BuyerOrderDetailPage() {
 	const discount = order.discount ?? 0;
 	const shipping = Math.max(0, order.totalAmount - subtotal + discount);
 	const taxes = 0;
+	const orderIdShort = order.id.slice(-6).toUpperCase();
+	const itemCount = order.items.length;
 
-	const firstSeller = order.items[0]?.productTitle ?? '—';
-	const sellerInitials = ProductInitials(firstSeller);
+	const sellerName =
+		// prefer top-level seller, then item-level name, then id, then fallback
+		((order as any).seller && (order as any).seller.name) ||
+		(order.items[0] as any)?.sellerName ||
+		order.items[0]?.sellerId ||
+		t('orderDetail.sidebar.seller');
 
 	const canCancel = ['PENDING', 'CONFIRMED'].includes(order.status);
 	const canConfirmDelivery = order.status === 'SHIPPED';
 	const canRefund = ['DELIVERED', 'CONFIRMED'].includes(order.status);
+	const canRequestReturn = order.status === 'DELIVERED' && !order.returnRequest;
 
 	const orderTimeline = buildOrderTimeline(order, t);
 	const deliveryTimeline = buildDeliveryTimeline(order, t);
 
 	return (
-		<Box sx={{ maxWidth: 1300 }}>
+		<Box sx={{ width: '100%', maxWidth: 1300, mx: 'auto', px: { xs: 2, md: 4 }, py: 4 }}>
 			{/* page head */}
 			<Box sx={{ mb: 3 }}>
 				<Link
@@ -206,6 +248,7 @@ export default function BuyerOrderDetailPage() {
 						justifyContent: 'space-between',
 						flexWrap: 'wrap',
 						gap: 2,
+						mb: 2,
 					}}
 				>
 					<Box>
@@ -213,7 +256,8 @@ export default function BuyerOrderDetailPage() {
 							<Typography
 								sx={{ fontSize: 24, fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.2 }}
 							>
-								Order #{order.id.slice(-6).toUpperCase()}
+								{t('orderDetail.orderNumberPrefix')}
+								{orderIdShort}
 							</Typography>
 							<StatusBadge status={order.status} label={t(`status.order.${order.status}`)} />
 						</Box>
@@ -257,6 +301,11 @@ export default function BuyerOrderDetailPage() {
 								{t('orderDetail.actions.requestRefund')}
 							</AppButton>
 						)}
+						{canRequestReturn && (
+							<AppButton variant="outlined" size="small" onClick={() => setDialog('return')}>
+								{t('orderDetail.actions.requestReturn')}
+							</AppButton>
+						)}
 					</Box>
 				</Box>
 			</Box>
@@ -275,7 +324,12 @@ export default function BuyerOrderDetailPage() {
 					{/* Details card */}
 					<AppCard
 						title={t('orderDetail.details')}
-						subtitle={`${t('orderDetail.detailsSub', { count: order.items.length })} · ${t('orderDetail.shipsFrom', { seller: firstSeller })}`}
+						subtitle={`${t('orderDetail.detailsSub', { count: itemCount })} · ${t(
+							'orderDetail.shipsFromSeller',
+							{
+								seller: sellerName,
+							}
+						)}`}
 					>
 						{/* items list */}
 						<Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -293,31 +347,77 @@ export default function BuyerOrderDetailPage() {
 									}}
 								>
 									{/* thumb */}
-									<Box
-										sx={{
-											width: 56,
-											height: 56,
-											borderRadius: 1.5,
-											background: `repeating-linear-gradient(135deg, ${tokens.surface2} 0 6px, transparent 6px 12px), ${tokens.surface2}`,
-											border: `1px solid ${tokens.line}`,
-											flexShrink: 0,
-										}}
-									/>
+									{(() => {
+										const imageUrl =
+											(item as any).imageUrl ||
+											(item as any).mainImage ||
+											(item as any).productImage ||
+											(item as any).productMainImage ||
+											undefined;
+										if (imageUrl) {
+											return (
+												<Box
+													component="img"
+													src={imageUrl}
+													alt={item.productTitle}
+													sx={{
+														width: 56,
+														height: 56,
+														borderRadius: 1.5,
+														objectFit: 'cover',
+														border: `1px solid ${tokens.line}`,
+														flexShrink: 0,
+													}}
+												/>
+											);
+										}
+										return (
+											<Box
+												sx={{
+													width: 56,
+													height: 56,
+													borderRadius: 1.5,
+													background: `repeating-linear-gradient(135deg, ${tokens.surface2} 0 6px, transparent 6px 12px), ${tokens.surface2}`,
+													border: `1px solid ${tokens.line}`,
+													flexShrink: 0,
+												}}
+											/>
+										);
+									})()}
 									{/* info */}
 									<Box>
 										<Typography sx={{ fontWeight: 600, fontSize: 14 }}>
 											{item.productTitle}
 										</Typography>
-										<Typography
+										<Box
 											sx={{
-												fontFamily: 'JetBrains Mono, monospace',
-												fontSize: 11.5,
-												color: tokens.ink3,
-												mt: 0.375,
+												display: 'flex',
+												gap: 1,
+												alignItems: 'baseline',
+												mt: 0.4,
+												flexWrap: 'wrap',
 											}}
 										>
-											{item.productId.slice(0, 12).toUpperCase()}
-										</Typography>
+											<Typography
+												sx={{
+													fontSize: 11.5,
+													color: tokens.ink3,
+													textTransform: 'uppercase',
+													letterSpacing: '0.04em',
+												}}
+											>
+												{t('orderDetail.sku')}
+											</Typography>
+											<Typography
+												sx={{
+													fontFamily: 'JetBrains Mono, monospace',
+													fontSize: 11.5,
+													color: tokens.ink3,
+												}}
+											>
+												{formatOrderItemCode(item)}
+											</Typography>
+										</Box>
 									</Box>
 									{/* qty */}
 									<Typography sx={{ fontSize: 13, color: tokens.ink3 }}>
@@ -389,7 +489,7 @@ export default function BuyerOrderDetailPage() {
 				{/* RIGHT — sidebar */}
 				<Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.25 }}>
 					{/* Seller card */}
-					<SideCard title={t('orderDetail.sidebar.seller')}>
+					<SideCard title={t('orderDetail.sidebar.seller')} onEdit={() => {}}>
 						<Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
 							<Box
 								sx={{
@@ -402,17 +502,19 @@ export default function BuyerOrderDetailPage() {
 									alignItems: 'center',
 									justifyContent: 'center',
 									fontFamily: 'JetBrains Mono, monospace',
-									fontSize: 12,
+									fontSize: 13,
 									fontWeight: 700,
 									flexShrink: 0,
 								}}
 							>
-								{sellerInitials || '?'}
+								<FontAwesomeIcon icon={Icons.store} />
 							</Box>
 							<Box>
-								<Typography sx={{ fontWeight: 700, fontSize: 14 }}>{firstSeller}</Typography>
+								<Typography sx={{ fontWeight: 700, fontSize: 14 }}>
+									{t('orderDetail.sidebar.seller')}
+								</Typography>
 								<Typography sx={{ fontSize: 12.5, color: tokens.ink3 }}>
-									{order.items.length} {order.items.length === 1 ? 'item' : 'items'}
+									{t('orderDetail.sidebar.itemCount', { count: itemCount })}
 								</Typography>
 							</Box>
 						</Box>
@@ -420,9 +522,15 @@ export default function BuyerOrderDetailPage() {
 
 					{/* Delivery card */}
 					{order.delivery && (
-						<SideCard title={t('orderDetail.sidebar.delivery')}>
-							<KVRow label={t('orderDetail.delivery.shipBy')} value={order.delivery.method} />
-							<KVRow label={t('orderDetail.delivery.speed')} value="Standard" />
+						<SideCard title={t('orderDetail.sidebar.delivery')} onEdit={() => {}}>
+							<KVRow
+								label={t('orderDetail.delivery.shipBy')}
+								value={t(formatDeliveryMethod(order.delivery.method))}
+							/>
+							<KVRow
+								label={t('orderDetail.delivery.speed')}
+								value={t('orderDetail.delivery.standard')}
+							/>
 							<KVRow
 								label={t('orderDetail.delivery.tracking')}
 								value={
@@ -446,7 +554,7 @@ export default function BuyerOrderDetailPage() {
 
 					{/* Shipping card */}
 					{order.delivery?.address && (
-						<SideCard title={t('orderDetail.sidebar.shipping')}>
+						<SideCard title={t('orderDetail.sidebar.shipping')} onEdit={() => {}}>
 							<Typography sx={{ fontSize: 13, color: tokens.ink2, lineHeight: 1.6 }}>
 								{order.delivery.address}
 							</Typography>
@@ -455,60 +563,65 @@ export default function BuyerOrderDetailPage() {
 
 					{/* Payment card */}
 					{order.payment && (
-						<SideCard title={t('orderDetail.sidebar.payment')}>
-							<Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
-								<Box
-									sx={{
-										width: 28,
-										height: 18,
-										borderRadius: 0.5,
-										background: 'linear-gradient(90deg, #FFAB00 0 50%, #FF5630 50% 100%)',
-										flexShrink: 0,
-									}}
-								/>
-								<Typography sx={{ fontSize: 13.5, fontWeight: 600 }}>
-									{order.payment.method}
-								</Typography>
-							</Box>
-							<Box sx={{ mt: 1.25 }}>
-								<StatusBadge
-									status={order.payment.status}
-									label={t(`status.payment.${order.payment.status}`)}
-								/>
-							</Box>
-							{(canRefund || canConfirmDelivery) && (
-								<Box
-									sx={{
-										display: 'flex',
-										gap: 1,
-										mt: 1.5,
-										pt: 1.5,
-										borderTop: `1px solid ${tokens.line2}`,
-									}}
-								>
-									{canConfirmDelivery && (
-										<AppButton
-											variant="contained"
-											size="small"
-											sx={{ flex: 1, justifyContent: 'center' }}
-											onClick={() => setDialog('confirmDelivery')}
-										>
-											{t('orderDetail.actions.confirmDelivery')}
-										</AppButton>
-									)}
-									{canRefund && (
-										<AppButton
-											variant="outlined"
-											color="error"
-											size="small"
-											sx={{ flex: 1, justifyContent: 'center' }}
-											onClick={() => setDialog('refund')}
-										>
-											{t('orderDetail.actions.requestRefund')}
-										</AppButton>
-									)}
-								</Box>
-							)}
+						<SideCard title={t('orderDetail.sidebar.payment')} onEdit={() => {}}>
+							{(() => {
+								const brand = (order.payment as any).cardBrand;
+								const last4 = (order.payment as any).cardLast4;
+								return (
+									<>
+										<Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
+											{/* card brand + masked number when available */}
+											{brand || last4 ? (
+												<Typography sx={{ fontSize: 13.5, fontWeight: 600 }}>
+													{brand ? brand : t(formatPaymentMethod(order.payment.method))}
+													{last4 ? ` • •••• ${last4}` : ''}
+												</Typography>
+											) : (
+												<>
+													<Box
+														sx={{
+															width: 28,
+															height: 18,
+															borderRadius: 0.5,
+															background: 'linear-gradient(90deg, #FFAB00 0 50%, #FF5630 50% 100%)',
+															flexShrink: 0,
+														}}
+													/>
+													<Typography sx={{ fontSize: 13.5, fontWeight: 600 }}>
+														{t(formatPaymentMethod(order.payment.method))}
+													</Typography>
+												</>
+											)}
+										</Box>
+										<Box sx={{ mt: 1.25 }}>
+											{/* If card is paid, show friendly text, otherwise show status badge */}
+											{order.payment.method === 'CARD' && order.payment.status === 'PAID' ? (
+												<Typography sx={{ fontSize: 12.5, color: tokens.ink3 }}>
+													{t(`status.payment.PAID`)}
+												</Typography>
+											) : (
+												<StatusBadge
+													status={order.payment.status}
+													label={t(`status.payment.${order.payment.status}`)}
+												/>
+											)}
+											{order.returnRequest && (
+												<Box sx={{ mt: 1 }}>
+													<StatusBadge
+														status={order.returnRequest.status}
+														label={t(`status.returnRequest.${order.returnRequest.status}`)}
+													/>
+													<Typography
+														sx={{ mt: 0.75, fontSize: 12.5, color: tokens.ink3, lineHeight: 1.5 }}
+													>
+														{order.returnRequest.reason}
+													</Typography>
+												</Box>
+											)}
+										</Box>
+									</>
+								);
+							})()}
 						</SideCard>
 					)}
 				</Box>
@@ -540,6 +653,43 @@ export default function BuyerOrderDetailPage() {
 				onClose={() => setDialog(null)}
 				loading={refunding}
 			/>
+			<AppModal
+				open={dialog === 'return'}
+				onClose={() => setDialog(null)}
+				title={t('orderDetail.returnConfirm.title')}
+				footer={
+					<>
+						<AppButton variant="outlined" onClick={() => setDialog(null)}>
+							{t('common.cancel')}
+						</AppButton>
+						<AppButton
+							variant="contained"
+							disabled={!returnReason.trim()}
+							loading={requestingReturn}
+							onClick={() =>
+								requestReturn({
+									variables: {
+										orderId: order.id,
+										reason: returnReason.trim(),
+										details: returnReason.trim(),
+									},
+								})
+							}
+						>
+							{t('orderDetail.returnConfirm.submit')}
+						</AppButton>
+					</>
+				}
+			>
+				<AppTextarea
+					label={t('orderDetail.returnConfirm.reasonLabel')}
+					placeholder={t('orderDetail.returnConfirm.reasonPlaceholder')}
+					value={returnReason}
+					onChange={(event) => setReturnReason(event.target.value)}
+					rows={5}
+					maxLength={500}
+				/>
+			</AppModal>
 		</Box>
 	);
 }
@@ -560,7 +710,7 @@ function TimelineColumn({ events }: { events: TimelineEvent[] }) {
 					left: '5px',
 					top: 8,
 					bottom: 8,
-					width: 1,
+					width: '1px',
 					bgcolor: tokens.line,
 				},
 			}}
@@ -590,30 +740,57 @@ function TimelineColumn({ events }: { events: TimelineEvent[] }) {
 }
 
 /* ── Sidebar card ── */
-function SideCard({ title, children }: { title: string; children: React.ReactNode }) {
+function SideCard({
+	title,
+	children,
+	onEdit,
+}: {
+	title: string;
+	children: React.ReactNode;
+	onEdit?: () => void;
+}) {
 	return (
 		<Box
 			sx={{
 				background: tokens.surface,
 				border: `1px solid ${tokens.line}`,
 				borderRadius: 2,
-				px: 2.75,
-				pt: 2.5,
-				pb: 2,
+				px: '22px',
+				pt: '20px',
+				pb: '18px',
+				boxShadow: tokens.shadowSm,
 			}}
 		>
-			<Typography
-				sx={{
-					fontSize: 11.5,
-					fontWeight: 700,
-					letterSpacing: '0.08em',
-					textTransform: 'uppercase',
-					color: tokens.ink3,
-					mb: 1.75,
-				}}
+			<Box
+				sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.75 }}
 			>
-				{title}
-			</Typography>
+				<Typography
+					sx={{
+						fontSize: 11.5,
+						fontWeight: 700,
+						letterSpacing: '0.08em',
+						textTransform: 'uppercase',
+						color: tokens.ink3,
+					}}
+				>
+					{title}
+				</Typography>
+				{onEdit && (
+					<Box
+						component="button"
+						onClick={onEdit}
+						sx={{
+							background: 'transparent',
+							border: 0,
+							p: 0,
+							color: tokens.ink3,
+							cursor: 'pointer',
+						}}
+					>
+						<FontAwesomeIcon icon={Icons.edit} />
+					</Box>
+				)}
+			</Box>
 			{children}
 		</Box>
 	);

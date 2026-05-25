@@ -28,6 +28,8 @@ const STATUS_TONES: Record<string, StatusTone> = {
 	RESOLVED: 'cyan',
 	IN_TRANSIT: 'cyan',
 	VALIDATED: 'cyan',
+	CLOSED: 'neutral',
+	REQUESTED: 'amber',
 	// amber — in-progress / awaiting
 	PENDING: 'amber',
 	DRAFT: 'amber',

@@ -5,6 +5,7 @@ import {
 	cancelOrder,
 	confirmDelivery,
 	requestRefund,
+	requestReturn,
 	getMyOrders,
 	getMyOrder,
 } from '../../../services/orderService.js';
@@ -85,6 +86,15 @@ export const ordersResolvers = {
 			const user = requireAuth(context);
 			return requestRefund(args.orderId, user.id);
 		},
+
+		requestReturn: async (
+			_: unknown,
+			args: { orderId: string; reason: string; details?: string },
+			context: GraphQLContext
+		) => {
+			const user = requireAuth(context);
+			return requestReturn(args.orderId, user.id, args.reason, args.details);
+		},
 	},
 
 	Order: {
@@ -98,5 +108,26 @@ export const ordersResolvers = {
 
 	DeliveryRecord: {
 		createdAt: (record: { createdAt: Date }) => record.createdAt.toISOString(),
+	},
+
+	ReturnRequest: {
+		createdAt: (record: { createdAt: Date }) => record.createdAt.toISOString(),
+		updatedAt: (record: { updatedAt: Date }) => record.updatedAt.toISOString(),
+		reviewedAt: (record: { reviewedAt: Date | null }) =>
+			record.reviewedAt ? record.reviewedAt.toISOString() : null,
+		refundedAt: (record: { refundedAt: Date | null }) =>
+			record.refundedAt ? record.refundedAt.toISOString() : null,
+		closedAt: (record: { closedAt: Date | null }) =>
+			record.closedAt ? record.closedAt.toISOString() : null,
+	},
+
+	OrderItem: {
+		productMainImage: (item: any) => {
+			// item.product may be included by repository; pick the main media url if available
+			const prod = (item as any).product;
+			if (!prod || !prod.media || prod.media.length === 0) return null;
+			const main = prod.media.find((m: any) => m.isMain) || prod.media[0];
+			return main?.url ?? null;
+		},
 	},
 };

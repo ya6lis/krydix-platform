@@ -35,24 +35,28 @@ export function ProductCard({ product }: ProductCardProps) {
 	const handleAddToCart = (e: React.MouseEvent) => {
 		e.preventDefault();
 		e.stopPropagation();
-		if (product.totalStock === 0) {
+		const itemId = product.id;
+		const itemStock = product.totalStock;
+		const itemPrice = product.basePrice;
+
+		if (itemStock === 0) {
 			showToast(t('cart.errors.outOfStock'), 'error');
 			return;
 		}
-		const existing = cartItems.find((i) => i.id === product.id);
-		if (existing && existing.qty >= product.totalStock) {
-			showToast(t('cart.errors.insufficientStock', { count: product.totalStock }), 'error');
+		const existing = cartItems.find((i) => i.id === itemId);
+		if (existing && existing.qty >= itemStock) {
+			showToast(t('cart.errors.insufficientStock', { count: itemStock }), 'error');
 			return;
 		}
 		addItem({
-			id: product.id,
+			id: itemId,
 			productId: product.id,
 			sellerId: product.seller.id,
 			sellerName: product.seller.name,
 			name: product.title,
-			price: product.basePrice,
+			price: itemPrice,
 			qty: 1,
-			stock: product.totalStock,
+			stock: itemStock,
 			imageUrl: product.mainImage ?? undefined,
 		});
 		showToast(t('cart.addedToCart', { name: product.title }), 'success');
@@ -89,6 +93,10 @@ export function ProductCard({ product }: ProductCardProps) {
 			sx={{
 				display: 'flex',
 				flexDirection: 'column',
+				width: '100%',
+				maxWidth: 280,
+				minHeight: 430,
+				margin: '0 auto',
 				textDecoration: 'none',
 				color: 'inherit',
 				background: tokens.surface,
@@ -213,7 +221,19 @@ export function ProductCard({ product }: ProductCardProps) {
 				</Box>
 
 				{/* product name */}
-				<Typography sx={{ fontSize: 14.5, fontWeight: 700, lineHeight: 1.3, color: tokens.ink1 }}>
+				<Typography
+					sx={{
+						fontSize: 14.5,
+						fontWeight: 700,
+						lineHeight: 1.3,
+						color: tokens.ink1,
+						display: '-webkit-box',
+						WebkitLineClamp: 2,
+						WebkitBoxOrient: 'vertical',
+						overflow: 'hidden',
+						minHeight: '36px',
+					}}
+				>
 					{product.title}
 				</Typography>
 

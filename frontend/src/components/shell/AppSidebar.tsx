@@ -24,7 +24,7 @@ interface NavItem {
 	labelKey: string;
 	icon: (typeof Icons)[keyof typeof Icons];
 	href: string;
-	badge?: { count: number; variant: BadgeVariant };
+	badge?: { count?: number; variant: BadgeVariant };
 	roles: string[];
 }
 
@@ -64,20 +64,7 @@ const NAV_GROUPS: NavGroup[] = [
 				labelKey: 'nav.orders',
 				icon: Icons.order,
 				href: '/account/orders',
-				badge: { count: 20, variant: 'default' },
-				roles: ['BUYER', 'SELLER', 'ADMINISTRATOR'],
-			},
-		],
-	},
-	{
-		id: 'selling',
-		labelKey: 'nav.group.selling',
-		items: [
-			{
-				id: 'verification',
-				labelKey: 'nav.verification',
-				icon: Icons.shield,
-				href: '/seller-cabinet/verification',
+				badge: { variant: 'default' },
 				roles: ['BUYER', 'SELLER', 'ADMINISTRATOR'],
 			},
 		],
@@ -91,7 +78,7 @@ const NAV_GROUPS: NavGroup[] = [
 				labelKey: 'nav.queue',
 				icon: Icons.clipboardCheck,
 				href: '/moderator/products',
-				badge: { count: 12, variant: 'warn' },
+				badge: { variant: 'warn' },
 				roles: ['MODERATOR', 'ADMINISTRATOR'],
 			},
 			{
@@ -99,7 +86,7 @@ const NAV_GROUPS: NavGroup[] = [
 				labelKey: 'nav.complaints',
 				icon: Icons.warning,
 				href: '/moderator/complaints',
-				badge: { count: 4, variant: 'danger' },
+				badge: { variant: 'danger' },
 				roles: ['MODERATOR', 'ADMINISTRATOR'],
 			},
 			{
@@ -120,7 +107,7 @@ const NAV_GROUPS: NavGroup[] = [
 				labelKey: 'nav.messages',
 				icon: Icons.chats,
 				href: '/chat',
-				badge: { count: 3, variant: 'default' },
+				badge: { variant: 'default' },
 				roles: ['BUYER', 'SELLER', 'MODERATOR', 'ADMINISTRATOR'],
 			},
 		],
@@ -148,7 +135,7 @@ const NAV_GROUPS: NavGroup[] = [
 				labelKey: 'nav.verifications',
 				icon: Icons.userShield,
 				href: '/moderator/verification',
-				badge: { count: 7, variant: 'warn' },
+				badge: { variant: 'warn' },
 				roles: ['MODERATOR', 'ADMINISTRATOR'],
 			},
 			{
@@ -195,6 +182,10 @@ const BADGE_STYLES: Record<BadgeVariant, { bg: string; color: string }> = {
 	warn: { bg: tokens.amber, color: tokens.amberInk },
 	danger: { bg: tokens.coral, color: '#fff' },
 };
+
+// Phase 13: replace with counts from API/store selectors.
+const NAV_BADGE_COUNTS: Partial<Record<string, number>> = {};
+const WHATS_NEW_COUNT = 0;
 
 /* ── role badge map ──────────────────────────────────────────── */
 const ROLE_BADGE: Record<string, { bg: string; color: string; label: string }> = {
@@ -281,7 +272,19 @@ export default function AppSidebar() {
 
 			{/* ── nav groups ── */}
 			{NAV_GROUPS.map((group) => {
-				const visibleItems = group.items.filter((item) => item.roles.includes(role));
+				const visibleItems = group.items
+					.filter((item) => item.roles.includes(role))
+					.map((item) => {
+						if (!item.badge) {
+							return item;
+						}
+
+						const count = NAV_BADGE_COUNTS[item.id] ?? 0;
+						return {
+							...item,
+							badge: count > 0 ? { ...item.badge, count } : undefined,
+						};
+					});
 				if (visibleItems.length === 0) return null;
 				return (
 					<Box key={group.id} sx={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
@@ -567,7 +570,10 @@ function UserMenu({ user, onClose }: { user: AuthUser; onClose: () => void }) {
 			? { label: 'Verified', bg: tokens.accentSoft, color: tokens.accentInk }
 			: undefined;
 
-	const newTag: MenuTag = { label: '3 new', bg: tokens.amber, color: tokens.amberInk };
+	const newTag: MenuTag | undefined =
+		WHATS_NEW_COUNT > 0
+			? { label: String(WHATS_NEW_COUNT), bg: tokens.amber, color: tokens.amberInk }
+			: undefined;
 
 	const handleLogout = () => {
 		clearAuth();

@@ -54,7 +54,19 @@ function makeOrder(id: string, status: string = 'PENDING'): Order {
 
 const statsMock: MockedResponse = {
 	request: { query: MY_ORDER_STATS_QUERY, variables: {} },
-	result: { data: { myOrderStats: { all: 10, pending: 3, completed: 6, refunded: 1 } } },
+	result: {
+		data: {
+			myOrderStats: {
+				all: 10,
+				pending: 3,
+				confirmed: 0,
+				shipped: 0,
+				delivered: 6,
+				cancelled: 0,
+				refunded: 1,
+			},
+		},
+	},
 };
 
 function makeOrdersMock(items: Order[] = [], total = items.length): MockedResponse {
@@ -93,10 +105,11 @@ describe('BuyerOrdersPage', () => {
 	it('renders stat cards after stats load', async () => {
 		renderPage([statsMock, makeOrdersMock()]);
 		await waitFor(() => {
-			expect(screen.getByText('10')).toBeInTheDocument();
-			expect(screen.getByText('3')).toBeInTheDocument();
-			expect(screen.getByText('6')).toBeInTheDocument();
-			expect(screen.getByText('1')).toBeInTheDocument();
+			// stat values may appear in multiple places (stat card + tab badge) — use getAllByText
+			expect(screen.getAllByText('10').length).toBeGreaterThanOrEqual(1);
+			expect(screen.getAllByText('3').length).toBeGreaterThanOrEqual(1);
+			expect(screen.getAllByText('6').length).toBeGreaterThanOrEqual(1);
+			expect(screen.getAllByText('1').length).toBeGreaterThanOrEqual(1);
 		});
 	});
 

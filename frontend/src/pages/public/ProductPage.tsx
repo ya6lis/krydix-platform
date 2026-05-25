@@ -123,6 +123,7 @@ export default function ProductPage() {
 	const [qty, setQty] = useState(1);
 	const [wishlisted, setWishlisted] = useState(false);
 	const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
+	const [isVariantManuallySelected, setIsVariantManuallySelected] = useState(false);
 	const initializedRef = useRef(false);
 
 	const { data, loading } = useQuery<{ product: CatalogProduct | null }>(PRODUCT_QUERY, {
@@ -158,8 +159,10 @@ export default function ProductPage() {
 	const price = selectedVariant?.price ?? product.basePrice;
 	const stock = selectedVariant?.stock ?? product.totalStock;
 
-	const selectOption = (key: string, value: string) =>
+	const selectOption = (key: string, value: string) => {
+		setIsVariantManuallySelected(true);
 		setSelectedOptions((prev) => ({ ...prev, [key]: value }));
+	};
 
 	const prevImage = () =>
 		setActiveImage((i) => (i - 1 + Math.max(images.length, 1)) % Math.max(images.length, 1));
@@ -167,19 +170,25 @@ export default function ProductPage() {
 
 	const handleAddToCart = () => {
 		if (!product) return;
-		if (stock === 0) {
+		const useVariant = isVariantManuallySelected && !!selectedVariant;
+		const itemId = useVariant ? selectedVariant!.id : product.id;
+		const itemStock = useVariant ? selectedVariant!.stock : product.totalStock;
+		const itemPrice = useVariant
+			? (selectedVariant!.price ?? product.basePrice)
+			: product.basePrice;
+
+		if (itemStock === 0) {
 			showToast(t('cart.errors.outOfStock'), 'error');
 			return;
 		}
-		const itemId = selectedVariant?.id ?? product.id;
 		const existing = cartItems.find((i) => i.id === itemId);
 		const existingQty = existing?.qty ?? 0;
-		if (existingQty + qty > stock) {
-			showToast(t('cart.errors.insufficientStock', { count: stock - existingQty }), 'error');
+		if (existingQty + qty > itemStock) {
+			showToast(t('cart.errors.insufficientStock', { count: itemStock - existingQty }), 'error');
 			return;
 		}
 		const variantLabel =
-			Object.keys(selectedOptions).length > 0
+			useVariant && Object.keys(selectedOptions).length > 0
 				? Object.entries(selectedOptions)
 						.map(([, v]) => v)
 						.join(' / ')
@@ -187,14 +196,14 @@ export default function ProductPage() {
 		addItem({
 			id: itemId,
 			productId: product.id,
-			variantId: selectedVariant?.id,
+			variantId: useVariant ? selectedVariant!.id : undefined,
 			sellerId: product.seller.id,
 			sellerName: product.seller.name,
 			name: product.title,
 			variant: variantLabel,
-			price,
+			price: itemPrice,
 			qty,
-			stock,
+			stock: itemStock,
 			imageUrl: images[activeImage]?.url ?? product.mainImage ?? undefined,
 		});
 		showToast(t('cart.addedToCart', { name: product.title }), 'success');
