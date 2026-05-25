@@ -911,11 +911,90 @@ async function main() {
 		});
 		if (!exists) {
 			await prisma.productReview.create({
-				data: { ...r, rating: r.rating, isApproved: true },
+				data: {
+					...r,
+					rating: r.rating,
+					isApproved: true,
+					sellerReply:
+						r.productId === prod3 ? 'Thank you for your feedback! We appreciate your support.' : undefined,
+					photos:
+						r.productId === prod3
+							? [{ url: 'https://res.cloudinary.com/demo/image/upload/sample.jpg', publicId: 'seed/rev1' }]
+							: undefined,
+				},
 			});
 		}
 	}
 	log('5 product reviews');
+
+	const pendingProductReviews = [
+		{
+			productId: prod3,
+			reviewerId: buyer2.id,
+			orderId: order4,
+			rating: 2.0,
+			text: 'Looks nothing like the photos. The color is off and the material feels cheap.',
+			isApproved: false,
+			flagged: true,
+			flaggerId: seller2.id,
+		},
+		{
+			productId: prod5,
+			reviewerId: buyer2.id,
+			orderId: order4,
+			rating: 5.0,
+			text: 'Sized exactly as expected. Beautiful quality and fast delivery.',
+			isApproved: false,
+			photos: [{ url: 'https://res.cloudinary.com/demo/image/upload/sample.jpg', publicId: 'seed/rev-pending' }],
+		},
+		{
+			productId: prod7,
+			reviewerId: buyer1.id,
+			orderId: order3,
+			rating: 1.5,
+			text: 'Item arrived damaged. Would not recommend.',
+			isApproved: false,
+			isBlocked: true,
+		},
+	];
+	for (const r of pendingProductReviews) {
+		const { flagged, flaggerId, ...reviewData } = r;
+		const exists = await prisma.productReview.findUnique({
+			where: {
+				productId_reviewerId_orderId: {
+					productId: r.productId,
+					reviewerId: r.reviewerId,
+					orderId: r.orderId,
+				},
+			},
+		});
+		if (!exists) {
+			const created = await prisma.productReview.create({
+				data: {
+					productId: reviewData.productId,
+					reviewerId: reviewData.reviewerId,
+					orderId: reviewData.orderId,
+					rating: reviewData.rating,
+					text: reviewData.text,
+					photos: reviewData.photos,
+					isApproved: reviewData.isApproved,
+					isBlocked: reviewData.isBlocked ?? false,
+				},
+			});
+			if (flagged && flaggerId) {
+				await prisma.complaint.create({
+					data: {
+						complainantId: flaggerId,
+						target: 'REVIEW',
+						status: 'NEW',
+						reason: 'Flagged by seller',
+						targetReviewId: created.id,
+					},
+				});
+			}
+		}
+	}
+	log('3 pending/hidden product reviews for moderation');
 
 	// ── 12. SELLER REVIEWS ──────────────────────────────────────────────────────
 

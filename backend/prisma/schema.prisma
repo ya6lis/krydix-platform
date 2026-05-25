@@ -552,17 +552,19 @@ model PromoCode {
 // ─── Reviews ─────────────────────────────────────────────────────────────────
 
 model ProductReview {
-  id         String    @id @default(cuid())
-  productId  String
-  reviewerId String
-  orderId    String?
-  rating     Decimal   @db.Decimal(2, 1)
-  text       String?
-  isApproved Boolean   @default(false)
-  isBlocked  Boolean   @default(false)
-  deletedAt  DateTime?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  id          String    @id @default(cuid())
+  productId   String
+  reviewerId  String
+  orderId     String?
+  rating      Decimal   @db.Decimal(2, 1)
+  text        String?
+  photos      Json?
+  sellerReply String?
+  isApproved  Boolean   @default(false)
+  isBlocked   Boolean   @default(false)
+  deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   product    Product    @relation(fields: [productId], references: [id])
   reviewer   User       @relation(fields: [reviewerId], references: [id])

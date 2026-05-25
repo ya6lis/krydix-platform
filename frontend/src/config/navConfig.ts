@@ -45,9 +45,9 @@ const moderatorNav: NavSection[] = [
 	{
 		titleKey: 'nav.sections.moderation',
 		items: [
-			{ labelKey: 'nav.products', icon: Icons.product, path: ROUTES.MODERATOR_PRODUCTS },
+			{ labelKey: 'nav.productModeration', icon: Icons.product, path: ROUTES.MODERATOR_PRODUCT_MODERATION },
 			{ labelKey: 'nav.complaints', icon: Icons.flag, path: ROUTES.MODERATOR_COMPLAINTS },
-			{ labelKey: 'nav.reviews', icon: Icons.star, path: ROUTES.MODERATOR_REVIEWS },
+			{ labelKey: 'nav.reviewModeration', icon: Icons.star, path: ROUTES.MODERATOR_REVIEW_MODERATION },
 			{ labelKey: 'nav.verification', icon: Icons.shield, path: ROUTES.MODERATOR_VERIFICATION },
 		],
 	},

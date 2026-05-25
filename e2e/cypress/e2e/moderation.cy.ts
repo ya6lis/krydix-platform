@@ -63,16 +63,16 @@ function stubGraphQL(overrides: Record<string, object> = {}) {
 
 // ─── Specs ────────────────────────────────────────────────────────────────────
 
-describe('ModerationQueuePage', () => {
+describe('ProductModerationPage', () => {
 	beforeEach(() => {
 		stubGraphQL();
-		cy.visit('/moderator/products', {
+		cy.visit('/moderator/product-moderation', {
 			onBeforeLoad: stubAuth,
 		});
 	});
 
 	it('renders page title and pending count', () => {
-		cy.contains('Moderation queue').should('be.visible');
+		cy.contains('Product moderation').should('be.visible');
 		cy.contains('2 items pending').should('be.visible');
 	});
 
@@ -120,7 +120,7 @@ describe('ModerationQueuePage', () => {
 			}
 		}).as('graphqlAfterApprove');
 
-		cy.visit('/moderator/products', { onBeforeLoad: stubAuth });
+		cy.visit('/moderator/product-moderation', { onBeforeLoad: stubAuth });
 
 		cy.contains('Wool Cardigan — Oat').click();
 		cy.contains('Approve').click();
@@ -164,7 +164,7 @@ describe('ModerationQueuePage', () => {
 			}
 		}).as('graphqlAfterReject');
 
-		cy.visit('/moderator/products', { onBeforeLoad: stubAuth });
+		cy.visit('/moderator/product-moderation', { onBeforeLoad: stubAuth });
 
 		cy.contains('Wool Cardigan — Oat').click();
 
@@ -205,7 +205,7 @@ describe('ModerationQueuePage', () => {
 			}
 		}).as('emptyQueue');
 
-		cy.visit('/moderator/products', { onBeforeLoad: stubAuth });
+		cy.visit('/moderator/product-moderation', { onBeforeLoad: stubAuth });
 
 		cy.contains('No items in queue').should('be.visible');
 		cy.contains('All product submissions have been reviewed').should('be.visible');

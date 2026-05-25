@@ -90,15 +90,13 @@ describe('AppSidebar', () => {
 	it('shows moderation items for MODERATOR role', () => {
 		mockAuthUser = { ...mockUser, role: 'MODERATOR' };
 		renderSidebar();
-		expect(screen.getByText('nav.queue')).toBeInTheDocument();
-		expect(screen.getByText('nav.complaints')).toBeInTheDocument();
-		expect(screen.getByText('nav.reviews')).toBeInTheDocument();
+		expect(screen.getByText('nav.productModeration')).toBeInTheDocument();
+		expect(screen.getByText('nav.reviewModeration')).toBeInTheDocument();
 	});
 
 	it('hides moderation items for BUYER role', () => {
 		renderSidebar();
-		expect(screen.queryByText('nav.queue')).not.toBeInTheDocument();
-		expect(screen.queryByText('nav.complaints')).not.toBeInTheDocument();
+		expect(screen.queryByText('nav.productModeration')).not.toBeInTheDocument();
 	});
 
 	it('hides count badges when NAV_BADGE_COUNTS is empty (Phase 13 wires real data)', () => {

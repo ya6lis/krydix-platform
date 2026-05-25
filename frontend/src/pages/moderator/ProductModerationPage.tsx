@@ -649,7 +649,7 @@ function QueueSkeleton() {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function ModerationQueuePage() {
+export default function ProductModerationPage() {
 	const { t } = useTranslation();
 	const { showToast } = useAppToast();
 

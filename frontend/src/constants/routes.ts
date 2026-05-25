@@ -42,9 +42,12 @@ export const ROUTES = {
 
 	// Moderator panel
 	MODERATOR: '/moderator',
-	MODERATOR_PRODUCTS: '/moderator/products',
+	MODERATOR_PRODUCT_MODERATION: '/moderator/product-moderation',
+	MODERATOR_REVIEW_MODERATION: '/moderator/review-moderation',
+	MODERATOR_PRODUCTS: '/moderator/product-moderation',
+	MODERATOR_QUEUE: '/moderator/product-moderation',
 	MODERATOR_COMPLAINTS: '/moderator/complaints',
-	MODERATOR_REVIEWS: '/moderator/reviews',
+	MODERATOR_REVIEWS: '/moderator/review-moderation',
 	MODERATOR_VERIFICATION: '/moderator/verification',
 
 	// Admin panel

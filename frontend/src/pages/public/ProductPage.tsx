@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Box, Typography, Stack } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { AppLoader, EmptyState, AppCard, AppTabs, AppButton, useAppToast } from '@/components/ui';
+import { ProductReviewsSection } from '@/components/reviews/ProductReviewsSection';
 import { PRODUCT_QUERY } from '@/graphql/operations/catalog';
 import { Icons } from '@/constants/icons';
 import { ROUTES } from '@/constants/routes';
@@ -94,18 +95,6 @@ function sellerInitials(name: string): string {
 }
 
 // ─── sub-components ───────────────────────────────────────────────────────────
-
-function StarRating({ rating, size = 14 }: { rating: number; size?: number }) {
-	return (
-		<Box sx={{ display: 'inline-flex', gap: 0.25, color: tokens.amber }}>
-			{Array.from({ length: 5 }, (_, i) => {
-				const diff = rating - i;
-				const icon = diff >= 1 ? Icons.star : diff >= 0.5 ? Icons.starHalf : Icons.starEmpty;
-				return <FontAwesomeIcon key={i} icon={icon} style={{ fontSize: size }} />;
-			})}
-		</Box>
-	);
-}
 
 // ─── component ────────────────────────────────────────────────────────────────
 
@@ -870,47 +859,7 @@ export default function ProductPage() {
 						</AppCard>
 					)}
 
-					{tab === 'reviews' && (
-						<AppCard title={t('product.reviewsTitle')}>
-							{product.reviewCount > 0 ? (
-								<Box
-									sx={{
-										display: 'grid',
-										gridTemplateColumns: '220px 1fr',
-										gap: 4,
-										alignItems: 'center',
-										py: 2.5,
-									}}
-								>
-									<Box>
-										<Typography
-											sx={{
-												fontSize: 56,
-												fontWeight: 800,
-												letterSpacing: '-0.03em',
-												lineHeight: 1,
-											}}
-										>
-											{product.rating.toFixed(1)}
-										</Typography>
-										<Box sx={{ mt: 0.5 }}>
-											<StarRating rating={product.rating} size={18} />
-										</Box>
-										<Box sx={{ color: 'text.secondary', fontSize: 13, mt: 0.5 }}>
-											{t('product.reviewsSummary', { count: product.reviewCount })}
-										</Box>
-									</Box>
-									<EmptyState icon={Icons.star} title={t('product.noReviews')} description="" />
-								</Box>
-							) : (
-								<EmptyState
-									icon={Icons.starEmpty}
-									title={t('product.noReviews')}
-									description={t('product.noReviewsDesc')}
-								/>
-							)}
-						</AppCard>
-					)}
+					{tab === 'reviews' && <ProductReviewsSection productId={product.id} />}
 
 					{tab === 'qa' && (
 						<AppCard>

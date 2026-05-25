@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { Role } from '@/constants/enums';
 
@@ -23,7 +23,8 @@ import BuyerSettingsPage from '@/pages/buyer/BuyerSettingsPage';
 import SellerProductFormPage from '@/pages/seller/SellerProductFormPage';
 import SellerProductsPage from '@/pages/seller/SellerProductsPage';
 import SellerDashboardPage from '@/pages/seller/SellerDashboardPage';
-import ModerationQueuePage from '@/pages/moderator/ModerationQueuePage';
+import ProductModerationPage from '@/pages/moderator/ProductModerationPage';
+import ReviewModerationPage from '@/pages/moderator/ReviewModerationPage';
 
 const Placeholder = ({ name }: { name: string }) => (
 	<div style={{ padding: 32 }}>
@@ -125,9 +126,12 @@ export const router = createBrowserRouter([
 		),
 		children: [
 			{ index: true, element: <Placeholder name="Moderator Home" /> },
-			{ path: 'products', element: <ModerationQueuePage /> },
+			{ path: 'product-moderation', element: <ProductModerationPage /> },
+			{ path: 'products', element: <Navigate to={ROUTES.MODERATOR_PRODUCT_MODERATION} replace /> },
+			{ path: 'queue', element: <Navigate to={ROUTES.MODERATOR_PRODUCT_MODERATION} replace /> },
 			{ path: 'complaints', element: <Placeholder name="Complaints" /> },
-			{ path: 'reviews', element: <Placeholder name="Review Moderation" /> },
+			{ path: 'review-moderation', element: <ReviewModerationPage /> },
+			{ path: 'reviews', element: <Navigate to={ROUTES.MODERATOR_REVIEW_MODERATION} replace /> },
 			{ path: 'verification', element: <Placeholder name="Seller Verification Queue" /> },
 		],
 	},

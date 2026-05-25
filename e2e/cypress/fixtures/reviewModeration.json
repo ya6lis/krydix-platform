@@ -1,0 +1,58 @@
+{
+	"moderationReviews": {
+		"items": [
+			{
+				"id": "rev-1",
+				"reviewType": "PRODUCT",
+				"rating": 2,
+				"text": "Looks nothing like the photos. The olive is more of a dirty mustard.",
+				"photos": [],
+				"isApproved": false,
+				"isBlocked": false,
+				"isFlagged": true,
+				"flagReason": "Flagged by seller",
+				"reviewerName": "Jaymes Sorrento",
+				"reviewerInitials": "JS",
+				"reviewerAvatarUrl": null,
+				"reviewerReviewCount": 3,
+				"targetTitle": "Heritage Field Jacket — Olive",
+				"targetRef": "NA-HFJ-OLV",
+				"targetImageUrl": "https://res.cloudinary.com/demo/image/upload/sample.jpg",
+				"targetSlug": "heritage-field-jacket-olive",
+				"orderId": "order-6010",
+				"submittedAt": "2026-05-26T10:00:00.000Z"
+			},
+			{
+				"id": "rev-2",
+				"reviewType": "PRODUCT",
+				"rating": 5,
+				"text": "Sized exactly as expected. The wax breaks in beautifully after a week.",
+				"photos": [
+					"https://res.cloudinary.com/demo/image/upload/sample.jpg",
+					"https://res.cloudinary.com/demo/image/upload/sample.jpg"
+				],
+				"isApproved": false,
+				"isBlocked": false,
+				"isFlagged": false,
+				"flagReason": null,
+				"reviewerName": "Lucia O'Brien",
+				"reviewerInitials": "LO",
+				"reviewerAvatarUrl": null,
+				"reviewerReviewCount": 14,
+				"targetTitle": "Heritage Field Jacket — Olive",
+				"targetRef": "NA-HFJ-OLV",
+				"targetImageUrl": "https://res.cloudinary.com/demo/image/upload/sample.jpg",
+				"targetSlug": "heritage-field-jacket-olive",
+				"orderId": "order-6011",
+				"submittedAt": "2026-05-26T07:00:00.000Z"
+			}
+		],
+		"total": 2,
+		"page": 1,
+		"pageSize": 6,
+		"pendingCount": 2,
+		"flaggedCount": 1,
+		"approvedCount": 1284,
+		"hiddenCount": 12
+	}
+}
