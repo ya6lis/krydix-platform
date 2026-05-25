@@ -7,6 +7,7 @@ import { signAccessToken } from '../utils/jwt.js';
 import { sendVerificationEmail } from '../utils/email.js';
 import { env } from '../config/env.js';
 import { Role } from '../constants/enums.js';
+import { touchLastSeen } from './presenceService.js';
 
 function generateToken(): string {
 	return randomBytes(32).toString('hex');
@@ -70,6 +71,7 @@ export async function login(email: string, password: string) {
 	});
 	const refreshToken = generateToken();
 	await tokenRepo.createRefreshToken(user.id, refreshToken);
+	touchLastSeen(user.id, true);
 
 	return { accessToken, refreshToken, user };
 }
@@ -95,6 +97,7 @@ export async function refreshToken(token: string) {
 	});
 	const newRefreshToken = generateToken();
 	await tokenRepo.createRefreshToken(user.id, newRefreshToken);
+	touchLastSeen(user.id, true);
 
 	return { accessToken, refreshToken: newRefreshToken };
 }

@@ -32,6 +32,8 @@
 		"reviews": "Відгуки",
 		"messages": "Повідомлення",
 		"users": "Користувачі та ролі",
+		"allProducts": "Усі товари",
+		"allReviews": "Усі відгуки",
 		"categories": "Категорії",
 		"verifications": "Верифікації",
 		"platform": "Налаштування платформи",
@@ -1124,6 +1126,233 @@
 			"success": "Відгук надіслано — очікує модерації",
 			"error": "Не вдалося надіслати відгук",
 			"ratingRequired": "Оберіть оцінку"
+		}
+	},
+	"users": {
+		"pageTitle": "Користувачі та ролі",
+		"pageSubtitle": "Усі облікові записи Krydix · {{count}} загалом.",
+		"pageSubtitleModerator": "Перегляд користувачів і soft-ban покупців/продавців · {{count}} загалом.",
+		"exportBtn": "Експорт",
+		"inviteBtn": "Запросити користувача",
+		"searchPlaceholder": "Пошук за ім'ям, email або ID…",
+		"stats": {
+			"all": "Усі",
+			"buyers": "Покупці",
+			"sellers": "Продавці",
+			"moderators": "Модератори",
+			"administrators": "Адміністратори",
+			"newThisMonth": "+{{count}} цього місяця",
+			"activeTeam": "Активна команда",
+			"platformTeam": "Команда платформи"
+		},
+		"tabs": {
+			"all": "Усі",
+			"buyers": "Покупці",
+			"sellers": "Продавці",
+			"moderators": "Модератори",
+			"administrators": "Адміністратори",
+			"blocked": "Заблоковані"
+		},
+		"filters": {
+			"statusAll": "Усі статуси",
+			"statusActive": "Активні",
+			"statusPendingEmail": "Очікує email",
+			"statusBlocked": "Заблоковані"
+		},
+		"table": {
+			"user": "Користувач",
+			"role": "Роль",
+			"country": "Країна",
+			"joined": "Приєднався",
+			"lastSeen": "Останній візит",
+			"status": "Статус"
+		},
+		"online": "Онлайн",
+		"lastSeenAt": "Останній візит {{time}}",
+		"roles": {
+			"buyer": "Покупець",
+			"seller": "Продавець",
+			"moderator": "Модератор",
+			"admin": "Адміністратор",
+			"guest": "Гість"
+		},
+		"status": {
+			"active": "Активний",
+			"pending_email": "Очікує email",
+			"blocked": "Заблокований",
+			"deleted": "Видалений"
+		},
+		"actions": {
+			"softBan": "Soft-ban",
+			"unban": "Розблокувати",
+			"softDelete": "М'яке видалення"
+		},
+		"invite": {
+			"title": "Запросити користувача",
+			"email": "Email",
+			"firstName": "Ім'я",
+			"lastName": "Прізвище",
+			"role": "Роль",
+			"cancel": "Скасувати",
+			"submit": "Надіслати запрошення"
+		},
+		"delete": {
+			"title": "М'яке видалення",
+			"message": "М'яко видалити {{name}}? Користувач більше не зможе увійти.",
+			"confirm": "Видалити",
+			"cancel": "Скасувати"
+		},
+		"empty": {
+			"title": "Користувачів не знайдено",
+			"description": "Спробуйте змінити пошук або фільтри."
+		},
+		"toast": {
+			"roleChanged": "Роль оновлено",
+			"roleChangeError": "Не вдалося змінити роль",
+			"banned": "Користувача заблоковано",
+			"banError": "Не вдалося заблокувати",
+			"unbanned": "Користувача розблоковано",
+			"unbanError": "Не вдалося розблокувати",
+			"deleted": "Користувача видалено",
+			"deleteError": "Не вдалося видалити",
+			"invited": "Запрошення надіслано",
+			"inviteError": "Не вдалося запросити"
+		}
+	},
+	"adminProducts": {
+		"pageTitle": "Усі товари",
+		"pageSubtitle": "Огляд каталогу · {{count}} активних позицій.",
+		"pageSubtitleModerator": "Перегляд і керування всіма товарами каталогу · {{count}} активних позицій.",
+		"searchPlaceholder": "Пошук за назвою, SKU, slug, продавцем…",
+		"stats": {
+			"all": "Усі",
+			"approved": "Схвалені",
+			"pending": "На модерації",
+			"draft": "Чернетки",
+			"blocked": "Заблоковані",
+			"newThisMonth": "+{{count}} цього місяця"
+		},
+		"tabs": {
+			"all": "Усі",
+			"draft": "Чернетки",
+			"pending": "На модерації",
+			"approved": "Схвалені",
+			"rejected": "Відхилені",
+			"blocked": "Заблоковані",
+			"archived": "Архів",
+			"deleted": "Видалені"
+		},
+		"filters": {
+			"availabilityAll": "Уся доступність",
+			"availabilityAvailable": "Доступні",
+			"availabilityUnavailable": "Недоступні"
+		},
+		"table": {
+			"product": "Товар",
+			"seller": "Продавець",
+			"price": "Ціна",
+			"stock": "Залишок",
+			"category": "Категорія",
+			"updated": "Оновлено",
+			"status": "Статус",
+			"availability": "Доступність"
+		},
+		"status": {
+			"draft": "Чернетка",
+			"pending_moderation": "На модерації",
+			"approved": "Схвалено",
+			"rejected": "Відхилено",
+			"archived": "Архів",
+			"blocked": "Заблоковано",
+			"disabled": "Вимкнено",
+			"enabled": "Увімкнено",
+			"deleted": "Видалено"
+		},
+		"availability": {
+			"available": "Доступний",
+			"unavailable": "Недоступний"
+		},
+		"actions": {
+			"softDelete": "М'яке видалення"
+		},
+		"delete": {
+			"title": "М'яке видалення товару",
+			"message": "Видалити «{{name}}»? Товар буде прибрано з каталогу.",
+			"confirm": "Видалити",
+			"cancel": "Скасувати"
+		},
+		"empty": {
+			"title": "Товарів не знайдено",
+			"description": "Спробуйте змінити пошук або фільтри."
+		},
+		"toast": {
+			"statusChanged": "Статус товару оновлено",
+			"statusChangeError": "Не вдалося оновити статус",
+			"deleted": "Товар видалено",
+			"deleteError": "Не вдалося видалити товар"
+		}
+	},
+	"adminReviews": {
+		"pageTitle": "Усі відгуки",
+		"pageSubtitle": "Відгуки про товари на Krydix · {{count}} загалом.",
+		"pageSubtitleModerator": "Перегляд і керування всіма відгуками · {{count}} загалом.",
+		"searchPlaceholder": "Пошук за текстом, товаром або автором…",
+		"flagged": "Позначено",
+		"stats": {
+			"all": "Усі",
+			"approved": "Схвалені",
+			"pending": "Очікують",
+			"flagged": "Позначені",
+			"blocked": "Заблоковані",
+			"newThisMonth": "+{{count}} цього місяця"
+		},
+		"tabs": {
+			"all": "Усі",
+			"pending": "Очікують",
+			"flagged": "Позначені",
+			"approved": "Схвалені",
+			"blocked": "Заблоковані",
+			"deleted": "Видалені"
+		},
+		"filters": {
+			"ratingAll": "Усі оцінки",
+			"rating5": "5 зірок",
+			"rating4": "4 зірки",
+			"rating3": "3 зірки",
+			"ratingLow": "1–2 зірки"
+		},
+		"table": {
+			"review": "Відгук",
+			"product": "Товар",
+			"rating": "Оцінка",
+			"submitted": "Надіслано",
+			"flag": "Позначка",
+			"status": "Статус"
+		},
+		"status": {
+			"pending": "Очікує",
+			"approved": "Схвалено",
+			"blocked": "Заблоковано",
+			"deleted": "Видалено"
+		},
+		"actions": {
+			"softDelete": "М'яке видалення"
+		},
+		"delete": {
+			"title": "М'яке видалення відгуку",
+			"message": "Видалити відгук від {{name}}? Він буде прибраний з каталогу.",
+			"confirm": "Видалити",
+			"cancel": "Скасувати"
+		},
+		"empty": {
+			"title": "Відгуків не знайдено",
+			"description": "Спробуйте змінити пошук або фільтри."
+		},
+		"toast": {
+			"statusChanged": "Статус відгуку оновлено",
+			"statusChangeError": "Не вдалося оновити статус",
+			"deleted": "Відгук видалено",
+			"deleteError": "Не вдалося видалити відгук"
 		}
 	}
 }

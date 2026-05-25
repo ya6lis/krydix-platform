@@ -1,6 +1,7 @@
 import { GraphQLError } from 'graphql';
 import * as repo from '../repositories/reviewModerationRepository.js';
 import * as auditLog from './auditLogService.js';
+import { Role } from '../constants/enums.js';
 
 type RawReview = repo.RawModerationReview;
 
@@ -114,7 +115,11 @@ export async function hideReview(reviewId: string, moderatorId: string) {
 	return serializeModerationReview(updated);
 }
 
-export async function deleteReview(reviewId: string, moderatorId: string) {
+export async function deleteReview(reviewId: string, actorId: string, actorRole: Role) {
+	if (actorRole !== Role.ADMIN) {
+		throw new GraphQLError('Administrator access required', { extensions: { code: 'FORBIDDEN' } });
+	}
+
 	const existing = await repo.findModerationReviewById(reviewId);
 	if (!existing || existing.deletedAt) {
 		throw new GraphQLError('Review not found', { extensions: { code: 'NOT_FOUND' } });
@@ -123,7 +128,7 @@ export async function deleteReview(reviewId: string, moderatorId: string) {
 	await repo.softDeleteReviewRecord(reviewId);
 
 	await auditLog.log({
-		actorId: moderatorId,
+		actorId,
 		action: 'REVIEW_DELETED',
 		targetType: 'ProductReview',
 		targetId: reviewId,

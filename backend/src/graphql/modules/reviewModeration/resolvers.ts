@@ -17,6 +17,14 @@ function requireModerator(ctx: GraphQLContext) {
 	return ctx.user;
 }
 
+function requireAdmin(ctx: GraphQLContext) {
+	const user = requireModerator(ctx);
+	if (user.role !== Role.ADMIN) {
+		throw new GraphQLError('Administrator access required', { extensions: { code: 'FORBIDDEN' } });
+	}
+	return user;
+}
+
 export const reviewModerationResolvers = {
 	Query: {
 		moderationReviews: async (
@@ -59,8 +67,8 @@ export const reviewModerationResolvers = {
 		},
 
 		deleteReview: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
-			const user = requireModerator(ctx);
-			return service.deleteReview(id, user.id);
+			const user = requireAdmin(ctx);
+			return service.deleteReview(id, user.id, user.role as Role);
 		},
 	},
 };

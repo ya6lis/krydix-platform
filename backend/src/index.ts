@@ -6,6 +6,7 @@ import { env } from './config/env.js';
 import { logger } from './utils/logger.js';
 import { schema } from './graphql/schema.js';
 import { extractAuthUser } from './middleware/auth.js';
+import { touchLastSeen } from './services/presenceService.js';
 import { UPLOAD_MAX_FILE_SIZE_MB } from './constants/constants.js';
 import type { GraphQLContext } from './types/context.js';
 
@@ -48,7 +49,11 @@ async function bootstrap() {
 	app.use(
 		'/graphql',
 		expressMiddleware(server, {
-			context: async ({ req }) => ({ user: extractAuthUser(req) }),
+			context: async ({ req }) => {
+				const user = extractAuthUser(req);
+				if (user) touchLastSeen(user.id);
+				return { user };
+			},
 		}) as unknown as express.RequestHandler
 	);
 

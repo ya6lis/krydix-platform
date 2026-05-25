@@ -6,6 +6,7 @@ jest.mock('../auditLogService.js');
 import * as repo from '../../repositories/reviewModerationRepository.js';
 import * as auditLog from '../auditLogService.js';
 import * as service from '../reviewModerationService.js';
+import { Role } from '../../constants/enums.js';
 
 const mockReview = {
 	id: 'rev-1',
@@ -93,12 +94,18 @@ describe('hideReview', () => {
 });
 
 describe('deleteReview', () => {
-	it('soft deletes review', async () => {
+	it('soft deletes review as admin', async () => {
 		(repo.findModerationReviewById as jest.Mock).mockResolvedValue(mockReview);
 		(repo.softDeleteReviewRecord as jest.Mock).mockResolvedValue(mockReview);
 
-		const result = await service.deleteReview('rev-1', 'mod-1');
+		const result = await service.deleteReview('rev-1', 'admin-1', Role.ADMIN);
 		expect(result).toBe(true);
 		expect(repo.softDeleteReviewRecord).toHaveBeenCalledWith('rev-1');
+	});
+
+	it('blocks moderator from deleting review', async () => {
+		await expect(service.deleteReview('rev-1', 'mod-1', Role.MODERATOR)).rejects.toMatchObject({
+			extensions: { code: 'FORBIDDEN' },
+		});
 	});
 });

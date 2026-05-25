@@ -1,0 +1,74 @@
+{
+	"adminStats": {
+		"total": 9,
+		"buyers": 3,
+		"sellers": 3,
+		"moderators": 2,
+		"administrators": 1,
+		"blocked": 0,
+		"newThisMonth": 2
+	},
+	"allUsers": {
+		"items": [
+			{
+				"id": "buyer-1",
+				"email": "buyer1@krydix.dev",
+				"displayName": "Anna Bondarenko",
+				"initials": "AB",
+				"avatarUrl": null,
+				"role": "BUYER",
+				"country": "Ukraine",
+				"joinedAt": "2026-01-14T00:00:00.000Z",
+				"lastSeenAt": "2026-05-26T12:00:00.000Z",
+				"isOnline": true,
+				"status": "ACTIVE",
+				"userRef": "#US-ER01",
+				"isActive": true,
+				"isEmailVerified": true
+			},
+			{
+				"id": "mod-2",
+				"email": "mod2@krydix.dev",
+				"displayName": "Sofia Kovalenko",
+				"initials": "SK",
+				"avatarUrl": null,
+				"role": "MODERATOR",
+				"country": "Ukraine",
+				"joinedAt": "2026-02-02T00:00:00.000Z",
+				"lastSeenAt": "2026-05-20T10:00:00.000Z",
+				"isOnline": false,
+				"status": "ACTIVE",
+				"userRef": "#US-OD01",
+				"isActive": true,
+				"isEmailVerified": true
+			},
+			{
+				"id": "admin-2",
+				"email": "admin2@krydix.dev",
+				"displayName": "Alex Admin",
+				"initials": "AA",
+				"avatarUrl": null,
+				"role": "ADMIN",
+				"country": "Ukraine",
+				"joinedAt": "2025-12-01T00:00:00.000Z",
+				"lastSeenAt": "2026-05-26T10:00:00.000Z",
+				"isOnline": true,
+				"status": "ACTIVE",
+				"userRef": "#US-AD01",
+				"isActive": true,
+				"isEmailVerified": true
+			}
+		],
+		"total": 3,
+		"page": 1,
+		"pageSize": 25,
+		"tabCounts": {
+			"all": 9,
+			"buyers": 3,
+			"sellers": 3,
+			"moderators": 2,
+			"administrators": 1,
+			"blocked": 0
+		}
+	}
+}
