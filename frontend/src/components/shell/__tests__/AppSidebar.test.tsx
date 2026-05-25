@@ -92,6 +92,7 @@ describe('AppSidebar', () => {
 		renderSidebar();
 		expect(screen.getByText('nav.productModeration')).toBeInTheDocument();
 		expect(screen.getByText('nav.reviewModeration')).toBeInTheDocument();
+		expect(screen.getByText('nav.users')).toBeInTheDocument();
 	});
 
 	it('hides moderation items for BUYER role', () => {

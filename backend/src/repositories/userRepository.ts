@@ -26,3 +26,10 @@ export async function updateUserEmailVerified(userId: string) {
 		data: { isEmailVerified: true },
 	});
 }
+
+export async function updateUserLastSeenAt(userId: string) {
+	return prisma.user.update({
+		where: { id: userId },
+		data: { lastSeenAt: new Date() },
+	});
+}

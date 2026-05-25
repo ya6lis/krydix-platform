@@ -77,6 +77,21 @@ async function main() {
 	const buyer1 = await upsertUser('buyer1@krydix.dev', 'BUYER', 'Anna', 'Bondarenko', 'Kyiv');
 	const buyer2 = await upsertUser('buyer2@krydix.dev', 'BUYER', 'Pavlo', 'Tkachenko', 'Lviv');
 	const buyer3 = await upsertUser('buyer3@krydix.dev', 'BUYER', 'Natalia', 'Kravchenko', 'Dnipro');
+
+	const now = Date.now();
+	await prisma.user.updateMany({
+		where: { id: { in: [buyer1.id, admin.id] } },
+		data: { lastSeenAt: new Date(now) },
+	});
+	await prisma.user.updateMany({
+		where: { id: { in: [mod1.id, seller1.id] } },
+		data: { lastSeenAt: new Date(now - 20 * 60 * 1000) },
+	});
+	await prisma.user.updateMany({
+		where: { id: { in: [buyer2.id, buyer3.id, seller2.id, seller3.id, mod2.id] } },
+		data: { lastSeenAt: new Date(now - 3 * 24 * 60 * 60 * 1000) },
+	});
+
 	log('9 users');
 
 	// ── 2. CATEGORIES ───────────────────────────────────────────────────────────

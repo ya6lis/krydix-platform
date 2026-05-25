@@ -146,6 +146,27 @@ const NAV_GROUPS: NavGroup[] = [
 				href: ROUTES.MODERATOR_REVIEW_MODERATION,
 				roles: ['MODERATOR', 'ADMINISTRATOR'],
 			},
+			{
+				id: 'all-reviews',
+				labelKey: 'nav.allReviews',
+				icon: Icons.star,
+				href: ROUTES.MODERATOR_ALL_REVIEWS,
+				roles: ['MODERATOR', 'ADMINISTRATOR'],
+			},
+			{
+				id: 'all-products',
+				labelKey: 'nav.allProducts',
+				icon: Icons.products,
+				href: ROUTES.MODERATOR_ALL_PRODUCTS,
+				roles: ['MODERATOR', 'ADMINISTRATOR'],
+			},
+			{
+				id: 'users',
+				labelKey: 'nav.users',
+				icon: Icons.users,
+				href: ROUTES.MODERATOR_USERS,
+				roles: ['MODERATOR', 'ADMINISTRATOR'],
+			},
 			//{
 			//	id: 'verifications',
 			//	labelKey: 'nav.verifications',
@@ -167,6 +188,20 @@ const NAV_GROUPS: NavGroup[] = [
 				labelKey: 'nav.users',
 				icon: Icons.users,
 				href: ROUTES.ADMIN_USERS,
+				roles: ['ADMINISTRATOR'],
+			},
+			{
+				id: 'admin-products',
+				labelKey: 'nav.allProducts',
+				icon: Icons.products,
+				href: ROUTES.ADMIN_PRODUCTS,
+				roles: ['ADMINISTRATOR'],
+			},
+			{
+				id: 'admin-reviews',
+				labelKey: 'nav.allReviews',
+				icon: Icons.star,
+				href: ROUTES.ADMIN_REVIEWS,
 				roles: ['ADMINISTRATOR'],
 			},
 			{

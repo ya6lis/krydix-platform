@@ -48,11 +48,16 @@ export const ROUTES = {
 	MODERATOR_QUEUE: '/moderator/product-moderation',
 	MODERATOR_COMPLAINTS: '/moderator/complaints',
 	MODERATOR_REVIEWS: '/moderator/review-moderation',
+	MODERATOR_USERS: '/moderator/users',
+	MODERATOR_USER: (id: string) => `/moderator/users/${id}`,
+	MODERATOR_ALL_PRODUCTS: '/moderator/all-products',
+	MODERATOR_ALL_REVIEWS: '/moderator/all-reviews',
 	MODERATOR_VERIFICATION: '/moderator/verification',
 
 	// Admin panel
 	ADMIN: '/admin',
 	ADMIN_USERS: '/admin/users',
+	ADMIN_USER: (id: string) => `/admin/users/${id}`,
 	ADMIN_CATEGORIES: '/admin/categories',
 	ADMIN_PRODUCTS: '/admin/products',
 	ADMIN_COMPLAINTS: '/admin/complaints',

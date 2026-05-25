@@ -1,0 +1,70 @@
+{
+	"adminReviewStats": {
+		"total": 18,
+		"pending": 4,
+		"flagged": 2,
+		"approved": 10,
+		"blocked": 2,
+		"deleted": 1,
+		"newThisMonth": 3
+	},
+	"allReviews": {
+		"items": [
+			{
+				"id": "rev-1",
+				"reviewRef": "#RV-EV01",
+				"rating": 4.5,
+				"text": "Excellent sound quality and comfortable fit.",
+				"reviewerId": "buyer-1",
+				"reviewerName": "Anna Bondarenko",
+				"reviewerEmail": "buyer1@krydix.dev",
+				"reviewerAvatarUrl": null,
+				"productId": "prod-1",
+				"productTitle": "Wireless Headphones Pro",
+				"productSlug": "wireless-headphones-pro",
+				"productSku": "WH-001",
+				"productImageUrl": "https://example.com/headphones.jpg",
+				"status": "APPROVED",
+				"isFlagged": false,
+				"flagReason": null,
+				"orderId": "order-1",
+				"createdAt": "2026-03-10T00:00:00.000Z",
+				"updatedAt": "2026-05-26T12:00:00.000Z",
+				"isDeleted": false
+			},
+			{
+				"id": "rev-2",
+				"reviewRef": "#RV-EV02",
+				"rating": 2,
+				"text": "Product arrived damaged.",
+				"reviewerId": "buyer-2",
+				"reviewerName": "Ivan Petrenko",
+				"reviewerEmail": "buyer2@krydix.dev",
+				"reviewerAvatarUrl": null,
+				"productId": "prod-2",
+				"productTitle": "Smart Watch X",
+				"productSlug": "smart-watch-x",
+				"productSku": "SW-002",
+				"productImageUrl": null,
+				"status": "PENDING",
+				"isFlagged": true,
+				"flagReason": "Inappropriate language",
+				"orderId": "order-2",
+				"createdAt": "2026-05-20T00:00:00.000Z",
+				"updatedAt": "2026-05-25T10:00:00.000Z",
+				"isDeleted": false
+			}
+		],
+		"total": 2,
+		"page": 1,
+		"pageSize": 25,
+		"tabCounts": {
+			"all": 18,
+			"pending": 4,
+			"flagged": 2,
+			"approved": 10,
+			"blocked": 2,
+			"deleted": 1
+		}
+	}
+}

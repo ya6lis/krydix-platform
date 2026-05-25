@@ -1,0 +1,70 @@
+{
+	"adminProductStats": {
+		"total": 42,
+		"draft": 5,
+		"pending": 3,
+		"approved": 28,
+		"rejected": 2,
+		"blocked": 1,
+		"archived": 2,
+		"deleted": 1,
+		"newThisMonth": 6
+	},
+	"allProducts": {
+		"items": [
+			{
+				"id": "prod-1",
+				"title": "Wireless Headphones Pro",
+				"sku": "WH-001",
+				"slug": "wireless-headphones-pro",
+				"productRef": "#PR-OD01",
+				"imageUrl": "https://example.com/headphones.jpg",
+				"sellerId": "seller-1",
+				"sellerName": "Tech Store UA",
+				"sellerEmail": "seller1@krydix.dev",
+				"basePrice": 2499,
+				"brand": "SoundMax",
+				"categoryPath": "Electronics › Audio",
+				"status": "APPROVED",
+				"isAvailable": true,
+				"totalStock": 15,
+				"createdAt": "2026-01-10T00:00:00.000Z",
+				"updatedAt": "2026-05-26T12:00:00.000Z",
+				"isDeleted": false
+			},
+			{
+				"id": "prod-2",
+				"title": "Draft Product Sample",
+				"sku": "DR-002",
+				"slug": "draft-product-sample",
+				"productRef": "#PR-OD02",
+				"imageUrl": null,
+				"sellerId": "seller-2",
+				"sellerName": "Home Goods Ltd",
+				"sellerEmail": "seller2@krydix.dev",
+				"basePrice": 599,
+				"brand": null,
+				"categoryPath": null,
+				"status": "DRAFT",
+				"isAvailable": false,
+				"totalStock": 0,
+				"createdAt": "2026-02-01T00:00:00.000Z",
+				"updatedAt": "2026-05-25T10:00:00.000Z",
+				"isDeleted": false
+			}
+		],
+		"total": 2,
+		"page": 1,
+		"pageSize": 25,
+		"tabCounts": {
+			"all": 42,
+			"draft": 5,
+			"pending": 3,
+			"approved": 28,
+			"rejected": 2,
+			"blocked": 1,
+			"archived": 2,
+			"deleted": 1
+		}
+	}
+}

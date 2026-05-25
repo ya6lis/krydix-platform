@@ -32,6 +32,8 @@
 		"reviews": "Reviews",
 		"messages": "Messages",
 		"users": "Users & roles",
+		"allProducts": "All products",
+		"allReviews": "All reviews",
 		"categories": "Categories",
 		"verifications": "Verifications",
 		"platform": "Platform settings",
@@ -1124,6 +1126,233 @@
 			"success": "Review submitted — pending moderation",
 			"error": "Failed to submit review",
 			"ratingRequired": "Please select a rating"
+		}
+	},
+	"users": {
+		"pageTitle": "Users & roles",
+		"pageSubtitle": "All accounts on Krydix · {{count}} total.",
+		"pageSubtitleModerator": "View users and soft-ban buyers or sellers · {{count}} total.",
+		"exportBtn": "Export",
+		"inviteBtn": "Invite user",
+		"searchPlaceholder": "Search by name, email, or user ID…",
+		"stats": {
+			"all": "All",
+			"buyers": "Buyers",
+			"sellers": "Sellers",
+			"moderators": "Moderators",
+			"administrators": "Administrators",
+			"newThisMonth": "+{{count}} this month",
+			"activeTeam": "Active team",
+			"platformTeam": "Platform team"
+		},
+		"tabs": {
+			"all": "All",
+			"buyers": "Buyers",
+			"sellers": "Sellers",
+			"moderators": "Moderators",
+			"administrators": "Administrators",
+			"blocked": "Blocked"
+		},
+		"filters": {
+			"statusAll": "All statuses",
+			"statusActive": "Active",
+			"statusPendingEmail": "Pending email",
+			"statusBlocked": "Blocked"
+		},
+		"table": {
+			"user": "User",
+			"role": "Role",
+			"country": "Country",
+			"joined": "Joined",
+			"lastSeen": "Last seen",
+			"status": "Status"
+		},
+		"online": "Online",
+		"lastSeenAt": "Last seen {{time}}",
+		"roles": {
+			"buyer": "Buyer",
+			"seller": "Seller",
+			"moderator": "Moderator",
+			"admin": "Administrator",
+			"guest": "Guest"
+		},
+		"status": {
+			"active": "Active",
+			"pending_email": "Pending email",
+			"blocked": "Blocked",
+			"deleted": "Deleted"
+		},
+		"actions": {
+			"softBan": "Soft-ban",
+			"unban": "Unban user",
+			"softDelete": "Soft delete"
+		},
+		"invite": {
+			"title": "Invite user",
+			"email": "Email",
+			"firstName": "First name",
+			"lastName": "Last name",
+			"role": "Role",
+			"cancel": "Cancel",
+			"submit": "Send invite"
+		},
+		"delete": {
+			"title": "Soft delete user",
+			"message": "Soft-delete {{name}}? They will no longer be able to sign in.",
+			"confirm": "Delete",
+			"cancel": "Cancel"
+		},
+		"empty": {
+			"title": "No users found",
+			"description": "Try adjusting your search or filters."
+		},
+		"toast": {
+			"roleChanged": "Role updated successfully",
+			"roleChangeError": "Failed to change role",
+			"banned": "User soft-banned",
+			"banError": "Failed to soft-ban user",
+			"unbanned": "User unbanned",
+			"unbanError": "Failed to unban user",
+			"deleted": "User soft-deleted",
+			"deleteError": "Failed to delete user",
+			"invited": "Invitation sent",
+			"inviteError": "Failed to invite user"
+		}
+	},
+	"adminProducts": {
+		"pageTitle": "All products",
+		"pageSubtitle": "Full catalog overview · {{count}} active listings.",
+		"pageSubtitleModerator": "Browse and manage all catalog products · {{count}} active listings.",
+		"searchPlaceholder": "Search by title, SKU, slug, seller…",
+		"stats": {
+			"all": "All",
+			"approved": "Approved",
+			"pending": "Pending review",
+			"draft": "Draft",
+			"blocked": "Blocked",
+			"newThisMonth": "+{{count}} this month"
+		},
+		"tabs": {
+			"all": "All",
+			"draft": "Draft",
+			"pending": "Pending",
+			"approved": "Approved",
+			"rejected": "Rejected",
+			"blocked": "Blocked",
+			"archived": "Archived",
+			"deleted": "Deleted"
+		},
+		"filters": {
+			"availabilityAll": "All availability",
+			"availabilityAvailable": "Available",
+			"availabilityUnavailable": "Unavailable"
+		},
+		"table": {
+			"product": "Product",
+			"seller": "Seller",
+			"price": "Price",
+			"stock": "Stock",
+			"category": "Category",
+			"updated": "Updated",
+			"status": "Status",
+			"availability": "Availability"
+		},
+		"status": {
+			"draft": "Draft",
+			"pending_moderation": "Pending review",
+			"approved": "Approved",
+			"rejected": "Rejected",
+			"archived": "Archived",
+			"blocked": "Blocked",
+			"disabled": "Disabled",
+			"enabled": "Enabled",
+			"deleted": "Deleted"
+		},
+		"availability": {
+			"available": "Available",
+			"unavailable": "Unavailable"
+		},
+		"actions": {
+			"softDelete": "Soft delete"
+		},
+		"delete": {
+			"title": "Soft delete product",
+			"message": "Soft-delete \"{{name}}\"? It will be removed from the catalog.",
+			"confirm": "Delete",
+			"cancel": "Cancel"
+		},
+		"empty": {
+			"title": "No products found",
+			"description": "Try adjusting your search or filters."
+		},
+		"toast": {
+			"statusChanged": "Product status updated",
+			"statusChangeError": "Failed to update status",
+			"deleted": "Product soft-deleted",
+			"deleteError": "Failed to delete product"
+		}
+	},
+	"adminReviews": {
+		"pageTitle": "All reviews",
+		"pageSubtitle": "Product reviews across Krydix · {{count}} total.",
+		"pageSubtitleModerator": "Browse and manage all product reviews · {{count}} total.",
+		"searchPlaceholder": "Search by review text, product, or reviewer…",
+		"flagged": "Flagged",
+		"stats": {
+			"all": "All",
+			"approved": "Approved",
+			"pending": "Pending",
+			"flagged": "Flagged",
+			"blocked": "Blocked",
+			"newThisMonth": "+{{count}} this month"
+		},
+		"tabs": {
+			"all": "All",
+			"pending": "Pending",
+			"flagged": "Flagged",
+			"approved": "Approved",
+			"blocked": "Blocked",
+			"deleted": "Deleted"
+		},
+		"filters": {
+			"ratingAll": "All ratings",
+			"rating5": "5 stars",
+			"rating4": "4 stars",
+			"rating3": "3 stars",
+			"ratingLow": "1–2 stars"
+		},
+		"table": {
+			"review": "Review",
+			"product": "Product",
+			"rating": "Rating",
+			"submitted": "Submitted",
+			"flag": "Flag",
+			"status": "Status"
+		},
+		"status": {
+			"pending": "Pending",
+			"approved": "Approved",
+			"blocked": "Blocked",
+			"deleted": "Deleted"
+		},
+		"actions": {
+			"softDelete": "Soft delete"
+		},
+		"delete": {
+			"title": "Soft delete review",
+			"message": "Soft-delete review by {{name}}? It will be removed from the catalog.",
+			"confirm": "Delete",
+			"cancel": "Cancel"
+		},
+		"empty": {
+			"title": "No reviews found",
+			"description": "Try adjusting your search or filters."
+		},
+		"toast": {
+			"statusChanged": "Review status updated",
+			"statusChangeError": "Failed to update status",
+			"deleted": "Review soft-deleted",
+			"deleteError": "Failed to delete review"
 		}
 	}
 }

@@ -25,6 +25,9 @@ import SellerProductsPage from '@/pages/seller/SellerProductsPage';
 import SellerDashboardPage from '@/pages/seller/SellerDashboardPage';
 import ProductModerationPage from '@/pages/moderator/ProductModerationPage';
 import ReviewModerationPage from '@/pages/moderator/ReviewModerationPage';
+import UsersManagementPage from '@/pages/admin/UsersManagementPage';
+import ProductsManagementPage from '@/pages/admin/ProductsManagementPage';
+import ReviewsManagementPage from '@/pages/admin/ReviewsManagementPage';
 
 const Placeholder = ({ name }: { name: string }) => (
 	<div style={{ padding: 32 }}>
@@ -132,6 +135,10 @@ export const router = createBrowserRouter([
 			{ path: 'complaints', element: <Placeholder name="Complaints" /> },
 			{ path: 'review-moderation', element: <ReviewModerationPage /> },
 			{ path: 'reviews', element: <Navigate to={ROUTES.MODERATOR_REVIEW_MODERATION} replace /> },
+			{ path: 'users', element: <UsersManagementPage /> },
+			{ path: 'users/:id', element: <Placeholder name="User Profile" /> },
+			{ path: 'all-products', element: <ProductsManagementPage /> },
+			{ path: 'all-reviews', element: <ReviewsManagementPage /> },
 			{ path: 'verification', element: <Placeholder name="Seller Verification Queue" /> },
 		],
 	},
@@ -146,11 +153,12 @@ export const router = createBrowserRouter([
 		),
 		children: [
 			{ index: true, element: <Placeholder name="Admin Home" /> },
-			{ path: 'users', element: <Placeholder name="Users" /> },
+			{ path: 'users', element: <UsersManagementPage /> },
+			{ path: 'users/:id', element: <Placeholder name="User Profile" /> },
 			{ path: 'categories', element: <Placeholder name="Categories" /> },
-			{ path: 'products', element: <Placeholder name="All Products" /> },
+			{ path: 'products', element: <ProductsManagementPage /> },
 			{ path: 'complaints', element: <Placeholder name="All Complaints" /> },
-			{ path: 'reviews', element: <Placeholder name="All Reviews" /> },
+			{ path: 'reviews', element: <ReviewsManagementPage /> },
 			{ path: 'settings', element: <Placeholder name="Platform Settings" /> },
 			{ path: 'audit', element: <Placeholder name="Audit Log" /> },
 		],
