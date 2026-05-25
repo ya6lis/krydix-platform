@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Box, Skeleton, Typography } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 import { Icons } from '@/constants/icons';
 import { tokens } from '@/theme';
@@ -38,6 +38,7 @@ export function ModerationReviewCard({
 	showActions = true,
 }: ModerationReviewCardProps) {
 	const { t } = useTranslation();
+	const navigate = useNavigate();
 	const relTime = formatRelativeTime(review.submittedAt);
 
 	return (
@@ -199,8 +200,7 @@ export function ModerationReviewCard({
 						tone="ghost"
 						size="small"
 						fullWidth
-						component={RouterLink}
-						to={ROUTES.PRODUCT(review.targetSlug)}
+						onClick={() => navigate(ROUTES.PRODUCT(review.targetSlug))}
 					>
 						{t('reviewModeration.card.viewProduct')}
 					</AppButton>
