@@ -844,7 +844,9 @@
 			"edit": "Edit",
 			"duplicate": "Duplicate",
 			"archive": "Archive",
-			"unarchive": "Unarchive"
+			"unarchive": "Unarchive",
+			"deactivate": "Deactivate",
+			"activate": "Activate"
 		},
 		"duplicateSuccess": "Product duplicated as draft",
 		"archiveSuccess": "Product archived",
@@ -879,6 +881,12 @@
 			"doneBtn": "Done",
 			"invalidRows": "{{count}} row(s) have errors — fix and re-upload",
 			"noValidRows": "No valid rows to import"
-		}
+		},
+		"exportButton": "Export",
+		"exportFilename": "products-export",
+		"deactivateSuccess": "Product deactivated",
+		"activateSuccess": "Product activated",
+		"deactivateError": "Failed to deactivate product",
+		"activateError": "Failed to activate product"
 	}
 }

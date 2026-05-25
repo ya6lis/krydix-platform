@@ -844,7 +844,9 @@
 			"edit": "Редагувати",
 			"duplicate": "Дублювати",
 			"archive": "Архівувати",
-			"unarchive": "З архіву"
+			"unarchive": "З архіву",
+			"deactivate": "Деактивувати",
+			"activate": "Активувати"
 		},
 		"duplicateSuccess": "Товар продубльований як чернетка",
 		"archiveSuccess": "Товар архівовано",
@@ -879,6 +881,12 @@
 			"doneBtn": "Готово",
 			"invalidRows": "{{count}} рядків з помилками — виправте та завантажте знову",
 			"noValidRows": "Немає валідних рядків для імпорту"
-		}
+		},
+		"exportButton": "Експорт",
+		"exportFilename": "products-export",
+		"deactivateSuccess": "Товар деактивовано",
+		"activateSuccess": "Товар активовано",
+		"deactivateError": "Не вдалося деактивувати товар",
+		"activateError": "Не вдалося активувати товар"
 	}
 }

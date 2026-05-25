@@ -160,6 +160,24 @@ export const ARCHIVE_PRODUCT_MUTATION = gql`
 	}
 `;
 
+export const DEACTIVATE_PRODUCT_MUTATION = gql`
+	mutation DeactivateProduct($id: ID!) {
+		deactivateProduct(id: $id) {
+			id
+			isAvailable
+		}
+	}
+`;
+
+export const ACTIVATE_PRODUCT_MUTATION = gql`
+	mutation ActivateProduct($id: ID!) {
+		activateProduct(id: $id) {
+			id
+			isAvailable
+		}
+	}
+`;
+
 export const PREVIEW_IMPORT_MUTATION = gql`
 	mutation PreviewImport($dataUrl: String!, $fileType: String) {
 		previewImport(dataUrl: $dataUrl, fileType: $fileType) {

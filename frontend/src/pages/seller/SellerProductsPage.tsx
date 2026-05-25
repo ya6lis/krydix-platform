@@ -37,6 +37,8 @@ import {
 	MY_PRODUCTS_QUERY,
 	DUPLICATE_PRODUCT_MUTATION,
 	ARCHIVE_PRODUCT_MUTATION,
+	DEACTIVATE_PRODUCT_MUTATION,
+	ACTIVATE_PRODUCT_MUTATION,
 	PREVIEW_IMPORT_MUTATION,
 	CONFIRM_IMPORT_MUTATION,
 	type SellerProductListItem,
@@ -62,12 +64,15 @@ interface RowMenuProps {
 	product: SellerProductListItem;
 	onEdit: () => void;
 	onDuplicate: () => void;
+	onToggleActive: () => void;
 	onArchive: () => void;
 }
 
-function RowMenu({ product, onEdit, onDuplicate, onArchive }: RowMenuProps) {
+function RowMenu({ product, onEdit, onDuplicate, onToggleActive, onArchive }: RowMenuProps) {
 	const { t } = useTranslation();
 	const [anchor, setAnchor] = useState<null | HTMLElement>(null);
+	const isActive = product.isAvailable;
+	const isArchived = product.status === 'ARCHIVED';
 
 	return (
 		<>
@@ -81,10 +86,7 @@ function RowMenu({ product, onEdit, onDuplicate, onArchive }: RowMenuProps) {
 
 			<Menu anchorEl={anchor} open={Boolean(anchor)} onClose={() => setAnchor(null)}>
 				<MenuItem
-					onClick={() => {
-						setAnchor(null);
-						onEdit();
-					}}
+					onClick={() => { setAnchor(null); onEdit(); }}
 					sx={{ gap: 1.5, fontSize: 13 }}
 				>
 					<FontAwesomeIcon icon={Icons.edit} fixedWidth />
@@ -92,22 +94,26 @@ function RowMenu({ product, onEdit, onDuplicate, onArchive }: RowMenuProps) {
 				</MenuItem>
 
 				<MenuItem
-					onClick={() => {
-						setAnchor(null);
-						onDuplicate();
-					}}
+					onClick={() => { setAnchor(null); onDuplicate(); }}
 					sx={{ gap: 1.5, fontSize: 13 }}
 				>
 					<FontAwesomeIcon icon={Icons.duplicate} fixedWidth />
 					{t('sellerProducts.action.duplicate')}
 				</MenuItem>
 
-				{product.status !== 'ARCHIVED' && (
+				{!isArchived && (
 					<MenuItem
-						onClick={() => {
-							setAnchor(null);
-							onArchive();
-						}}
+						onClick={() => { setAnchor(null); onToggleActive(); }}
+						sx={{ gap: 1.5, fontSize: 13, color: isActive ? tokens.amberInk : tokens.ink2 }}
+					>
+						<FontAwesomeIcon icon={isActive ? Icons.ban : Icons.check} fixedWidth />
+						{t(isActive ? 'sellerProducts.action.deactivate' : 'sellerProducts.action.activate')}
+					</MenuItem>
+				)}
+
+				{!isArchived && (
+					<MenuItem
+						onClick={() => { setAnchor(null); onArchive(); }}
 						sx={{ gap: 1.5, fontSize: 13, color: tokens.coralInk }}
 					>
 						<FontAwesomeIcon icon={Icons.archive} fixedWidth />
@@ -431,6 +437,8 @@ export default function SellerProductsPage() {
 
 	const [duplicateProduct] = useMutation(DUPLICATE_PRODUCT_MUTATION);
 	const [archiveProduct, { loading: archiving }] = useMutation(ARCHIVE_PRODUCT_MUTATION);
+	const [deactivateProduct] = useMutation(DEACTIVATE_PRODUCT_MUTATION);
+	const [activateProduct] = useMutation(ACTIVATE_PRODUCT_MUTATION);
 
 	const products = data?.myProducts?.items ?? [];
 	const total = data?.myProducts?.total ?? 0;
@@ -460,11 +468,60 @@ export default function SellerProductsPage() {
 		}
 	}, [archiveTarget, archiveProduct, showToast, t, refetch]);
 
+	const handleToggleActive = useCallback(
+		async (product: SellerProductListItem) => {
+			try {
+				if (product.isAvailable) {
+					await deactivateProduct({ variables: { id: product.id } });
+					showToast(t('sellerProducts.deactivateSuccess'), 'success');
+				} else {
+					await activateProduct({ variables: { id: product.id } });
+					showToast(t('sellerProducts.activateSuccess'), 'success');
+				}
+				refetch();
+			} catch {
+				showToast(
+					t(product.isAvailable ? 'sellerProducts.deactivateError' : 'sellerProducts.activateError'),
+					'error'
+				);
+			}
+		},
+		[deactivateProduct, activateProduct, showToast, t, refetch]
+	);
+
 	const totalStock = useCallback(
 		(p: SellerProductListItem) =>
 			p.variants.filter((v) => v.isActive).reduce((sum, v) => sum + v.stock, 0),
 		[]
 	);
+
+	const handleExport = useCallback(() => {
+		const rows = products.map((p) => [
+			p.titleEn,
+			p.sku,
+			p.slug,
+			p.basePrice,
+			p.comparePrice ?? '',
+			p.status,
+			p.isAvailable ? 'true' : 'false',
+			p.categories.map((c) => c.nameEn).join('; '),
+			totalStock(p),
+			new Date(p.createdAt).toLocaleDateString(),
+		]);
+
+		const headers = ['Title EN', 'SKU', 'Slug', 'Base Price', 'Compare Price', 'Status', 'Available', 'Categories', 'Stock', 'Created'];
+		const csvContent = [headers, ...rows]
+			.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+			.join('\n');
+
+		const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = `${t('sellerProducts.exportFilename')}.csv`;
+		a.click();
+		URL.revokeObjectURL(url);
+	}, [products, totalStock, t]);
 
 	const mainImage = useCallback(
 		(p: SellerProductListItem) => p.media.find((m) => m.isMain) ?? p.media[0] ?? null,
@@ -610,6 +667,7 @@ export default function SellerProductsPage() {
 					product={p}
 					onEdit={() => navigate(`/seller-cabinet/products/${p.id}/edit`)}
 					onDuplicate={() => handleDuplicate(p)}
+					onToggleActive={() => handleToggleActive(p)}
 					onArchive={() => setArchiveTarget(p)}
 				/>
 			),
@@ -643,6 +701,14 @@ export default function SellerProductsPage() {
 					{t('sellerProducts.title')}
 				</Typography>
 				<Stack direction="row" spacing={1.5}>
+					<AppButton
+						variant="outlined"
+						startIcon={<FontAwesomeIcon icon={Icons.download} />}
+						onClick={handleExport}
+						disabled={products.length === 0}
+					>
+						{t('sellerProducts.exportButton')}
+					</AppButton>
 					<AppButton
 						variant="outlined"
 						startIcon={<FontAwesomeIcon icon={Icons.upload} />}

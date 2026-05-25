@@ -1,10 +1,15 @@
 import { GraphQLError } from 'graphql';
 import type { GraphQLContext } from '../../../types/context.js';
 import * as service from '../../../services/sellerProductService.js';
+import * as importService from '../../../services/bulkImportService.js';
 import {
 	CreateProductSchema,
 	UpdateProductSchema,
 	UploadMediaSchema,
+	ProductListFilterSchema,
+	ProductListPaginationSchema,
+	ConfirmImportSchema,
+	ImportPreviewSchema,
 } from '../../../validators/sellerProductValidators.js';
 
 function requireSeller(ctx: GraphQLContext) {
@@ -23,6 +28,23 @@ function requireSeller(ctx: GraphQLContext) {
 
 export const sellerProductsResolvers = {
 	Query: {
+		myProducts: async (
+			_: unknown,
+			{
+				filter,
+				pagination,
+			}: {
+				filter?: Record<string, unknown>;
+				pagination: Record<string, unknown>;
+			},
+			ctx: GraphQLContext
+		) => {
+			const user = requireSeller(ctx);
+			const parsedFilter = ProductListFilterSchema.parse(filter ?? {});
+			const parsedPagination = ProductListPaginationSchema.parse(pagination);
+			return service.getMyProducts(user.id, parsedFilter, parsedPagination);
+		},
+
 		myProduct: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
 			const user = requireSeller(ctx);
 			return service.getMyProduct(id, user.id);
@@ -66,6 +88,46 @@ export const sellerProductsResolvers = {
 		) => {
 			const user = requireSeller(ctx);
 			return service.deleteProductMedia(mediaId, user.id);
+		},
+
+		duplicateProduct: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
+			const user = requireSeller(ctx);
+			return service.duplicateProduct(id, user.id);
+		},
+
+		archiveProduct: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
+			const user = requireSeller(ctx);
+			return service.archiveProduct(id, user.id);
+		},
+
+		deactivateProduct: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
+			const user = requireSeller(ctx);
+			return service.deactivateProduct(id, user.id);
+		},
+
+		activateProduct: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
+			const user = requireSeller(ctx);
+			return service.activateProduct(id, user.id);
+		},
+
+		previewImport: async (
+			_: unknown,
+			args: { dataUrl: string; fileType?: string },
+			ctx: GraphQLContext
+		) => {
+			requireSeller(ctx);
+			const parsed = ImportPreviewSchema.parse(args);
+			return importService.previewImport(parsed.dataUrl, parsed.fileType);
+		},
+
+		confirmImport: async (
+			_: unknown,
+			{ rows }: { rows: unknown[] },
+			ctx: GraphQLContext
+		) => {
+			const user = requireSeller(ctx);
+			const parsed = ConfirmImportSchema.parse({ rows });
+			return importService.confirmImport(user.id, parsed.rows);
 		},
 	},
 };

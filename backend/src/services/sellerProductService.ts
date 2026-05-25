@@ -8,6 +8,8 @@ import type {
 	CreateProductInput,
 	UpdateProductInput,
 	UploadMediaInput,
+	ProductListFilterInput,
+	ProductListPaginationInput,
 } from '../validators/sellerProductValidators.js';
 
 if (env.CLOUDINARY_CLOUD_NAME) {
@@ -62,6 +64,34 @@ function mapProduct(p: repo.SellerProductRecord) {
 			isMain: m.isMain,
 			sortOrder: m.sortOrder,
 		})),
+	};
+}
+
+export async function getMyProducts(
+	sellerId: string,
+	filter: ProductListFilterInput,
+	pagination: ProductListPaginationInput
+) {
+	const where: import('@prisma/client').Prisma.ProductWhereInput = {};
+	if (filter.status) where.status = filter.status as ProductStatus;
+	if (filter.search) {
+		where.OR = [
+			{ sku: { contains: filter.search, mode: 'insensitive' } },
+			{ translations: { some: { title: { contains: filter.search, mode: 'insensitive' } } } },
+		];
+	}
+
+	const skip = (pagination.page - 1) * pagination.pageSize;
+	const [items, total] = await Promise.all([
+		repo.findSellerProducts(sellerId, where, skip, pagination.pageSize),
+		repo.countSellerProducts(sellerId, where),
+	]);
+
+	return {
+		items: items.map(mapProduct),
+		total,
+		page: pagination.page,
+		pageSize: pagination.pageSize,
 	};
 }
 
@@ -173,6 +203,63 @@ export async function updateProduct(id: string, sellerId: string, input: UpdateP
 		variants: input.variants,
 	});
 
+	return mapProduct(updated);
+}
+
+export async function duplicateProduct(id: string, sellerId: string) {
+	const existing = await repo.findSellerProductById(id, sellerId);
+	if (!existing) {
+		throw new GraphQLError('Product not found', { extensions: { code: 'NOT_FOUND' } });
+	}
+
+	// Generate unique slug and sku for the copy
+	const baseSlug = `${existing.slug}-copy`;
+	const baseSku = `${existing.sku}-COPY`;
+	let newSlug = baseSlug;
+	let attempt = 0;
+	while (await repo.slugExists(newSlug)) {
+		attempt++;
+		newSlug = `${baseSlug}-${attempt}`;
+	}
+	const newSku = attempt === 0 ? baseSku : `${baseSku}-${attempt}`;
+
+	const duplicated = await repo.duplicateProduct(id, newSlug, newSku);
+	return mapProduct(duplicated);
+}
+
+export async function archiveProduct(id: string, sellerId: string) {
+	const existing = await repo.findSellerProductById(id, sellerId);
+	if (!existing) {
+		throw new GraphQLError('Product not found', { extensions: { code: 'NOT_FOUND' } });
+	}
+	if (existing.status === ProductStatus.ARCHIVED) {
+		throw new GraphQLError('Product already archived', { extensions: { code: 'BAD_USER_INPUT' } });
+	}
+	const updated = await repo.setProductStatus(id, ProductStatus.ARCHIVED);
+	return mapProduct(updated);
+}
+
+export async function deactivateProduct(id: string, sellerId: string) {
+	const existing = await repo.findSellerProductById(id, sellerId);
+	if (!existing) {
+		throw new GraphQLError('Product not found', { extensions: { code: 'NOT_FOUND' } });
+	}
+	if (!existing.isAvailable) {
+		throw new GraphQLError('Product already deactivated', { extensions: { code: 'BAD_USER_INPUT' } });
+	}
+	const updated = await repo.updateProduct(id, { isAvailable: false });
+	return mapProduct(updated);
+}
+
+export async function activateProduct(id: string, sellerId: string) {
+	const existing = await repo.findSellerProductById(id, sellerId);
+	if (!existing) {
+		throw new GraphQLError('Product not found', { extensions: { code: 'NOT_FOUND' } });
+	}
+	if (existing.isAvailable) {
+		throw new GraphQLError('Product already active', { extensions: { code: 'BAD_USER_INPUT' } });
+	}
+	const updated = await repo.updateProduct(id, { isAvailable: true });
 	return mapProduct(updated);
 }
 
