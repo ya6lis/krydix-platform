@@ -7,6 +7,15 @@ export type OrderStatus =
 	| 'REFUNDED';
 
 export type PaymentStatus = 'PENDING' | 'AUTHORIZED' | 'PAID' | 'FAILED' | 'REFUNDED';
+export type ReturnRequestStatus =
+	| 'REQUESTED'
+	| 'UNDER_REVIEW'
+	| 'APPROVED'
+	| 'AWAITING_RETURN_SHIPPING'
+	| 'RECEIVED'
+	| 'REJECTED'
+	| 'REFUNDED'
+	| 'CLOSED';
 export type DeliveryStatus =
 	| 'PENDING'
 	| 'PACKED'
@@ -20,6 +29,7 @@ export type DeliveryMethod = 'COURIER' | 'BRANCH_PICKUP' | 'SELF_PICKUP';
 export type PaymentMethod = 'CARD' | 'CASH_ON_DELIVERY' | 'BANK_TRANSFER';
 
 export interface OrderItem {
+	__typename?: string;
 	id: string;
 	productId: string;
 	variantId?: string | null;
@@ -32,15 +42,20 @@ export interface OrderItem {
 }
 
 export interface PaymentRecord {
+	__typename?: string;
 	id: string;
 	amount: number;
 	method: PaymentMethod;
 	status: PaymentStatus;
 	transactionId?: string | null;
 	createdAt: string;
+	// optional card details (store only safe parts)
+	cardBrand?: string | null;
+	cardLast4?: string | null;
 }
 
 export interface DeliveryRecord {
+	__typename?: string;
 	id: string;
 	method: DeliveryMethod;
 	status: DeliveryStatus;
@@ -55,7 +70,26 @@ export interface OrderPromoCode {
 	discount: number;
 }
 
+export interface ReturnRequest {
+	__typename?: string;
+	id: string;
+	orderId: string;
+	buyerId: string;
+	sellerId: string;
+	status: ReturnRequestStatus;
+	reason: string;
+	details?: string | null;
+	resolution?: string | null;
+	reviewedById?: string | null;
+	reviewedAt?: string | null;
+	refundedAt?: string | null;
+	closedAt?: string | null;
+	createdAt: string;
+	updatedAt: string;
+}
+
 export interface Order {
+	__typename?: string;
 	id: string;
 	status: OrderStatus;
 	totalAmount: number;
@@ -64,6 +98,7 @@ export interface Order {
 	items: OrderItem[];
 	payment?: PaymentRecord | null;
 	delivery?: DeliveryRecord | null;
+	returnRequest?: ReturnRequest | null;
 	promoCode?: OrderPromoCode | null;
 	createdAt: string;
 	updatedAt: string;

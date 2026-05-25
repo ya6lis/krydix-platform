@@ -18,12 +18,25 @@ function assignRef<T>(ref: Ref<T> | undefined, value: T | null) {
 }
 
 export const AppTextarea = forwardRef<HTMLTextAreaElement, AppTextareaProps>(function AppTextarea(
-	{ rows = 4, maxLength, size = 'small', fullWidth = true, variant = 'outlined', value, inputProps, inputRef, ...props },
-	ref,
+	{
+		rows = 4,
+		maxLength,
+		size = 'small',
+		fullWidth = true,
+		variant = 'outlined',
+		value,
+		inputProps,
+		inputRef,
+		...props
+	},
+	ref
 ) {
 	const currentLength = typeof value === 'string' ? value.length : 0;
 	const handleInputRef = (instance: HTMLInputElement | HTMLTextAreaElement | null) => {
-		assignRef(inputRef as Ref<HTMLTextAreaElement> | undefined, instance as HTMLTextAreaElement | null);
+		assignRef(
+			inputRef as Ref<HTMLTextAreaElement> | undefined,
+			instance as HTMLTextAreaElement | null
+		);
 		assignRef(ref, instance as HTMLTextAreaElement | null);
 	};
 

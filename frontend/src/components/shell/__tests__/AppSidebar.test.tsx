@@ -101,13 +101,13 @@ describe('AppSidebar', () => {
 		expect(screen.queryByText('nav.complaints')).not.toBeInTheDocument();
 	});
 
-	it('renders count badges for orders, messages, queue', () => {
+	it('hides count badges when NAV_BADGE_COUNTS is empty (Phase 13 wires real data)', () => {
+		// NAV_BADGE_COUNTS = {} means all badges are suppressed until Phase 13 wires real counts.
 		mockAuthUser = { ...mockUser, role: 'ADMINISTRATOR' };
 		renderSidebar();
-		expect(screen.getByText('20')).toBeInTheDocument(); // orders badge
-		expect(screen.getByText('3')).toBeInTheDocument(); // messages badge
-		expect(screen.getByText('12')).toBeInTheDocument(); // queue badge
-		expect(screen.getByText('4')).toBeInTheDocument(); // complaints badge
+		expect(screen.queryByText('20')).not.toBeInTheDocument();
+		expect(screen.queryByText('12')).not.toBeInTheDocument();
+		expect(screen.queryByText('4')).not.toBeInTheDocument();
 	});
 
 	it('renders user footer with initials derived from profile', () => {

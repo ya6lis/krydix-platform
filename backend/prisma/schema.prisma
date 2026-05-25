@@ -84,6 +84,17 @@ enum ComplaintStatus {
   REJECTED
 }
 
+enum ReturnRequestStatus {
+  REQUESTED
+  UNDER_REVIEW
+  APPROVED
+  AWAITING_RETURN_SHIPPING
+  RECEIVED
+  REJECTED
+  REFUNDED
+  CLOSED
+}
+
 enum ComplaintTarget {
   PRODUCT
   SELLER
@@ -161,6 +172,8 @@ model User {
   chatParticipations   ChatParticipant[]
   chatMessages         ChatMessage[]
   imports              ImportJob[]
+  returnRequestsBought ReturnRequest[]      @relation("BuyerReturnRequests")
+  returnRequestsSold   ReturnRequest[]      @relation("SellerReturnRequests")
 
   @@index([email])
   @@index([role])
@@ -436,8 +449,34 @@ model Order {
   items     OrderItem[]
   payment   PaymentRecord?
   delivery  DeliveryRecord?
+  returnRequest ReturnRequest?
 
   @@index([buyerId])
+  @@index([status])
+}
+
+model ReturnRequest {
+  id          String               @id @default(cuid())
+  orderId     String               @unique
+  buyerId     String
+  sellerId    String
+  status      ReturnRequestStatus  @default(REQUESTED)
+  reason      String
+  details     String?
+  resolution  String?
+  reviewedById String?
+  reviewedAt  DateTime?
+  refundedAt  DateTime?
+  closedAt    DateTime?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  order   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  buyer   User  @relation("BuyerReturnRequests", fields: [buyerId], references: [id])
+  seller  User  @relation("SellerReturnRequests", fields: [sellerId], references: [id])
+
+  @@index([buyerId])
+  @@index([sellerId])
   @@index([status])
 }
 
@@ -469,6 +508,8 @@ model PaymentRecord {
   amount        Decimal       @db.Decimal(10, 2)
   method        PaymentMethod?
   transactionId String?
+  cardBrand     String?
+  cardLast4     String?
   paidAt        DateTime?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt

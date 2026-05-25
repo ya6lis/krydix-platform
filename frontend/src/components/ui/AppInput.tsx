@@ -16,12 +16,20 @@ function assignRef<T>(ref: Ref<T> | undefined, value: T | null) {
 
 export const AppInput = forwardRef<HTMLInputElement, AppInputProps>(function AppInput(
 	{ size = 'small', fullWidth = true, variant = 'outlined', inputRef, ...props },
-	ref,
+	ref
 ) {
 	const handleInputRef = (instance: HTMLInputElement | null) => {
 		assignRef(inputRef, instance);
 		assignRef(ref, instance);
 	};
 
-	return <TextField size={size} fullWidth={fullWidth} variant={variant} inputRef={handleInputRef} {...props} />;
+	return (
+		<TextField
+			size={size}
+			fullWidth={fullWidth}
+			variant={variant}
+			inputRef={handleInputRef}
+			{...props}
+		/>
+	);
 });

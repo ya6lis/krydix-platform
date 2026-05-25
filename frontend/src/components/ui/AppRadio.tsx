@@ -25,7 +25,7 @@ export interface AppRadioProps extends Omit<RadioGroupProps, 'children'> {
 
 export const AppRadio = forwardRef<HTMLDivElement, AppRadioProps>(function AppRadio(
 	{ options, label, error, helperText, required, ...props },
-	ref,
+	ref
 ) {
 	return (
 		<FormControl ref={ref} error={error} required={required}>

@@ -173,7 +173,9 @@ export default function ProductPage() {
 		const useVariant = isVariantManuallySelected && !!selectedVariant;
 		const itemId = useVariant ? selectedVariant!.id : product.id;
 		const itemStock = useVariant ? selectedVariant!.stock : product.totalStock;
-		const itemPrice = useVariant ? (selectedVariant!.price ?? product.basePrice) : product.basePrice;
+		const itemPrice = useVariant
+			? (selectedVariant!.price ?? product.basePrice)
+			: product.basePrice;
 
 		if (itemStock === 0) {
 			showToast(t('cart.errors.outOfStock'), 'error');

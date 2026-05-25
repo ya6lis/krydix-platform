@@ -232,6 +232,16 @@
 			"FAILED": "Failed",
 			"REFUNDED": "Refunded"
 		},
+		"returnRequest": {
+			"REQUESTED": "Requested",
+			"UNDER_REVIEW": "Under Review",
+			"APPROVED": "Approved",
+			"AWAITING_RETURN_SHIPPING": "Awaiting Return Shipment",
+			"RECEIVED": "Returned Item Received",
+			"REJECTED": "Rejected",
+			"REFUNDED": "Refunded",
+			"CLOSED": "Closed"
+		},
 		"delivery": {
 			"PENDING": "Pending",
 			"PACKED": "Packed",
@@ -639,6 +649,7 @@
 			"cancel": "Cancel order",
 			"confirmDelivery": "Confirm delivery",
 			"requestRefund": "Request refund",
+			"requestReturn": "Request return",
 			"print": "Print"
 		},
 		"cancelConfirm": {
@@ -652,6 +663,12 @@
 		"refundConfirm": {
 			"title": "Request a refund?",
 			"message": "A refund request will be submitted for this order."
+		},
+		"returnConfirm": {
+			"title": "Request a return?",
+			"reasonLabel": "Reason for return",
+			"reasonPlaceholder": "Describe the defect, issue, or other reason for the return",
+			"submit": "Submit return request"
 		},
 		"qty": "×{{count}}",
 		"sku": "SKU"

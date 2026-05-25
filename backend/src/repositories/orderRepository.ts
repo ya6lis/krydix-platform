@@ -6,6 +6,7 @@ export type OrderRecord = Prisma.OrderGetPayload<{
 		items: true;
 		payment: true;
 		delivery: true;
+		returnRequest: true;
 		promoCode: true;
 	};
 }>;
@@ -69,7 +70,7 @@ export async function createOrder(input: CreateOrderInput): Promise<OrderRecord>
 					})),
 				},
 			},
-			include: { items: true, payment: true, delivery: true, promoCode: true },
+			include: { items: true, payment: true, delivery: true, returnRequest: true, promoCode: true },
 		});
 
 		await tx.paymentRecord.create({
@@ -104,6 +105,7 @@ export async function createOrder(input: CreateOrderInput): Promise<OrderRecord>
 				items: { include: { product: { include: { media: true } }, variant: true, seller: true } },
 				payment: true,
 				delivery: true,
+				returnRequest: true,
 				promoCode: true,
 			},
 		});
@@ -140,6 +142,7 @@ export async function findOrdersByBuyer(
 				items: { include: { product: { include: { media: true } }, variant: true, seller: true } },
 				payment: true,
 				delivery: true,
+				returnRequest: true,
 				promoCode: true,
 			},
 			orderBy: { createdAt: 'desc' },
@@ -159,6 +162,7 @@ export async function findOrderById(id: string): Promise<OrderRecord | null> {
 			items: { include: { product: { include: { media: true } }, variant: true, seller: true } },
 			payment: true,
 			delivery: true,
+			returnRequest: true,
 			promoCode: true,
 		},
 	});
@@ -174,6 +178,7 @@ export async function findOrderByIdAndBuyer(
 			items: { include: { product: { include: { media: true } }, variant: true, seller: true } },
 			payment: true,
 			delivery: true,
+			returnRequest: true,
 			promoCode: true,
 		},
 	});
@@ -187,6 +192,7 @@ export async function updateOrderStatus(id: string, status: OrderStatus): Promis
 			items: { include: { product: { include: { media: true } }, variant: true, seller: true } },
 			payment: true,
 			delivery: true,
+			returnRequest: true,
 			promoCode: true,
 		},
 	});

@@ -351,9 +351,7 @@ export default function CatalogPage() {
 								sx={{
 									display: 'grid',
 									gridTemplateColumns:
-										viewMode === 'grid'
-											? { xs: '1fr', sm: 'repeat(auto-fit, 280px)' }
-											: '1fr',
+										viewMode === 'grid' ? { xs: '1fr', sm: 'repeat(auto-fit, 280px)' } : '1fr',
 									gap: '20px',
 									justifyContent: 'center',
 								}}

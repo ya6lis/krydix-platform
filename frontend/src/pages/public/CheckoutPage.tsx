@@ -28,22 +28,6 @@ import {
 	saveCheckoutContactDraft,
 } from './checkoutUtils';
 
-type CheckoutFormValues = {
-	firstName: string;
-	lastName: string;
-	email: string;
-	phone: string;
-	deliveryMethod: DeliveryMethod;
-	deliveryAddress: string;
-	branchPickupPoint: string;
-	paymentMethod: PaymentMethod;
-	cardHolderName: string;
-	cardNumber: string;
-	cardExpiry: string;
-	cardCvv: string;
-	notes: string;
-};
-
 const checkoutSchema = z
 	.object({
 		firstName: z.string().trim().min(1, 'checkout.errors.required'),
@@ -69,7 +53,10 @@ const checkoutSchema = z
 			});
 		}
 
-		if (values.deliveryMethod === DeliveryMethod.BRANCH_PICKUP && !values.branchPickupPoint?.trim()) {
+		if (
+			values.deliveryMethod === DeliveryMethod.BRANCH_PICKUP &&
+			!values.branchPickupPoint?.trim()
+		) {
 			context.addIssue({
 				code: z.ZodIssueCode.custom,
 				path: ['branchPickupPoint'],
@@ -124,7 +111,10 @@ function wait(ms: number) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function toFieldMessage(message: string | undefined, t: (key: string, options?: Record<string, unknown>) => string) {
+function toFieldMessage(
+	message: string | undefined,
+	t: (key: string, options?: Record<string, unknown>) => string
+) {
 	return message ? t(message) : undefined;
 }
 
@@ -140,7 +130,9 @@ function summarizeContact(values: CheckoutForm, t: (key: string) => string) {
 
 function summarizeDelivery(values: CheckoutForm, t: (key: string) => string) {
 	if (values.deliveryMethod === DeliveryMethod.COURIER) {
-		return values.deliveryAddress?.trim() ? values.deliveryAddress.trim() : t('checkout.summary.empty');
+		return values.deliveryAddress?.trim()
+			? values.deliveryAddress.trim()
+			: t('checkout.summary.empty');
 	}
 
 	if (values.deliveryMethod === DeliveryMethod.BRANCH_PICKUP) {
@@ -187,7 +179,7 @@ function CheckoutSectionCard({
 					onClick={onToggle}
 					endIcon={<FontAwesomeIcon icon={expanded ? Icons.angleUp : Icons.angleDown} size="xs" />}
 				>
-						{expanded ? t('checkout.section.collapse') : t('checkout.section.expand')}
+					{expanded ? t('checkout.section.collapse') : t('checkout.section.expand')}
 				</AppButton>
 			}
 		>
@@ -247,7 +239,7 @@ function CheckoutConfirmation({ order }: { order: OrderOut }) {
 						letterSpacing: '0.08em',
 					}}
 				>
-						{t('checkout.confirmed.orderId')}
+					{t('checkout.confirmed.orderId')}
 				</Typography>
 				<Typography
 					sx={{
@@ -288,10 +280,12 @@ export default function CheckoutPage() {
 	const [sections, setSections] = useState({ contact: true, delivery: true, payment: true });
 	const [paymentStage, setPaymentStage] = useState<PaymentStage>('idle');
 
-	const [createOrder, { loading: submitting }] = useMutation<{ createOrder: OrderOut }>(CREATE_ORDER_MUTATION);
-	const [applyPromo, { loading: promoLoading }] = useMutation<{ applyPromoCode: PromoValidationResult }>(
-		APPLY_PROMO_CODE_MUTATION
+	const [createOrder, { loading: submitting }] = useMutation<{ createOrder: OrderOut }>(
+		CREATE_ORDER_MUTATION
 	);
+	const [applyPromo, { loading: promoLoading }] = useMutation<{
+		applyPromoCode: PromoValidationResult;
+	}>(APPLY_PROMO_CODE_MUTATION);
 
 	const contactDefaults = getCheckoutContactDefaults(user, readCheckoutContactDraft());
 
@@ -303,7 +297,9 @@ export default function CheckoutPage() {
 			deliveryAddress: '',
 			branchPickupPoint: NOVA_POST_BRANCHES[0].value,
 			paymentMethod: PaymentMethod.CARD,
-			cardHolderName: [contactDefaults.firstName, contactDefaults.lastName].filter(Boolean).join(' '),
+			cardHolderName: [contactDefaults.firstName, contactDefaults.lastName]
+				.filter(Boolean)
+				.join(' '),
 			cardNumber: '',
 			cardExpiry: '',
 			cardCvv: '',
@@ -359,7 +355,17 @@ export default function CheckoutPage() {
 	}, [t, watchedBranchPickupPoint]);
 
 	const contactSummary = useMemo(
-		() => summarizeContact({ ...form.getValues(), firstName: watchedFirstName, lastName: watchedLastName, email: watchedEmail, phone: watchedPhone } as CheckoutForm, t),
+		() =>
+			summarizeContact(
+				{
+					...form.getValues(),
+					firstName: watchedFirstName,
+					lastName: watchedLastName,
+					email: watchedEmail,
+					phone: watchedPhone,
+				} as CheckoutForm,
+				t
+			),
 		[form, t, watchedEmail, watchedFirstName, watchedLastName, watchedPhone]
 	);
 
@@ -371,7 +377,14 @@ export default function CheckoutPage() {
 			branchPickupPoint: watchedBranchPickupPoint,
 		} as CheckoutForm;
 		return summarizeDelivery(deliveryValues, t);
-	}, [branchLabel, form, t, watchedBranchPickupPoint, watchedDeliveryAddress, watchedDeliveryMethod]);
+	}, [
+		branchLabel,
+		form,
+		t,
+		watchedBranchPickupPoint,
+		watchedDeliveryAddress,
+		watchedDeliveryMethod,
+	]);
 
 	const paymentSummary = useMemo(() => {
 		const paymentValues = {
@@ -489,10 +502,10 @@ export default function CheckoutPage() {
 		<Box sx={{ maxWidth: 1320, mx: 'auto', px: { xs: 2, md: 3 }, py: 4 }}>
 			<Box sx={{ mb: 4 }}>
 				<Typography variant="h5" sx={{ fontWeight: 800, letterSpacing: '-0.02em', mb: 1 }}>
-						{t('checkout.title')}
+					{t('checkout.title')}
 				</Typography>
 				<Typography sx={{ color: tokens.ink3, fontSize: 14, maxWidth: 760 }}>
-						{t('checkout.subtitle')}
+					{t('checkout.subtitle')}
 				</Typography>
 			</Box>
 
@@ -501,7 +514,11 @@ export default function CheckoutPage() {
 				id="checkout-form"
 				onSubmit={handleSubmit(handleOrderSubmit)}
 				noValidate
-				sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', xl: 'minmax(0, 1fr) 380px' }, gap: 3 }}
+				sx={{
+					display: 'grid',
+					gridTemplateColumns: { xs: '1fr', xl: 'minmax(0, 1fr) 380px' },
+					gap: 3,
+				}}
 			>
 				<Stack spacing={2.5}>
 					<CheckoutSectionCard
@@ -515,7 +532,9 @@ export default function CheckoutPage() {
 								{t('checkout.contact.autofillHint')}
 							</Typography>
 						</Box>
-						<Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
+						<Box
+							sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}
+						>
 							<AppInput
 								label={t('checkout.contact.firstName')}
 								placeholder={t('checkout.contact.firstName')}
@@ -533,7 +552,14 @@ export default function CheckoutPage() {
 								helperText={toFieldMessage(errors.lastName?.message, t)}
 							/>
 						</Box>
-						<Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2, mt: 2 }}>
+						<Box
+							sx={{
+								display: 'grid',
+								gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+								gap: 2,
+								mt: 2,
+							}}
+						>
 							<AppInput
 								label={t('checkout.contact.email')}
 								placeholder={t('checkout.contact.email')}
@@ -699,7 +725,13 @@ export default function CheckoutPage() {
 								<Typography sx={{ fontSize: 13, color: tokens.ink3 }}>
 									{t('checkout.payment.cardMockHint')}
 								</Typography>
-								<Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' }, gap: 2 }}>
+								<Box
+									sx={{
+										display: 'grid',
+										gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' },
+										gap: 2,
+									}}
+								>
 									<AppInput
 										label={t('checkout.payment.cardHolderName')}
 										placeholder={t('checkout.payment.cardHolderName')}
@@ -717,7 +749,13 @@ export default function CheckoutPage() {
 										helperText={toFieldMessage(errors.cardExpiry?.message, t)}
 									/>
 								</Box>
-								<Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' }, gap: 2 }}>
+								<Box
+									sx={{
+										display: 'grid',
+										gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' },
+										gap: 2,
+									}}
+								>
 									<AppInput
 										label={t('checkout.payment.cardNumber')}
 										placeholder={t('checkout.payment.cardNumberPlaceholder')}
@@ -754,8 +792,10 @@ export default function CheckoutPage() {
 				</Stack>
 
 				<AppCard
-						title={t('checkout.summary.title')}
-						subtitle={t('checkout.summary.items', { count: cartItems.reduce((count, item) => count + item.qty, 0) })}
+					title={t('checkout.summary.title')}
+					subtitle={t('checkout.summary.items', {
+						count: cartItems.reduce((count, item) => count + item.qty, 0),
+					})}
 					sx={{ position: 'sticky', top: 24, alignSelf: 'start' }}
 				>
 					{paymentStage !== 'idle' && (
@@ -804,11 +844,15 @@ export default function CheckoutPage() {
 
 					<Box sx={{ display: 'grid', gap: 1 }}>
 						<Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
-							<Typography sx={{ fontSize: 13, color: tokens.ink3 }}>{t('checkout.summary.subtotal')}</Typography>
+							<Typography sx={{ fontSize: 13, color: tokens.ink3 }}>
+								{t('checkout.summary.subtotal')}
+							</Typography>
 							<Typography sx={{ fontSize: 13, fontWeight: 700 }}>${subtotal.toFixed(2)}</Typography>
 						</Box>
 						<Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
-							<Typography sx={{ fontSize: 13, color: tokens.ink3 }}>{t('checkout.summary.shipping')}</Typography>
+							<Typography sx={{ fontSize: 13, color: tokens.ink3 }}>
+								{t('checkout.summary.shipping')}
+							</Typography>
 							<Typography sx={{ fontSize: 13, fontWeight: 700 }}>
 								{shipping === 0 ? t('checkout.summary.shippingFree') : `$${shipping.toFixed(2)}`}
 							</Typography>
@@ -830,14 +874,24 @@ export default function CheckoutPage() {
 					<Divider sx={{ my: 2 }} />
 
 					<Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, mb: 2 }}>
-						<Typography sx={{ fontSize: 15, fontWeight: 800 }}>{t('checkout.summary.total')}</Typography>
+						<Typography sx={{ fontSize: 15, fontWeight: 800 }}>
+							{t('checkout.summary.total')}
+						</Typography>
 						<Typography sx={{ fontSize: 18, fontWeight: 900, letterSpacing: '-0.02em' }}>
 							${total.toFixed(2)}
 						</Typography>
 					</Box>
 
-					{promoError && <Typography sx={{ fontSize: 13, color: tokens.coralInk, mb: 1.5 }}>{promoError}</Typography>}
-					{submitError && <Typography sx={{ fontSize: 13, color: tokens.coralInk, mb: 1.5 }}>{submitError}</Typography>}
+					{promoError && (
+						<Typography sx={{ fontSize: 13, color: tokens.coralInk, mb: 1.5 }}>
+							{promoError}
+						</Typography>
+					)}
+					{submitError && (
+						<Typography sx={{ fontSize: 13, color: tokens.coralInk, mb: 1.5 }}>
+							{submitError}
+						</Typography>
+					)}
 
 					<Box sx={{ display: 'grid', gap: 1.25 }}>
 						<AppInput

@@ -1,6 +1,13 @@
 import { DeliveryMethod } from '@/constants/enums';
 import { Role } from '@/constants/enums';
-import { computeCheckoutTotal, computeShippingAmount, getCheckoutContactDefaults, isValidCardCvv, isValidCardExpiry, isValidCardNumber } from '../checkoutUtils';
+import {
+	computeCheckoutTotal,
+	computeShippingAmount,
+	getCheckoutContactDefaults,
+	isValidCardCvv,
+	isValidCardExpiry,
+	isValidCardNumber,
+} from '../checkoutUtils';
 
 describe('checkoutUtils', () => {
 	it('prefills checkout contact from user and draft data', () => {
