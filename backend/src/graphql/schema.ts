@@ -32,6 +32,12 @@ import { chatTypeDefs } from './modules/chat/typeDefs.js';
 import { chatResolvers } from './modules/chat/resolvers.js';
 import { notificationsTypeDefs } from './modules/notifications/typeDefs.js';
 import { notificationsResolvers } from './modules/notifications/resolvers.js';
+import { feedbackTypeDefs } from './modules/feedback/typeDefs.js';
+import { feedbackResolvers } from './modules/feedback/resolvers.js';
+import { releaseNotesTypeDefs } from './modules/releaseNotes/typeDefs.js';
+import { releaseNotesResolvers } from './modules/releaseNotes/resolvers.js';
+import { wishlistTypeDefs } from './modules/wishlist/typeDefs.js';
+import { wishlistResolvers } from './modules/wishlist/resolvers.js';
 
 const rootTypeDefs = `#graphql
 	type Query
@@ -57,6 +63,9 @@ export const schema = makeExecutableSchema({
 		publicProfileTypeDefs,
 		chatTypeDefs,
 		notificationsTypeDefs,
+		feedbackTypeDefs,
+		releaseNotesTypeDefs,
+		wishlistTypeDefs,
 	]),
 	resolvers: mergeResolvers([
 		authResolvers,
@@ -75,5 +84,8 @@ export const schema = makeExecutableSchema({
 		publicProfileResolvers,
 		chatResolvers,
 		notificationsResolvers,
+		feedbackResolvers,
+		releaseNotesResolvers,
+		wishlistResolvers,
 	]),
 });

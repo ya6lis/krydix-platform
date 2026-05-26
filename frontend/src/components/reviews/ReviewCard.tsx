@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { Icons } from '@/constants/icons';
 import { tokens } from '@/theme';
-import { AppAvatar, StatusBadge } from '@/components/ui';
+import { AppAvatar, StatusBadge, AppImage } from '@/components/ui';
 import { StarRating } from './StarRating';
 import type { ProductReviewItem } from '@/graphql/operations/reviews';
 
@@ -70,11 +70,11 @@ export function ReviewCard({ review, onFlag }: ReviewCardProps) {
 			{review.photos.length > 0 && (
 				<Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
 					{review.photos.map((url, i) => (
-						<Box
-							key={i}
-							component="img"
+						<AppImage
+							key={url}
 							src={url}
-							alt=""
+							gallery={review.photos}
+							galleryIndex={i}
 							sx={{
 								width: 60,
 								height: 60,

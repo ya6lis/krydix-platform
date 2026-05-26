@@ -21,7 +21,6 @@ import {
 } from '@/graphql/operations/catalog';
 import { Icons } from '@/constants/icons';
 import { ROUTES } from '@/constants/routes';
-import { Role } from '@/constants/enums';
 import { tokens } from '@/theme';
 import { useAuth } from '@/hooks/useAuth';
 import type {
@@ -64,8 +63,8 @@ const VIEW_ICONS: Record<ViewMode, (typeof Icons)[keyof typeof Icons]> = {
 export default function CatalogPage() {
 	const { t, i18n } = useTranslation();
 	const language = i18n.language === 'uk' ? 'UK' : 'EN';
-	const { hasRole } = useAuth();
-	const isSellerOrAdmin = hasRole(Role.SELLER, Role.ADMIN);
+	const { user, canUseSellerCabinet } = useAuth();
+	const showSellerActions = canUseSellerCabinet;
 
 	const [filters, setFilters] = useState<CatalogFilterState>(INITIAL_FILTERS);
 	const [sort, setSort] = useState<ProductSort>('NEWEST');
@@ -140,7 +139,7 @@ export default function CatalogPage() {
 				</Box>
 
 				{/* ── page actions: Export + New product (SELLER / ADMIN only) ── */}
-				{isSellerOrAdmin && (
+				{showSellerActions && (
 					<Box sx={{ display: 'flex', gap: '10px', alignItems: 'center', flexShrink: 0 }}>
 						<Box
 							component="button"

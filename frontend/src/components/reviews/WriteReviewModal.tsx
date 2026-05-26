@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { Icons } from '@/constants/icons';
 import { tokens } from '@/theme';
-import { AppButton, AppModal, AppTextarea } from '@/components/ui';
+import { AppButton, AppModal, AppTextarea, AppImage } from '@/components/ui';
 import { useAppToast } from '@/components/ui/AppToast';
 import { StarRating } from './StarRating';
 import { CREATE_PRODUCT_REVIEW_MUTATION } from '@/graphql/operations/reviews';
@@ -140,11 +140,11 @@ export function WriteReviewModal({
 					</Typography>
 					<Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
 						{photoPreviews.map((preview, i) => (
-							<Box key={i} sx={{ position: 'relative' }}>
-								<Box
-									component="img"
+							<Box key={preview} sx={{ position: 'relative' }}>
+								<AppImage
 									src={preview}
-									alt=""
+									gallery={photoPreviews}
+									galleryIndex={i}
 									sx={{
 										width: 64,
 										height: 64,

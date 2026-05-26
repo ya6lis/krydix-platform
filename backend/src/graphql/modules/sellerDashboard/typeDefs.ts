@@ -43,10 +43,16 @@ export const sellerDashboardTypeDefs = `#graphql
 		stock: Int!
 	}
 
+	type SellerDashboardSummary {
+		pendingModerationCount: Int!
+		unrepliedReviewCount: Int!
+	}
+
 	extend type Query {
 		sellerStats(period: DashboardPeriod): SellerStats!
 		sellerRevenueSeries(granularity: RevenueGranularity, period: DashboardPeriod): [RevenuePoint!]!
 		sellerTopProducts(limit: Int): [DashboardTopProduct!]!
 		sellerLowStockAlerts(threshold: Int): [LowStockAlert!]!
+		sellerDashboardSummary: SellerDashboardSummary!
 	}
 `;

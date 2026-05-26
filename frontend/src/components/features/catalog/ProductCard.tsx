@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Box, Typography } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +6,9 @@ import { Icons } from '@/constants/icons';
 import { ROUTES } from '@/constants/routes';
 import { tokens } from '@/theme';
 import { useCartStore } from '@/store/cartStore';
-import { useAppToast } from '@/components/ui';
+import { useWishlist } from '@/hooks/useWishlist';
+import { useAuth } from '@/hooks/useAuth';
+import { useAppToast, AppImage } from '@/components/ui';
 import type { CatalogProduct } from '@/types/catalog';
 
 const NEW_PRODUCT_DAYS = 14;
@@ -27,10 +28,12 @@ const HATCH = `repeating-linear-gradient(135deg, ${tokens.surface2} 0 6px, trans
 /** Product grid card — matches Catalog.html .product design exactly. */
 export function ProductCard({ product }: ProductCardProps) {
 	const { t } = useTranslation();
-	const [wishlisted, setWishlisted] = useState(false);
+	const { canBuy, canUseWishlist } = useAuth();
+	const { isWishlisted, toggleWishlist, toggling } = useWishlist();
 	const addItem = useCartStore((s) => s.addItem);
 	const cartItems = useCartStore((s) => s.items);
 	const { showToast } = useAppToast();
+	const wishlisted = isWishlisted(product.id);
 
 	const handleAddToCart = (e: React.MouseEvent) => {
 		e.preventDefault();
@@ -127,8 +130,7 @@ export function ProductCard({ product }: ProductCardProps) {
 				}}
 			>
 				{product.mainImage && (
-					<Box
-						component="img"
+					<AppImage
 						src={product.mainImage}
 						alt={product.title}
 						loading="lazy"
@@ -173,32 +175,35 @@ export function ProductCard({ product }: ProductCardProps) {
 					) : (
 						<Box />
 					)}
-					<Box
-						component="button"
-						onClick={(e: React.MouseEvent) => {
-							e.preventDefault();
-							e.stopPropagation();
-							setWishlisted((w) => !w);
-						}}
-						aria-label={wishlisted ? t('product.removeFromWishlist') : t('product.addToWishlist')}
-						sx={{
-							background: tokens.surface,
-							color: wishlisted ? tokens.coral : tokens.ink2,
-							border: 'none',
-							width: 28,
-							height: 28,
-							borderRadius: '50%',
-							display: 'grid',
-							placeItems: 'center',
-							cursor: 'pointer',
-							boxShadow: tokens.shadowSm,
-							fontSize: 13,
-							flexShrink: 0,
-							transition: 'color 120ms',
-						}}
-					>
-						<FontAwesomeIcon icon={wishlisted ? Icons.heart : Icons.heartEmpty} />
-					</Box>
+					{canUseWishlist && (
+						<Box
+							component="button"
+							onClick={(e: React.MouseEvent) => {
+								e.preventDefault();
+								e.stopPropagation();
+								void toggleWishlist(product.id, product.title);
+							}}
+							disabled={toggling}
+							aria-label={wishlisted ? t('product.removeFromWishlist') : t('product.addToWishlist')}
+							sx={{
+								background: tokens.surface,
+								color: wishlisted ? tokens.coral : tokens.ink2,
+								border: 'none',
+								width: 28,
+								height: 28,
+								borderRadius: '50%',
+								display: 'grid',
+								placeItems: 'center',
+								cursor: 'pointer',
+								boxShadow: tokens.shadowSm,
+								fontSize: 13,
+								flexShrink: 0,
+								transition: 'color 120ms',
+							}}
+						>
+							<FontAwesomeIcon icon={wishlisted ? Icons.heart : Icons.heartEmpty} />
+						</Box>
+					)}
 				</Box>
 			</Box>
 
@@ -307,27 +312,29 @@ export function ProductCard({ product }: ProductCardProps) {
 					>
 						{t('catalog.quickView')}
 					</Box>
-					<Box
-						component="button"
-						onClick={handleAddToCart}
-						sx={{
-							flex: 1,
-							display: 'grid',
-							placeItems: 'center',
-							padding: '6px 10px',
-							borderRadius: '8px',
-							border: 'none',
-							background: tokens.accent,
-							color: '#fff',
-							fontSize: 12.5,
-							fontWeight: 600,
-							cursor: 'pointer',
-							transition: 'opacity 120ms',
-							'&:hover': { opacity: 0.88 },
-						}}
-					>
-						{t('product.addToCart')}
-					</Box>
+					{canBuy && (
+						<Box
+							component="button"
+							onClick={handleAddToCart}
+							sx={{
+								flex: 1,
+								display: 'grid',
+								placeItems: 'center',
+								padding: '6px 10px',
+								borderRadius: '8px',
+								border: 'none',
+								background: tokens.accent,
+								color: '#fff',
+								fontSize: 12.5,
+								fontWeight: 600,
+								cursor: 'pointer',
+								transition: 'opacity 120ms',
+								'&:hover': { opacity: 0.88 },
+							}}
+						>
+							{t('product.addToCart')}
+						</Box>
+					)}
 				</Box>
 			</Box>
 		</Box>

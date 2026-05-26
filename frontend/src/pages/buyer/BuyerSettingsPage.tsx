@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
-import { Box, Grid, Typography, Divider } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useMutation } from '@apollo/client';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import {
-	AppInput,
-	AppSelect,
-	AppButton,
-	AppSwitch,
-	ConfirmDialog,
-} from '@/components/ui';
+import { AppInput, AppButton, AppModal, useAppToast } from '@/components/ui';
 import { AccountSettingsNav, type AccountSettingsSection } from '@/components/account/AccountSettingsNav';
 import { ProfileEditSection } from '@/components/account/ProfileEditSection';
+import { CLOSE_ACCOUNT_MUTATION } from '@/graphql/operations/profile';
+import { useAuth } from '@/hooks/useAuth';
+import { ROUTES } from '@/constants/routes';
+import { getHomeRouteForRole } from '@/utils/roleAccess';
 import { tokens } from '@/theme';
 
 const PasswordSchema = z
@@ -28,19 +28,6 @@ const PasswordSchema = z
 
 type PasswordForm = z.infer<typeof PasswordSchema>;
 
-type SettingsSection = AccountSettingsSection;
-interface NotifPrefs {
-	newOrder: boolean;
-	orderStatus: boolean;
-	newMessage: boolean;
-	moderation: boolean;
-	verification: boolean;
-	complaint: boolean;
-	weekly: boolean;
-	updates: boolean;
-}
-
-// ── notification toggle state ────────────────────────────────────────────────
 function SectionCard({
 	id,
 	title,
@@ -99,50 +86,22 @@ function SectionCard({
 	);
 }
 
-function ToggleRow({
-	label,
-	description,
-	checked,
-	onChange,
-}: {
-	label: string;
-	description: string;
-	checked: boolean;
-	onChange: (val: boolean) => void;
-}) {
-	return (
-		<Box
-			sx={{
-				display: 'grid',
-				gridTemplateColumns: '1fr auto',
-				gap: 2,
-				py: 1.75,
-				borderBottom: `1px solid ${tokens.line2}`,
-				alignItems: 'center',
-				'&:last-of-type': { borderBottom: 0 },
-			}}
-		>
-			<Box>
-				<Typography sx={{ fontWeight: 600, fontSize: 14 }}>{label}</Typography>
-				<Typography sx={{ fontSize: 12.5, color: tokens.ink3, mt: 0.375 }}>
-					{description}
-				</Typography>
-			</Box>
-			<AppSwitch checked={checked} onChange={onChange} />
-		</Box>
-	);
-}
-
-// ── main component ────────────────────────────────────────────────────────────
 export default function BuyerSettingsPage() {
 	const { t } = useTranslation();
-	const [activeSection, setActiveSection] = useState<SettingsSection>('notifications');
+	const navigate = useNavigate();
+	const { logout } = useAuth();
+	const { showToast } = useAppToast();
+	const [activeSection, setActiveSection] = useState<AccountSettingsSection>('profile');
 	const [closeDialogOpen, setCloseDialogOpen] = useState(false);
+	const [closePassword, setClosePassword] = useState('');
+	const [closePasswordError, setClosePasswordError] = useState('');
+
+	const [closeAccount, { loading: closingAccount }] = useMutation(CLOSE_ACCOUNT_MUTATION);
 
 	useEffect(() => {
 		const syncHash = () => {
-			const hash = window.location.hash.replace('#', '') as SettingsSection;
-			if (hash === 'profile' || hash === 'security' || hash === 'notifications' || hash === 'language') {
+			const hash = window.location.hash.replace('#', '') as AccountSettingsSection;
+			if (hash === 'profile' || hash === 'security' || hash === 'danger') {
 				setActiveSection(hash);
 				document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 			}
@@ -156,33 +115,53 @@ export default function BuyerSettingsPage() {
 		control: passCtrl,
 		handleSubmit: handlePassSubmit,
 		formState: { isSubmitting: passSubmitting },
+		reset: resetPasswordForm,
 	} = useForm<PasswordForm>({
 		resolver: zodResolver(PasswordSchema),
+		defaultValues: {
+			currentPassword: '',
+			newPassword: '',
+			confirmPassword: '',
+		},
 	});
-
-	const [notifPrefs, setNotifPrefs] = useState<NotifPrefs>({
-		newOrder: true,
-		orderStatus: true,
-		newMessage: true,
-		moderation: true,
-		verification: true,
-		complaint: true,
-		weekly: false,
-		updates: false,
-	});
-
-	const [lang, setLang] = useState('en');
-	const [timezone, setTimezone] = useState('Europe/Kyiv');
-	const [currency, setCurrency] = useState('USD');
-	const [dateFormat, setDateFormat] = useState('dd MMM yyyy');
 
 	const onChangePassword = (_data: PasswordForm) => {
 		// TODO: wire to CHANGE_PASSWORD mutation
+		resetPasswordForm();
+	};
+
+	const handleCloseDialogOpen = () => {
+		setClosePassword('');
+		setClosePasswordError('');
+		setCloseDialogOpen(true);
+	};
+
+	const handleCloseDialogDismiss = () => {
+		if (closingAccount) return;
+		setCloseDialogOpen(false);
+		setClosePassword('');
+		setClosePasswordError('');
+	};
+
+	const handleCloseAccount = async () => {
+		if (!closePassword.trim()) {
+			setClosePasswordError(t('account.settings.closeAccount.passwordRequired'));
+			return;
+		}
+
+		try {
+			await closeAccount({ variables: { password: closePassword } });
+			setCloseDialogOpen(false);
+			showToast(t('account.settings.closeAccount.success'), 'success');
+			await logout();
+			navigate(getHomeRouteForRole(undefined));
+		} catch {
+			setClosePasswordError(t('account.settings.closeAccount.error'));
+		}
 	};
 
 	return (
 		<Box sx={{ width: '100%', maxWidth: 1200, mx: 'auto' }}>
-			{/* page head */}
 			<Box sx={{ mb: 3 }}>
 				<Typography variant="h4" sx={{ fontWeight: 800, letterSpacing: '-0.02em' }}>
 					{t('account.settings.title')}
@@ -193,12 +172,10 @@ export default function BuyerSettingsPage() {
 			</Box>
 
 			<Grid container spacing={4.5} alignItems="flex-start">
-				{/* ── LEFT NAV ── */}
 				<Grid item xs={12} md="auto" sx={{ width: { md: 220 } }}>
 					<AccountSettingsNav active={activeSection} />
 				</Grid>
 
-				{/* ── RIGHT BODY ── */}
 				<Grid item xs={12} md>
 					<Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
 						<SectionCard
@@ -209,102 +186,14 @@ export default function BuyerSettingsPage() {
 							<ProfileEditSection />
 						</SectionCard>
 
-						{/* ── Notifications ── */}
-						<SectionCard
-							id="notifications"
-							title={t('account.settings.notifications.title')}
-							subtitle={t('account.settings.notifications.subtitle')}
-						>
-							<Box sx={{ mx: -3, px: 3 }}>
-								{(
-									[
-										'newOrder',
-										'orderStatus',
-										'newMessage',
-										'moderation',
-										'verification',
-										'complaint',
-										'weekly',
-										'updates',
-									] as (keyof NotifPrefs)[]
-								).map((key) => (
-									<ToggleRow
-										key={key}
-										label={t(`account.settings.notifications.${key}`)}
-										description={t(`account.settings.notifications.${key}Desc`)}
-										checked={notifPrefs[key]}
-										onChange={(val) => setNotifPrefs((prev) => ({ ...prev, [key]: val }))}
-									/>
-								))}
-							</Box>
-						</SectionCard>
-
-						{/* ── Language & region ── */}
-						<SectionCard
-							id="language"
-							title={t('account.settings.language.title')}
-							subtitle={t('account.settings.language.subtitle')}
-						>
-							<Grid container spacing={2}>
-								<Grid item xs={12} sm={6}>
-									<AppSelect
-										label={t('account.settings.language.interfaceLang')}
-										value={lang}
-										onChange={(e) => setLang(e.target.value as string)}
-										options={[
-											{ value: 'en', label: 'English' },
-											{ value: 'uk', label: 'Українська' },
-										]}
-									/>
-								</Grid>
-								<Grid item xs={12} sm={6}>
-									<AppSelect
-										label={t('account.settings.language.timezone')}
-										value={timezone}
-										onChange={(e) => setTimezone(e.target.value as string)}
-										options={[
-											{ value: 'Europe/Kyiv', label: 'Europe/Kyiv (GMT+2)' },
-											{ value: 'Europe/London', label: 'Europe/London (GMT+0)' },
-											{ value: 'America/New_York', label: 'America/New York (GMT−5)' },
-										]}
-									/>
-								</Grid>
-								<Grid item xs={12} sm={6}>
-									<AppSelect
-										label={t('account.settings.language.currency')}
-										value={currency}
-										onChange={(e) => setCurrency(e.target.value as string)}
-										options={[
-											{ value: 'USD', label: 'USD — US dollar' },
-											{ value: 'UAH', label: 'UAH — Ukrainian hryvnia' },
-											{ value: 'EUR', label: 'EUR — Euro' },
-										]}
-									/>
-								</Grid>
-								<Grid item xs={12} sm={6}>
-									<AppSelect
-										label={t('account.settings.language.dateFormat')}
-										value={dateFormat}
-										onChange={(e) => setDateFormat(e.target.value as string)}
-										options={[
-											{ value: 'dd MMM yyyy', label: '22 May 2026' },
-											{ value: 'MM/dd/yyyy', label: '05/22/2026' },
-											{ value: 'yyyy-MM-dd', label: '2026-05-22' },
-										]}
-									/>
-								</Grid>
-							</Grid>
-						</SectionCard>
-
-						{/* ── Security ── */}
 						<SectionCard
 							id="security"
 							title={t('account.settings.security.title')}
 							subtitle={t('account.settings.security.subtitle')}
 						>
-							<form onSubmit={handlePassSubmit(onChangePassword)}>
+							<Box component="form" onSubmit={handlePassSubmit(onChangePassword)}>
 								<Grid container spacing={2}>
-									<Grid item xs={12} sm={6}>
+									<Grid item xs={12}>
 										<Controller
 											name="currentPassword"
 											control={passCtrl}
@@ -328,7 +217,21 @@ export default function BuyerSettingsPage() {
 													{...field}
 													label={t('account.settings.security.newPassword')}
 													type="password"
-													placeholder="At least 12 characters"
+													error={!!fieldState.error}
+													helperText={fieldState.error?.message}
+												/>
+											)}
+										/>
+									</Grid>
+									<Grid item xs={12} sm={6}>
+										<Controller
+											name="confirmPassword"
+											control={passCtrl}
+											render={({ field, fieldState }) => (
+												<AppInput
+													{...field}
+													label={t('account.settings.security.confirmPassword')}
+													type="password"
 													error={!!fieldState.error}
 													helperText={fieldState.error?.message}
 												/>
@@ -336,74 +239,66 @@ export default function BuyerSettingsPage() {
 										/>
 									</Grid>
 								</Grid>
-							</form>
-
-							<Divider sx={{ my: 2.5 }} />
-
-							<ToggleRow
-								label="Two-factor authentication"
-								description="Use an authenticator app for sign-in challenges."
-								checked={false}
-								onChange={() => {}}
-							/>
-
-							<Box
-								sx={{
-									display: 'grid',
-									gridTemplateColumns: '1fr auto',
-									gap: 2,
-									py: 1.75,
-									alignItems: 'center',
-								}}
-							>
-								<Box>
-									<Typography sx={{ fontWeight: 600, fontSize: 14 }}>
-										Sign out other sessions
-									</Typography>
-									<Typography sx={{ fontSize: 12.5, color: tokens.ink3, mt: 0.375 }}>
-										You have active sessions on other devices.
-									</Typography>
+								<Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2.5 }}>
+									<AppButton type="submit" tone="accent" loading={passSubmitting}>
+										{t('account.settings.security.changePassword')}
+									</AppButton>
 								</Box>
-								<AppButton tone="ghost" size="small">
-									Sign out all
-								</AppButton>
 							</Box>
 						</SectionCard>
 
-						{/* ── Danger zone ── */}
 						<SectionCard
 							id="danger"
-							title="Close account"
-							subtitle="Permanently close your account and remove all data. Pending orders must be resolved first."
+							title={t('account.settings.closeAccount.title')}
+							subtitle={t('account.settings.closeAccount.subtitle')}
 							headerAction={
-								<AppButton tone="danger" onClick={() => setCloseDialogOpen(true)}>
-									Close account
+								<AppButton tone="danger" onClick={handleCloseDialogOpen}>
+									{t('account.settings.closeAccount.action')}
 								</AppButton>
 							}
 							danger
 						/>
-
-						{/* ── Save bar ── */}
-						<Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1.25, pt: 0.75 }}>
-							<AppButton tone="ghost">{t('common.discard')}</AppButton>
-							<AppButton tone="accent" loading={passSubmitting}>
-								{t('account.settings.notifications.savePreferences')}
-							</AppButton>
-						</Box>
 					</Box>
 				</Grid>
 			</Grid>
 
-			{/* Close account confirm dialog */}
-			<ConfirmDialog
+			<AppModal
 				open={closeDialogOpen}
-				onClose={() => setCloseDialogOpen(false)}
-				onConfirm={() => setCloseDialogOpen(false)}
-				title="Close account"
-				message="Are you sure you want to permanently close your account? This action cannot be undone."
-				confirmLabel="Close account"
-				confirmColor="error"
-			/>
+				onClose={handleCloseDialogDismiss}
+				title={t('account.settings.closeAccount.confirmTitle')}
+				maxWidth="xs"
+				footer={
+					<>
+						<AppButton variant="outlined" onClick={handleCloseDialogDismiss} disabled={closingAccount}>
+							{t('confirmDialog.cancel')}
+						</AppButton>
+						<AppButton
+							variant="contained"
+							color="error"
+							onClick={handleCloseAccount}
+							loading={closingAccount}
+						>
+							{t('account.settings.closeAccount.action')}
+						</AppButton>
+					</>
+				}
+			>
+				<Typography sx={{ fontSize: 14, color: tokens.ink2, mb: 2 }}>
+					{t('account.settings.closeAccount.confirmMessage')}
+				</Typography>
+				<AppInput
+					label={t('account.settings.closeAccount.passwordLabel')}
+					type="password"
+					value={closePassword}
+					onChange={(e) => {
+						setClosePassword(e.target.value);
+						if (closePasswordError) setClosePasswordError('');
+					}}
+					error={!!closePasswordError}
+					helperText={closePasswordError}
+					autoComplete="current-password"
+				/>
+			</AppModal>
 		</Box>
 	);
 }

@@ -320,6 +320,7 @@ export const adminTypeDefs = `#graphql
 
 	extend type Query {
 		auditLogs(input: AuditLogsInput): AuditLogList!
+		myAuditLogs(limit: Int): AuditLogList!
 	}
 
 	type PlatformOverview {

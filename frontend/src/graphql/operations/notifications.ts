@@ -53,3 +53,15 @@ export const MARK_CONVERSATION_NOTIFICATIONS_READ_MUTATION = gql`
 		markConversationNotificationsRead(conversationId: $conversationId)
 	}
 `;
+
+export const DELETE_NOTIFICATION_MUTATION = gql`
+	mutation DeleteNotification($id: ID!) {
+		deleteNotification(id: $id)
+	}
+`;
+
+export const DELETE_READ_NOTIFICATIONS_MUTATION = gql`
+	mutation DeleteReadNotifications {
+		deleteReadNotifications
+	}
+`;

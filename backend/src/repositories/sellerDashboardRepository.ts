@@ -108,6 +108,29 @@ export async function findProductsForTopList(productIds: string[], sellerId: str
 	});
 }
 
+export async function getSellerPendingModerationCount(sellerId: string): Promise<number> {
+	return prisma.product.count({
+		where: {
+			sellerId,
+			deletedAt: null,
+			status: ProductStatus.PENDING_MODERATION,
+		},
+	});
+}
+
+export async function getSellerUnrepliedReviewCount(sellerId: string): Promise<number> {
+	return prisma.productReview.count({
+		where: {
+			deletedAt: null,
+			isApproved: true,
+			isBlocked: false,
+			sellerReply: null,
+			text: { not: null },
+			product: { sellerId, deletedAt: null },
+		},
+	});
+}
+
 export async function getLowStockVariants(sellerId: string, threshold: number) {
 	return prisma.productVariant.findMany({
 		where: {

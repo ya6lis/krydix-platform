@@ -148,6 +148,16 @@ export const adminResolvers = {
 			});
 		},
 
+		myAuditLogs: async (_: unknown, { limit }: { limit?: number }, ctx: GraphQLContext) => {
+			const user = requireStaff(ctx);
+			return auditService.getAuditLogs({
+				actorId: user.id,
+				datePreset: 'LAST_30_DAYS',
+				page: 1,
+				pageSize: Math.min(limit ?? 5, 20),
+			});
+		},
+
 		platformOverview: async (_: unknown, __: unknown, ctx: GraphQLContext) => {
 			requireAdmin(ctx);
 			return platformService.getPlatformOverview();
@@ -175,12 +185,12 @@ export const adminResolvers = {
 			{ id, role }: { id: string; role: string },
 			ctx: GraphQLContext,
 		) => {
-			const user = requireStaff(ctx);
+			const user = requireAdmin(ctx);
 			return service.changeUserRole(user.id, user.role as Role, id, role as Role);
 		},
 
 		softDeleteUser: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
-			const user = requireStaff(ctx);
+			const user = requireAdmin(ctx);
 			return service.softDeleteUser(user.id, user.role as Role, id);
 		},
 
@@ -203,7 +213,7 @@ export const adminResolvers = {
 			{ input }: { input: { email: string; firstName: string; lastName: string; role: string } },
 			ctx: GraphQLContext,
 		) => {
-			const user = requireStaff(ctx);
+			const user = requireAdmin(ctx);
 			return service.inviteUser(user.id, user.role as Role, {
 				...input,
 				role: input.role as Role,

@@ -61,5 +61,15 @@ export const notificationsResolvers = {
 			const user = requireAuth(ctx);
 			return notificationService.markConversationNotificationsRead(user.id, conversationId);
 		},
+
+		deleteNotification: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
+			const user = requireAuth(ctx);
+			return notificationService.deleteNotification(user.id, id);
+		},
+
+		deleteReadNotifications: async (_: unknown, __: unknown, ctx: GraphQLContext) => {
+			const user = requireAuth(ctx);
+			return notificationService.deleteReadNotifications(user.id);
+		},
 	},
 };

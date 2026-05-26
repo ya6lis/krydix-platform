@@ -50,5 +50,10 @@ export const sellerDashboardResolvers = {
 			const user = requireSeller(ctx);
 			return service.getSellerLowStockAlerts(user.id, threshold ?? 5);
 		},
+
+		sellerDashboardSummary: async (_: unknown, __: unknown, ctx: GraphQLContext) => {
+			const user = requireSeller(ctx);
+			return service.getSellerDashboardSummary(user.id);
+		},
 	},
 };

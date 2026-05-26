@@ -1,20 +1,25 @@
 import { Prisma } from '@prisma/client';
 import { prisma } from '../utils/prisma.js';
+import { ChatType, SupportChatStatus } from '../constants/enums.js';
+
+const userInclude = {
+	include: {
+		profile: true,
+	},
+} satisfies Prisma.UserDefaultArgs;
 
 const participantInclude = {
-	user: {
-		include: {
-			profile: true,
-		},
-	},
+	user: userInclude,
 } satisfies Prisma.ChatParticipantInclude;
 
-const chatInclude = {
+export const chatInclude = {
 	participants: { include: participantInclude },
+	requester: userInclude,
+	assignedTo: userInclude,
 	messages: {
 		orderBy: { createdAt: 'desc' as const },
 		take: 1,
-		include: { sender: { include: { profile: true } } },
+		include: { sender: userInclude },
 	},
 } satisfies Prisma.ChatInclude;
 
@@ -28,7 +33,10 @@ export type ChatMessageRecord = Prisma.ChatMessageGetPayload<{
 
 export async function findConversationsByUserId(userId: string): Promise<ChatRecord[]> {
 	return prisma.chat.findMany({
-		where: { participants: { some: { userId } } },
+		where: {
+			type: ChatType.MARKETPLACE,
+			participants: { some: { userId } },
+		},
 		include: chatInclude,
 	});
 }
@@ -55,6 +63,7 @@ export async function findExistingConversation(
 ): Promise<ChatRecord | null> {
 	const chats = await prisma.chat.findMany({
 		where: {
+			type: ChatType.MARKETPLACE,
 			productId,
 			participants: {
 				every: { userId: { in: [userA, userB] } },
@@ -77,12 +86,154 @@ export async function createConversation(
 ): Promise<ChatRecord> {
 	return prisma.chat.create({
 		data: {
+			type: ChatType.MARKETPLACE,
 			productId,
 			participants: {
 				create: [{ userId: userA }, { userId: userB }],
 			},
 		},
 		include: chatInclude,
+	});
+}
+
+export async function findActiveSupportByRequesterId(
+	requesterId: string
+): Promise<ChatRecord | null> {
+	return prisma.chat.findFirst({
+		where: {
+			type: ChatType.SUPPORT,
+			requesterId,
+			status: { in: [SupportChatStatus.OPEN, SupportChatStatus.IN_PROGRESS] },
+		},
+		include: chatInclude,
+		orderBy: { updatedAt: 'desc' },
+	});
+}
+
+export async function findSupportHistoryByRequesterId(
+	requesterId: string,
+	limit: number
+): Promise<ChatRecord[]> {
+	return prisma.chat.findMany({
+		where: {
+			type: ChatType.SUPPORT,
+			requesterId,
+			status: { in: [SupportChatStatus.RESOLVED, SupportChatStatus.CLOSED] },
+		},
+		include: chatInclude,
+		orderBy: { updatedAt: 'desc' },
+		take: limit,
+	});
+}
+
+export interface SupportQueueFilter {
+	status?: SupportChatStatus;
+	search?: string;
+	page: number;
+	pageSize: number;
+}
+
+export async function findSupportQueue(
+	filter: SupportQueueFilter
+): Promise<{ items: ChatRecord[]; total: number }> {
+	const where: Prisma.ChatWhereInput = {
+		type: ChatType.SUPPORT,
+		...(filter.status ? { status: filter.status } : {}),
+		...(filter.search
+			? {
+					OR: [
+						{ subject: { contains: filter.search, mode: 'insensitive' } },
+						{
+							requester: {
+								OR: [
+									{ email: { contains: filter.search, mode: 'insensitive' } },
+									{
+										profile: {
+											displayName: { contains: filter.search, mode: 'insensitive' },
+										},
+									},
+								],
+							},
+						},
+					],
+				}
+			: {}),
+	};
+
+	const skip = (filter.page - 1) * filter.pageSize;
+	const [items, total] = await Promise.all([
+		prisma.chat.findMany({
+			where,
+			include: chatInclude,
+			orderBy: { updatedAt: 'desc' },
+			skip,
+			take: filter.pageSize,
+		}),
+		prisma.chat.count({ where }),
+	]);
+
+	return { items, total };
+}
+
+export async function createSupportConversation(
+	requesterId: string,
+	subject: string,
+	message: string
+): Promise<ChatRecord> {
+	return prisma.chat.create({
+		data: {
+			type: ChatType.SUPPORT,
+			subject,
+			status: SupportChatStatus.OPEN,
+			requesterId,
+			participants: {
+				create: [{ userId: requesterId }],
+			},
+			messages: {
+				create: [{ senderId: requesterId, content: message }],
+			},
+		},
+		include: chatInclude,
+	});
+}
+
+export async function addParticipant(chatId: string, userId: string): Promise<void> {
+	await prisma.chatParticipant.upsert({
+		where: { chatId_userId: { chatId, userId } },
+		create: { chatId, userId },
+		update: {},
+	});
+}
+
+export async function assignSupportConversation(
+	chatId: string,
+	staffId: string
+): Promise<ChatRecord> {
+	return prisma.chat.update({
+		where: { id: chatId },
+		data: {
+			assignedToId: staffId,
+			status: SupportChatStatus.IN_PROGRESS,
+		},
+		include: chatInclude,
+	});
+}
+
+export async function updateSupportStatus(
+	chatId: string,
+	status: SupportChatStatus
+): Promise<ChatRecord> {
+	return prisma.chat.update({
+		where: { id: chatId },
+		data: { status },
+		include: chatInclude,
+	});
+}
+
+export async function touchConversation(chatId: string): Promise<void> {
+	await prisma.chat.update({
+		where: { id: chatId },
+		data: { updatedAt: new Date() },
 	});
 }
 
@@ -109,10 +260,12 @@ export async function createMessage(
 	senderId: string,
 	content: string
 ): Promise<ChatMessageRecord> {
-	return prisma.chatMessage.create({
+	const message = await prisma.chatMessage.create({
 		data: { chatId, senderId, content },
 		include: { sender: { include: { profile: true } } },
 	});
+	await touchConversation(chatId);
+	return message;
 }
 
 export async function markMessagesRead(chatId: string, readerId: string): Promise<number> {

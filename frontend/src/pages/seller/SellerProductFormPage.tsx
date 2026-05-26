@@ -23,6 +23,7 @@ import { ROUTES } from '@/constants/routes';
 import { AppBreadcrumbs } from '@/components/ui/AppBreadcrumbs';
 import { AppButton } from '@/components/ui/AppButton';
 import { AppCard } from '@/components/ui/AppCard';
+import { AppImage } from '@/components/ui/AppImage';
 import { AppInput } from '@/components/ui/AppInput';
 import { AppTextarea } from '@/components/ui/AppTextarea';
 import { AppLoader } from '@/components/ui/AppLoader';
@@ -124,12 +125,13 @@ function SectionCard({ title, subtitle, headerAction, children }: SectionCardPro
 
 interface MediaThumbProps {
 	media: MediaItem;
+	galleryUrls?: string[];
 	onDelete: (id: string) => void;
 	onSetMain: (id: string) => void;
 	isMain: boolean;
 	deleting: boolean;
 }
-function MediaThumb({ media, onDelete, onSetMain, isMain, deleting }: MediaThumbProps) {
+function MediaThumb({ media, galleryUrls, onDelete, onSetMain, isMain, deleting }: MediaThumbProps) {
 	const { t } = useTranslation();
 	return (
 		<Box
@@ -144,10 +146,10 @@ function MediaThumb({ media, onDelete, onSetMain, isMain, deleting }: MediaThumb
 				flexShrink: 0,
 			}}
 		>
-			<Box
-				component="img"
+			<AppImage
 				src={media.url}
-				alt=""
+				gallery={galleryUrls}
+				galleryIndex={galleryUrls?.indexOf(media.url)}
 				sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
 			/>
 			{isMain && (
@@ -619,6 +621,7 @@ export default function SellerProductFormPage() {
 	const watchedCategoryIds = watch('categoryIds') ?? [];
 	const mainImage = media.find((m) => m.isMain);
 	const gallery = media.filter((m) => !m.isMain && m.type === 'IMAGE');
+	const mediaUrls = media.filter((m) => m.type === 'IMAGE').map((m) => m.url);
 	const canUploadMore = media.filter((m) => m.type === 'IMAGE').length < 9;
 	const isDraftEdit = isEdit && productStatus === 'DRAFT';
 	const isNonDraftEdit = isEdit && productStatus && productStatus !== 'DRAFT';
@@ -937,6 +940,7 @@ export default function SellerProductFormPage() {
 								{mainImage ? (
 									<MediaThumb
 										media={mainImage}
+										galleryUrls={mediaUrls}
 										isMain
 										onDelete={handleDeleteMedia}
 										onSetMain={handleSetMain}
@@ -972,6 +976,7 @@ export default function SellerProductFormPage() {
 									<MediaThumb
 										key={m.id}
 										media={m}
+										galleryUrls={mediaUrls}
 										isMain={false}
 										onDelete={handleDeleteMedia}
 										onSetMain={handleSetMain}

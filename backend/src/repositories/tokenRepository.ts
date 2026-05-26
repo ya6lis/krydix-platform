@@ -17,6 +17,13 @@ export async function revokeRefreshToken(id: string) {
 	return prisma.refreshToken.update({ where: { id }, data: { revokedAt: new Date() } });
 }
 
+export async function revokeAllRefreshTokensForUser(userId: string) {
+	return prisma.refreshToken.updateMany({
+		where: { userId, revokedAt: null },
+		data: { revokedAt: new Date() },
+	});
+}
+
 export async function createEmailVerification(userId: string, token: string) {
 	const expiresAt = new Date();
 	expiresAt.setHours(expiresAt.getHours() + EMAIL_VERIFY_HOURS);

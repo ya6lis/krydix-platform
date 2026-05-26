@@ -11,29 +11,33 @@ import {
 	faArrowRight,
 	faShoppingCart,
 	faTimes,
-	faCheckDouble,
 } from '@fortawesome/free-solid-svg-icons';
 import { tokens } from '@/theme';
 import { useCartStore } from '@/store/cartStore';
+import { useWishlist } from '@/hooks/useWishlist';
 import { useAuthStore } from '@/store/authStore';
 import { ROUTES } from '@/constants/routes';
-import { NotificationEvent } from '@/constants/enums';
-import { NotificationItem } from '@/components/ui/NotificationItem';
+import { canUseBuyerCommerce } from '@/utils/roleAccess';
+import { Icons } from '@/constants/icons';
+import { NotificationsPanel } from '@/components/notifications/NotificationsPanel';
+import { AppImage } from '@/components/ui';
 import {
-	filterNotifications,
-	formatNotificationTime,
-	notificationDisplayText,
-	notificationIcon,
-	notificationRoute,
-	notificationTone,
+	type NotificationTabKey,
 } from '@/utils/notificationUtils';
 import {
+	DELETE_NOTIFICATION_MUTATION,
 	MARK_ALL_NOTIFICATIONS_READ_MUTATION,
 	MARK_NOTIFICATION_READ_MUTATION,
 	MY_NOTIFICATIONS_QUERY,
 	UNREAD_NOTIFICATION_COUNT_QUERY,
 } from '@/graphql/operations/notifications';
+import {
+	MY_WISHLIST_QUERY,
+	REMOVE_FROM_WISHLIST_MUTATION,
+	type WishlistItemData,
+} from '@/graphql/operations/wishlist';
 import type { AppNotification } from '@/types/notification';
+import { notificationRoute } from '@/utils/notificationUtils';
 
 /* ── breadcrumb types ────────────────────────────────────────── */
 export interface Breadcrumb {
@@ -46,10 +50,6 @@ interface AppNavbarProps {
 }
 
 /* ── static mock notifications ───────────────────────────────── */
-const NOTIF_TAB_KEYS = ['all', 'unread', 'orders', 'system'] as const;
-type NotifTabKey = (typeof NOTIF_TAB_KEYS)[number];
-
-const NOTIF_TABS = NOTIF_TAB_KEYS.map((key) => `shell.notif.tab.${key}`);
 
 /* ── icon button base sx ─────────────────────────────────────── */
 const iconBtnSx = {
@@ -73,15 +73,19 @@ export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
 	const { t, i18n } = useTranslation();
 	const navigate = useNavigate();
 	const user = useAuthStore((s) => s.user);
+	const showCommerceNav = canUseBuyerCommerce(user?.role);
 	const cartItems = useCartStore((s) => s.items);
 	const removeItem = useCartStore((s) => s.removeItem);
 	const subtotal = useCartStore((s) => s.subtotal);
 	const sellerGroups = useCartStore((s) => s.sellerGroups);
 	const itemCount = useCartStore((s) => s.itemCount);
+	const { count: wishlistCount } = useWishlist();
 
 	const [cartAnchor, setCartAnchor] = useState<HTMLElement | null>(null);
+	const [wishlistAnchor, setWishlistAnchor] = useState<HTMLElement | null>(null);
 	const [notifAnchor, setNotifAnchor] = useState<HTMLElement | null>(null);
-	const [notifTab, setNotifTab] = useState(0);
+	const [notifTab, setNotifTab] = useState<NotificationTabKey>('all');
+	const [deletingNotifId, setDeletingNotifId] = useState<string | null>(null);
 
 	const { data: notificationsData, refetch: refetchNotifications } = useQuery<{
 		myNotifications: AppNotification[];
@@ -102,8 +106,21 @@ export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
 	const [markAllNotificationsRead, { loading: markingAllRead }] = useMutation(
 		MARK_ALL_NOTIFICATIONS_READ_MUTATION,
 	);
+	const [deleteNotification] = useMutation(DELETE_NOTIFICATION_MUTATION);
+
+	const { data: wishlistData, refetch: refetchWishlist } = useQuery<{
+		myWishlist: { items: WishlistItemData[]; count: number };
+	}>(MY_WISHLIST_QUERY, {
+		skip: !user,
+		fetchPolicy: 'cache-and-network',
+	});
+
+	const [removeFromWishlist] = useMutation(REMOVE_FROM_WISHLIST_MUTATION, {
+		refetchQueries: ['MyWishlist', 'MyWishlistProductIds'],
+	});
 
 	const cartOpen = Boolean(cartAnchor);
+	const wishlistOpen = Boolean(wishlistAnchor);
 	const notifOpen = Boolean(notifAnchor);
 
 	const groups = sellerGroups();
@@ -111,18 +128,36 @@ export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
 	const count = itemCount();
 	const notifications = notificationsData?.myNotifications ?? [];
 	const unreadCount = unreadData?.unreadNotificationCount ?? 0;
-	const activeTabKey = NOTIF_TAB_KEYS[notifTab] ?? 'all';
-	const visibleNotifications = filterNotifications(notifications, activeTabKey);
+	const wishlistItems = wishlistData?.myWishlist.items ?? [];
+
+	const refetchNotificationsState = async () => {
+		await Promise.all([refetchNotifications(), refetchUnreadCount()]);
+	};
+
+	const handleRemoveWishlistItem = async (productId: string) => {
+		await removeFromWishlist({ variables: { productId } });
+		await refetchWishlist();
+	};
 
 	const handleMarkAllRead = async () => {
 		await markAllNotificationsRead();
-		await Promise.all([refetchNotifications(), refetchUnreadCount()]);
+		await refetchNotificationsState();
+	};
+
+	const handleDeleteNotification = async (id: string) => {
+		setDeletingNotifId(id);
+		try {
+			await deleteNotification({ variables: { id } });
+			await refetchNotificationsState();
+		} finally {
+			setDeletingNotifId(null);
+		}
 	};
 
 	const handleNotificationClick = async (notification: AppNotification) => {
 		if (!notification.isRead) {
 			await markNotificationRead({ variables: { id: notification.id } });
-			await Promise.all([refetchNotifications(), refetchUnreadCount()]);
+			await refetchNotificationsState();
 		}
 		setNotifAnchor(null);
 		const route = notificationRoute(notification, user?.role);
@@ -207,66 +242,126 @@ export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
 				</Box>
 			</Box>
 
-			{/* ── cart button ── */}
-			<Box sx={{ position: 'relative' }}>
-				<Box
-					component="button"
-					onClick={(e) => setCartAnchor(e.currentTarget)}
-					sx={iconBtnSx}
-					aria-label={t('shell.cart.title')}
-				>
-					<FontAwesomeIcon icon={faShoppingCart} style={{ width: 16, height: 16 }} />
-					{count > 0 && (
-						<Box
-							sx={{
-								position: 'absolute',
-								top: -4,
-								right: -4,
-								background: tokens.coral,
-								color: '#fff',
-								fontSize: 10,
-								fontWeight: 700,
-								height: 16,
-								minWidth: 16,
-								padding: '0 4px',
-								borderRadius: 8,
-								display: 'grid',
-								placeItems: 'center',
-							}}
-						>
-							{count}
-						</Box>
-					)}
-				</Box>
+			{showCommerceNav && (
+				<Box sx={{ position: 'relative' }}>
+					<Box
+						component="button"
+						onClick={(e) => setWishlistAnchor(e.currentTarget)}
+						sx={iconBtnSx}
+						aria-label={t('shell.wishlist.title')}
+					>
+						<FontAwesomeIcon icon={Icons.heartEmpty} style={{ width: 16, height: 16 }} />
+						{wishlistCount > 0 && (
+							<Box
+								sx={{
+									position: 'absolute',
+									top: -4,
+									right: -4,
+									background: tokens.coral,
+									color: '#fff',
+									fontSize: 10,
+									fontWeight: 700,
+									height: 16,
+									minWidth: 16,
+									padding: '0 4px',
+									borderRadius: 8,
+									display: 'grid',
+									placeItems: 'center',
+								}}
+							>
+								{wishlistCount}
+							</Box>
+						)}
+					</Box>
 
-				{/* Cart popover */}
-				<Popover
-					open={cartOpen}
-					anchorEl={cartAnchor}
-					onClose={() => setCartAnchor(null)}
-					anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-					transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-					PaperProps={{
-						sx: {
-							width: 360,
-							borderRadius: '14px',
-							border: `1px solid ${tokens.line}`,
-							boxShadow: tokens.shadowMd,
-							mt: '8px',
-							overflow: 'hidden',
-						},
-					}}
-				>
-					<CartDropdown
-						items={cartItems}
-						groups={groups}
-						sellerCount={sellerCount}
-						subtotal={subtotal()}
-						onRemove={removeItem}
+					<Popover
+						open={wishlistOpen}
+						anchorEl={wishlistAnchor}
+						onClose={() => setWishlistAnchor(null)}
+						anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+						transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+						PaperProps={{
+							sx: {
+								width: 360,
+								borderRadius: '14px',
+								border: `1px solid ${tokens.line}`,
+								boxShadow: tokens.shadowMd,
+								mt: '8px',
+								overflow: 'hidden',
+							},
+						}}
+					>
+						<WishlistDropdown
+							isAuthenticated={!!user}
+							items={wishlistItems}
+							count={wishlistCount}
+							onRemove={(productId) => void handleRemoveWishlistItem(productId)}
+							onClose={() => setWishlistAnchor(null)}
+						/>
+					</Popover>
+				</Box>
+			)}
+
+			{showCommerceNav && (
+				<Box sx={{ position: 'relative' }}>
+					<Box
+						component="button"
+						onClick={(e) => setCartAnchor(e.currentTarget)}
+						sx={iconBtnSx}
+						aria-label={t('shell.cart.title')}
+					>
+						<FontAwesomeIcon icon={faShoppingCart} style={{ width: 16, height: 16 }} />
+						{count > 0 && (
+							<Box
+								sx={{
+									position: 'absolute',
+									top: -4,
+									right: -4,
+									background: tokens.coral,
+									color: '#fff',
+									fontSize: 10,
+									fontWeight: 700,
+									height: 16,
+									minWidth: 16,
+									padding: '0 4px',
+									borderRadius: 8,
+									display: 'grid',
+									placeItems: 'center',
+								}}
+							>
+								{count}
+							</Box>
+						)}
+					</Box>
+
+					<Popover
+						open={cartOpen}
+						anchorEl={cartAnchor}
 						onClose={() => setCartAnchor(null)}
-					/>
-				</Popover>
-			</Box>
+						anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+						transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+						PaperProps={{
+							sx: {
+								width: 360,
+								borderRadius: '14px',
+								border: `1px solid ${tokens.line}`,
+								boxShadow: tokens.shadowMd,
+								mt: '8px',
+								overflow: 'hidden',
+							},
+						}}
+					>
+						<CartDropdown
+							items={cartItems}
+							groups={groups}
+							sellerCount={sellerCount}
+							subtotal={subtotal()}
+							onRemove={removeItem}
+							onClose={() => setCartAnchor(null)}
+						/>
+					</Popover>
+				</Box>
+			)}
 
 			{/* ── notifications button ── */}
 			<Box sx={{ position: 'relative' }}>
@@ -318,16 +413,18 @@ export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
 						},
 					}}
 				>
-					<NotifDropdown
+					<NotificationsPanel
+						notifications={notifications}
 						activeTab={notifTab}
 						onTabChange={setNotifTab}
-						tabs={NOTIF_TABS}
 						unreadCount={unreadCount}
-						notifications={visibleNotifications}
 						locale={i18n.language}
 						onMarkAllRead={() => void handleMarkAllRead()}
 						markingAllRead={markingAllRead}
 						onNotificationClick={(notification) => void handleNotificationClick(notification)}
+						onDeleteNotification={(id) => void handleDeleteNotification(id)}
+						deletingId={deletingNotifId}
+						variant="dropdown"
 					/>
 				</Popover>
 			</Box>
@@ -440,8 +537,7 @@ function CartDropdown({
 										}}
 									>
 										{item.imageUrl && (
-											<Box
-												component="img"
+											<AppImage
 												src={item.imageUrl}
 												alt={item.name}
 												sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -585,33 +681,24 @@ function CartDropdown({
 	);
 }
 
-/* ── NotifDropdown ───────────────────────────────────────────── */
-function NotifDropdown({
-	activeTab,
-	onTabChange,
-	tabs,
-	unreadCount,
-	notifications,
-	locale,
-	onMarkAllRead,
-	markingAllRead,
-	onNotificationClick,
+/* ── WishlistDropdown ────────────────────────────────────────── */
+function WishlistDropdown({
+	isAuthenticated,
+	items,
+	count,
+	onRemove,
+	onClose,
 }: {
-	activeTab: number;
-	onTabChange: (i: number) => void;
-	tabs: string[];
-	unreadCount: number;
-	notifications: AppNotification[];
-	locale: string;
-	onMarkAllRead: () => void;
-	markingAllRead: boolean;
-	onNotificationClick: (notification: AppNotification) => void;
+	isAuthenticated: boolean;
+	items: WishlistItemData[];
+	count: number;
+	onRemove: (productId: string) => void;
+	onClose: () => void;
 }) {
 	const { t } = useTranslation();
 
 	return (
 		<Box>
-			{/* head */}
 			<Box
 				sx={{
 					padding: '16px 18px',
@@ -621,126 +708,177 @@ function NotifDropdown({
 				}}
 			>
 				<Box>
-					<Typography sx={{ fontWeight: 700, fontSize: 15 }}>{t('shell.notif.title')}</Typography>
+					<Typography sx={{ fontWeight: 700, fontSize: 15 }}>{t('shell.wishlist.title')}</Typography>
 					<Typography sx={{ fontSize: 12, color: tokens.ink3, mt: '2px' }}>
-						{t('shell.notif.unread', { count: unreadCount })}
+						{!isAuthenticated
+							? t('shell.wishlist.signInHint')
+							: count === 0
+								? t('shell.wishlist.empty')
+								: t('shell.wishlist.itemsCount', { count })}
 					</Typography>
 				</Box>
 				<Box
 					component="button"
-					onClick={onMarkAllRead}
-					disabled={markingAllRead || unreadCount === 0}
+					onClick={onClose}
 					sx={{
-						border: 'none',
-						background: 'transparent',
+						...iconBtnSx,
+						width: 28,
+						height: 28,
+						borderRadius: 7,
 						fontSize: 12,
-						fontWeight: 600,
-						color: tokens.ink2,
-						cursor: 'pointer',
-						padding: '4px 8px',
-						borderRadius: 6,
-						display: 'flex',
-						alignItems: 'center',
-						gap: '5px',
-						transition: 'background 120ms',
-						'&:hover': { background: tokens.accentSoft },
 					}}
+					aria-label="Close"
 				>
-					<FontAwesomeIcon icon={faCheckDouble} style={{ width: 12 }} />
-					{t('shell.notif.markAllRead')}
+					<FontAwesomeIcon icon={faTimes} />
 				</Box>
 			</Box>
 
-			{/* tabs */}
-			<Box
-				sx={{
-					display: 'flex',
-					gap: '4px',
-					padding: '0 18px 12px',
-					borderBottom: `1px solid ${tokens.line}`,
-				}}
-			>
-				{tabs.map((tab, i) => (
-					<Box
-						key={tab}
-						component="button"
-						onClick={() => onTabChange(i)}
-						sx={{
-							border: 'none',
-							padding: '5px 10px',
-							borderRadius: 7,
-							fontSize: 12,
-							fontWeight: 500,
-							cursor: 'pointer',
-							color: activeTab === i ? '#fff' : tokens.ink2,
-							background: activeTab === i ? tokens.ink1 : 'transparent',
-							transition: 'background 120ms, color 120ms',
-							'&:hover': activeTab !== i ? { background: tokens.surface2, color: tokens.ink2 } : {},
-						}}
-					>
-						{t(tab)}
-					</Box>
-				))}
-			</Box>
+			<Divider sx={{ borderColor: tokens.line }} />
 
-			{/* body */}
-			<Box sx={{ maxHeight: 380, overflowY: 'auto' }}>
-				{notifications.length === 0 ? (
-					<Box
-						sx={{
-							padding: '32px 18px',
-							textAlign: 'center',
-							color: tokens.ink3,
-							fontSize: 13,
-						}}
-					>
-						{t('shell.notif.empty')}
+			<Box sx={{ maxHeight: 340, overflowY: 'auto', padding: '6px 0' }}>
+				{!isAuthenticated ? (
+					<Box sx={{ padding: '32px 18px', textAlign: 'center' }}>
+						<Typography sx={{ fontSize: 13, color: tokens.ink3, mb: 2 }}>
+							{t('shell.wishlist.signInHint')}
+						</Typography>
+						<Box
+							component={Link}
+							to={ROUTES.LOGIN}
+							onClick={onClose}
+							sx={{
+								display: 'inline-grid',
+								placeItems: 'center',
+								padding: '9px 16px',
+								borderRadius: 10,
+								background: tokens.accent,
+								color: '#fff',
+								fontSize: 13,
+								fontWeight: 600,
+								textDecoration: 'none',
+								transition: 'opacity 120ms',
+								'&:hover': { opacity: 0.88 },
+							}}
+						>
+							{t('shell.guest.signIn')}
+						</Box>
+					</Box>
+				) : items.length === 0 ? (
+					<Box sx={{ padding: '32px 18px', textAlign: 'center', color: tokens.ink3, fontSize: 13 }}>
+						{t('shell.wishlist.empty')}
 					</Box>
 				) : (
-					notifications.map((notification) => {
-						const event = notification.event as NotificationEvent;
-						const copy = notificationDisplayText(notification, t);
-						return (
-							<NotificationItem
-								key={notification.id}
-								icon={notificationIcon(event)}
-								tone={notificationTone(event)}
-								title={copy.title}
-								body={copy.body}
-								time={formatNotificationTime(notification.createdAt, locale)}
-								unread={!notification.isRead}
-								onClick={() => onNotificationClick(notification)}
-							/>
-						);
-					})
+					items.map((item) => (
+						<Box
+							key={item.id}
+							sx={{
+								display: 'flex',
+								alignItems: 'flex-start',
+								gap: '12px',
+								padding: '8px 18px',
+								transition: 'background 80ms',
+								'&:hover': { background: tokens.bg },
+							}}
+						>
+							<Box
+								component={Link}
+								to={ROUTES.PRODUCT(item.productSlug)}
+								onClick={onClose}
+								sx={{
+									width: 44,
+									height: 44,
+									borderRadius: 8,
+									background: tokens.surface2,
+									flexShrink: 0,
+									overflow: 'hidden',
+								}}
+							>
+								{item.productImage && (
+									<AppImage
+										src={item.productImage}
+										alt={item.productTitle}
+										sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+									/>
+								)}
+							</Box>
+							<Box sx={{ flex: 1, minWidth: 0 }}>
+								<Typography
+									component={Link}
+									to={ROUTES.PRODUCT(item.productSlug)}
+									onClick={onClose}
+									sx={{
+										fontWeight: 600,
+										fontSize: 13,
+										lineHeight: 1.3,
+										color: tokens.ink1,
+										textDecoration: 'none',
+										overflow: 'hidden',
+										textOverflow: 'ellipsis',
+										whiteSpace: 'nowrap',
+										display: 'block',
+										'&:hover': { color: tokens.accent },
+									}}
+								>
+									{item.productTitle}
+								</Typography>
+								<Typography sx={{ fontSize: '11.5px', color: tokens.ink3, mt: '2px' }}>
+									${item.price.toFixed(2)}
+									{!item.inStock ? ` · ${t('catalog.outOfStock')}` : ''}
+								</Typography>
+							</Box>
+							<Box
+								component="button"
+								onClick={() => onRemove(item.productId)}
+								sx={{
+									width: 28,
+									height: 28,
+									borderRadius: 6,
+									border: 'none',
+									background: 'transparent',
+									color: tokens.ink3,
+									cursor: 'pointer',
+									display: 'grid',
+									placeItems: 'center',
+									fontSize: 12,
+									transition: 'background 120ms, color 120ms',
+									'&:hover': {
+										background: tokens.coralSoft,
+										color: tokens.coralInk,
+									},
+								}}
+								aria-label={t('shell.wishlist.remove')}
+							>
+								<FontAwesomeIcon icon={faTrash} />
+							</Box>
+						</Box>
+					))
 				)}
 			</Box>
 
-			{/* foot */}
-			<Box
-				sx={{
-					padding: '12px 18px',
-					borderTop: `1px solid ${tokens.line}`,
-				}}
-			>
-				<Box
-					component={Link}
-					to={ROUTES.ACCOUNT_NOTIFICATIONS}
-					sx={{
-						display: 'inline-flex',
-						alignItems: 'center',
-						gap: '6px',
-						fontSize: 13,
-						fontWeight: 600,
-						color: tokens.accent,
-						textDecoration: 'none',
-						'&:hover': { textDecoration: 'underline' },
-					}}
-				>
-					{t('shell.notif.viewAll')}
-					<FontAwesomeIcon icon={faArrowRight} style={{ width: 13 }} />
-				</Box>
-			</Box>
+			{isAuthenticated && (
+				<>
+					<Divider sx={{ borderColor: tokens.line }} />
+					<Box sx={{ padding: '12px 18px' }}>
+						<Box
+							component={Link}
+							to={ROUTES.WISHLIST}
+							onClick={onClose}
+							sx={{
+								display: 'inline-flex',
+								alignItems: 'center',
+								gap: '6px',
+								fontSize: 13,
+								fontWeight: 600,
+								color: tokens.accent,
+								textDecoration: 'none',
+								'&:hover': { textDecoration: 'underline' },
+							}}
+						>
+							{t('shell.wishlist.viewAll')}
+							<FontAwesomeIcon icon={faArrowRight} style={{ width: 13 }} />
+						</Box>
+					</Box>
+				</>
+			)}
 		</Box>
 	);
 }

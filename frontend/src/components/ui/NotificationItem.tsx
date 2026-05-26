@@ -1,6 +1,7 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, IconButton } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { Icons } from '@/constants/icons';
 import { tokens } from '@/theme';
 
 export type NotificationTone = 'order' | 'message' | 'mod' | 'verif' | 'warn';
@@ -21,9 +22,13 @@ export interface NotificationItemProps {
 	time: string;
 	unread?: boolean;
 	onClick?: () => void;
+	showDelete?: boolean;
+	onDelete?: () => void;
+	deleting?: boolean;
+	deleteLabel?: string;
 }
 
-/** Single notification row for the topbar dropdown (Components.html → Notification item). */
+/** Single notification row for dropdown and notifications page. */
 export function NotificationItem({
 	icon,
 	tone = 'order',
@@ -32,15 +37,20 @@ export function NotificationItem({
 	time,
 	unread = false,
 	onClick,
+	showDelete = false,
+	onDelete,
+	deleting = false,
+	deleteLabel = 'Delete',
 }: NotificationItemProps) {
 	const style = TONE_STYLES[tone];
+	const hasDelete = showDelete && Boolean(onDelete);
 
 	return (
 		<Box
 			onClick={onClick}
 			sx={{
 				display: 'grid',
-				gridTemplateColumns: '32px 1fr auto',
+				gridTemplateColumns: hasDelete ? '32px 1fr auto auto' : '32px 1fr auto',
 				gap: 1.5,
 				alignItems: 'flex-start',
 				px: 2.5,
@@ -84,6 +94,24 @@ export function NotificationItem({
 			</Box>
 			{unread && (
 				<Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'primary.main', mt: 1 }} />
+			)}
+			{hasDelete && (
+				<IconButton
+					size="small"
+					aria-label={deleteLabel}
+					disabled={deleting}
+					onClick={(event) => {
+						event.stopPropagation();
+						onDelete?.();
+					}}
+					sx={{
+						mt: 0.25,
+						color: tokens.ink3,
+						'&:hover': { color: tokens.coralInk, bgcolor: tokens.coralSoft },
+					}}
+				>
+					<FontAwesomeIcon icon={Icons.delete} style={{ width: 13 }} />
+				</IconButton>
 			)}
 		</Box>
 	);

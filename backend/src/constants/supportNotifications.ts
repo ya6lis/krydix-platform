@@ -1,0 +1,9 @@
+export const SUPPORT_NOTIFICATION_ACTION = {
+	NEW_REQUEST: 'NEW_REQUEST',
+	ASSIGNED: 'ASSIGNED',
+	RESOLVED: 'RESOLVED',
+	CLOSED: 'CLOSED',
+} as const;
+
+export type SupportNotificationAction =
+	(typeof SUPPORT_NOTIFICATION_ACTION)[keyof typeof SUPPORT_NOTIFICATION_ACTION];

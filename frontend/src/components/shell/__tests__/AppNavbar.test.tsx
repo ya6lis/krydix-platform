@@ -7,9 +7,11 @@ import { useCartStore } from '@/store/cartStore';
 import {
 	MARK_ALL_NOTIFICATIONS_READ_MUTATION,
 	MARK_NOTIFICATION_READ_MUTATION,
+	DELETE_NOTIFICATION_MUTATION,
 	MY_NOTIFICATIONS_QUERY,
 	UNREAD_NOTIFICATION_COUNT_QUERY,
 } from '@/graphql/operations/notifications';
+import { MY_WISHLIST_QUERY } from '@/graphql/operations/wishlist';
 
 jest.mock('react-i18next', () => ({
 	useTranslation: () => ({ t: (key: string) => key, i18n: { language: 'en' } }),
@@ -29,6 +31,10 @@ jest.mock('@/store/authStore', () => ({
 		selector({ user: { id: 'user-1', role: 'BUYER' } }),
 }));
 
+jest.mock('@/hooks/useWishlist', () => ({
+	useWishlist: () => ({ count: 0 }),
+}));
+
 const apolloMocks = [
 	{
 		request: { query: MY_NOTIFICATIONS_QUERY, variables: { limit: 30 } },
@@ -45,6 +51,14 @@ const apolloMocks = [
 	{
 		request: { query: MARK_NOTIFICATION_READ_MUTATION, variables: { id: 'notif-1' } },
 		result: { data: { markNotificationRead: true } },
+	},
+	{
+		request: { query: DELETE_NOTIFICATION_MUTATION, variables: { id: 'notif-1' } },
+		result: { data: { deleteNotification: true } },
+	},
+	{
+		request: { query: MY_WISHLIST_QUERY },
+		result: { data: { myWishlist: { count: 0, items: [] } } },
 	},
 ];
 
@@ -68,6 +82,18 @@ describe('AppNavbar', () => {
 	it('renders search bar with placeholder i18n key', () => {
 		renderNavbar();
 		expect(screen.getByText('shell.search.placeholder')).toBeInTheDocument();
+	});
+
+	it('renders wishlist icon button', () => {
+		renderNavbar();
+		expect(screen.getByLabelText('shell.wishlist.title')).toBeInTheDocument();
+	});
+
+	it('opens wishlist popover on heart button click', () => {
+		renderNavbar();
+		fireEvent.click(screen.getByLabelText('shell.wishlist.title'));
+		expect(screen.getAllByText('shell.wishlist.empty').length).toBeGreaterThanOrEqual(1);
+		expect(screen.getByText('shell.wishlist.viewAll')).toBeInTheDocument();
 	});
 
 	it('renders cart icon button', () => {

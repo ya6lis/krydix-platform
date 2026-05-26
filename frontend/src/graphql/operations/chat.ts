@@ -37,6 +37,20 @@ const MESSAGE_FIELDS = `
 	}
 `;
 
+const SUPPORT_META_FIELDS = `
+	type
+	subject
+	status
+	createdAt
+	updatedAt
+	requester {
+		${PARTICIPANT_FIELDS}
+	}
+	assignedTo {
+		${PARTICIPANT_FIELDS}
+	}
+`;
+
 export const MY_CONVERSATIONS_QUERY = gql`
 	query MyConversations($language: Language) {
 		myConversations(language: $language) {
@@ -127,5 +141,132 @@ export const MARK_CONVERSATION_READ_MUTATION = gql`
 export const UNREAD_MESSAGE_COUNT_QUERY = gql`
 	query UnreadMessageCount {
 		unreadMessageCount
+	}
+`;
+
+export const MY_SUPPORT_CONVERSATION_QUERY = gql`
+	query MySupportConversation($language: Language) {
+		mySupportConversation(language: $language) {
+			id
+			unreadCount
+			createdAt
+			otherParticipant {
+				${PARTICIPANT_FIELDS}
+			}
+			participants {
+				${PARTICIPANT_FIELDS}
+			}
+			supportMeta {
+				${SUPPORT_META_FIELDS}
+			}
+		}
+	}
+`;
+
+export const MY_SUPPORT_HISTORY_QUERY = gql`
+	query MySupportHistory($language: Language, $limit: Int) {
+		mySupportHistory(language: $language, limit: $limit) {
+			id
+			updatedAt
+			unreadCount
+			otherParticipant {
+				${PARTICIPANT_FIELDS}
+			}
+			lastMessage {
+				${MESSAGE_FIELDS}
+			}
+			supportMeta {
+				${SUPPORT_META_FIELDS}
+			}
+		}
+	}
+`;
+
+export const SUPPORT_QUEUE_QUERY = gql`
+	query SupportQueue($filter: SupportQueueFilter) {
+		supportQueue(filter: $filter) {
+			items {
+				id
+				updatedAt
+				unreadCount
+				otherParticipant {
+					${PARTICIPANT_FIELDS}
+				}
+				lastMessage {
+					${MESSAGE_FIELDS}
+				}
+				supportMeta {
+					${SUPPORT_META_FIELDS}
+				}
+			}
+			total
+			page
+			pageSize
+		}
+	}
+`;
+
+export const SUPPORT_CONVERSATION_QUERY = gql`
+	query SupportConversation($id: ID!, $language: Language) {
+		supportConversation(id: $id, language: $language) {
+			id
+			unreadCount
+			createdAt
+			otherParticipant {
+				${PARTICIPANT_FIELDS}
+			}
+			participants {
+				${PARTICIPANT_FIELDS}
+			}
+			supportMeta {
+				${SUPPORT_META_FIELDS}
+			}
+		}
+	}
+`;
+
+export const CREATE_SUPPORT_CONVERSATION_MUTATION = gql`
+	mutation CreateSupportConversation($input: CreateSupportConversationInput!, $language: Language) {
+		createSupportConversation(input: $input, language: $language) {
+			id
+			unreadCount
+			createdAt
+			otherParticipant {
+				${PARTICIPANT_FIELDS}
+			}
+			supportMeta {
+				${SUPPORT_META_FIELDS}
+			}
+		}
+	}
+`;
+
+export const ASSIGN_SUPPORT_CONVERSATION_MUTATION = gql`
+	mutation AssignSupportConversation($conversationId: ID!, $language: Language) {
+		assignSupportConversation(conversationId: $conversationId, language: $language) {
+			id
+			supportMeta {
+				${SUPPORT_META_FIELDS}
+			}
+		}
+	}
+`;
+
+export const UPDATE_SUPPORT_STATUS_MUTATION = gql`
+	mutation UpdateSupportConversationStatus(
+		$conversationId: ID!
+		$status: SupportChatStatus!
+		$language: Language
+	) {
+		updateSupportConversationStatus(
+			conversationId: $conversationId
+			status: $status
+			language: $language
+		) {
+			id
+			supportMeta {
+				${SUPPORT_META_FIELDS}
+			}
+		}
 	}
 `;

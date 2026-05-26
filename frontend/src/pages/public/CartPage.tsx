@@ -4,7 +4,7 @@ import { useMutation } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
 import { Box, Typography, IconButton, Avatar } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { AppButton, AppInput, EmptyState } from '@/components/ui';
+import { AppButton, AppInput, EmptyState, AppImage } from '@/components/ui';
 import { APPLY_PROMO_CODE_MUTATION } from '@/graphql/operations/cart';
 import { useCartStore, type CartItem } from '@/store/cartStore';
 import { useAuth } from '@/hooks/useAuth';
@@ -99,8 +99,7 @@ function LineItem({ item }: { item: CartItem }) {
 				}}
 			>
 				{item.imageUrl ? (
-					<Box
-						component="img"
+					<AppImage
 						src={item.imageUrl}
 						alt={item.name}
 						sx={{ width: '100%', height: '100%', objectFit: 'cover' }}

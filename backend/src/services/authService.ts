@@ -64,6 +64,12 @@ export async function login(email: string, password: string) {
 		});
 	}
 
+	if (user.deletedAt) {
+		throw new GraphQLError('Account is closed', {
+			extensions: { code: 'ACCOUNT_CLOSED' },
+		});
+	}
+
 	const accessToken = signAccessToken({
 		userId: user.id,
 		role: user.role as unknown as Role,
@@ -86,7 +92,7 @@ export async function refreshToken(token: string) {
 	await tokenRepo.revokeRefreshToken(stored.id);
 
 	const user = await userRepo.findUserById(stored.userId);
-	if (!user || !user.isActive) {
+	if (!user || !user.isActive || user.deletedAt) {
 		throw new GraphQLError('User not found', { extensions: { code: 'USER_NOT_FOUND' } });
 	}
 
@@ -134,5 +140,7 @@ export async function logout(refreshToken: string) {
 }
 
 export async function getMe(userId: string) {
-	return userRepo.findUserById(userId);
+	const user = await userRepo.findUserById(userId);
+	if (!user || user.deletedAt) return null;
+	return user;
 }

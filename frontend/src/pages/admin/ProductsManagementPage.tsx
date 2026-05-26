@@ -21,6 +21,7 @@ import {
 	ConfirmDialog,
 	StatusBadge,
 	useAppToast,
+	AppImage,
 } from '@/components/ui';
 import {
 	ADMIN_PRODUCT_STATS_QUERY,
@@ -262,8 +263,7 @@ export default function ProductsManagementPage() {
 						}}
 					>
 						{row.imageUrl ? (
-							<Box
-								component="img"
+							<AppImage
 								src={row.imageUrl}
 								alt={row.title}
 								sx={{ width: '100%', height: '100%', objectFit: 'cover' }}

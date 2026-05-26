@@ -4,14 +4,15 @@ import { useQuery } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
 import { Box, Typography, Stack } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { AppLoader, EmptyState, AppCard, AppTabs, AppButton, useAppToast } from '@/components/ui';
+import { AppLoader, EmptyState, AppCard, AppTabs, AppButton, AppImage, useAppToast } from '@/components/ui';
 import { ProductReviewsSection } from '@/components/reviews/ProductReviewsSection';
 import { PRODUCT_QUERY } from '@/graphql/operations/catalog';
 import { Icons } from '@/constants/icons';
 import { ROUTES } from '@/constants/routes';
 import { tokens } from '@/theme';
 import { useCartStore } from '@/store/cartStore';
-import { useAuthStore } from '@/store/authStore';
+import { useWishlist } from '@/hooks/useWishlist';
+import { useAuth } from '@/hooks/useAuth';
 import type { CatalogProduct, CatalogProductVariant } from '@/types/catalog';
 
 // ─── constants ────────────────────────────────────────────────────────────────
@@ -104,15 +105,16 @@ export default function ProductPage() {
 	const language = i18n.language === 'uk' ? 'UK' : 'EN';
 	const { slug = '' } = useParams();
 	const navigate = useNavigate();
-	const user = useAuthStore((s) => s.user);
+	const { user, canBuy, canUseWishlist } = useAuth();
 	const addItem = useCartStore((s) => s.addItem);
 	const cartItems = useCartStore((s) => s.items);
 	const { showToast } = useAppToast();
 
+	const { isWishlisted, toggleWishlist, toggling } = useWishlist();
+
 	const [activeImage, setActiveImage] = useState(0);
 	const [tab, setTab] = useState('description');
 	const [qty, setQty] = useState(1);
-	const [wishlisted, setWishlisted] = useState(false);
 	const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
 	const [isVariantManuallySelected, setIsVariantManuallySelected] = useState(false);
 	const initializedRef = useRef(false);
@@ -145,10 +147,12 @@ export default function ProductPage() {
 	}
 
 	const images = product.media;
+	const imageUrls = images.map((media) => media.url);
 	const optionGroups = buildOptionGroups(product.variants);
 	const selectedVariant = findVariant(product.variants, selectedOptions);
 	const price = selectedVariant?.price ?? product.basePrice;
 	const stock = selectedVariant?.stock ?? product.totalStock;
+	const wishlisted = isWishlisted(product.id);
 
 	const selectOption = (key: string, value: string) => {
 		setIsVariantManuallySelected(true);
@@ -283,10 +287,10 @@ export default function ProductPage() {
 										borderColor: index === activeImage ? tokens.ink1 : tokens.line,
 									}}
 								>
-									<Box
-										component="img"
+									<AppImage
 										src={media.url}
-										alt=""
+										gallery={imageUrls}
+										galleryIndex={index}
 										sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
 									/>
 								</Box>
@@ -323,10 +327,11 @@ export default function ProductPage() {
 						}}
 					>
 						{images[activeImage] ? (
-							<Box
-								component="img"
+							<AppImage
 								src={images[activeImage].url}
 								alt={product.title}
+								gallery={imageUrls}
+								galleryIndex={activeImage}
 								sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
 							/>
 						) : (
@@ -686,9 +691,9 @@ export default function ProductPage() {
 						);
 					})}
 
-					{/* Buy row */}
+					{(canBuy || canUseWishlist) && (
 					<Stack direction="row" alignItems="center" gap={1.25} sx={{ mt: 1, mb: 2.75 }}>
-						{/* Qty control */}
+						{canBuy && (
 						<Box
 							sx={{
 								display: 'inline-flex',
@@ -759,8 +764,9 @@ export default function ProductPage() {
 								+
 							</Box>
 						</Box>
+						)}
 
-						{/* Add to cart */}
+						{canBuy && (
 						<AppButton
 							variant="contained"
 							disabled={stock === 0}
@@ -770,12 +776,14 @@ export default function ProductPage() {
 						>
 							{t('product.addToCart')} — {formatPrice(price)}
 						</AppButton>
+						)}
 
-						{/* Wishlist */}
+						{canUseWishlist && (
 						<AppButton
 							variant="outlined"
 							aria-label={t(wishlisted ? 'product.removeFromWishlist' : 'product.addToWishlist')}
-							onClick={() => setWishlisted((w) => !w)}
+							onClick={() => void toggleWishlist(product.id, product.title)}
+							disabled={toggling}
 							sx={{
 								minWidth: 0,
 								px: 1.625,
@@ -793,7 +801,9 @@ export default function ProductPage() {
 								style={{ fontSize: 16 }}
 							/>
 						</AppButton>
+						)}
 					</Stack>
+					)}
 
 					{/* Trust — 3-column grid */}
 					<Box

@@ -14,6 +14,7 @@ import {
 	ConfirmDialog,
 	AppCard,
 	useAppToast,
+	AppImage,
 } from '@/components/ui';
 import { Icons } from '@/constants/icons';
 import { tokens } from '@/theme';
@@ -375,8 +376,7 @@ export default function BuyerOrderDetailPage() {
 											undefined;
 										if (imageUrl) {
 											return (
-												<Box
-													component="img"
+												<AppImage
 													src={imageUrl}
 													alt={item.productTitle}
 													sx={{

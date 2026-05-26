@@ -6,7 +6,7 @@ import { Icons } from '@/constants/icons';
 import { ROUTES } from '@/constants/routes';
 import styles from './AccountSettingsNav.module.scss';
 
-export type AccountSettingsSection = 'profile' | 'notifications' | 'security' | 'language';
+export type AccountSettingsSection = 'profile' | 'security' | 'danger';
 
 const ACCOUNT_ITEMS: Array<{
 	id: AccountSettingsSection;
@@ -14,12 +14,11 @@ const ACCOUNT_ITEMS: Array<{
 	icon: typeof Icons.user;
 	href: string;
 }> = [
-	{ id: 'profile', labelKey: 'account.settings.nav.profile', icon: Icons.user, href: ROUTES.ACCOUNT_PROFILE },
 	{
-		id: 'notifications',
-		labelKey: 'account.settings.nav.notifications',
-		icon: Icons.bell,
-		href: `${ROUTES.ACCOUNT_SETTINGS}#notifications`,
+		id: 'profile',
+		labelKey: 'account.settings.nav.profile',
+		icon: Icons.user,
+		href: `${ROUTES.ACCOUNT_SETTINGS}#profile`,
 	},
 	{
 		id: 'security',
@@ -28,10 +27,10 @@ const ACCOUNT_ITEMS: Array<{
 		href: `${ROUTES.ACCOUNT_SETTINGS}#security`,
 	},
 	{
-		id: 'language',
-		labelKey: 'account.settings.nav.language',
-		icon: Icons.globe,
-		href: `${ROUTES.ACCOUNT_SETTINGS}#language`,
+		id: 'danger',
+		labelKey: 'account.settings.nav.closeAccount',
+		icon: Icons.ban,
+		href: `${ROUTES.ACCOUNT_SETTINGS}#danger`,
 	},
 ];
 
@@ -46,16 +45,16 @@ export function AccountSettingsNav({ active }: AccountSettingsNavProps) {
 		<nav className={styles.nav} data-testid="account-settings-nav">
 			<div className={styles.groupLabel}>{t('account.settings.nav.account')}</div>
 			{ACCOUNT_ITEMS.map((item) => (
-					<Link
-						key={item.id}
-						to={item.href}
-						className={`${styles.link} ${item.id === active ? styles.linkActive : ''}`}
-						data-testid={`account-nav-${item.id}`}
-					>
-						<FontAwesomeIcon icon={item.icon} className={styles.icon} />
-						{t(item.labelKey)}
-					</Link>
-				))}
+				<Link
+					key={item.id}
+					to={item.href}
+					className={`${styles.link} ${item.id === active ? styles.linkActive : ''}`}
+					data-testid={`account-nav-${item.id}`}
+				>
+					<FontAwesomeIcon icon={item.icon} className={styles.icon} />
+					{t(item.labelKey)}
+				</Link>
+			))}
 		</nav>
 	);
 }

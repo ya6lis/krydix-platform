@@ -19,6 +19,7 @@ const buyerNav: NavSection[] = [
 	{
 		titleKey: 'nav.sections.account',
 		items: [
+			{ labelKey: 'nav.dashboard', icon: Icons.chart, path: ROUTES.ACCOUNT },
 			{ labelKey: 'nav.orders', icon: Icons.order, path: ROUTES.ACCOUNT_ORDERS },
 			{ labelKey: 'nav.profile', icon: Icons.user, path: ROUTES.ACCOUNT_PROFILE },
 			{ labelKey: 'nav.reviews', icon: Icons.star, path: ROUTES.ACCOUNT_REVIEWS },
@@ -45,6 +46,7 @@ const moderatorNav: NavSection[] = [
 	{
 		titleKey: 'nav.sections.moderation',
 		items: [
+			{ labelKey: 'nav.dashboard', icon: Icons.chart, path: ROUTES.MODERATOR },
 			{ labelKey: 'nav.productModeration', icon: Icons.product, path: ROUTES.MODERATOR_PRODUCT_MODERATION },
 			{ labelKey: 'nav.allProducts', icon: Icons.product, path: ROUTES.MODERATOR_ALL_PRODUCTS },
 			{ labelKey: 'nav.allReviews', icon: Icons.star, path: ROUTES.MODERATOR_ALL_REVIEWS },
@@ -52,6 +54,7 @@ const moderatorNav: NavSection[] = [
 			{ labelKey: 'nav.reviewModeration', icon: Icons.star, path: ROUTES.MODERATOR_REVIEW_MODERATION },
 			{ labelKey: 'nav.users', icon: Icons.users, path: ROUTES.MODERATOR_USERS },
 			{ labelKey: 'nav.verification', icon: Icons.shield, path: ROUTES.MODERATOR_VERIFICATION },
+			{ labelKey: 'nav.userSupport', icon: Icons.chat, path: ROUTES.MODERATOR_SUPPORT },
 		],
 	},
 ];
@@ -60,11 +63,15 @@ const adminNav: NavSection[] = [
 	{
 		titleKey: 'nav.sections.management',
 		items: [
+			{ labelKey: 'nav.dashboard', icon: Icons.chart, path: ROUTES.ADMIN },
 			{ labelKey: 'nav.users', icon: Icons.user, path: ROUTES.ADMIN_USERS },
 			{ labelKey: 'nav.categories', icon: Icons.category, path: ROUTES.ADMIN_CATEGORIES },
 			{ labelKey: 'nav.products', icon: Icons.product, path: ROUTES.ADMIN_PRODUCTS },
 			{ labelKey: 'nav.allReviews', icon: Icons.star, path: ROUTES.ADMIN_REVIEWS },
 			{ labelKey: 'nav.complaints', icon: Icons.flag, path: ROUTES.ADMIN_COMPLAINTS },
+			{ labelKey: 'nav.feedback', icon: Icons.chat, path: ROUTES.ADMIN_FEEDBACK },
+			{ labelKey: 'nav.userSupport', icon: Icons.chat, path: ROUTES.MODERATOR_SUPPORT },
+			{ labelKey: 'nav.releaseNotes', icon: Icons.bolt, path: ROUTES.ADMIN_RELEASE_NOTES },
 			{ labelKey: 'nav.reviews', icon: Icons.star, path: ROUTES.ADMIN_REVIEWS },
 		],
 	},

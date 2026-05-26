@@ -280,6 +280,7 @@ function buildFilterOptions(
 }
 
 export async function getAuditLogs(input: {
+	actorId?: string;
 	actorRoles?: repo.AuditActorRoleFilter[];
 	actionKeys?: AuditActionKeyValue[];
 	datePreset?: repo.AuditDateRangePreset;
@@ -293,6 +294,7 @@ export async function getAuditLogs(input: {
 
 	const [data, countRows] = await Promise.all([
 		repo.findAuditLogs({
+			actorId: input.actorId,
 			actorRoles: input.actorRoles,
 			actionKeys: input.actionKeys,
 			datePreset: input.datePreset,

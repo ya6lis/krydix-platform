@@ -1,3 +1,5 @@
+import type { ChatType, SupportChatStatus } from '@/constants/enums';
+
 export interface ConversationParticipant {
 	id: string;
 	displayName: string;
@@ -33,22 +35,34 @@ export interface ChatMessage {
 	sender: ConversationParticipant;
 }
 
+export interface SupportChatMeta {
+	type: ChatType;
+	subject: string | null;
+	status: SupportChatStatus | null;
+	requester: ConversationParticipant | null;
+	assignedTo: ConversationParticipant | null;
+	createdAt: string;
+	updatedAt: string;
+}
+
 export interface ConversationSummary {
 	id: string;
 	product: ConversationProduct | null;
-	otherParticipant: ConversationParticipant;
+	otherParticipant: ConversationParticipant | null;
 	lastMessage: ChatMessage | null;
 	unreadCount: number;
 	updatedAt: string;
+	supportMeta?: SupportChatMeta | null;
 }
 
 export interface ConversationDetail {
 	id: string;
 	product: ConversationProduct | null;
 	participants: ConversationParticipant[];
-	otherParticipant: ConversationParticipant;
+	otherParticipant: ConversationParticipant | null;
 	unreadCount: number;
 	createdAt: string;
+	supportMeta?: SupportChatMeta | null;
 }
 
 export interface MessageListResult {

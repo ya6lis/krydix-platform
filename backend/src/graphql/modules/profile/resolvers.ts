@@ -1,10 +1,12 @@
 import { GraphQLError } from 'graphql';
 import type { GraphQLContext } from '../../../types/context.js';
 import * as profileService from '../../../services/profileService.js';
+import * as accountService from '../../../services/accountService.js';
 import {
 	UpdateProfileSchema,
 	UploadProfileAvatarSchema,
 } from '../../../validators/profileValidators.js';
+import { CloseAccountSchema } from '../../../validators/accountValidators.js';
 
 function requireAuth(ctx: GraphQLContext) {
 	if (!ctx.user) {
@@ -59,6 +61,16 @@ export const profileResolvers = {
 		removeProfileAvatar: async (_: unknown, __: unknown, ctx: GraphQLContext) => {
 			const user = requireAuth(ctx);
 			return profileService.removeProfileAvatar(user.id);
+		},
+
+		closeAccount: async (
+			_: unknown,
+			{ password }: { password: string },
+			ctx: GraphQLContext,
+		) => {
+			const user = requireAuth(ctx);
+			const data = parseInput(CloseAccountSchema, { password });
+			return accountService.closeAccount(user.id, data.password);
 		},
 	},
 };

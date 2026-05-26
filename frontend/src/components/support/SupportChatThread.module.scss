@@ -1,0 +1,217 @@
+$bg: #f4f6f8;
+$surface: #ffffff;
+$ink1: #1c252e;
+$ink2: #455463;
+$ink3: #8794a1;
+$line: #e1e5ea;
+$accent: #7635dc;
+$accentSoft: #f1eafc;
+$accentInk: #200a69;
+
+.thread {
+	display: flex;
+	flex-direction: column;
+	background: $surface;
+	border: 1px solid $line;
+	border-radius: 16px;
+	overflow: hidden;
+}
+
+.head {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 12px 16px;
+	border-bottom: 1px solid $line;
+	background: $surface;
+}
+
+.headInfo {
+	flex: 1;
+	min-width: 0;
+}
+
+.headName {
+	font-size: 15px;
+	font-weight: 700;
+	color: $ink1;
+}
+
+.headSub {
+	margin-top: 2px;
+	font-size: 12.5px;
+	color: $ink3;
+}
+
+.subjectBadge {
+	font-size: 11px;
+	font-weight: 700;
+	padding: 4px 10px;
+	border-radius: 999px;
+	background: $accentSoft;
+	color: $accentInk;
+	max-width: 180px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.waitingBanner {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 16px;
+	font-size: 12px;
+	color: $ink2;
+	background: #fff8e6;
+	border-bottom: 1px solid #ffe8a3;
+}
+
+.messages {
+	flex: 1 1 auto;
+	overflow-y: auto;
+	padding: 12px 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	min-height: 380px;
+	max-height: 480px;
+}
+
+.daySep {
+	text-align: center;
+	font-size: 11px;
+	font-weight: 700;
+	color: $ink3;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	margin: 8px 0 12px;
+}
+
+.messageRow {
+	display: flex;
+	gap: 10px;
+	align-items: flex-start;
+}
+
+.messageRowMine {
+	flex-direction: row-reverse;
+}
+
+.messageStack {
+	max-width: min(72%, 520px);
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.messageRowMine .messageStack {
+	align-items: flex-end;
+}
+
+.messageBubble {
+	padding: 8px 12px;
+	border-radius: 12px;
+	font-size: 13.5px;
+	line-height: 1.4;
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.messageBubbleOther {
+	background: $bg;
+	color: $ink1;
+	border-top-left-radius: 4px;
+}
+
+.messageBubbleMine {
+	background: $accentInk;
+	color: #fff;
+	border-top-right-radius: 4px;
+}
+
+.messageMeta {
+	font-size: 11px;
+	color: $ink3;
+}
+
+.avatar,
+.avatarPlaceholder {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	flex-shrink: 0;
+	display: grid;
+	place-items: center;
+	background: $accentSoft;
+	color: $accentInk;
+	font-size: 11px;
+	font-weight: 700;
+	overflow: hidden;
+}
+
+.avatarPlaceholder {
+	background: $bg;
+	color: $ink3;
+}
+
+.avatarImage {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.composer {
+	display: flex;
+	gap: 10px;
+	padding: 10px 16px 12px;
+	border-top: 1px solid $line;
+	align-items: center;
+}
+
+.inputBox {
+	flex: 1;
+	min-width: 0;
+}
+
+.inputBox textarea {
+	width: 100%;
+	resize: none;
+	border: 1px solid $line;
+	border-radius: 10px;
+	padding: 8px 12px;
+	font: inherit;
+	font-size: 13.5px;
+	color: $ink1;
+	background: $bg;
+	min-height: 38px;
+	max-height: 96px;
+	line-height: 1.35;
+}
+
+.inputBox textarea:focus {
+	outline: none;
+	border-color: $accent;
+}
+
+.composerHint {
+	display: none;
+}
+
+.sendButton {
+	width: 38px;
+	height: 38px;
+	flex-shrink: 0;
+	border: none;
+	border-radius: 10px;
+	background: $accent;
+	color: #fff;
+	cursor: pointer;
+	display: grid;
+	place-items: center;
+}
+
+.sendButton:disabled {
+	opacity: 0.45;
+	cursor: not-allowed;
+}

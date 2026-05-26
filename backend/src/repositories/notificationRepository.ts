@@ -92,11 +92,22 @@ export async function markConversationNotificationsRead(
 		where: {
 			userId,
 			isRead: false,
-			event: 'NEW_MESSAGE',
-			metadata: {
-				path: ['conversationId'],
-				equals: conversationId,
-			},
+			OR: [
+				{
+					event: 'NEW_MESSAGE',
+					metadata: {
+						path: ['conversationId'],
+						equals: conversationId,
+					},
+				},
+				{
+					event: 'SUPPORT_UPDATE',
+					metadata: {
+						path: ['conversationId'],
+						equals: conversationId,
+					},
+				},
+			],
 		},
 		data: { isRead: true },
 	});
@@ -111,4 +122,18 @@ export async function isNotificationEnabled(
 		where: { userId_event: { userId, event } },
 	});
 	return pref?.enabled ?? true;
+}
+
+export async function deleteNotification(id: string, userId: string): Promise<boolean> {
+	const result = await prisma.notification.deleteMany({
+		where: { id, userId },
+	});
+	return result.count > 0;
+}
+
+export async function deleteReadNotifications(userId: string): Promise<number> {
+	const result = await prisma.notification.deleteMany({
+		where: { userId, isRead: true },
+	});
+	return result.count;
 }

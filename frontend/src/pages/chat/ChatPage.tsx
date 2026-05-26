@@ -8,7 +8,7 @@ import { Icons } from '@/constants/icons';
 import { ROUTES } from '@/constants/routes';
 import { Role } from '@/constants/enums';
 import { CHAT_FILTER, type ChatFilter } from '@/constants/chatEvents';
-import { AppLoader, AppMenu, ConfirmDialog } from '@/components/ui';
+import { AppLoader, AppMenu, ConfirmDialog, AppImage } from '@/components/ui';
 import { useAuthStore } from '@/store/authStore';
 import { useChatSocket, type ConversationUpdatedPayload, type TypingPayload } from '@/hooks/useChatSocket';
 import {
@@ -47,6 +47,7 @@ const MESSAGE_PAGE_SIZE = 100;
 const TYPING_CLEAR_MS = 3000;
 
 function participantProfileRoute(participant: ConversationSummary['otherParticipant']): string | null {
+	if (!participant) return null;
 	if (participant.role === Role.SELLER) {
 		return ROUTES.SELLER_PUBLIC(participant.id);
 	}
@@ -58,6 +59,7 @@ function participantPresence(
 	t: (key: string, opts?: Record<string, unknown>) => string,
 	locale: string,
 ) {
+	if (!participant) return '';
 	if (participant.isOnline) {
 		return t('chat.onlineNow');
 	}
@@ -87,6 +89,7 @@ function MessageStatus({ isDelivered, isRead }: { isDelivered: boolean; isRead: 
 }
 
 function participantLabel(participant: ConversationSummary['otherParticipant'], t: (k: string) => string) {
+	if (!participant) return '';
 	if (participant.role === Role.MODERATOR) {
 		return `${participant.displayName} · ${t('chat.roleModerator')}`;
 	}
@@ -206,6 +209,7 @@ export default function ChatPage() {
 	const filteredConversations = useMemo(() => {
 		const query = search.trim().toLowerCase();
 		return conversations.filter((item) => {
+			if (!item.otherParticipant) return false;
 			if (filter === CHAT_FILTER.UNREAD && item.unreadCount === 0) return false;
 			if (filter === CHAT_FILTER.BUYERS && item.otherParticipant.role !== Role.BUYER) return false;
 			if (filter === CHAT_FILTER.MODS && item.otherParticipant.role !== Role.MODERATOR) return false;
@@ -218,14 +222,22 @@ export default function ChatPage() {
 				.join(' ')
 				.toLowerCase();
 			return haystack.includes(query);
-		});
+		}) as Array<
+			ConversationSummary & { otherParticipant: NonNullable<ConversationSummary['otherParticipant']> }
+		>;
 	}, [conversations, filter, search]);
+
+	const activeOther = activeConversation?.otherParticipant ?? null;
 
 	const filterCounts = useMemo(
 		() => ({
 			all: conversations.length,
-			buyers: conversations.filter((item) => item.otherParticipant.role === Role.BUYER).length,
-			mods: conversations.filter((item) => item.otherParticipant.role === Role.MODERATOR).length,
+			buyers: conversations.filter(
+				(item) => item.otherParticipant?.role === Role.BUYER,
+			).length,
+			mods: conversations.filter(
+				(item) => item.otherParticipant?.role === Role.MODERATOR,
+			).length,
 			unread: conversations.filter((item) => item.unreadCount > 0).length,
 		}),
 		[conversations],
@@ -373,7 +385,7 @@ export default function ChatPage() {
 
 	const openParticipantProfile = () => {
 		if (!activeConversation) return;
-		const route = participantProfileRoute(activeConversation.otherParticipant);
+		const route = participantProfileRoute(activeOther);
 		if (route) navigate(route);
 	};
 
@@ -465,28 +477,28 @@ export default function ChatPage() {
 				</aside>
 
 				<section className={styles.conv}>
-					{!selectedId || !activeConversation ? (
+					{!selectedId || !activeConversation || !activeOther ? (
 						<div className={styles.emptyState}>{t('chat.selectConversation')}</div>
 					) : (
 						<>
 							<div className={styles.convHead}>
 								<Avatar
-									url={activeConversation.otherParticipant.avatarUrl}
-									initials={activeConversation.otherParticipant.initials}
+									url={activeOther.avatarUrl}
+									initials={activeOther.initials}
 									className={styles.avatarSm}
-									online={activeConversation.otherParticipant.isOnline}
+									online={activeOther.isOnline}
 								/>
 								<div className={styles.convHeadInfo}>
 									<div className={styles.convHeadName}>
-										{activeConversation.otherParticipant.displayName}
+										{activeOther.displayName}
 									</div>
 									<div className={styles.convHeadSub}>
-										<span className={activeConversation.otherParticipant.isOnline ? styles.onlineLabel : ''}>
-											{participantPresence(activeConversation.otherParticipant, t, locale)}
+										<span className={activeOther.isOnline ? styles.onlineLabel : ''}>
+											{participantPresence(activeOther, t, locale)}
 										</span>
 										<span>
-											{t(`chat.role.${activeConversation.otherParticipant.role.toLowerCase()}`, {
-												defaultValue: activeConversation.otherParticipant.role,
+											{t(`chat.role.${activeOther.role.toLowerCase()}`, {
+												defaultValue: activeOther.role,
 											})}
 										</span>
 									</div>
@@ -518,7 +530,7 @@ export default function ChatPage() {
 								<div className={styles.convContext} data-testid="chat-product-context">
 									<div className={styles.convContextThumb}>
 										{activeConversation.product.imageUrl ? (
-											<img src={activeConversation.product.imageUrl} alt="" />
+											<AppImage src={activeConversation.product.imageUrl} alt="" />
 										) : null}
 									</div>
 									<div>
@@ -592,7 +604,7 @@ export default function ChatPage() {
 											<i />
 											<i />
 										</div>
-										{t('chat.typing', { name: activeConversation.otherParticipant.displayName })}
+										{t('chat.typing', { name: activeOther.displayName })}
 									</div>
 								) : null}
 							</div>
@@ -629,30 +641,30 @@ export default function ChatPage() {
 				</section>
 
 				<aside className={styles.sideInfo} data-testid="chat-side-info">
-					{activeConversation ? (
+					{activeConversation && activeOther ? (
 						<>
 							<button
 								type="button"
 								className={styles.person}
 								onClick={openParticipantProfile}
-								disabled={!participantProfileRoute(activeConversation.otherParticipant)}
+								disabled={!participantProfileRoute(activeOther)}
 								data-testid="chat-person-profile"
 							>
 								<Avatar
-									url={activeConversation.otherParticipant.avatarUrl}
-									initials={activeConversation.otherParticipant.initials}
+									url={activeOther.avatarUrl}
+									initials={activeOther.initials}
 									className={styles.avatarLg}
 								/>
-								<div className={styles.personName}>{activeConversation.otherParticipant.displayName}</div>
+								<div className={styles.personName}>{activeOther.displayName}</div>
 								<div className={styles.personPresence}>
-									{participantPresence(activeConversation.otherParticipant, t, locale)}
+									{participantPresence(activeOther, t, locale)}
 								</div>
 								<div className={styles.personRole}>
-									{t(`chat.role.${activeConversation.otherParticipant.role.toLowerCase()}`, {
-										defaultValue: activeConversation.otherParticipant.role,
+									{t(`chat.role.${activeOther.role.toLowerCase()}`, {
+										defaultValue: activeOther.role,
 									})}{' '}
 									· {t('chat.memberSince', {
-										date: formatMemberSince(activeConversation.otherParticipant.memberSince, locale),
+										date: formatMemberSince(activeOther.memberSince, locale),
 									})}
 								</div>
 							</button>
@@ -662,18 +674,18 @@ export default function ChatPage() {
 								<div className={styles.kv}>
 									<div className={styles.kvRow}>
 										<span className={styles.kvKey}>{t('chat.email')}</span>
-										<span className={styles.kvValue}>{activeConversation.otherParticipant.email}</span>
+										<span className={styles.kvValue}>{activeOther.email}</span>
 									</div>
 									{formatLocation(
-										activeConversation.otherParticipant.city,
-										activeConversation.otherParticipant.country,
+										activeOther.city,
+										activeOther.country,
 									) ? (
 										<div className={styles.kvRow}>
 											<span className={styles.kvKey}>{t('chat.location')}</span>
 											<span className={styles.kvValue}>
 												{formatLocation(
-													activeConversation.otherParticipant.city,
-													activeConversation.otherParticipant.country,
+													activeOther.city,
+													activeOther.country,
 												)}
 											</span>
 										</div>

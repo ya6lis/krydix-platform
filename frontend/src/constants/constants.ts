@@ -9,6 +9,7 @@ export const RATING_MIN = 1;
 export const RATING_MAX = 5;
 
 export const GUEST_CART_STORAGE_KEY = 'krydix_guest_cart';
+export const LAST_SEEN_RELEASE_NOTE_KEY = 'krydix_last_seen_release_at';
 export const AUTH_ACCESS_TOKEN_KEY = 'krydix_access_token';
 export const AUTH_REFRESH_TOKEN_KEY = 'krydix_refresh_token';
 

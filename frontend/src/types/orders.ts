@@ -129,3 +129,32 @@ export interface MyOrdersFilter {
 	page?: number;
 	pageSize?: number;
 }
+
+export interface SellerOrderBuyer {
+	id: string;
+	name: string;
+	email: string;
+	phone?: string | null;
+}
+
+export interface SellerOrder {
+	__typename?: string;
+	id: string;
+	status: OrderStatus;
+	sellerSubtotal: number;
+	itemCount: number;
+	buyer: SellerOrderBuyer;
+	items: OrderItem[];
+	payment?: PaymentRecord | null;
+	delivery?: DeliveryRecord | null;
+	returnRequest?: ReturnRequest | null;
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface PaginatedSellerOrders {
+	items: SellerOrder[];
+	total: number;
+	page: number;
+	pageSize: number;
+}

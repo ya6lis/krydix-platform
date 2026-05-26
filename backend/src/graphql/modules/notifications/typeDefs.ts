@@ -7,6 +7,7 @@ export const notificationsTypeDefs = `#graphql
 		VERIFICATION_RESULT
 		COMPLAINT_UPDATE
 		REVIEW_RECEIVED
+		SUPPORT_UPDATE
 	}
 
 	type Notification {
@@ -30,5 +31,7 @@ export const notificationsTypeDefs = `#graphql
 		markAllNotificationsRead: Boolean!
 		markOrderNotificationsRead(orderId: ID!): Boolean!
 		markConversationNotificationsRead(conversationId: ID!): Boolean!
+		deleteNotification(id: ID!): Boolean!
+		deleteReadNotifications: Int!
 	}
 `;

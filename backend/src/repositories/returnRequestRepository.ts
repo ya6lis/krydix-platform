@@ -50,6 +50,15 @@ export async function findReturnRequestByOrderId(
 	});
 }
 
+export async function findReturnRequestByOrderIdAndSeller(
+	orderId: string,
+	sellerId: string
+): Promise<ReturnRequestRecord | null> {
+	return prisma.returnRequest.findFirst({
+		where: { orderId, sellerId },
+	});
+}
+
 export async function updateReturnRequestStatus(
 	orderId: string,
 	status: ReturnRequestStatus,

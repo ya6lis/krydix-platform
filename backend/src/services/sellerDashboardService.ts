@@ -75,6 +75,14 @@ export async function getSellerTopProducts(sellerId: string, limit = 10) {
 	});
 }
 
+export async function getSellerDashboardSummary(sellerId: string) {
+	const [pendingModerationCount, unrepliedReviewCount] = await Promise.all([
+		repo.getSellerPendingModerationCount(sellerId),
+		repo.getSellerUnrepliedReviewCount(sellerId),
+	]);
+	return { pendingModerationCount, unrepliedReviewCount };
+}
+
 export async function getSellerLowStockAlerts(sellerId: string, threshold = 5) {
 	const variants = await repo.getLowStockVariants(sellerId, threshold);
 	return variants.map((v) => {

@@ -6,7 +6,7 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { Icons } from '@/constants/icons';
 import { tokens } from '@/theme';
 import { ROUTES } from '@/constants/routes';
-import { AppAvatar, AppButton } from '@/components/ui';
+import { AppAvatar, AppButton, AppImage } from '@/components/ui';
 import { StarRating } from '@/components/reviews/StarRating';
 import type { ModerationReviewItem } from '@/graphql/operations/reviewModeration';
 
@@ -100,10 +100,8 @@ export function ModerationReviewCard({
 					}}
 				>
 					{review.targetImageUrl && (
-						<Box
-							component="img"
+						<AppImage
 							src={review.targetImageUrl}
-							alt=""
 							sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
 						/>
 					)}
@@ -132,11 +130,11 @@ export function ModerationReviewCard({
 			{review.photos.length > 0 && (
 				<Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
 					{review.photos.map((url, i) => (
-						<Box
-							key={i}
-							component="img"
+						<AppImage
+							key={url}
 							src={url}
-							alt=""
+							gallery={review.photos}
+							galleryIndex={i}
 							sx={{
 								width: 60,
 								height: 60,

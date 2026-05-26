@@ -1,6 +1,30 @@
 import { gql } from '@apollo/client';
 import type { AuditActionKeyValue, AuditActorRoleFilter, AuditDateRangePreset } from '@/constants/auditActionKeys';
 
+const AUDIT_LOG_FIELDS = `
+	id
+	eventRef
+	actionKey
+	actionVariant
+	rawAction
+	description
+	note
+	metadata
+	targetType
+	targetId
+	targetLabel
+	targetPath
+	createdAt
+	actor {
+		id
+		displayName
+		initials
+		avatarUrl
+		email
+		role
+	}
+`;
+
 export const AUDIT_LOGS_QUERY = gql`
 	query AuditLogs($input: AuditLogsInput) {
 		auditLogs(input: $input) {
@@ -16,27 +40,18 @@ export const AUDIT_LOGS_QUERY = gql`
 				count
 			}
 			items {
-				id
-				eventRef
-				actionKey
-				actionVariant
-				rawAction
-				description
-				note
-				metadata
-				targetType
-				targetId
-				targetLabel
-				targetPath
-				createdAt
-				actor {
-					id
-					displayName
-					initials
-					avatarUrl
-					email
-					role
-				}
+				${AUDIT_LOG_FIELDS}
+			}
+		}
+	}
+`;
+
+export const MY_AUDIT_LOGS_QUERY = gql`
+	query MyAuditLogs($limit: Int) {
+		myAuditLogs(limit: $limit) {
+			total
+			items {
+				${AUDIT_LOG_FIELDS}
 			}
 		}
 	}
@@ -81,6 +96,10 @@ export interface AuditLogsData {
 	auditLogs: AuditLogList;
 }
 
+export interface MyAuditLogsData {
+	myAuditLogs: Pick<AuditLogList, 'items' | 'total'>;
+}
+
 export interface AuditLogsInput {
 	actorRoles?: AuditActorRoleFilter[];
 	actionKeys?: AuditActionKeyValue[];
@@ -93,4 +112,8 @@ export interface AuditLogsInput {
 
 export interface AuditLogsVars {
 	input?: AuditLogsInput;
+}
+
+export interface MyAuditLogsVars {
+	limit?: number;
 }

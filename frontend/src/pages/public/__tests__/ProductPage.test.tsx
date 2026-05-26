@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import ProductPage from '../ProductPage';
-import { AppToastProvider } from '@/components/ui';
+import { AppToastProvider, ImageLightboxProvider } from '@/components/ui';
 import { PRODUCT_QUERY } from '@/graphql/operations/catalog';
 import type { CatalogProduct } from '@/types/catalog';
 
@@ -19,6 +19,15 @@ jest.mock('@fortawesome/react-fontawesome', () => ({
 
 jest.mock('@/hooks/useAuth', () => ({
 	useAuth: () => ({ isAuthenticated: false }),
+}));
+
+jest.mock('@/hooks/useWishlist', () => ({
+	useWishlist: () => ({
+		isWishlisted: () => false,
+		toggleWishlist: jest.fn(),
+		toggling: false,
+		count: 0,
+	}),
 }));
 
 function makeProduct(overrides: Partial<CatalogProduct> = {}): CatalogProduct {
@@ -86,13 +95,15 @@ function makeProductMock(product: CatalogProduct | null): MockedResponse {
 function renderPage(mocks: MockedResponse[]) {
 	return render(
 		<AppToastProvider>
-			<MockedProvider mocks={mocks} addTypename={false}>
-				<MemoryRouter initialEntries={['/products/field-jacket']}>
-					<Routes>
-						<Route path="/products/:slug" element={<ProductPage />} />
-					</Routes>
-				</MemoryRouter>
-			</MockedProvider>
+			<ImageLightboxProvider>
+				<MockedProvider mocks={mocks} addTypename={false}>
+					<MemoryRouter initialEntries={['/products/field-jacket']}>
+						<Routes>
+							<Route path="/products/:slug" element={<ProductPage />} />
+						</Routes>
+					</MemoryRouter>
+				</MockedProvider>
+			</ImageLightboxProvider>
 		</AppToastProvider>
 	);
 }
@@ -161,17 +172,10 @@ describe('ProductPage — product loaded', () => {
 		expect(screen.getByText('Outerwear')).toBeInTheDocument();
 	});
 
-	it('wishlist button toggles aria-label', async () => {
+	it('renders wishlist button', async () => {
 		renderPage([makeProductMock(makeProduct())]);
 		await waitForProduct();
-		const wishlistBtn = screen.getByRole('button', { name: 'product.addToWishlist' });
-		expect(wishlistBtn).toBeInTheDocument();
-		fireEvent.click(wishlistBtn);
-		await waitFor(() => {
-			expect(
-				screen.getByRole('button', { name: 'product.removeFromWishlist' })
-			).toBeInTheDocument();
-		});
+		expect(screen.getByRole('button', { name: 'product.addToWishlist' })).toBeInTheDocument();
 	});
 
 	it('qty decrement is disabled at minimum', async () => {

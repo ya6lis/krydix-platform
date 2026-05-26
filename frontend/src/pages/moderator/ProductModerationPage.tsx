@@ -32,6 +32,7 @@ import {
 	AppTabs,
 	StatusBadge,
 	EmptyState,
+	AppImage,
 } from '@/components/ui';
 import { useAppToast } from '@/components/ui/AppToast';
 import {
@@ -143,8 +144,7 @@ function QueueRow({ item, selected, checked, onSelect, onCheck, isPending }: Que
 				}}
 			>
 				{item.imageUrl ? (
-					<Box
-						component="img"
+					<AppImage
 						src={item.imageUrl}
 						alt={item.titleEn}
 						sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -243,7 +243,12 @@ function GalleryStrip({ urls, activeIdx, onSelect }: { urls: string[]; activeIdx
 						'&:hover': { borderColor: i === activeIdx ? tokens.accent : tokens.ink3 },
 					}}
 				>
-					<Box component="img" src={url} alt="" sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+					<AppImage
+						src={url}
+						gallery={urls}
+						galleryIndex={i}
+						sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+					/>
 				</Box>
 			))}
 		</Box>
@@ -313,10 +318,11 @@ function PreviewPanel({ item, onApprove, onReject, approving, rejecting }: Previ
 			{/* Hero image */}
 			<Box sx={{ position: 'relative', aspectRatio: '4/3', overflow: 'hidden', bgcolor: tokens.surface2 }}>
 				{currentPhotoUrl ? (
-					<Box
-						component="img"
+					<AppImage
 						src={currentPhotoUrl}
 						alt={item.titleEn}
+						gallery={item.galleryUrls}
+						galleryIndex={activePhotoIdx}
 						sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
 					/>
 				) : (
