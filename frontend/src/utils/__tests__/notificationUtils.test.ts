@@ -14,32 +14,44 @@ const t = (key: string, opts?: Record<string, unknown>) => {
 	return key;
 };
 
+function mockNotification(overrides: Partial<AppNotification> & Pick<AppNotification, 'body'>): AppNotification {
+	return {
+		id: 'notif-1',
+		event: NotificationEvent.ORDER_STATUS_CHANGE,
+		title: 'Test notification',
+		isRead: false,
+		metadata: null,
+		createdAt: '2026-01-01T00:00:00.000Z',
+		...overrides,
+	};
+}
+
 describe('notificationUtils order labels', () => {
 	it('uses metadata.orderLabel when available', () => {
-		const notification = {
+		const notification = mockNotification({
 			body: 'fallback',
 			metadata: { orderLabel: 'AB12CD34', orderId: 'full-id', status: 'SHIPPED' },
-		} as AppNotification;
+		});
 
 		expect(extractOrderLabel(notification)).toBe('AB12CD34');
 	});
 
 	it('falls back to parsing body when metadata is missing', () => {
-		const notification = {
+		const notification = mockNotification({
 			body: 'Your order #1 has been placed successfully.',
 			metadata: null,
-		} as AppNotification;
+		});
 
 		expect(extractOrderLabel(notification)).toBe('1');
 	});
 
 	it('renders order status text from metadata', () => {
-		const notification = {
+		const notification = mockNotification({
 			event: NotificationEvent.ORDER_STATUS_CHANGE,
 			title: 'Order status updated',
 			body: 'Order #AB12CD34 is now shipped.',
 			metadata: { orderLabel: 'AB12CD34', status: 'SHIPPED' },
-		} as AppNotification;
+		});
 
 		const copy = notificationDisplayText(notification, t);
 		expect(copy.body).toBe('Order #AB12CD34 is now shipped.');
@@ -48,10 +60,10 @@ describe('notificationUtils order labels', () => {
 
 describe('extractOrderStatus', () => {
 	it('parses status from legacy body text', () => {
-		const notification = {
+		const notification = mockNotification({
 			body: 'Your order #1 is on its way!',
 			metadata: null,
-		} as AppNotification;
+		});
 
 		expect(extractOrderStatus(notification, t)).toBeNull();
 	});
