@@ -100,7 +100,7 @@ export const catalogTypeDefs = `#graphql
 	}
 
 	extend type Query {
-		categories(language: Language): [CategoryNode!]!
+		categories(language: Language, sellerId: ID): [CategoryNode!]!
 		category(slug: String!, language: Language): CategoryNode
 		products(
 			filter: ProductFilterInput
@@ -111,6 +111,6 @@ export const catalogTypeDefs = `#graphql
 		): ProductList!
 		product(slug: String!, language: Language): CatalogProduct
 		productBrands: [String!]!
-		productBrandsWithCounts: [BrandCount!]!
+		productBrandsWithCounts(sellerId: ID): [BrandCount!]!
 	}
 `;

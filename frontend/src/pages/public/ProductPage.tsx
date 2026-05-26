@@ -11,6 +11,7 @@ import { Icons } from '@/constants/icons';
 import { ROUTES } from '@/constants/routes';
 import { tokens } from '@/theme';
 import { useCartStore } from '@/store/cartStore';
+import { useAuthStore } from '@/store/authStore';
 import type { CatalogProduct, CatalogProductVariant } from '@/types/catalog';
 
 // ─── constants ────────────────────────────────────────────────────────────────
@@ -103,6 +104,7 @@ export default function ProductPage() {
 	const language = i18n.language === 'uk' ? 'UK' : 'EN';
 	const { slug = '' } = useParams();
 	const navigate = useNavigate();
+	const user = useAuthStore((s) => s.user);
 	const addItem = useCartStore((s) => s.addItem);
 	const cartItems = useCartStore((s) => s.items);
 	const { showToast } = useAppToast();
@@ -496,8 +498,15 @@ export default function ProductPage() {
 							variant="outlined"
 							size="small"
 							startIcon={<FontAwesomeIcon icon={Icons.chat} />}
-							onClick={() => navigate(ROUTES.SELLER_PUBLIC(product.seller.id))}
+							onClick={() => {
+								if (!user) {
+									navigate(ROUTES.LOGIN);
+									return;
+								}
+								navigate(`${ROUTES.CHAT}?productId=${product.id}`);
+							}}
 							sx={{ flexShrink: 0 }}
+							data-testid="product-message-seller"
 						>
 							{t('product.message')}
 						</AppButton>

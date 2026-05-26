@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Box, Popover, Typography, Divider } from '@mui/material';
+import { useMutation, useQuery } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -14,7 +15,25 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { tokens } from '@/theme';
 import { useCartStore } from '@/store/cartStore';
-import { useTranslation as useI18n } from 'react-i18next';
+import { useAuthStore } from '@/store/authStore';
+import { ROUTES } from '@/constants/routes';
+import { NotificationEvent } from '@/constants/enums';
+import { NotificationItem } from '@/components/ui/NotificationItem';
+import {
+	filterNotifications,
+	formatNotificationTime,
+	notificationDisplayText,
+	notificationIcon,
+	notificationRoute,
+	notificationTone,
+} from '@/utils/notificationUtils';
+import {
+	MARK_ALL_NOTIFICATIONS_READ_MUTATION,
+	MARK_NOTIFICATION_READ_MUTATION,
+	MY_NOTIFICATIONS_QUERY,
+	UNREAD_NOTIFICATION_COUNT_QUERY,
+} from '@/graphql/operations/notifications';
+import type { AppNotification } from '@/types/notification';
 
 /* ── breadcrumb types ────────────────────────────────────────── */
 export interface Breadcrumb {
@@ -27,20 +46,10 @@ interface AppNavbarProps {
 }
 
 /* ── static mock notifications ───────────────────────────────── */
-const NOTIF_TABS = [
-	'shell.notif.tab.all',
-	'shell.notif.tab.unread',
-	'shell.notif.tab.orders',
-	'shell.notif.tab.system',
-];
+const NOTIF_TAB_KEYS = ['all', 'unread', 'orders', 'system'] as const;
+type NotifTabKey = (typeof NOTIF_TAB_KEYS)[number];
 
-interface NavbarNotification {
-	id: string;
-	isRead: boolean;
-}
-
-// Phase 13 can replace this with API/store data.
-const MOCK_NOTIFICATIONS: NavbarNotification[] = [];
+const NOTIF_TABS = NOTIF_TAB_KEYS.map((key) => `shell.notif.tab.${key}`);
 
 /* ── icon button base sx ─────────────────────────────────────── */
 const iconBtnSx = {
@@ -61,7 +70,9 @@ const iconBtnSx = {
 
 /* ── component ───────────────────────────────────────────────── */
 export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
+	const navigate = useNavigate();
+	const user = useAuthStore((s) => s.user);
 	const cartItems = useCartStore((s) => s.items);
 	const removeItem = useCartStore((s) => s.removeItem);
 	const subtotal = useCartStore((s) => s.subtotal);
@@ -72,13 +83,51 @@ export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
 	const [notifAnchor, setNotifAnchor] = useState<HTMLElement | null>(null);
 	const [notifTab, setNotifTab] = useState(0);
 
+	const { data: notificationsData, refetch: refetchNotifications } = useQuery<{
+		myNotifications: AppNotification[];
+	}>(MY_NOTIFICATIONS_QUERY, {
+		variables: { limit: 30 },
+		skip: !user,
+		fetchPolicy: 'cache-and-network',
+	});
+
+	const { data: unreadData, refetch: refetchUnreadCount } = useQuery<{
+		unreadNotificationCount: number;
+	}>(UNREAD_NOTIFICATION_COUNT_QUERY, {
+		skip: !user,
+		fetchPolicy: 'cache-and-network',
+	});
+
+	const [markNotificationRead] = useMutation(MARK_NOTIFICATION_READ_MUTATION);
+	const [markAllNotificationsRead, { loading: markingAllRead }] = useMutation(
+		MARK_ALL_NOTIFICATIONS_READ_MUTATION,
+	);
+
 	const cartOpen = Boolean(cartAnchor);
 	const notifOpen = Boolean(notifAnchor);
 
 	const groups = sellerGroups();
 	const sellerCount = Object.keys(groups).length;
 	const count = itemCount();
-	const unreadCount = MOCK_NOTIFICATIONS.filter((notification) => !notification.isRead).length;
+	const notifications = notificationsData?.myNotifications ?? [];
+	const unreadCount = unreadData?.unreadNotificationCount ?? 0;
+	const activeTabKey = NOTIF_TAB_KEYS[notifTab] ?? 'all';
+	const visibleNotifications = filterNotifications(notifications, activeTabKey);
+
+	const handleMarkAllRead = async () => {
+		await markAllNotificationsRead();
+		await Promise.all([refetchNotifications(), refetchUnreadCount()]);
+	};
+
+	const handleNotificationClick = async (notification: AppNotification) => {
+		if (!notification.isRead) {
+			await markNotificationRead({ variables: { id: notification.id } });
+			await Promise.all([refetchNotifications(), refetchUnreadCount()]);
+		}
+		setNotifAnchor(null);
+		const route = notificationRoute(notification, user?.role);
+		if (route) navigate(route);
+	};
 
 	return (
 		<Box
@@ -274,6 +323,11 @@ export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
 						onTabChange={setNotifTab}
 						tabs={NOTIF_TABS}
 						unreadCount={unreadCount}
+						notifications={visibleNotifications}
+						locale={i18n.language}
+						onMarkAllRead={() => void handleMarkAllRead()}
+						markingAllRead={markingAllRead}
+						onNotificationClick={(notification) => void handleNotificationClick(notification)}
 					/>
 				</Popover>
 			</Box>
@@ -299,7 +353,7 @@ function CartDropdown({
 	onRemove: (id: string) => void;
 	onClose: () => void;
 }) {
-	const { t } = useI18n();
+	const { t } = useTranslation();
 
 	return (
 		<Box>
@@ -537,13 +591,23 @@ function NotifDropdown({
 	onTabChange,
 	tabs,
 	unreadCount,
+	notifications,
+	locale,
+	onMarkAllRead,
+	markingAllRead,
+	onNotificationClick,
 }: {
 	activeTab: number;
 	onTabChange: (i: number) => void;
 	tabs: string[];
 	unreadCount: number;
+	notifications: AppNotification[];
+	locale: string;
+	onMarkAllRead: () => void;
+	markingAllRead: boolean;
+	onNotificationClick: (notification: AppNotification) => void;
 }) {
-	const { t } = useI18n();
+	const { t } = useTranslation();
 
 	return (
 		<Box>
@@ -564,6 +628,8 @@ function NotifDropdown({
 				</Box>
 				<Box
 					component="button"
+					onClick={onMarkAllRead}
+					disabled={markingAllRead || unreadCount === 0}
 					sx={{
 						border: 'none',
 						background: 'transparent',
@@ -617,18 +683,37 @@ function NotifDropdown({
 				))}
 			</Box>
 
-			{/* body — static for now, Phase 13 wires real data */}
+			{/* body */}
 			<Box sx={{ maxHeight: 380, overflowY: 'auto' }}>
-				<Box
-					sx={{
-						padding: '32px 18px',
-						textAlign: 'center',
-						color: tokens.ink3,
-						fontSize: 13,
-					}}
-				>
-					{t('shell.notif.empty')}
-				</Box>
+				{notifications.length === 0 ? (
+					<Box
+						sx={{
+							padding: '32px 18px',
+							textAlign: 'center',
+							color: tokens.ink3,
+							fontSize: 13,
+						}}
+					>
+						{t('shell.notif.empty')}
+					</Box>
+				) : (
+					notifications.map((notification) => {
+						const event = notification.event as NotificationEvent;
+						const copy = notificationDisplayText(notification, t);
+						return (
+							<NotificationItem
+								key={notification.id}
+								icon={notificationIcon(event)}
+								tone={notificationTone(event)}
+								title={copy.title}
+								body={copy.body}
+								time={formatNotificationTime(notification.createdAt, locale)}
+								unread={!notification.isRead}
+								onClick={() => onNotificationClick(notification)}
+							/>
+						);
+					})
+				)}
 			</Box>
 
 			{/* foot */}
@@ -640,7 +725,7 @@ function NotifDropdown({
 			>
 				<Box
 					component={Link}
-					to="/notifications"
+					to={ROUTES.ACCOUNT_NOTIFICATIONS}
 					sx={{
 						display: 'inline-flex',
 						alignItems: 'center',

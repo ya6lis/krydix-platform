@@ -193,6 +193,8 @@ model UserProfile {
   userId      String    @unique
   firstName   String
   lastName    String
+  displayName String?
+  bio         String?
   phone       String?
   avatarUrl   String?
   country     String?
@@ -719,6 +721,7 @@ model ChatMessage {
   chatId    String
   senderId  String
   content   String
+  isDelivered Boolean @default(false)
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
 

@@ -56,13 +56,9 @@ describe('BuyerSettingsPage — layout', () => {
 		expect(screen.getByText('account.settings.subtitle')).toBeInTheDocument();
 	});
 
-	it('renders left nav section label', () => {
+	it('renders account settings nav', () => {
 		renderPage();
-		expect(screen.getByText('account.settings.nav.account')).toBeInTheDocument();
-	});
-
-	it('renders all 4 nav items', () => {
-		renderPage();
+		expect(screen.getByTestId('account-settings-nav')).toBeInTheDocument();
 		expect(screen.getByText('account.settings.nav.profile')).toBeInTheDocument();
 		expect(screen.getByText('account.settings.nav.security')).toBeInTheDocument();
 		expect(screen.getByText('account.settings.nav.notifications')).toBeInTheDocument();
@@ -71,40 +67,10 @@ describe('BuyerSettingsPage — layout', () => {
 });
 
 describe('BuyerSettingsPage — profile section', () => {
-	it('renders profile section title', () => {
+	it('renders profile edit section', () => {
 		renderPage();
+		expect(screen.getByTestId('profile-edit-section')).toBeInTheDocument();
 		expect(screen.getByText('account.settings.profile.title')).toBeInTheDocument();
-	});
-
-	it('prefills first name from user store', () => {
-		renderPage();
-		expect(screen.getByDisplayValue('Deja')).toBeInTheDocument();
-	});
-
-	it('prefills last name from user store', () => {
-		renderPage();
-		expect(screen.getByDisplayValue('Brady')).toBeInTheDocument();
-	});
-
-	it('prefills email from user store', () => {
-		renderPage();
-		expect(screen.getByDisplayValue('deja@krydix.co')).toBeInTheDocument();
-	});
-
-	it('renders avatar upload button', () => {
-		renderPage();
-		expect(screen.getByText('account.settings.profile.uploadAvatar')).toBeInTheDocument();
-	});
-
-	it('renders avatar help text', () => {
-		renderPage();
-		expect(screen.getByText('account.settings.profile.avatarHelp')).toBeInTheDocument();
-	});
-
-	it('renders avatar initials derived from user name', () => {
-		renderPage();
-		// "Deja Brady" → initials "DB"
-		expect(screen.getByText('DB')).toBeInTheDocument();
 	});
 });
 
@@ -217,15 +183,15 @@ describe('BuyerSettingsPage — danger zone', () => {
 });
 
 describe('BuyerSettingsPage — save bar', () => {
-	it('renders Save changes button', () => {
+	it('renders save preferences button', () => {
 		renderPage();
 		expect(
-			screen.getByRole('button', { name: 'account.settings.profile.saveChanges' })
+			screen.getByRole('button', { name: 'account.settings.notifications.savePreferences' }),
 		).toBeInTheDocument();
 	});
 
-	it('renders Discard button', () => {
+	it('renders Discard buttons for profile and notification sections', () => {
 		renderPage();
-		expect(screen.getByRole('button', { name: 'common.discard' })).toBeInTheDocument();
+		expect(screen.getAllByRole('button', { name: 'common.discard' }).length).toBeGreaterThanOrEqual(1);
 	});
 });

@@ -1,0 +1,786 @@
+$color1: #ffffff;
+$ink: #1c252e;
+$ink2: #455463;
+$ink3: #8794a1;
+$line: #e1e5ea;
+$line2: #eef1f4;
+$accent: #7635dc;
+$accentSoft: #f3ebff;
+$accentInk: #200a69;
+$cyan: #00b8d9;
+$cyanInk: #006c7f;
+$surface: #ffffff;
+$bg: #f4f6f8;
+$surface2: #eef1f4;
+$radius: 14px;
+
+.page {
+	width: 100%;
+	max-width: none;
+	padding: 28px 36px;
+}
+
+.pageHead {
+	margin-bottom: 28px;
+}
+
+.pageTitle {
+	margin: 0;
+	font-size: 26px;
+	font-weight: 800;
+	letter-spacing: -0.02em;
+	color: $ink;
+	line-height: 1.2;
+}
+
+.pageSub {
+	margin: 4px 0 0;
+	font-size: 14px;
+	color: $ink3;
+}
+
+.chatShell {
+	display: grid;
+	grid-template-columns: 320px 1fr 280px;
+	background: $surface;
+	border: 1px solid $line;
+	border-radius: $radius;
+	overflow: hidden;
+	height: calc(100vh - 160px);
+	min-height: 560px;
+}
+
+@media (max-width: 1200px) {
+	.chatShell {
+		grid-template-columns: 320px 1fr;
+	}
+
+	.sideInfo {
+		display: none;
+	}
+}
+
+@media (max-width: 900px) {
+	.chatShell {
+		grid-template-columns: 1fr;
+	}
+
+	.convList {
+		display: none;
+	}
+
+	.convListMobileOpen {
+		display: flex;
+		position: absolute;
+		inset: 0;
+		z-index: 2;
+		background: $surface;
+	}
+}
+
+.convList {
+	border-right: 1px solid $line;
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+}
+
+.clHead {
+	padding: 18px 18px 12px;
+	border-bottom: 1px solid $line;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.clTitleRow {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	font-weight: 700;
+	font-size: 16px;
+}
+
+.newBtn {
+	width: 28px;
+	height: 28px;
+	border-radius: 8px;
+	background: $accent;
+	color: $color1;
+	border: 0;
+	display: grid;
+	place-items: center;
+	cursor: pointer;
+}
+
+.searchWrap {
+	width: 100%;
+	margin: 0;
+	background: $bg;
+	border: 1px solid $line;
+	border-radius: 10px;
+	padding: 7px 12px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	color: $ink3;
+	font-size: 13px;
+}
+
+.searchInput {
+	border: 0;
+	background: transparent;
+	outline: none;
+	font: inherit;
+	color: $ink;
+	flex: 1;
+}
+
+.clFilters {
+	display: flex;
+	gap: 4px;
+	font-size: 12.5px;
+	flex-wrap: wrap;
+}
+
+.filterPill {
+	padding: 4px 10px;
+	border-radius: 999px;
+	background: $bg;
+	color: $ink2;
+	font-weight: 600;
+	cursor: pointer;
+	border: 1px solid $line;
+	font: inherit;
+}
+
+.filterPillActive {
+	background: $ink;
+	color: $color1;
+	border-color: $ink;
+}
+
+.filterCount {
+	opacity: 0.6;
+	margin-left: 4px;
+}
+
+.convItems {
+	flex: 1;
+	overflow-y: auto;
+}
+
+.convItem {
+	display: grid;
+	grid-template-columns: 40px 1fr auto;
+	gap: 12px;
+	padding: 12px 16px;
+	cursor: pointer;
+	border-bottom: 1px solid $line2;
+	align-items: center;
+	border: 0;
+	background: transparent;
+	width: 100%;
+	text-align: left;
+	font: inherit;
+}
+
+.convItem:hover {
+	background: $bg;
+}
+
+.convItemActive {
+	background: $accentSoft;
+}
+
+.avatar {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	font-size: 13px;
+	font-weight: 700;
+	display: grid;
+	place-items: center;
+	color: $color1;
+	background: linear-gradient(135deg, $accent, $cyan);
+	position: relative;
+	overflow: hidden;
+	flex-shrink: 0;
+}
+
+.avatarSm {
+	width: 36px;
+	height: 36px;
+	font-size: 12px;
+}
+
+.avatarXs {
+	width: 28px;
+	height: 28px;
+	font-size: 10.5px;
+}
+
+.avatarLg {
+	width: 64px;
+	height: 64px;
+	font-size: 20px;
+	margin: 0 auto 10px;
+}
+
+.avatarImage {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.avatarOnline::after {
+	content: '';
+	position: absolute;
+	bottom: -1px;
+	right: -1px;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: $cyan;
+	border: 2px solid $surface;
+}
+
+.convBody {
+	min-width: 0;
+}
+
+.convTop {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.convName {
+	font-weight: 700;
+	font-size: 13.5px;
+	flex: 1;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.convWhen {
+	font-size: 11px;
+	color: $ink3;
+	flex-shrink: 0;
+}
+
+.convCtx {
+	font-size: 11.5px;
+	color: $ink3;
+	margin-top: 1px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.convCtxStrong {
+	color: $ink2;
+	font-weight: 600;
+}
+
+.convPreview {
+	grid-column: 2 / -1;
+	font-size: 12.5px;
+	color: $ink2;
+	margin-top: 4px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.convItemActive .convPreview {
+	color: $ink;
+}
+
+.unreadBadge {
+	width: 18px;
+	height: 18px;
+	border-radius: 9px;
+	background: $accent;
+	color: $color1;
+	font-size: 10.5px;
+	font-weight: 700;
+	display: grid;
+	place-items: center;
+}
+
+.conv {
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	position: relative;
+}
+
+.convHead {
+	padding: 14px 22px;
+	border-bottom: 1px solid $line;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.convHeadInfo {
+	flex: 1;
+	min-width: 0;
+}
+
+.convHeadName {
+	font-weight: 700;
+	font-size: 14.5px;
+}
+
+.convHeadSub {
+	font-size: 12px;
+	color: $ink3;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	flex-wrap: wrap;
+}
+
+.onlineLabel {
+	color: $cyanInk;
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.onlineLabel::before {
+	content: '';
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: $cyan;
+}
+
+.iconBtn {
+	background: transparent;
+	border: 0;
+	padding: 6px;
+	color: $ink3;
+	cursor: pointer;
+	border-radius: 8px;
+}
+
+.iconBtn:hover {
+	background: $surface2;
+	color: $ink2;
+}
+
+.convContext {
+	margin: 14px 22px;
+	padding: 12px 14px;
+	background: $bg;
+	border: 1px solid $line;
+	border-radius: 10px;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	font-size: 12.5px;
+}
+
+.convContextThumb {
+	width: 40px;
+	height: 40px;
+	border-radius: 8px;
+	background: $surface2;
+	flex-shrink: 0;
+	overflow: hidden;
+}
+
+.convContextThumb img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.convContextName {
+	font-weight: 700;
+	font-size: 13px;
+}
+
+.convContextRef {
+	color: $ink3;
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 11px;
+}
+
+.convContextLink {
+	color: $accentInk;
+	font-weight: 600;
+	text-decoration: none;
+	margin-left: auto;
+	font-size: 12px;
+	white-space: nowrap;
+}
+
+.msgs {
+	flex: 1;
+	overflow-y: auto;
+	padding: 8px 22px 22px;
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+
+.dayGroup {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	width: 100%;
+}
+
+.daySep {
+	text-align: center;
+	font-size: 11.5px;
+	color: $ink3;
+	position: relative;
+	padding: 8px 0;
+	font-weight: 600;
+}
+
+.daySep::before,
+.daySep::after {
+	content: '';
+	position: absolute;
+	top: 50%;
+	width: calc(50% - 60px);
+	height: 1px;
+	background: $line;
+}
+
+.daySep::before {
+	left: 0;
+}
+
+.daySep::after {
+	right: 0;
+}
+
+.msgRow {
+	display: flex;
+	gap: 10px;
+	max-width: 75%;
+	width: fit-content;
+}
+
+.msgRowMe {
+	align-self: flex-end;
+	margin-left: auto;
+	flex-direction: row-reverse;
+}
+
+.stack {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.msgRowMe .stack {
+	align-items: flex-end;
+}
+
+.msgBubble {
+	background: $bg;
+	border: 1px solid $line;
+	padding: 10px 14px;
+	border-radius: 14px;
+	font-size: 13.5px;
+	line-height: 1.5;
+	color: $ink;
+	word-break: break-word;
+	display: flow-root;
+}
+
+.msgBubbleMe {
+	background: $accent;
+	color: $color1;
+	border-color: $accent;
+}
+
+.msgContent {
+	white-space: pre-wrap;
+}
+
+.msgFooter {
+	float: right;
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	margin-left: 10px;
+	margin-top: 2px;
+	line-height: 1;
+}
+
+.msgTime {
+	font-size: 11px;
+	opacity: 0.85;
+	white-space: nowrap;
+}
+
+.msgMeta {
+	font-size: 11px;
+	color: $ink3;
+	margin-top: 4px;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.msgRowMe .msgMeta {
+	justify-content: flex-end;
+}
+
+.msgStatusSent,
+.msgStatusDelivered,
+.msgStatusRead {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 13px;
+	line-height: 1;
+	min-width: 18px;
+}
+
+.msgStatusSent svg,
+.msgStatusDelivered svg,
+.msgStatusRead svg {
+	width: 14px;
+	height: 14px;
+}
+
+.msgStatusSent {
+	color: rgba(255, 255, 255, 0.75);
+}
+
+.msgStatusDelivered {
+	color: rgba(255, 255, 255, 0.75);
+}
+
+.msgStatusRead {
+	color: #e9d5ff;
+}
+
+.typing {
+	align-self: flex-start;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-left: 38px;
+	font-size: 12px;
+	color: $ink3;
+}
+
+.typingDots {
+	display: inline-flex;
+	gap: 3px;
+}
+
+.typingDots i {
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: $ink3;
+	display: block;
+	animation: typingBounce 1.2s infinite;
+}
+
+.typingDots i:nth-child(2) {
+	animation-delay: 0.15s;
+}
+
+.typingDots i:nth-child(3) {
+	animation-delay: 0.3s;
+}
+
+@keyframes typingBounce {
+	0%,
+	80%,
+	100% {
+		opacity: 0.3;
+		transform: translateY(0);
+	}
+
+	40% {
+		opacity: 1;
+		transform: translateY(-3px);
+	}
+}
+
+.composer {
+	border-top: 1px solid $line;
+	padding: 14px 22px;
+	display: flex;
+	align-items: end;
+	gap: 10px;
+}
+
+.inputBox {
+	flex: 1;
+	background: $bg;
+	border: 1px solid $line;
+	border-radius: 12px;
+	padding: 10px 14px;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.textarea {
+	border: 0;
+	background: transparent;
+	outline: none;
+	font: inherit;
+	font-size: 13.5px;
+	line-height: 1.5;
+	resize: none;
+	min-height: 40px;
+	max-height: 140px;
+	color: $ink;
+	width: 100%;
+}
+
+.tools {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.toolBtn {
+	background: transparent;
+	border: 0;
+	padding: 4px;
+	color: $ink3;
+	cursor: pointer;
+	border-radius: 6px;
+}
+
+.toolBtn:hover {
+	background: $surface2;
+	color: $ink2;
+}
+
+.sendBtn {
+	background: $ink;
+	color: $color1;
+	width: 42px;
+	height: 42px;
+	border-radius: 12px;
+	display: grid;
+	place-items: center;
+	border: 0;
+	cursor: pointer;
+}
+
+.sendBtn:hover:not(:disabled) {
+	background: $accent;
+}
+
+.sendBtn:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.sideInfo {
+	border-left: 1px solid $line;
+	padding: 22px;
+	display: flex;
+	flex-direction: column;
+	gap: 22px;
+	min-height: 0;
+	overflow-y: auto;
+}
+
+.person {
+	text-align: center;
+	border: 0;
+	background: transparent;
+	padding: 0;
+	width: 100%;
+	cursor: pointer;
+	font: inherit;
+	color: inherit;
+	border-radius: 10px;
+}
+
+.person:disabled {
+	cursor: default;
+}
+
+.person:not(:disabled):hover {
+	background: $bg;
+}
+
+.personName {
+	font-weight: 700;
+	font-size: 15px;
+}
+
+.personPresence {
+	font-size: 12px;
+	color: $ink3;
+	margin-top: 4px;
+}
+
+.personRole {
+	font-size: 12px;
+	color: $ink3;
+	margin-top: 2px;
+}
+
+.infoSection {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.infoTitle {
+	font-size: 10.5px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: $ink3;
+}
+
+.kv {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	font-size: 13px;
+}
+
+.kvRow {
+	display: flex;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.kvKey {
+	color: $ink3;
+}
+
+.kvValue {
+	font-weight: 600;
+	text-align: right;
+}
+
+.emptyState {
+	flex: 1;
+	display: grid;
+	place-items: center;
+	color: $ink3;
+	font-size: 14px;
+	padding: 24px;
+	text-align: center;
+}
+
+.emptyAttach {
+	font-size: 12.5px;
+	color: $ink3;
+}

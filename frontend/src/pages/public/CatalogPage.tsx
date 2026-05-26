@@ -10,6 +10,7 @@ import {
 	CatalogFilters,
 	PRICE_MIN,
 	PRICE_MAX,
+	buildCatalogFilterInput,
 	type CatalogFilterState,
 } from '@/components/features/catalog/CatalogFilters';
 import { findCategoryName } from '@/components/features/catalog/CategoryFilterTree';
@@ -27,7 +28,6 @@ import type {
 	BrandCount,
 	CatalogProduct,
 	CategoryNode,
-	ProductFilterInput,
 	ProductListResult,
 	ProductSort,
 } from '@/types/catalog';
@@ -41,25 +41,6 @@ const INITIAL_FILTERS: CatalogFilterState = {
 	inStockOnly: false,
 };
 
-function buildFilterInput(f: CatalogFilterState): ProductFilterInput {
-	const input: ProductFilterInput = {};
-	if (f.categorySlug) input.categorySlug = f.categorySlug;
-	if (f.brands.length > 0) input.brands = f.brands;
-	if (f.priceRange[0] > PRICE_MIN) input.minPrice = f.priceRange[0];
-	if (f.priceRange[1] < PRICE_MAX) input.maxPrice = f.priceRange[1];
-	if (f.minRating) input.minRating = f.minRating;
-	if (f.inStockOnly) input.inStockOnly = true;
-	return input;
-}
-
-type ViewMode = 'grid' | 'list';
-
-const VIEW_ICONS: Record<ViewMode, (typeof Icons)[keyof typeof Icons]> = {
-	grid: Icons.grip,
-	list: Icons.listView,
-};
-
-/** Build active filter context string — e.g. "· Outerwear · Heritage Co." */
 function buildFilterContext(filters: CatalogFilterState, categories: CategoryNode[]): string {
 	const parts: string[] = [];
 
@@ -73,6 +54,13 @@ function buildFilterContext(filters: CatalogFilterState, categories: CategoryNod
 	return parts.length > 0 ? ' · ' + parts.join(' · ') : '';
 }
 
+type ViewMode = 'grid' | 'list';
+
+const VIEW_ICONS: Record<ViewMode, (typeof Icons)[keyof typeof Icons]> = {
+	grid: Icons.grip,
+	list: Icons.listView,
+};
+
 export default function CatalogPage() {
 	const { t, i18n } = useTranslation();
 	const language = i18n.language === 'uk' ? 'UK' : 'EN';
@@ -85,7 +73,7 @@ export default function CatalogPage() {
 	const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
 	const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
-	const filterInput = useMemo(() => buildFilterInput(filters), [filters]);
+	const filterInput = useMemo(() => buildCatalogFilterInput(filters), [filters]);
 
 	const { data: categoryData } = useQuery<{ categories: CategoryNode[] }>(CATEGORIES_QUERY, {
 		variables: { language },

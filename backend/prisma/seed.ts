@@ -742,7 +742,7 @@ async function main() {
 				variantId: var3,
 				sellerId: seller2.id,
 				qty: 1,
-				price: 184,
+			price: 184,
 				title: 'Heritage Field Jacket — Olive',
 			},
 			{
@@ -1213,7 +1213,7 @@ async function main() {
 		});
 		if (!exists) {
 			await prisma.complaint.create({
-				data: {
+			data: {
 					...c,
 					target: c.target as never,
 					status: c.status as never,
@@ -1347,18 +1347,21 @@ async function main() {
 			event: 'NEW_ORDER',
 			title: 'Order confirmed',
 			body: 'Your order #1 has been placed successfully.',
+			metadata: { orderId: order1, orderLabel: order1.slice(-8).toUpperCase(), status: 'PENDING' },
 		},
 		{
 			userId: buyer1.id,
 			event: 'ORDER_STATUS_CHANGE',
 			title: 'Order shipped',
 			body: 'Your order #1 is on its way!',
+			metadata: { orderId: order1, orderLabel: order1.slice(-8).toUpperCase(), status: 'SHIPPED' },
 		},
 		{
 			userId: seller1.id,
 			event: 'NEW_ORDER',
 			title: 'New order received',
 			body: 'You have received a new order from Anna B.',
+			metadata: { orderId: order1, orderLabel: order1.slice(-8).toUpperCase(), status: 'PENDING' },
 		},
 		{
 			userId: buyer2.id,

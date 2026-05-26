@@ -11,8 +11,12 @@ export const authTypeDefs = `#graphql
 		id: ID!
 		firstName: String!
 		lastName: String!
+		displayName: String
+		bio: String
 		phone: String
 		avatarUrl: String
+		country: String
+		city: String
 	}
 
 	type User {

@@ -24,6 +24,14 @@ import { adminTypeDefs } from './modules/admin/typeDefs.js';
 import { adminResolvers } from './modules/admin/resolvers.js';
 import { categoriesTypeDefs } from './modules/categories/typeDefs.js';
 import { categoriesResolvers } from './modules/categories/resolvers.js';
+import { profileTypeDefs } from './modules/profile/typeDefs.js';
+import { profileResolvers } from './modules/profile/resolvers.js';
+import { publicProfileTypeDefs } from './modules/publicProfile/typeDefs.js';
+import { publicProfileResolvers } from './modules/publicProfile/resolvers.js';
+import { chatTypeDefs } from './modules/chat/typeDefs.js';
+import { chatResolvers } from './modules/chat/resolvers.js';
+import { notificationsTypeDefs } from './modules/notifications/typeDefs.js';
+import { notificationsResolvers } from './modules/notifications/resolvers.js';
 
 const rootTypeDefs = `#graphql
 	type Query
@@ -45,6 +53,10 @@ export const schema = makeExecutableSchema({
 		reviewModerationTypeDefs,
 		adminTypeDefs,
 		categoriesTypeDefs,
+		profileTypeDefs,
+		publicProfileTypeDefs,
+		chatTypeDefs,
+		notificationsTypeDefs,
 	]),
 	resolvers: mergeResolvers([
 		authResolvers,
@@ -59,5 +71,9 @@ export const schema = makeExecutableSchema({
 		reviewModerationResolvers,
 		adminResolvers,
 		categoriesResolvers,
+		profileResolvers,
+		publicProfileResolvers,
+		chatResolvers,
+		notificationsResolvers,
 	]),
 });

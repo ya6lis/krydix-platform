@@ -46,7 +46,8 @@ export interface CategoryNode {
 
 function mapCategory(
 	cat: categoryRepo.CategoryRecord,
-	language: Language
+	language: Language,
+	productCount?: number
 ): Omit<CategoryNode, 'children'> {
 	const tr = pickTranslation(cat.translations, language);
 	return {
@@ -55,16 +56,33 @@ function mapCategory(
 		parentId: cat.parentId,
 		name: tr?.name ?? cat.slug,
 		description: tr?.description ?? null,
-		productCount: cat._count.products,
+		productCount: productCount ?? cat._count.products,
 	};
 }
 
+function pruneSellerCategories(nodes: CategoryNode[]): CategoryNode[] {
+	return nodes
+		.map((node) => ({ ...node, children: pruneSellerCategories(node.children) }))
+		.filter((node) => node.productCount > 0 || node.children.length > 0);
+}
+
 /** Returns the full category tree (roots with nested children). */
-export async function getCategories(language: Language = Language.EN): Promise<CategoryNode[]> {
+export async function getCategories(
+	language: Language = Language.EN,
+	sellerId?: string
+): Promise<CategoryNode[]> {
 	const flat = await categoryRepo.findAllCategories();
+	const sellerCounts = sellerId
+		? await productRepo.categoryCountsBySeller(sellerId, VISIBLE_PRODUCT_WHERE)
+		: null;
+
 	const nodes = new Map<string, CategoryNode>();
 	for (const cat of flat) {
-		nodes.set(cat.id, { ...mapCategory(cat, language), children: [] });
+		const count = sellerCounts?.get(cat.id);
+		nodes.set(cat.id, {
+			...mapCategory(cat, language, count),
+			children: [],
+		});
 	}
 	const roots: CategoryNode[] = [];
 	for (const node of nodes.values()) {
@@ -74,7 +92,7 @@ export async function getCategories(language: Language = Language.EN): Promise<C
 			roots.push(node);
 		}
 	}
-	return roots;
+	return sellerId ? pruneSellerCategories(roots) : roots;
 }
 
 export async function getCategoryBySlug(
@@ -289,6 +307,11 @@ export async function getProductBrands(): Promise<string[]> {
 }
 
 /** Brand names with product counts across the visible catalog. */
-export async function getProductBrandsWithCounts(): Promise<{ name: string; count: number }[]> {
-	return productRepo.brandsWithCounts(VISIBLE_PRODUCT_WHERE);
+export async function getProductBrandsWithCounts(
+	sellerId?: string
+): Promise<{ name: string; count: number }[]> {
+	const where: Prisma.ProductWhereInput = sellerId
+		? { ...VISIBLE_PRODUCT_WHERE, sellerId }
+		: VISIBLE_PRODUCT_WHERE;
+	return productRepo.brandsWithCounts(where);
 }

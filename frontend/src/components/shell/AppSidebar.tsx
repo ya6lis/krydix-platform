@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Box, Typography, Popover, Divider } from '@mui/material';
+import { useQuery } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight, faChevronUp } from '@fortawesome/free-solid-svg-icons';
@@ -10,6 +11,11 @@ import { useAuthStore, type AuthUser } from '@/store/authStore';
 import { ROUTES } from '@/constants/routes';
 import { Role } from '@/constants/enums';
 import i18n from '@/i18n';
+import { UNREAD_MESSAGE_COUNT_QUERY } from '@/graphql/operations/chat';
+import {
+	UNREAD_NOTIFICATION_COUNT_QUERY,
+	UNREAD_ORDER_NOTIFICATION_COUNT_QUERY,
+} from '@/graphql/operations/notifications';
 
 /* ── width constant ──────────────────────────────────────────── */
 export const SIDEBAR_WIDTH = 248;
@@ -18,7 +24,7 @@ export const SIDEBAR_WIDTH = 248;
 const GUEST = 'GUEST';
 
 /* ── nav config ──────────────────────────────────────────────── */
-type BadgeVariant = 'default' | 'warn' | 'danger';
+type BadgeVariant = 'default' | 'warn' | 'danger' | 'accent';
 
 interface NavItem {
 	id: string;
@@ -119,7 +125,7 @@ const NAV_GROUPS: NavGroup[] = [
 				id: 'messages',
 				labelKey: 'nav.messages',
 				icon: Icons.chats,
-				href: '/chat',
+				href: ROUTES.CHAT,
 				badge: { variant: 'default' },
 				roles: [Role.BUYER, Role.SELLER, Role.MODERATOR, Role.ADMIN],
 			},
@@ -221,6 +227,7 @@ const BADGE_STYLES: Record<BadgeVariant, { bg: string; color: string }> = {
 	default: { bg: tokens.surface2, color: tokens.ink2 },
 	warn: { bg: tokens.amber, color: tokens.amberInk },
 	danger: { bg: tokens.coral, color: '#fff' },
+	accent: { bg: tokens.accent, color: '#fff' },
 };
 
 // Phase 13: replace with counts from API/store selectors.
@@ -241,6 +248,19 @@ export default function AppSidebar() {
 	const user = useAuthStore((s) => s.user);
 	const role = user?.role ?? GUEST;
 	const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
+	const { data: unreadData } = useQuery<{ unreadMessageCount: number }>(UNREAD_MESSAGE_COUNT_QUERY, {
+		skip: !user,
+		fetchPolicy: 'cache-and-network',
+	});
+	const { data: unreadOrderData } = useQuery<{ unreadOrderNotificationCount: number }>(
+		UNREAD_ORDER_NOTIFICATION_COUNT_QUERY,
+		{
+			skip: !user,
+			fetchPolicy: 'cache-and-network',
+		},
+	);
+	const unreadMessageCount = unreadData?.unreadMessageCount ?? 0;
+	const unreadOrderCount = unreadOrderData?.unreadOrderNotificationCount ?? 0;
 
 	const initials = user?.profile
 		? `${user.profile.firstName[0]}${user.profile.lastName[0]}`.toUpperCase()
@@ -315,14 +335,33 @@ export default function AppSidebar() {
 				const visibleItems = group.items
 					.filter((item) => item.roles.includes(role))
 					.map((item) => {
+						const href =
+							item.id === 'messages' && role === Role.SELLER ? ROUTES.SELLER_CHAT : item.href;
+						const count =
+							item.id === 'messages'
+								? unreadMessageCount
+								: item.id === 'orders' || item.id === 'seller-orders'
+									? unreadOrderCount
+									: (NAV_BADGE_COUNTS[item.id] ?? 0);
+
 						if (!item.badge) {
-							return item;
+							return { ...item, href };
 						}
 
-						const count = NAV_BADGE_COUNTS[item.id] ?? 0;
 						return {
 							...item,
-							badge: count > 0 ? { ...item.badge, count } : undefined,
+							href,
+							badge:
+								count > 0
+									? {
+											...item.badge,
+											count,
+											variant:
+												item.id === 'messages' || item.id === 'orders' || item.id === 'seller-orders'
+													? 'accent'
+													: item.badge.variant,
+										}
+									: undefined,
 						};
 					});
 				if (visibleItems.length === 0) return null;

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link as RouterLink } from 'react-router-dom';
 import { Box, Typography, Link } from '@mui/material';
 import { useQuery, useMutation } from '@apollo/client';
@@ -27,6 +27,12 @@ import {
 	MY_ORDERS_QUERY,
 	MY_ORDER_STATS_QUERY,
 } from '@/graphql/operations/orders';
+import {
+	MARK_ORDER_NOTIFICATIONS_READ_MUTATION,
+	MY_NOTIFICATIONS_QUERY,
+	UNREAD_NOTIFICATION_COUNT_QUERY,
+	UNREAD_ORDER_NOTIFICATION_COUNT_QUERY,
+} from '@/graphql/operations/notifications';
 import type { Order, DeliveryMethod, PaymentMethod } from '@/types/orders';
 
 function formatDateTime(iso: string) {
@@ -139,6 +145,19 @@ export default function BuyerOrderDetailPage() {
 		variables: { id },
 		skip: !id,
 	});
+
+	const [markOrderNotificationsRead] = useMutation(MARK_ORDER_NOTIFICATIONS_READ_MUTATION, {
+		refetchQueries: [
+			{ query: MY_NOTIFICATIONS_QUERY, variables: { limit: 30 } },
+			{ query: UNREAD_NOTIFICATION_COUNT_QUERY },
+			{ query: UNREAD_ORDER_NOTIFICATION_COUNT_QUERY },
+		],
+	});
+
+	useEffect(() => {
+		if (!id) return;
+		void markOrderNotificationsRead({ variables: { orderId: id } });
+	}, [id, markOrderNotificationsRead]);
 
 	const refetchQueries = [
 		{ query: MY_ORDER_QUERY, variables: { id } },

@@ -45,8 +45,8 @@ const CATALOG_PRODUCT_FIELDS = `
 `;
 
 export const CATEGORIES_QUERY = gql`
-	query Categories($language: Language) {
-		categories(language: $language) {
+	query Categories($language: Language, $sellerId: ID) {
+		categories(language: $language, sellerId: $sellerId) {
 			id
 			slug
 			parentId
@@ -78,8 +78,8 @@ export const PRODUCT_BRANDS_QUERY = gql`
 `;
 
 export const PRODUCT_BRANDS_WITH_COUNTS_QUERY = gql`
-	query ProductBrandsWithCounts {
-		productBrandsWithCounts {
+	query ProductBrandsWithCounts($sellerId: ID) {
+		productBrandsWithCounts(sellerId: $sellerId) {
 			name
 			count
 		}

@@ -1,6 +1,12 @@
 import { render, screen } from '@testing-library/react';
+import { MockedProvider } from '@apollo/client/testing';
 import { MemoryRouter } from 'react-router-dom';
 import AppSidebar from '../AppSidebar';
+import { UNREAD_MESSAGE_COUNT_QUERY } from '@/graphql/operations/chat';
+import {
+	UNREAD_NOTIFICATION_COUNT_QUERY,
+	UNREAD_ORDER_NOTIFICATION_COUNT_QUERY,
+} from '@/graphql/operations/notifications';
 
 jest.mock('react-i18next', () => ({
 	useTranslation: () => ({ t: (key: string) => key }),
@@ -38,9 +44,27 @@ jest.mock('@/store/authStore', () => ({
 
 function renderSidebar(initialRoute = '/account') {
 	return render(
-		<MemoryRouter initialEntries={[initialRoute]}>
-			<AppSidebar />
-		</MemoryRouter>
+		<MockedProvider
+			mocks={[
+				{
+					request: { query: UNREAD_MESSAGE_COUNT_QUERY },
+					result: { data: { unreadMessageCount: 3 } },
+				},
+				{
+					request: { query: UNREAD_ORDER_NOTIFICATION_COUNT_QUERY },
+					result: { data: { unreadOrderNotificationCount: 2 } },
+				},
+				{
+					request: { query: UNREAD_NOTIFICATION_COUNT_QUERY },
+					result: { data: { unreadNotificationCount: 5 } },
+				},
+			]}
+			addTypename={false}
+		>
+			<MemoryRouter initialEntries={[initialRoute]}>
+				<AppSidebar />
+			</MemoryRouter>
+		</MockedProvider>,
 	);
 }
 

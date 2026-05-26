@@ -68,4 +68,8 @@ export const ROUTES = {
 	// Misc
 	NOT_FOUND: '/404',
 	FORBIDDEN: '/403',
+
+	// Chat
+	CHAT: '/chat',
+	SELLER_CHAT: '/seller/chat',
 } as const;

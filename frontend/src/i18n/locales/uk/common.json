@@ -89,6 +89,21 @@
 			}
 		}
 	},
+	"notifications": {
+		"events": {
+			"newMessage": {
+				"title": "Нове повідомлення від {{name}}"
+			},
+			"newOrder": {
+				"title": "Нове замовлення",
+				"body": "Замовлення #{{order}} оформлено."
+			},
+			"orderStatus": {
+				"title": "Оновлення замовлення",
+				"body": "Замовлення #{{order}} тепер {{status}}."
+			}
+		}
+	},
 	"auth": {
 		"login": "Увійти",
 		"register": "Зареєструватись",
@@ -209,6 +224,15 @@
 		"createdAt": "Створено",
 		"updatedAt": "Оновлено",
 		"discard": "Скасувати"
+	},
+	"toast": {
+		"title": {
+			"success": "Успішно",
+			"error": "Помилка",
+			"warning": "Попередження",
+			"info": "Сповіщення"
+		},
+		"open": "Відкрити"
 	},
 	"status": {
 		"product": {
@@ -679,7 +703,81 @@
 		"qty": "×{{count}}",
 		"sku": "Артикул"
 	},
+	"publicProfile": {
+		"verifiedSeller": "Перевірений продавець",
+		"memberSince": "На платформі з {{date}}",
+		"products": "товарів",
+		"reviewsCount": "({{count}} відгуків)",
+		"contactSeller": "Написати продавцю",
+		"ownerHint": "Так покупці бачать ваш магазин.",
+		"editProfile": "Редагувати публічний профіль",
+		"shopTitle": "Товари цього продавця",
+		"shopSubtitle": "Усі оголошення від {{name}}",
+		"searchPlaceholder": "Пошук у магазині…",
+		"noProductsTitle": "Поки немає товарів",
+		"noProductsDescription": "У цього продавця зараз немає активних оголошень.",
+		"noFilterResultsTitle": "Немає відповідних товарів",
+		"noFilterResultsDescription": "Спробуйте змінити фільтри або пошуковий запит у цьому магазині.",
+		"notFoundTitle": "Продавця не знайдено",
+		"notFoundDescription": "Профіль видалено або недоступний.",
+		"backToCatalog": "До каталогу"
+	},
+	"chat": {
+		"pageTitle": "Повідомлення",
+		"pageSubtitle": "Листування покупців і продавців та вхідні модератора.",
+		"inbox": "Вхідні",
+		"newChat": "Новий чат",
+		"searchPlaceholder": "Пошук повідомлень…",
+		"filters": {
+			"all": "Усі",
+			"buyers": "Покупці",
+			"mods": "Модератори",
+			"unread": "Непрочитані"
+		},
+		"contextProductPrefix": "щодо:",
+		"contextGeneral": "Загальне питання",
+		"noMessagesYet": "Поки немає повідомлень",
+		"selectConversation": "Оберіть розмову, щоб почати листування",
+		"onlineNow": "Зараз онлайн",
+		"lastSeenAt": "Був(ла) в мережі {{time}}",
+		"moreActions": "Більше дій",
+		"openProduct": "Відкрити товар →",
+		"composerPlaceholder": "Напишіть відповідь…",
+		"attach": "Додати файл",
+		"image": "Додати зображення",
+		"send": "Надіслати",
+		"about": "Про користувача",
+		"email": "Email",
+		"location": "Локація",
+		"sharedInChat": "Спільне в чаті",
+		"noAttachments": "У цій розмові ще немає вкладень.",
+		"memberSince": "з {{date}}",
+		"deleteConversation": "Видалити чат",
+		"deleteConversationTitle": "Видалити цю розмову?",
+		"deleteConversationMessage": "Усі повідомлення в цьому чаті буде назавжди видалено.",
+		"typing": "{{name}} друкує…",
+		"roleModerator": "Модератор",
+		"role": {
+			"buyer": "Покупець",
+			"seller": "Продавець",
+			"moderator": "Модератор",
+			"admin": "Адміністратор"
+		}
+	},
 	"account": {
+		"profile": {
+			"pageTitle": "Профіль",
+			"pageSubtitle": "Керуйте тим, як вас бачать на Krydix.",
+			"emailReadonly": "Для зміни email зверніться в підтримку.",
+			"toast": {
+				"saved": "Профіль збережено",
+				"saveError": "Не вдалося зберегти профіль",
+				"avatarUpdated": "Аватар оновлено",
+				"avatarRemoved": "Аватар видалено",
+				"avatarError": "Не вдалося оновити аватар",
+				"avatarTooLarge": "Зображення має бути не більше 2MB"
+			}
+		},
 		"settings": {
 			"title": "Налаштування",
 			"subtitle": "Керуйте акаунтом, сповіщеннями та перевагами.",

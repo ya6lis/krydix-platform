@@ -10,6 +10,8 @@ export interface AuthUser {
 	profile: {
 		firstName: string;
 		lastName: string;
+		displayName?: string | null;
+		bio?: string | null;
 		avatarUrl: string | null;
 	} | null;
 }
@@ -20,6 +22,7 @@ interface AuthState {
 	isInitialized: boolean;
 	setAuth: (user: AuthUser, accessToken: string, refreshToken: string) => void;
 	setAccessToken: (accessToken: string) => void;
+	patchProfile: (profile: Partial<NonNullable<AuthUser['profile']>>) => void;
 	clearAuth: () => void;
 	setInitialized: () => void;
 }
@@ -35,6 +38,13 @@ export const useAuthStore = create<AuthState>((set) => ({
 	},
 
 	setAccessToken: (accessToken) => set({ accessToken }),
+
+	patchProfile: (profile) =>
+		set((state) =>
+			state.user?.profile
+				? { user: { ...state.user, profile: { ...state.user.profile, ...profile } } }
+				: state,
+		),
 
 	clearAuth: () => {
 		localStorage.removeItem(AUTH_REFRESH_TOKEN_KEY);
