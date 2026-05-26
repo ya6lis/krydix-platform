@@ -1,0 +1,176 @@
+{
+	"auditLogsAll": {
+		"total": 4,
+		"page": 1,
+		"pageSize": 50,
+		"actionFilterOptions": [
+			{ "key": "product.approve", "count": 2 },
+			{ "key": "product.reject", "count": 1 },
+			{ "key": "user.roleChange", "count": 1 }
+		],
+		"actorRoleFilterOptions": [
+			{ "role": "MODERATOR", "count": 3 },
+			{ "role": "ADMIN", "count": 1 }
+		],
+		"items": [
+			{
+				"id": "log-1",
+				"eventRef": "#AL-OG-1",
+				"actionKey": "product.approve",
+				"actionVariant": "approve",
+				"rawAction": "PRODUCT_STATUS_CHANGE",
+				"description": "approved product",
+				"note": null,
+				"metadata": { "from": "PENDING_MODERATION", "to": "APPROVED" },
+				"targetType": "Product",
+				"targetId": "prod-abc12345",
+				"targetLabel": "#PR-2345 · Wool Cardigan — Oat",
+				"targetPath": "/catalog/wool-cardigan-oat",
+				"createdAt": "2026-05-22T10:42:18.000Z",
+				"actor": {
+					"id": "mod-1",
+					"displayName": "Sofia Kovalenko",
+					"initials": "SK",
+					"avatarUrl": null,
+					"email": "mod@krydix.dev",
+					"role": "MODERATOR"
+				}
+			},
+			{
+				"id": "log-2",
+				"eventRef": "#AL-OG-2",
+				"actionKey": "product.approve",
+				"actionVariant": "approve",
+				"rawAction": "PRODUCT_STATUS_CHANGE",
+				"description": "approved product",
+				"note": null,
+				"metadata": { "from": "PENDING_MODERATION", "to": "APPROVED" },
+				"targetType": "Product",
+				"targetId": "prod-def67890",
+				"targetLabel": "#PR-7890 · Heritage Field Jacket",
+				"targetPath": "/catalog/heritage-field-jacket",
+				"createdAt": "2026-05-22T09:15:02.000Z",
+				"actor": {
+					"id": "mod-2",
+					"displayName": "Deja Brady",
+					"initials": "DB",
+					"avatarUrl": null,
+					"email": "deja@krydix.dev",
+					"role": "MODERATOR"
+				}
+			},
+			{
+				"id": "log-3",
+				"eventRef": "#AL-OG-3",
+				"actionKey": "product.reject",
+				"actionVariant": "reject",
+				"rawAction": "PRODUCT_STATUS_CHANGE",
+				"description": "rejected product",
+				"note": "Misleading photos",
+				"metadata": {
+					"from": "PENDING_MODERATION",
+					"to": "REJECTED",
+					"reason": "Misleading photos"
+				},
+				"targetType": "Product",
+				"targetId": "prod-xyz11111",
+				"targetLabel": "#PR-1111 · Trail Runners",
+				"targetPath": "/catalog/trail-runners",
+				"createdAt": "2026-05-21T17:48:09.000Z",
+				"actor": {
+					"id": "mod-2",
+					"displayName": "Deja Brady",
+					"initials": "DB",
+					"avatarUrl": null,
+					"email": "deja@krydix.dev",
+					"role": "MODERATOR"
+				}
+			},
+			{
+				"id": "log-4",
+				"eventRef": "#AL-OG-4",
+				"actionKey": "user.roleChange",
+				"actionVariant": "role",
+				"rawAction": "USER_ROLE_CHANGE",
+				"description": "changed user role",
+				"note": null,
+				"metadata": { "from": "BUYER", "to": "MODERATOR" },
+				"targetType": "User",
+				"targetId": "user-aaa22222",
+				"targetLabel": "#US-2222 · Sasha Lytvyn",
+				"targetPath": "/admin/users",
+				"createdAt": "2026-05-21T14:08:51.000Z",
+				"actor": {
+					"id": "admin-1",
+					"displayName": "Alex Admin",
+					"initials": "AA",
+					"avatarUrl": null,
+					"email": "admin@krydix.dev",
+					"role": "ADMIN"
+				}
+			}
+		]
+	},
+	"auditLogsProductApprove": {
+		"total": 2,
+		"page": 1,
+		"pageSize": 50,
+		"actionFilterOptions": [
+			{ "key": "product.approve", "count": 2 },
+			{ "key": "product.reject", "count": 1 },
+			{ "key": "user.roleChange", "count": 1 }
+		],
+		"actorRoleFilterOptions": [
+			{ "role": "MODERATOR", "count": 3 },
+			{ "role": "ADMIN", "count": 1 }
+		],
+		"items": [
+			{
+				"id": "log-1",
+				"eventRef": "#AL-OG-1",
+				"actionKey": "product.approve",
+				"actionVariant": "approve",
+				"rawAction": "PRODUCT_STATUS_CHANGE",
+				"description": "approved product",
+				"note": null,
+				"metadata": { "from": "PENDING_MODERATION", "to": "APPROVED" },
+				"targetType": "Product",
+				"targetId": "prod-abc12345",
+				"targetLabel": "#PR-2345 · Wool Cardigan — Oat",
+				"targetPath": "/catalog/wool-cardigan-oat",
+				"createdAt": "2026-05-22T10:42:18.000Z",
+				"actor": {
+					"id": "mod-1",
+					"displayName": "Sofia Kovalenko",
+					"initials": "SK",
+					"avatarUrl": null,
+					"email": "mod@krydix.dev",
+					"role": "MODERATOR"
+				}
+			},
+			{
+				"id": "log-2",
+				"eventRef": "#AL-OG-2",
+				"actionKey": "product.approve",
+				"actionVariant": "approve",
+				"rawAction": "PRODUCT_STATUS_CHANGE",
+				"description": "approved product",
+				"note": null,
+				"metadata": { "from": "PENDING_MODERATION", "to": "APPROVED" },
+				"targetType": "Product",
+				"targetId": "prod-def67890",
+				"targetLabel": "#PR-7890 · Heritage Field Jacket",
+				"targetPath": "/catalog/heritage-field-jacket",
+				"createdAt": "2026-05-22T09:15:02.000Z",
+				"actor": {
+					"id": "mod-2",
+					"displayName": "Deja Brady",
+					"initials": "DB",
+					"avatarUrl": null,
+					"email": "deja@krydix.dev",
+					"role": "MODERATOR"
+				}
+			}
+		]
+	}
+}

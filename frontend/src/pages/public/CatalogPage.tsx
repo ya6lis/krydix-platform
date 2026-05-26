@@ -12,6 +12,7 @@ import {
 	PRICE_MAX,
 	type CatalogFilterState,
 } from '@/components/features/catalog/CatalogFilters';
+import { findCategoryName } from '@/components/features/catalog/CategoryFilterTree';
 import {
 	CATEGORIES_QUERY,
 	PRODUCTS_QUERY,
@@ -63,9 +64,8 @@ function buildFilterContext(filters: CatalogFilterState, categories: CategoryNod
 	const parts: string[] = [];
 
 	if (filters.categorySlug) {
-		const flatCats = categories.flatMap((c) => [c, ...c.children]);
-		const cat = flatCats.find((c) => c.slug === filters.categorySlug);
-		if (cat) parts.push(cat.name);
+		const name = findCategoryName(categories, filters.categorySlug);
+		if (name) parts.push(name);
 	}
 
 	filters.brands.forEach((b) => parts.push(b));

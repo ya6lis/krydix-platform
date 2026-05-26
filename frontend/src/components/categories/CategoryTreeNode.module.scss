@@ -1,0 +1,179 @@
+@use '@/styles/variables' as v;
+
+.node {
+	display: grid;
+	grid-template-columns: auto 1fr auto 28px auto 28px;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 18px;
+	border-bottom: 1px solid v.$line-2;
+	cursor: pointer;
+	transition: background 120ms;
+
+	&:hover {
+		background: v.$bg-default;
+	}
+
+	&:last-of-type {
+		border-bottom: 0;
+	}
+}
+
+.level2 {
+	background: linear-gradient(to right, v.$bg-default 0 30px, transparent 30px);
+
+	.gripCell {
+		padding-left: 30px;
+	}
+}
+
+.level3 {
+	background: linear-gradient(to right, v.$bg-default 0 56px, transparent 56px);
+
+	.gripCell {
+		padding-left: 56px;
+	}
+}
+
+.level4 {
+	background: linear-gradient(to right, v.$bg-default 0 82px, transparent 82px);
+
+	.gripCell {
+		padding-left: 82px;
+	}
+}
+
+.selected {
+	background: v.$accent-soft !important;
+}
+
+.disabled {
+	opacity: 0.55;
+}
+
+.dragging {
+	opacity: 0.5;
+	z-index: 1;
+}
+
+.gripCell {
+	display: grid;
+	grid-template-columns: 16px 18px 22px;
+	gap: 8px;
+	align-items: center;
+}
+
+.grip {
+	color: v.$text-secondary;
+	cursor: grab;
+	display: grid;
+	place-items: center;
+
+	&:active {
+		cursor: grabbing;
+	}
+}
+
+.chev {
+	width: 18px !important;
+	height: 18px !important;
+	padding: 0 !important;
+	color: v.$text-secondary !important;
+	border-radius: 4px !important;
+
+	&:hover {
+		background: v.$bg-surface-2 !important;
+	}
+
+	&.empty {
+		visibility: hidden;
+	}
+
+	&.open svg {
+		transform: rotate(90deg);
+		transition: transform 120ms;
+	}
+}
+
+.nameCell {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.name {
+	font-weight: 600;
+	font-size: 14px;
+	color: v.$text-primary;
+	margin-right: 6px;
+}
+
+.slug {
+	font-family: v.$font-mono;
+	font-size: 11.5px;
+	color: v.$text-secondary;
+}
+
+.count {
+	font-size: 11.5px;
+	font-weight: 700;
+	color: v.$text-secondary;
+	background: v.$bg-surface-2;
+	padding: 2px 8px;
+	border-radius: 999px;
+	white-space: nowrap;
+}
+
+.vis {
+	width: 28px !important;
+	height: 28px !important;
+	padding: 4px !important;
+	color: v.$text-secondary !important;
+	border-radius: 4px !important;
+
+	&:hover {
+		background: v.$bg-surface-2 !important;
+		color: v.$text-primary !important;
+	}
+}
+
+.addChild {
+	background: transparent;
+	border: 0;
+	padding: 4px 8px;
+	font-size: 11.5px;
+	font-weight: 600;
+	color: v.$text-secondary;
+	cursor: pointer;
+	border-radius: 6px;
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	opacity: 0;
+	transition: opacity 120ms, color 120ms;
+	font-family: inherit;
+	white-space: nowrap;
+
+	.node:hover & {
+		opacity: 1;
+		color: v.$accent-ink;
+	}
+
+	&:hover {
+		background: v.$accent-soft;
+	}
+}
+
+.actions {
+	width: 28px !important;
+	height: 28px !important;
+	padding: 4px !important;
+	color: v.$text-secondary !important;
+	border-radius: 4px !important;
+
+	&:hover {
+		background: v.$bg-surface-2 !important;
+		color: v.$text-primary !important;
+	}
+}

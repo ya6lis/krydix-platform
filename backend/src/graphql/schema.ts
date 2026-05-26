@@ -22,6 +22,8 @@ import { reviewModerationTypeDefs } from './modules/reviewModeration/typeDefs.js
 import { reviewModerationResolvers } from './modules/reviewModeration/resolvers.js';
 import { adminTypeDefs } from './modules/admin/typeDefs.js';
 import { adminResolvers } from './modules/admin/resolvers.js';
+import { categoriesTypeDefs } from './modules/categories/typeDefs.js';
+import { categoriesResolvers } from './modules/categories/resolvers.js';
 
 const rootTypeDefs = `#graphql
 	type Query
@@ -42,6 +44,7 @@ export const schema = makeExecutableSchema({
 		reviewsTypeDefs,
 		reviewModerationTypeDefs,
 		adminTypeDefs,
+		categoriesTypeDefs,
 	]),
 	resolvers: mergeResolvers([
 		authResolvers,
@@ -55,5 +58,6 @@ export const schema = makeExecutableSchema({
 		reviewsResolvers,
 		reviewModerationResolvers,
 		adminResolvers,
+		categoriesResolvers,
 	]),
 });

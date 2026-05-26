@@ -28,6 +28,9 @@ import ReviewModerationPage from '@/pages/moderator/ReviewModerationPage';
 import UsersManagementPage from '@/pages/admin/UsersManagementPage';
 import ProductsManagementPage from '@/pages/admin/ProductsManagementPage';
 import ReviewsManagementPage from '@/pages/admin/ReviewsManagementPage';
+import AdminCategoriesPage from '@/pages/admin/AdminCategoriesPage';
+import AdminAuditPage from '@/pages/admin/AdminAuditPage';
+import AdminPlatformPage from '@/pages/admin/AdminPlatformPage';
 
 const Placeholder = ({ name }: { name: string }) => (
 	<div style={{ padding: 32 }}>
@@ -155,12 +158,12 @@ export const router = createBrowserRouter([
 			{ index: true, element: <Placeholder name="Admin Home" /> },
 			{ path: 'users', element: <UsersManagementPage /> },
 			{ path: 'users/:id', element: <Placeholder name="User Profile" /> },
-			{ path: 'categories', element: <Placeholder name="Categories" /> },
+			{ path: 'categories', element: <AdminCategoriesPage /> },
 			{ path: 'products', element: <ProductsManagementPage /> },
 			{ path: 'complaints', element: <Placeholder name="All Complaints" /> },
 			{ path: 'reviews', element: <ReviewsManagementPage /> },
-			{ path: 'settings', element: <Placeholder name="Platform Settings" /> },
-			{ path: 'audit', element: <Placeholder name="Audit Log" /> },
+			{ path: 'settings', element: <AdminPlatformPage /> },
+			{ path: 'audit', element: <AdminAuditPage /> },
 		],
 	},
 ]);

@@ -79,12 +79,13 @@ describe('AppSidebar', () => {
 		expect(screen.queryByText('nav.audit')).not.toBeInTheDocument();
 	});
 
-	it('shows admin nav items for ADMINISTRATOR role', () => {
-		mockAuthUser = { ...mockUser, role: 'ADMINISTRATOR' };
+	it('shows admin nav items for ADMIN role', () => {
+		mockAuthUser = { ...mockUser, role: 'ADMIN' };
 		renderSidebar();
-		expect(screen.getByText('nav.users')).toBeInTheDocument();
+		expect(screen.getAllByText('nav.users').length).toBeGreaterThan(0);
 		expect(screen.getByText('nav.platform')).toBeInTheDocument();
 		expect(screen.getByText('nav.audit')).toBeInTheDocument();
+		expect(screen.getByText('nav.categories')).toBeInTheDocument();
 	});
 
 	it('shows moderation items for MODERATOR role', () => {
@@ -102,7 +103,7 @@ describe('AppSidebar', () => {
 
 	it('hides count badges when NAV_BADGE_COUNTS is empty (Phase 13 wires real data)', () => {
 		// NAV_BADGE_COUNTS = {} means all badges are suppressed until Phase 13 wires real counts.
-		mockAuthUser = { ...mockUser, role: 'ADMINISTRATOR' };
+		mockAuthUser = { ...mockUser, role: 'ADMIN' };
 		renderSidebar();
 		expect(screen.queryByText('20')).not.toBeInTheDocument();
 		expect(screen.queryByText('12')).not.toBeInTheDocument();

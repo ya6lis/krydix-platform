@@ -322,6 +322,8 @@
 		},
 		"filters": {
 			"category": "Category",
+			"expandCategory": "Expand category",
+			"collapseCategory": "Collapse category",
 			"price": "Price (USD)",
 			"brand": "Brand",
 			"rating": "Rating",
@@ -1353,6 +1355,256 @@
 			"statusChangeError": "Failed to update status",
 			"deleted": "Review soft-deleted",
 			"deleteError": "Failed to delete review"
+		}
+	},
+	"adminCategories": {
+		"pageTitle": "Categories",
+		"pageSubtitle": "Hierarchical taxonomy — up to 4 levels deep. Drag to reorder.",
+		"newTopLevel": "New top-level",
+		"tree": {
+			"searchPlaceholder": "Search categories…",
+			"languageEn": "English",
+			"languageUk": "Ukrainian",
+			"expandAll": "Expand all",
+			"collapseAll": "Collapse all",
+			"addSub": "Sub",
+			"actions": "Category actions",
+			"dragHandle": "Drag to reorder",
+			"expand": "Expand",
+			"collapse": "Collapse",
+			"hideCategory": "Hide category",
+			"showCategory": "Show category",
+			"emptyTitle": "No categories yet",
+			"emptyDescription": "Create your first top-level category to get started."
+		},
+		"form": {
+			"createTitle": "New category",
+			"createChildTitle": "New subcategory",
+			"createSubtitle": "Fill in the details and save.",
+			"editingMeta": "Editing · level {{level}} · {{path}}",
+			"nameEn": "Display name (EN)",
+			"nameUk": "Display name (UK)",
+			"slug": "Slug",
+			"icon": "Icon",
+			"iconNone": "Letter fallback",
+			"iconTags": "Tags",
+			"iconCategory": "Category",
+			"iconProduct": "Product",
+			"iconProducts": "Products",
+			"iconStore": "Store",
+			"iconHome": "Home",
+			"iconLayers": "Layers",
+			"iconCart": "Cart",
+			"parent": "Parent",
+			"noParent": "Top level",
+			"metaTitleEn": "SEO meta title (EN)",
+			"metaTitleUk": "SEO meta title (UK)",
+			"metaDescriptionEn": "SEO description (EN)",
+			"metaDescriptionUk": "SEO description (UK)",
+			"save": "Save",
+			"discard": "Discard",
+			"delete": "Delete"
+		},
+		"delete": {
+			"title": "Delete category",
+			"message": "Delete \"{{name}}\"? This cannot be undone if the category has no products or children.",
+			"confirm": "Delete",
+			"cancel": "Cancel"
+		},
+		"toast": {
+			"created": "Category created",
+			"createError": "Failed to create category",
+			"updated": "Category updated",
+			"updateError": "Failed to update category",
+			"deleted": "Category deleted",
+			"deleteError": "Failed to delete category",
+			"moveError": "Failed to reorder category"
+		}
+	},
+	"adminAudit": {
+		"pageTitle": "Audit log",
+		"pageSubtitle": "Every moderator and admin action, with actor and target.",
+		"dateRange": {
+			"LAST_24_HOURS": "Last 24 hours",
+			"LAST_7_DAYS": "Last 7 days",
+			"LAST_30_DAYS": "Last 30 days",
+			"CUSTOM": "Custom range"
+		},
+		"filters": {
+			"actionType": "Action type",
+			"actorType": "Actor role",
+			"clear": "Clear filters"
+		},
+		"actorRoles": {
+			"ADMIN": "Administrator",
+			"MODERATOR": "Moderator"
+		},
+		"actions": {
+			"product.approve": "Approve product",
+			"product.reject": "Reject product",
+			"product.block": "Block product",
+			"product.update": "Update product",
+			"product.delete": "Delete product",
+			"seller.approve": "Approve seller",
+			"seller.reject": "Reject seller",
+			"seller.update": "Update seller",
+			"user.roleChange": "Role change",
+			"user.ban": "Block user",
+			"user.invite": "Invite user",
+			"user.delete": "Delete user",
+			"review.approve": "Approve review",
+			"review.block": "Block review",
+			"review.delete": "Delete review",
+			"review.update": "Update review",
+			"complaint.resolve": "Resolve complaint",
+			"category.create": "Create category",
+			"category.update": "Update category",
+			"category.delete": "Delete category",
+			"category.move": "Move category",
+			"category.translation": "Update translation"
+		},
+		"dayLabels": {
+			"today": "Today · {{date}}",
+			"yesterday": "Yesterday · {{date}}"
+		},
+		"empty": {
+			"title": "No audit events",
+			"description": "Try adjusting your filters or date range."
+		},
+		"detail": {
+			"title": "Event details",
+			"close": "Close",
+			"openTarget": "Open target",
+			"yes": "Yes",
+			"no": "No",
+			"sections": {
+				"actor": "Actor",
+				"target": "Target",
+				"action": "Action",
+				"changes": "Changes & metadata"
+			},
+			"fields": {
+				"role": "Role",
+				"actorId": "Actor ID",
+				"targetType": "Target type",
+				"targetLabel": "Target",
+				"targetId": "Target ID",
+				"actionKey": "Action key",
+				"rawAction": "System action",
+				"note": "Note"
+			},
+			"metadata": {
+				"from": "Previous value",
+				"to": "New value",
+				"reason": "Reason",
+				"source": "Source",
+				"operation": "Operation",
+				"language": "Language",
+				"role": "Role",
+				"action": "Action",
+				"bulk": "Bulk action",
+				"count": "Items affected",
+				"slug": "Slug",
+				"parentId": "Parent ID",
+				"sortOrder": "Sort order"
+			},
+			"targetTypes": {
+				"Product": "Product",
+				"User": "User",
+				"Category": "Category",
+				"ProductReview": "Review",
+				"SellerApplication": "Seller verification",
+				"Complaint": "Complaint"
+			}
+		}
+	},
+	"adminPlatform": {
+		"pageTitle": "Platform settings",
+		"pageSubtitle": "Monetization, commissions, promo codes, and payout cycle.",
+		"healthStatus": "All systems healthy",
+		"saveChanges": "Save changes",
+		"nav": {
+			"groupMonetization": "Monetization",
+			"overview": "Overview",
+			"commissions": "Commissions",
+			"promos": "Promo codes",
+			"payouts": "Payout cycle"
+		},
+		"overview": {
+			"gmv": "GMV (30d)",
+			"vsLast30d": "vs last 30d",
+			"revenue": "Platform revenue (30d)",
+			"takeRate": "Avg. take rate {{rate}}%",
+			"pendingPayouts": "Pending payouts",
+			"nextRun": "Next run · {{date}}",
+			"activeSellers": "Active sellers",
+			"thisMonth": "verified this month"
+		},
+		"commissions": {
+			"title": "Commission rates",
+			"subtitle": "Percentage taken from each sale, with optional fixed fee per category.",
+			"scope": "Scope",
+			"percent": "Percentage",
+			"fixedFee": "Fixed fee",
+			"currency": "Currency",
+			"defaultRate": "Default rate",
+			"baseline": "Baseline",
+			"defaultHint": "Applies to every category unless overridden",
+			"addCategoryOverride": "Add category override",
+			"addCategoryTitle": "Add category override",
+			"selectCategory": "Category",
+			"selectCategoryPlaceholder": "Select category…",
+			"addCategory": "Add override",
+			"removeOverride": "Remove override",
+			"removeConfirmTitle": "Remove commission override?",
+			"removeConfirmMessage": "This category will use the default rate again after you save.",
+			"categoryRequired": "Select a category"
+		},
+		"promos": {
+			"title": "Promo codes",
+			"subtitle": "Platform-wide codes buyers apply at checkout.",
+			"newPromo": "New promo",
+			"code": "Code",
+			"discount": "Discount",
+			"scope": "Scope",
+			"uses": "Uses",
+			"expires": "Expires",
+			"status": "Status",
+			"allCategories": "All categories",
+			"minCart": "Min cart {{amount}}",
+			"createTitle": "Create promo code",
+			"create": "Create",
+			"form": {
+				"code": "Code",
+				"description": "Description",
+				"discountPercent": "Discount percent",
+				"maxUses": "Max uses"
+			},
+			"statuses": {
+				"ACTIVE": "Active",
+				"EXPIRED": "Expired",
+				"DISABLED": "Disabled"
+			}
+		},
+		"payouts": {
+			"title": "Payout cycle",
+			"subtitle": "When sellers receive funds and minimum hold for refunds.",
+			"schedule": "Schedule",
+			"holdDays": "Hold period (days)",
+			"holdHelp": "Funds release this many days after delivery.",
+			"minimum": "Minimum payout",
+			"schedules": {
+				"WEEKLY_TUESDAY": "Weekly · every Tuesday",
+				"BIWEEKLY": "Bi-weekly",
+				"MONTHLY_FIRST": "Monthly · 1st",
+				"ON_DEMAND": "On demand"
+			}
+		},
+		"toast": {
+			"saved": "Platform settings saved",
+			"saveError": "Failed to save platform settings",
+			"promoCreated": "Promo code created",
+			"promoCreateError": "Failed to create promo code"
 		}
 	}
 }

@@ -43,15 +43,17 @@ async function upsertCategory(
 	parentId: string | null,
 	en: string,
 	uk: string,
-	sort = 0
+	sort = 0,
+	icon: string | null = null,
 ) {
 	const cat = await prisma.category.upsert({
 		where: { slug },
-		update: {},
+		update: { icon },
 		create: {
 			slug,
 			parentId,
 			sortOrder: sort,
+			icon,
 			translations: {
 				create: [
 					{ language: 'EN', name: en },
@@ -96,28 +98,30 @@ async function main() {
 
 	// ── 2. CATEGORIES ───────────────────────────────────────────────────────────
 
-	const catClothing = await upsertCategory('clothing', null, 'Clothing', 'Одяг', 0);
+	const catClothing = await upsertCategory('clothing', null, 'Clothing', 'Одяг', 0, 'tags');
 	const catOuterwear = await upsertCategory(
 		'outerwear',
 		catClothing,
 		'Outerwear',
 		'Верхній одяг',
-		0
+		0,
+		'layers',
 	);
-	const catJackets = await upsertCategory('jackets', catOuterwear, 'Jackets', 'Куртки', 0);
-	const catKnitwear = await upsertCategory('knitwear', catOuterwear, 'Knitwear', 'Трикотаж', 1);
-	const catFootwear = await upsertCategory('footwear', null, 'Footwear', 'Взуття', 1);
-	const catSneakers = await upsertCategory('sneakers', catFootwear, 'Sneakers', 'Кросівки', 0);
-	const catHomeGoods = await upsertCategory('home-goods', null, 'Home Goods', 'Товари для дому', 2);
-	const catKitchen = await upsertCategory('kitchen', catHomeGoods, 'Kitchen', 'Кухня', 0);
+	const catJackets = await upsertCategory('jackets', catOuterwear, 'Jackets', 'Куртки', 0, null);
+	const catKnitwear = await upsertCategory('knitwear', catOuterwear, 'Knitwear', 'Трикотаж', 1, null);
+	const catFootwear = await upsertCategory('footwear', null, 'Footwear', 'Взуття', 1, 'store');
+	const catSneakers = await upsertCategory('sneakers', catFootwear, 'Sneakers', 'Кросівки', 0, null);
+	const catHomeGoods = await upsertCategory('home-goods', null, 'Home Goods', 'Товари для дому', 2, 'home');
+	const catKitchen = await upsertCategory('kitchen', catHomeGoods, 'Kitchen', 'Кухня', 0, null);
 	const catBedding = await upsertCategory(
 		'bedding',
 		catHomeGoods,
 		'Bedding',
 		'Постільна білизна',
-		1
+		1,
+		null,
 	);
-	const catAccessories = await upsertCategory('accessories', null, 'Accessories', 'Аксесуари', 3);
+	const catAccessories = await upsertCategory('accessories', null, 'Accessories', 'Аксесуари', 3, 'category');
 	log('10 categories');
 
 	// ── 3. CATEGORY ATTRIBUTES ──────────────────────────────────────────────────
@@ -254,19 +258,20 @@ async function main() {
 	// ── 6. PROMO CODES ──────────────────────────────────────────────────────────
 
 	const promoCodes = [
-		{ code: 'WELCOME10', discountPercent: 10, minOrderAmount: 50 },
-		{ code: 'SUMMER20', discountPercent: 20, minOrderAmount: 100 },
-		{ code: 'SAVE15', discountFixed: 15, minOrderAmount: 80 },
-		{ code: 'FIRST50', discountFixed: 50, minOrderAmount: 200 },
-		{ code: 'VIP25', discountPercent: 25, minOrderAmount: 150 },
+		{ code: 'WELCOME10', description: 'First-order discount', discountPercent: 10, minOrderAmount: 50 },
+		{ code: 'SUMMER20', description: 'Seasonal sitewide', discountPercent: 20, minOrderAmount: 100 },
+		{ code: 'SAVE15', description: 'Fixed amount off', discountFixed: 15, minOrderAmount: 80 },
+		{ code: 'FIRST50', description: 'Large order discount', discountFixed: 50, minOrderAmount: 200 },
+		{ code: 'VIP25', description: 'VIP member discount', discountPercent: 25, minOrderAmount: 150 },
 	];
 	const promoIds: Record<string, string> = {};
 	for (const pc of promoCodes) {
 		const p = await prisma.promoCode.upsert({
 			where: { code: pc.code },
-			update: {},
+			update: { description: pc.description },
 			create: {
 				code: pc.code,
+				description: pc.description,
 				discountPercent: 'discountPercent' in pc ? pc.discountPercent : null,
 				discountFixed: 'discountFixed' in pc ? pc.discountFixed : null,
 				minOrderAmount: pc.minOrderAmount,
@@ -277,6 +282,26 @@ async function main() {
 		promoIds[pc.code] = p.id;
 	}
 	log('5 promo codes');
+
+	// ── 6b. PLATFORM CONFIG ─────────────────────────────────────────────────────
+
+	await prisma.commissionRule.upsert({
+		where: { id: 'default-commission' },
+		update: {},
+		create: {
+			id: 'default-commission',
+			isDefault: true,
+			percent: 12,
+			fixedFee: 0.5,
+			currency: 'USD',
+		},
+	});
+	await prisma.platformConfig.upsert({
+		where: { id: 'default' },
+		update: {},
+		create: {},
+	});
+	log('platform config + default commission');
 
 	// ── 7. PRODUCTS ─────────────────────────────────────────────────────────────
 

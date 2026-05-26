@@ -1,0 +1,18 @@
+.page {
+	width: 100%;
+	max-width: 1200px;
+	margin-inline: auto;
+}
+
+.grid {
+	display: grid;
+	grid-template-columns: 1fr 360px;
+	gap: 24px;
+	align-items: start;
+}
+
+@media (max-width: 960px) {
+	.grid {
+		grid-template-columns: 1fr;
+	}
+}

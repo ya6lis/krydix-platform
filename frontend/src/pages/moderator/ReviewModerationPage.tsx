@@ -145,7 +145,7 @@ export default function ReviewModerationPage() {
 	);
 
 	return (
-		<Box sx={{ maxWidth: 1300 }}>
+		<Box sx={{ width: '100%', maxWidth: 1200, mx: 'auto' }}>
 			<Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 3, gap: 2 }}>
 				<Box>
 					<Typography variant="h5" fontWeight={700} color={tokens.ink1}>

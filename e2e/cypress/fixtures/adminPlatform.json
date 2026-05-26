@@ -1,0 +1,45 @@
+{
+	"platformOverview": {
+		"grossMerchandiseValue30d": 284612,
+		"gmvDeltaPercent": 12.4,
+		"platformRevenue30d": 31308,
+		"averageTakeRate": 11,
+		"pendingPayouts": 48914,
+		"nextPayoutDate": "2026-05-26T00:00:00.000Z",
+		"activeSellers": 524,
+		"newSellersThisMonth": 6
+	},
+	"commissionRules": [
+		{
+			"id": "rule-default",
+			"categoryId": null,
+			"categoryName": null,
+			"categorySlug": null,
+			"isDefault": true,
+			"percent": 12,
+			"fixedFee": 0.5,
+			"currency": "USD"
+		}
+	],
+	"payoutConfig": {
+		"schedule": "WEEKLY_TUESDAY",
+		"holdPeriodDays": 3,
+		"minimumPayout": 25,
+		"currency": "USD"
+	},
+	"adminPromoCodes": [
+		{
+			"id": "promo-1",
+			"code": "WELCOME10",
+			"description": "First-order discount",
+			"discountPercent": 10,
+			"discountFixed": null,
+			"minOrderAmount": 50,
+			"maxUses": null,
+			"usedCount": 1284,
+			"expiresAt": "2026-12-31T00:00:00.000Z",
+			"isActive": true,
+			"status": "ACTIVE"
+		}
+	]
+}
