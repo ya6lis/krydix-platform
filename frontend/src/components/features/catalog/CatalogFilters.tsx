@@ -2,6 +2,7 @@ import { Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { RangeSlider } from '@/components/ui';
 import { tokens } from '@/theme';
+import { CategoryFilterTree } from '@/components/features/catalog/CategoryFilterTree';
 import type { BrandCount, CategoryNode } from '@/types/catalog';
 
 export const PRICE_MIN = 0;
@@ -47,13 +48,11 @@ function CheckRow({
 	count,
 	checked,
 	onChange,
-	indent = false,
 }: {
 	label: string;
 	count?: number;
 	checked: boolean;
 	onChange: (next: boolean) => void;
-	indent?: boolean;
 }) {
 	return (
 		<Box
@@ -65,7 +64,6 @@ function CheckRow({
 				fontSize: 13.5,
 				color: tokens.ink2,
 				cursor: 'pointer',
-				pl: indent ? '16px' : 0,
 				'&:hover': { color: tokens.ink1 },
 			}}
 		>
@@ -149,11 +147,6 @@ export function CatalogFilters({
 }: CatalogFiltersProps) {
 	const { t } = useTranslation();
 
-	const flatCategories = categories.flatMap((root) => [
-		{ node: root, depth: 0 },
-		...root.children.map((child) => ({ node: child, depth: 1 })),
-	]);
-
 	const toggleBrand = (brand: string) => {
 		const next = value.brands.includes(brand)
 			? value.brands.filter((b) => b !== brand)
@@ -170,20 +163,11 @@ export function CatalogFilters({
 			{/* Category */}
 			<Box>
 				<FilterTitle>{t('catalog.filters.category')}</FilterTitle>
-				<Box sx={{ display: 'flex', flexDirection: 'column', gap: '9px' }}>
-					{flatCategories.map(({ node, depth }) => (
-						<CheckRow
-							key={node.id}
-							label={node.name}
-							count={node.productCount}
-							checked={value.categorySlug === node.slug}
-							indent={depth > 0}
-							onChange={(checked) =>
-								onChange({ ...value, categorySlug: checked ? node.slug : undefined })
-							}
-						/>
-					))}
-				</Box>
+				<CategoryFilterTree
+					categories={categories}
+					selectedSlug={value.categorySlug}
+					onSelect={(categorySlug) => onChange({ ...value, categorySlug })}
+				/>
 			</Box>
 
 			{/* Price */}

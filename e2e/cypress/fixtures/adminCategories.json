@@ -1,0 +1,81 @@
+{
+	"categoryTreeEmpty": {
+		"categoryTree": []
+	},
+	"categoryTreeWithParent": {
+		"categoryTree": [
+			{
+				"id": "cat-parent-1",
+				"slug": "electronics",
+				"parentId": null,
+				"icon": "tags",
+				"isActive": true,
+				"sortOrder": 0,
+				"depth": 1,
+				"productCount": 0,
+				"translations": [
+					{
+						"language": "EN",
+						"name": "Electronics",
+						"description": null,
+						"metaTitle": null,
+						"metaDescription": null
+					},
+					{
+						"language": "UK",
+						"name": "Електроніка",
+						"description": null,
+						"metaTitle": null,
+						"metaDescription": null
+					}
+				],
+				"children": []
+			}
+		]
+	},
+	"categoryTreeWithHierarchy": {
+		"categoryTree": [
+			{
+				"id": "cat-parent-1",
+				"slug": "electronics",
+				"parentId": null,
+				"icon": "tags",
+				"isActive": true,
+				"sortOrder": 0,
+				"depth": 1,
+				"productCount": 0,
+				"translations": [
+					{
+						"language": "EN",
+						"name": "Electronics",
+						"description": null,
+						"metaTitle": null,
+						"metaDescription": null
+					}
+				],
+				"children": [
+					{
+						"id": "cat-child-1",
+						"slug": "phones",
+						"parentId": "cat-parent-1",
+						"icon": "product",
+						"isActive": true,
+						"sortOrder": 0,
+						"depth": 2,
+						"productCount": 0,
+						"translations": [
+							{
+								"language": "EN",
+								"name": "Phones",
+								"description": null,
+								"metaTitle": null,
+								"metaDescription": null
+							}
+						],
+						"children": []
+					}
+				]
+			}
+		]
+	}
+}

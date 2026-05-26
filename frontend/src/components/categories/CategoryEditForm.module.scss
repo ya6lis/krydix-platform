@@ -1,0 +1,62 @@
+@use '@/styles/variables' as v;
+
+.form {
+	position: sticky;
+	top: 84px;
+	background: v.$bg-paper;
+	border: 1px solid v.$line;
+	border-radius: v.$radius-lg;
+	padding: 22px;
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	box-shadow: v.$shadow-sm;
+}
+
+.formError {
+	margin-bottom: 0 !important;
+}
+
+.headerTitle {
+	font-size: 16px;
+	font-weight: 700;
+	margin: 0;
+	letter-spacing: -0.01em;
+	color: v.$text-primary;
+}
+
+.headerDesc {
+	font-size: 12.5px;
+	color: v.$text-secondary;
+	margin-top: 4px;
+}
+
+.iconOption {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.iconValue {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.divider {
+	height: 1px;
+	background: v.$line;
+	margin: 4px 0;
+}
+
+.footer {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 8px;
+}
+
+.footerActions {
+	display: flex;
+	gap: 8px;
+}

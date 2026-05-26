@@ -65,9 +65,22 @@ describe('CatalogFilters', () => {
 			/>
 		);
 		expect(screen.getByText('Outerwear')).toBeInTheDocument();
-		expect(screen.getByText('Jackets')).toBeInTheDocument();
-		// toLocaleString in JSDOM may not add thousands separator — match either format
+		expect(screen.queryByText('Jackets')).not.toBeInTheDocument();
 		expect(screen.getByText(/1.?115/)).toBeInTheDocument();
+	});
+
+	it('expands child categories when chevron clicked', () => {
+		render(
+			<CatalogFilters
+				categories={categories}
+				brands={[]}
+				value={baseValue}
+				onChange={() => {}}
+				onClear={() => {}}
+			/>
+		);
+		fireEvent.click(screen.getByLabelText('catalog.filters.expandCategory'));
+		expect(screen.getByText('Jackets')).toBeInTheDocument();
 		expect(screen.getByText('312')).toBeInTheDocument();
 	});
 
@@ -98,9 +111,8 @@ describe('CatalogFilters', () => {
 				onClear={() => {}}
 			/>
 		);
-		// Find the checkbox next to "Jackets" by clicking the label
+		fireEvent.click(screen.getByLabelText('catalog.filters.expandCategory'));
 		const jacketsCheckboxes = screen.getAllByRole('checkbox');
-		// Outerwear is first, Jackets is second
 		fireEvent.click(jacketsCheckboxes[1]);
 		expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ categorySlug: 'jackets' }));
 	});

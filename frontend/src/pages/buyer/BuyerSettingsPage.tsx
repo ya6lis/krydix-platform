@@ -225,7 +225,7 @@ export default function BuyerSettingsPage() {
 	};
 
 	return (
-		<Box sx={{ maxWidth: 1100 }}>
+		<Box sx={{ width: '100%', maxWidth: 1200, mx: 'auto' }}>
 			{/* page head */}
 			<Box sx={{ mb: 3 }}>
 				<Typography variant="h4" sx={{ fontWeight: 800, letterSpacing: '-0.02em' }}>

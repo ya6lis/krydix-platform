@@ -8,6 +8,7 @@ import { Icons } from '@/constants/icons';
 import { tokens } from '@/theme';
 import { useAuthStore, type AuthUser } from '@/store/authStore';
 import { ROUTES } from '@/constants/routes';
+import { Role } from '@/constants/enums';
 import i18n from '@/i18n';
 
 /* ── width constant ──────────────────────────────────────────── */
@@ -45,14 +46,21 @@ const NAV_GROUPS: NavGroup[] = [
 				labelKey: 'nav.dashboard',
 				icon: Icons.chart,
 				href: ROUTES.SELLER_DASHBOARD,
-				roles: ['SELLER'],
+				roles: [Role.SELLER],
 			},
 			{
 				id: 'dashboard',
 				labelKey: 'nav.dashboard',
 				icon: Icons.chart,
 				href: ROUTES.ACCOUNT,
-				roles: ['BUYER', 'MODERATOR', 'ADMINISTRATOR'],
+				roles: [Role.BUYER, Role.MODERATOR],
+			},
+			{
+				id: 'dashboard-admin',
+				labelKey: 'nav.dashboard',
+				icon: Icons.chart,
+				href: ROUTES.ADMIN,
+				roles: [Role.ADMIN],
 			},
 		],
 	},
@@ -67,7 +75,7 @@ const NAV_GROUPS: NavGroup[] = [
 				labelKey: 'nav.products',
 				icon: Icons.store,
 				href: ROUTES.SELLER_PRODUCTS,
-				roles: ['SELLER'],
+				roles: [Role.SELLER],
 			},
 			{
 				id: 'seller-orders',
@@ -75,7 +83,7 @@ const NAV_GROUPS: NavGroup[] = [
 				icon: Icons.order,
 				href: ROUTES.SELLER_ORDERS,
 				badge: { variant: 'default' },
-				roles: ['SELLER'],
+				roles: [Role.SELLER],
 			},
 			//{
 			//	id: 'seller-verification',
@@ -97,7 +105,7 @@ const NAV_GROUPS: NavGroup[] = [
 				labelKey: 'nav.catalog',
 				icon: Icons.products,
 				href: ROUTES.PRODUCTS,
-				roles: [GUEST, 'BUYER', 'SELLER', 'MODERATOR', 'ADMINISTRATOR'],
+				roles: [GUEST, Role.BUYER, Role.SELLER, Role.MODERATOR, Role.ADMIN],
 			},
 			{
 				id: 'orders',
@@ -105,7 +113,7 @@ const NAV_GROUPS: NavGroup[] = [
 				icon: Icons.order,
 				href: ROUTES.ACCOUNT_ORDERS,
 				badge: { variant: 'default' },
-				roles: ['BUYER', 'ADMINISTRATOR'],
+				roles: [Role.BUYER, Role.ADMIN],
 			},
 			{
 				id: 'messages',
@@ -113,7 +121,7 @@ const NAV_GROUPS: NavGroup[] = [
 				icon: Icons.chats,
 				href: '/chat',
 				badge: { variant: 'default' },
-				roles: ['BUYER', 'SELLER', 'MODERATOR', 'ADMINISTRATOR'],
+				roles: [Role.BUYER, Role.SELLER, Role.MODERATOR, Role.ADMIN],
 			},
 		],
 	},
@@ -129,7 +137,7 @@ const NAV_GROUPS: NavGroup[] = [
 				icon: Icons.clipboardCheck,
 				href: ROUTES.MODERATOR_PRODUCT_MODERATION,
 				badge: { variant: 'warn' },
-				roles: ['MODERATOR', 'ADMINISTRATOR'],
+				roles: [Role.MODERATOR, Role.ADMIN],
 			},
 			//{
 			//	id: 'complaints',
@@ -144,28 +152,28 @@ const NAV_GROUPS: NavGroup[] = [
 				labelKey: 'nav.reviewModeration',
 				icon: Icons.star,
 				href: ROUTES.MODERATOR_REVIEW_MODERATION,
-				roles: ['MODERATOR', 'ADMINISTRATOR'],
+				roles: [Role.MODERATOR, Role.ADMIN],
 			},
 			{
 				id: 'all-reviews',
 				labelKey: 'nav.allReviews',
 				icon: Icons.star,
 				href: ROUTES.MODERATOR_ALL_REVIEWS,
-				roles: ['MODERATOR', 'ADMINISTRATOR'],
+				roles: [Role.MODERATOR, Role.ADMIN],
 			},
 			{
 				id: 'all-products',
 				labelKey: 'nav.allProducts',
 				icon: Icons.products,
 				href: ROUTES.MODERATOR_ALL_PRODUCTS,
-				roles: ['MODERATOR', 'ADMINISTRATOR'],
+				roles: [Role.MODERATOR, Role.ADMIN],
 			},
 			{
 				id: 'users',
 				labelKey: 'nav.users',
 				icon: Icons.users,
 				href: ROUTES.MODERATOR_USERS,
-				roles: ['MODERATOR', 'ADMINISTRATOR'],
+				roles: [Role.MODERATOR, Role.ADMIN],
 			},
 			//{
 			//	id: 'verifications',
@@ -184,46 +192,25 @@ const NAV_GROUPS: NavGroup[] = [
 		labelKey: 'nav.group.adminGroup',
 		items: [
 			{
-				id: 'users',
-				labelKey: 'nav.users',
-				icon: Icons.users,
-				href: ROUTES.ADMIN_USERS,
-				roles: ['ADMINISTRATOR'],
-			},
-			{
-				id: 'admin-products',
-				labelKey: 'nav.allProducts',
-				icon: Icons.products,
-				href: ROUTES.ADMIN_PRODUCTS,
-				roles: ['ADMINISTRATOR'],
-			},
-			{
-				id: 'admin-reviews',
-				labelKey: 'nav.allReviews',
-				icon: Icons.star,
-				href: ROUTES.ADMIN_REVIEWS,
-				roles: ['ADMINISTRATOR'],
-			},
-			{
 				id: 'categories',
 				labelKey: 'nav.categories',
 				icon: Icons.category,
 				href: ROUTES.ADMIN_CATEGORIES,
-				roles: ['ADMINISTRATOR'],
+				roles: [Role.ADMIN],
 			},
 			{
 				id: 'platform',
 				labelKey: 'nav.platform',
 				icon: Icons.settings,
 				href: ROUTES.ADMIN_SETTINGS,
-				roles: ['ADMINISTRATOR'],
+				roles: [Role.ADMIN],
 			},
 			{
 				id: 'audit',
 				labelKey: 'nav.audit',
 				icon: Icons.file,
 				href: ROUTES.ADMIN_AUDIT,
-				roles: ['ADMINISTRATOR'],
+				roles: [Role.ADMIN],
 			},
 		],
 	},
@@ -245,7 +232,7 @@ const ROLE_BADGE: Record<string, { bg: string; color: string; label: string }> =
 	BUYER: { bg: tokens.accentSoft, color: tokens.accentInk, label: 'Buyer' },
 	SELLER: { bg: '#ede9fe', color: '#5b21b6', label: 'Seller' },
 	MODERATOR: { bg: tokens.amber, color: tokens.amberInk, label: 'Moderator' },
-	ADMINISTRATOR: { bg: tokens.coralSoft, color: tokens.coralInk, label: 'Admin' },
+	ADMIN: { bg: tokens.coralSoft, color: tokens.coralInk, label: 'Admin' },
 };
 
 /* ── component ───────────────────────────────────────────────── */

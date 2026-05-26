@@ -250,4 +250,169 @@ export const adminTypeDefs = `#graphql
 		changeAdminReviewStatus(id: ID!, status: String!): AdminReviewItem!
 		adminDeleteReview(id: ID!): Boolean!
 	}
+
+	type AuditLogActor {
+		id: ID!
+		displayName: String!
+		initials: String!
+		avatarUrl: String
+		email: String!
+		role: String!
+	}
+
+	type AuditLogItem {
+		id: ID!
+		eventRef: String!
+		actionKey: String!
+		actionVariant: String!
+		rawAction: String!
+		actor: AuditLogActor!
+		targetType: String!
+		targetId: String!
+		targetLabel: String!
+		targetPath: String
+		description: String!
+		note: String
+		metadata: JSON
+		createdAt: String!
+	}
+
+	type AuditLogActionFilterOption {
+		key: String!
+		count: Int!
+	}
+
+	type AuditLogActorRoleFilterOption {
+		role: String!
+		count: Int!
+	}
+
+	type AuditLogList {
+		items: [AuditLogItem!]!
+		total: Int!
+		page: Int!
+		pageSize: Int!
+		actionFilterOptions: [AuditLogActionFilterOption!]!
+		actorRoleFilterOptions: [AuditLogActorRoleFilterOption!]!
+	}
+
+	enum AuditActorRoleFilter {
+		ADMIN
+		MODERATOR
+	}
+
+	enum AuditDateRangePreset {
+		LAST_24_HOURS
+		LAST_7_DAYS
+		LAST_30_DAYS
+		CUSTOM
+	}
+
+	input AuditLogsInput {
+		actorRoles: [AuditActorRoleFilter!]
+		actionKeys: [String!]
+		datePreset: AuditDateRangePreset
+		dateFrom: String
+		dateTo: String
+		page: Int
+		pageSize: Int
+	}
+
+	extend type Query {
+		auditLogs(input: AuditLogsInput): AuditLogList!
+	}
+
+	type PlatformOverview {
+		grossMerchandiseValue30d: Float!
+		gmvDeltaPercent: Float!
+		platformRevenue30d: Float!
+		averageTakeRate: Float!
+		pendingPayouts: Float!
+		nextPayoutDate: String!
+		activeSellers: Int!
+		newSellersThisMonth: Int!
+	}
+
+	type CommissionRuleItem {
+		id: ID!
+		categoryId: ID
+		categoryName: String
+		categorySlug: String
+		isDefault: Boolean!
+		percent: Float!
+		fixedFee: Float!
+		currency: String!
+	}
+
+	type PayoutConfig {
+		schedule: String!
+		holdPeriodDays: Int!
+		minimumPayout: Float!
+		currency: String!
+	}
+
+	type AdminPromoCodeItem {
+		id: ID!
+		code: String!
+		description: String
+		discountPercent: Float
+		discountFixed: Float
+		minOrderAmount: Float
+		maxUses: Int
+		usedCount: Int!
+		expiresAt: String
+		isActive: Boolean!
+		status: String!
+	}
+
+	input CommissionRuleInput {
+		id: ID
+		categoryId: ID
+		percent: Float!
+		fixedFee: Float!
+		currency: String!
+		isDefault: Boolean
+	}
+
+	input PayoutConfigInput {
+		schedule: String!
+		holdPeriodDays: Int!
+		minimumPayout: Float!
+		currency: String!
+	}
+
+	input CreateAdminPromoCodeInput {
+		code: String!
+		description: String
+		discountPercent: Float
+		discountFixed: Float
+		minOrderAmount: Float
+		maxUses: Int
+		expiresAt: String
+		isActive: Boolean
+	}
+
+	input UpdateAdminPromoCodeInput {
+		description: String
+		discountPercent: Float
+		discountFixed: Float
+		minOrderAmount: Float
+		maxUses: Int
+		expiresAt: String
+		isActive: Boolean
+	}
+
+	extend type Query {
+		platformOverview: PlatformOverview!
+		commissionRules: [CommissionRuleItem!]!
+		payoutConfig: PayoutConfig!
+		adminPromoCodes: [AdminPromoCodeItem!]!
+	}
+
+	extend type Mutation {
+		saveCommissionRules(rules: [CommissionRuleInput!]!): [CommissionRuleItem!]!
+		savePayoutConfig(input: PayoutConfigInput!): PayoutConfig!
+		createAdminPromoCode(input: CreateAdminPromoCodeInput!): AdminPromoCodeItem!
+		updateAdminPromoCode(id: ID!, input: UpdateAdminPromoCodeInput!): AdminPromoCodeItem!
+	}
 `;

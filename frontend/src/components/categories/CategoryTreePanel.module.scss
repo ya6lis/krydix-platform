@@ -1,0 +1,63 @@
+@use '@/styles/variables' as v;
+
+.treeCard {
+	overflow: hidden;
+	padding: 0 !important;
+	border: 1px solid v.$line !important;
+	border-radius: v.$radius-lg !important;
+	box-shadow: v.$shadow-sm !important;
+	background: v.$bg-paper !important;
+}
+
+.toolbar {
+	padding: 14px 18px;
+	border-bottom: 1px solid v.$line;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: nowrap;
+	min-width: 0;
+}
+
+.searchField {
+	flex: 1 1 auto;
+	min-width: 0;
+	background: v.$bg-default;
+	border: 1px solid v.$line;
+	border-radius: v.$radius-md;
+	padding: 7px 12px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.toolbarActions {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex: 0 0 auto;
+}
+
+.langSelect {
+	width: auto !important;
+	min-width: 108px;
+	flex-shrink: 0;
+
+	:global(.MuiOutlinedInput-root) {
+		font-size: 13px;
+		padding-top: 7px;
+		padding-bottom: 7px;
+	}
+}
+
+.toolbarBtn {
+	flex-shrink: 0;
+	white-space: nowrap;
+	min-width: auto !important;
+	padding-left: 10px !important;
+	padding-right: 10px !important;
+}
+
+.tree {
+	padding: 8px 0;
+}

@@ -1,0 +1,88 @@
+.heroIcon {
+	width: 40px;
+	height: 40px;
+	border-radius: 10px;
+	display: grid;
+	place-items: center;
+	background: var(--surface-2, #f4f6f8);
+	color: var(--ink-3, #637381);
+	flex-shrink: 0;
+}
+
+.heroIcon_approve,
+.heroIcon_create {
+	background: rgba(0, 184, 217, 0.12);
+	color: #006c9c;
+}
+
+.heroIcon_reject,
+.heroIcon_block,
+.heroIcon_delete {
+	background: rgba(255, 86, 48, 0.12);
+	color: #b71d18;
+}
+
+.heroIcon_update {
+	background: rgba(255, 171, 0, 0.12);
+	color: #b76e00;
+}
+
+.heroIcon_role {
+	background: rgba(99, 102, 241, 0.12);
+	color: #4338ca;
+}
+
+.section {
+	border: 1px solid rgba(145, 158, 171, 0.2);
+	border-radius: 12px;
+	padding: 14px 16px;
+}
+
+.sectionTitle {
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--ink-3, #637381);
+	margin-bottom: 12px;
+}
+
+.detailRow {
+	display: grid;
+	grid-template-columns: 140px 1fr;
+	gap: 12px;
+	padding: 6px 0;
+	align-items: start;
+}
+
+.detailRow + .detailRow {
+	border-top: 1px solid rgba(145, 158, 171, 0.12);
+}
+
+.detailLabel {
+	font-size: 12.5px;
+	color: var(--ink-3, #637381);
+}
+
+.detailValue {
+	font-size: 13px;
+	color: var(--ink-1, #212b36);
+	word-break: break-word;
+}
+
+.inlineLink {
+	color: #4338ca;
+	text-decoration: none;
+	font-size: 13px;
+}
+
+.inlineLink:hover {
+	text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+	.detailRow {
+		grid-template-columns: 1fr;
+		gap: 4px;
+	}
+}

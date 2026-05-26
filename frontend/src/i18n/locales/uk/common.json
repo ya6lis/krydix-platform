@@ -322,6 +322,8 @@
 		},
 		"filters": {
 			"category": "Категорія",
+			"expandCategory": "Розгорнути категорію",
+			"collapseCategory": "Згорнути категорію",
 			"price": "Ціна (USD)",
 			"brand": "Бренд",
 			"rating": "Рейтинг",
@@ -1353,6 +1355,256 @@
 			"statusChangeError": "Не вдалося оновити статус",
 			"deleted": "Відгук видалено",
 			"deleteError": "Не вдалося видалити відгук"
+		}
+	},
+	"adminCategories": {
+		"pageTitle": "Категорії",
+		"pageSubtitle": "Ієрархічна таксономія — до 4 рівнів вкладеності. Перетягніть для зміни порядку.",
+		"newTopLevel": "Нова коренева",
+		"tree": {
+			"searchPlaceholder": "Пошук категорій…",
+			"languageEn": "Англійська",
+			"languageUk": "Українська",
+			"expandAll": "Розгорнути все",
+			"collapseAll": "Згорнути все",
+			"addSub": "Підкат.",
+			"actions": "Дії з категорією",
+			"dragHandle": "Перетягнути для зміни порядку",
+			"expand": "Розгорнути",
+			"collapse": "Згорнути",
+			"hideCategory": "Приховати категорію",
+			"showCategory": "Показати категорію",
+			"emptyTitle": "Категорій ще немає",
+			"emptyDescription": "Створіть першу кореневу категорію."
+		},
+		"form": {
+			"createTitle": "Нова категорія",
+			"createChildTitle": "Нова підкатегорія",
+			"createSubtitle": "Заповніть дані та збережіть.",
+			"editingMeta": "Редагування · рівень {{level}} · {{path}}",
+			"nameEn": "Назва (EN)",
+			"nameUk": "Назва (UK)",
+			"slug": "Slug",
+			"icon": "Іконка",
+			"iconNone": "Літера за замовчуванням",
+			"iconTags": "Теги",
+			"iconCategory": "Категорія",
+			"iconProduct": "Товар",
+			"iconProducts": "Товари",
+			"iconStore": "Магазин",
+			"iconHome": "Дім",
+			"iconLayers": "Шари",
+			"iconCart": "Кошик",
+			"parent": "Батьківська",
+			"noParent": "Кореневий рівень",
+			"metaTitleEn": "SEO meta title (EN)",
+			"metaTitleUk": "SEO meta title (UK)",
+			"metaDescriptionEn": "SEO опис (EN)",
+			"metaDescriptionUk": "SEO опис (UK)",
+			"save": "Зберегти",
+			"discard": "Скасувати",
+			"delete": "Видалити"
+		},
+		"delete": {
+			"title": "Видалити категорію",
+			"message": "Видалити «{{name}}»? Можливо лише якщо немає товарів або підкатегорій.",
+			"confirm": "Видалити",
+			"cancel": "Скасувати"
+		},
+		"toast": {
+			"created": "Категорію створено",
+			"createError": "Не вдалося створити категорію",
+			"updated": "Категорію оновлено",
+			"updateError": "Не вдалося оновити категорію",
+			"deleted": "Категорію видалено",
+			"deleteError": "Не вдалося видалити категорію",
+			"moveError": "Не вдалося змінити порядок"
+		}
+	},
+	"adminAudit": {
+		"pageTitle": "Журнал аудиту",
+		"pageSubtitle": "Усі дії модераторів і адміністраторів з актором та ціллю.",
+		"dateRange": {
+			"LAST_24_HOURS": "Останні 24 години",
+			"LAST_7_DAYS": "Останні 7 днів",
+			"LAST_30_DAYS": "Останні 30 днів",
+			"CUSTOM": "Власний діапазон"
+		},
+		"filters": {
+			"actionType": "Тип дії",
+			"actorType": "Роль актора",
+			"clear": "Скинути фільтри"
+		},
+		"actorRoles": {
+			"ADMIN": "Адміністратор",
+			"MODERATOR": "Модератор"
+		},
+		"actions": {
+			"product.approve": "Схвалити товар",
+			"product.reject": "Відхилити товар",
+			"product.block": "Заблокувати товар",
+			"product.update": "Оновити товар",
+			"product.delete": "Видалити товар",
+			"seller.approve": "Схвалити продавця",
+			"seller.reject": "Відхилити продавця",
+			"seller.update": "Оновити продавця",
+			"user.roleChange": "Зміна ролі",
+			"user.ban": "Заблокувати користувача",
+			"user.invite": "Запросити користувача",
+			"user.delete": "Видалити користувача",
+			"review.approve": "Схвалити відгук",
+			"review.block": "Заблокувати відгук",
+			"review.delete": "Видалити відгук",
+			"review.update": "Оновити відгук",
+			"complaint.resolve": "Вирішити скаргу",
+			"category.create": "Створити категорію",
+			"category.update": "Оновити категорію",
+			"category.delete": "Видалити категорію",
+			"category.move": "Перемістити категорію",
+			"category.translation": "Оновити переклад"
+		},
+		"dayLabels": {
+			"today": "Сьогодні · {{date}}",
+			"yesterday": "Вчора · {{date}}"
+		},
+		"empty": {
+			"title": "Подій аудиту немає",
+			"description": "Спробуйте змінити фільтри або діапазон дат."
+		},
+		"detail": {
+			"title": "Деталі події",
+			"close": "Закрити",
+			"openTarget": "Відкрити ціль",
+			"yes": "Так",
+			"no": "Ні",
+			"sections": {
+				"actor": "Актор",
+				"target": "Ціль",
+				"action": "Дія",
+				"changes": "Зміни та метадані"
+			},
+			"fields": {
+				"role": "Роль",
+				"actorId": "ID актора",
+				"targetType": "Тип цілі",
+				"targetLabel": "Ціль",
+				"targetId": "ID цілі",
+				"actionKey": "Ключ дії",
+				"rawAction": "Системна дія",
+				"note": "Примітка"
+			},
+			"metadata": {
+				"from": "Попереднє значення",
+				"to": "Нове значення",
+				"reason": "Причина",
+				"source": "Джерело",
+				"operation": "Операція",
+				"language": "Мова",
+				"role": "Роль",
+				"action": "Дія",
+				"bulk": "Масова дія",
+				"count": "Кількість елементів",
+				"slug": "Slug",
+				"parentId": "ID батьківської",
+				"sortOrder": "Порядок сортування"
+			},
+			"targetTypes": {
+				"Product": "Товар",
+				"User": "Користувач",
+				"Category": "Категорія",
+				"ProductReview": "Відгук",
+				"SellerApplication": "Верифікація продавця",
+				"Complaint": "Скарга"
+			}
+		}
+	},
+	"adminPlatform": {
+		"pageTitle": "Налаштування платформи",
+		"pageSubtitle": "Монетизація, комісії, промокоди та цикл виплат.",
+		"healthStatus": "Усі системи працюють",
+		"saveChanges": "Зберегти зміни",
+		"nav": {
+			"groupMonetization": "Монетизація",
+			"overview": "Огляд",
+			"commissions": "Комісії",
+			"promos": "Промокоди",
+			"payouts": "Цикл виплат"
+		},
+		"overview": {
+			"gmv": "GMV (30д)",
+			"vsLast30d": "vs попередні 30д",
+			"revenue": "Дохід платформи (30д)",
+			"takeRate": "Середня комісія {{rate}}%",
+			"pendingPayouts": "Очікують виплати",
+			"nextRun": "Наступний цикл · {{date}}",
+			"activeSellers": "Активні продавці",
+			"thisMonth": "верифіковано цього місяця"
+		},
+		"commissions": {
+			"title": "Ставки комісії",
+			"subtitle": "Відсоток з кожного продажу та фіксована плата за категорією.",
+			"scope": "Область",
+			"percent": "Відсоток",
+			"fixedFee": "Фікс. плата",
+			"currency": "Валюта",
+			"defaultRate": "Базова ставка",
+			"baseline": "Базова",
+			"defaultHint": "Для всіх категорій, якщо немає override",
+			"addCategoryOverride": "Додати override категорії",
+			"addCategoryTitle": "Додати override категорії",
+			"selectCategory": "Категорія",
+			"selectCategoryPlaceholder": "Оберіть категорію…",
+			"addCategory": "Додати override",
+			"removeOverride": "Видалити override",
+			"removeConfirmTitle": "Видалити override комісії?",
+			"removeConfirmMessage": "Після збереження категорія знову використовуватиме базову ставку.",
+			"categoryRequired": "Оберіть категорію"
+		},
+		"promos": {
+			"title": "Промокоди",
+			"subtitle": "Коди для покупців на етапі checkout.",
+			"newPromo": "Новий промо",
+			"code": "Код",
+			"discount": "Знижка",
+			"scope": "Область",
+			"uses": "Використань",
+			"expires": "Закінчення",
+			"status": "Статус",
+			"allCategories": "Усі категорії",
+			"minCart": "Мін. кошик {{amount}}",
+			"createTitle": "Створити промокод",
+			"create": "Створити",
+			"form": {
+				"code": "Код",
+				"description": "Опис",
+				"discountPercent": "Відсоток знижки",
+				"maxUses": "Макс. використань"
+			},
+			"statuses": {
+				"ACTIVE": "Активний",
+				"EXPIRED": "Прострочений",
+				"DISABLED": "Вимкнений"
+			}
+		},
+		"payouts": {
+			"title": "Цикл виплат",
+			"subtitle": "Коли продавці отримують кошти та мін. hold для refund.",
+			"schedule": "Графік",
+			"holdDays": "Hold період (дні)",
+			"holdHelp": "Кошти через стільки днів після доставки.",
+			"minimum": "Мін. виплата",
+			"schedules": {
+				"WEEKLY_TUESDAY": "Щотижня · кожен вівторок",
+				"BIWEEKLY": "Раз на 2 тижні",
+				"MONTHLY_FIRST": "Щомісяця · 1-го",
+				"ON_DEMAND": "На вимогу"
+			}
+		},
+		"toast": {
+			"saved": "Налаштування платформи збережено",
+			"saveError": "Не вдалося зберегти налаштування",
+			"promoCreated": "Промокод створено",
+			"promoCreateError": "Не вдалося створити промокод"
 		}
 	}
 }
