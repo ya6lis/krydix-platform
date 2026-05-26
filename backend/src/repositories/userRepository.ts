@@ -33,3 +33,11 @@ export async function updateUserLastSeenAt(userId: string) {
 		data: { lastSeenAt: new Date() },
 	});
 }
+
+export async function findStaffUserIds(): Promise<string[]> {
+	const rows = await prisma.user.findMany({
+		where: { role: { in: ['MODERATOR', 'ADMIN'] } },
+		select: { id: true },
+	});
+	return rows.map((row) => row.id);
+}

@@ -4,9 +4,35 @@ import { Icons } from '@/constants/icons';
 import type { AppNotification } from '@/types/notification';
 import type { NotificationTone } from '@/components/ui/NotificationItem';
 
+const STAFF_ROLES: string[] = [Role.MODERATOR, Role.ADMIN];
+
+export const SUPPORT_NOTIFICATION_ACTION = {
+	NEW_REQUEST: 'NEW_REQUEST',
+	ASSIGNED: 'ASSIGNED',
+	RESOLVED: 'RESOLVED',
+	CLOSED: 'CLOSED',
+} as const;
+
+function isSupportNotification(notification: AppNotification): boolean {
+	const metadata = notification.metadata ?? {};
+	return (
+		notification.event === NotificationEvent.SUPPORT_UPDATE ||
+		metadata.isSupportChat === true
+	);
+}
+
+function supportNotificationRoute(role: Role | string | undefined): string {
+	if (role && STAFF_ROLES.includes(role)) {
+		return ROUTES.MODERATOR_SUPPORT;
+	}
+	return ROUTES.SUPPORT;
+}
+
 export function notificationTone(event: NotificationEvent): NotificationTone {
 	switch (event) {
 		case NotificationEvent.NEW_MESSAGE:
+			return 'message';
+		case NotificationEvent.SUPPORT_UPDATE:
 			return 'message';
 		case NotificationEvent.NEW_ORDER:
 		case NotificationEvent.ORDER_STATUS_CHANGE:
@@ -23,6 +49,7 @@ export function notificationTone(event: NotificationEvent): NotificationTone {
 export function notificationIcon(event: NotificationEvent) {
 	switch (event) {
 		case NotificationEvent.NEW_MESSAGE:
+		case NotificationEvent.SUPPORT_UPDATE:
 			return Icons.chats;
 		case NotificationEvent.NEW_ORDER:
 		case NotificationEvent.ORDER_STATUS_CHANGE:
@@ -63,12 +90,28 @@ export function filterNotifications(
 	}
 }
 
+export const NOTIFICATION_TAB_KEYS = ['all', 'unread', 'orders', 'system'] as const;
+export type NotificationTabKey = (typeof NOTIFICATION_TAB_KEYS)[number];
+
+export function notificationTabCounts(notifications: AppNotification[]) {
+	return {
+		all: notifications.length,
+		unread: notifications.filter((item) => !item.isRead).length,
+		orders: filterNotifications(notifications, 'orders').length,
+		system: filterNotifications(notifications, 'system').length,
+	};
+}
+
 export function notificationRoute(
 	notification: AppNotification,
 	role: Role | string | undefined,
 ): string | null {
 	const metadata = notification.metadata ?? {};
 	const event = notification.event as NotificationEvent;
+
+	if (isSupportNotification(notification)) {
+		return supportNotificationRoute(role);
+	}
 
 	if (event === NotificationEvent.NEW_MESSAGE && typeof metadata.conversationId === 'string') {
 		return role === Role.SELLER
@@ -137,12 +180,67 @@ export function notificationDisplayText(
 
 	switch (event) {
 		case NotificationEvent.NEW_MESSAGE:
+			if (metadata.isSupportChat === true) {
+				return {
+					title: t('notifications.events.supportReply.title', {
+						name: metadata.senderName ?? notification.title,
+					}),
+					body: typeof metadata.preview === 'string' ? metadata.preview : notification.body,
+				};
+			}
 			return {
 				title: t('notifications.events.newMessage.title', {
 					name: metadata.senderName ?? notification.title,
 				}),
 				body: typeof metadata.preview === 'string' ? metadata.preview : notification.body,
 			};
+		case NotificationEvent.SUPPORT_UPDATE: {
+			const action = metadata.action as string | undefined;
+			const subject = typeof metadata.subject === 'string' ? metadata.subject : null;
+			const staffName =
+				typeof metadata.staffName === 'string' ? metadata.staffName : t('common.supportTeam');
+			const requesterName =
+				typeof metadata.requesterName === 'string' ? metadata.requesterName : t('common.user');
+
+			switch (action) {
+				case SUPPORT_NOTIFICATION_ACTION.ASSIGNED:
+					return {
+						title: t('notifications.events.supportAssigned.title'),
+						body: subject
+							? t('notifications.events.supportAssigned.bodyWithSubject', {
+									name: staffName,
+									subject,
+								})
+							: t('notifications.events.supportAssigned.body', { name: staffName }),
+					};
+				case SUPPORT_NOTIFICATION_ACTION.RESOLVED:
+					return {
+						title: t('notifications.events.supportResolved.title'),
+						body: subject
+							? t('notifications.events.supportResolved.bodyWithSubject', { subject })
+							: t('notifications.events.supportResolved.body'),
+					};
+				case SUPPORT_NOTIFICATION_ACTION.CLOSED:
+					return {
+						title: t('notifications.events.supportClosed.title'),
+						body: subject
+							? t('notifications.events.supportClosed.bodyWithSubject', { subject })
+							: t('notifications.events.supportClosed.body'),
+					};
+				case SUPPORT_NOTIFICATION_ACTION.NEW_REQUEST:
+					return {
+						title: t('notifications.events.supportNewRequest.title'),
+						body: subject
+							? t('notifications.events.supportNewRequest.bodyWithSubject', {
+									name: requesterName,
+									subject,
+								})
+							: t('notifications.events.supportNewRequest.body', { name: requesterName }),
+					};
+				default:
+					return { title: notification.title, body: notification.body };
+			}
+		}
 		case NotificationEvent.NEW_ORDER: {
 			const order = extractOrderLabel(notification);
 			if (!order) {

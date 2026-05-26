@@ -3,6 +3,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { tokens } from '@/theme';
 import { ROUTES } from '@/constants/routes';
+import { useRoleHomeRoute } from '@/hooks/useRoleHomeRoute';
 
 export interface AuthLayoutProps {
 	/** Small uppercase chip above the title. */
@@ -43,6 +44,7 @@ export function AuthLayout({
 	artGradient = LOGIN_GRADIENT,
 }: AuthLayoutProps) {
 	const { t } = useTranslation();
+	const homeRoute = useRoleHomeRoute();
 
 	return (
 		<Box
@@ -69,7 +71,7 @@ export function AuthLayout({
 			>
 				<Box
 					component={RouterLink}
-					to={ROUTES.HOME}
+					to={homeRoute}
 					sx={{
 						display: 'flex',
 						alignItems: 'center',

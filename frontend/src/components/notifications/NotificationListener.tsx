@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/store/authStore';
 import { useAppToast } from '@/components/ui/AppToast';
 import { useNotificationSocket } from '@/hooks/useNotificationSocket';
-import { NotificationEvent } from '@/constants/enums';
+import { NotificationEvent, Role } from '@/constants/enums';
 import { UNREAD_MESSAGE_COUNT_QUERY } from '@/graphql/operations/chat';
 import {
 	MARK_NOTIFICATION_READ_MUTATION,
@@ -13,7 +13,7 @@ import {
 	UNREAD_ORDER_NOTIFICATION_COUNT_QUERY,
 } from '@/graphql/operations/notifications';
 import { router } from '@/router';
-import { notificationDisplayText, notificationRoute } from '@/utils/notificationUtils';
+import { notificationDisplayText, notificationRoute, SUPPORT_NOTIFICATION_ACTION } from '@/utils/notificationUtils';
 import type { NotificationSocketPayload } from '@/types/notification';
 
 function toastSeverity(event: NotificationEvent): 'info' | 'success' | 'warning' | 'error' {
@@ -24,6 +24,8 @@ function toastSeverity(event: NotificationEvent): 'info' | 'success' | 'warning'
 			return 'info';
 		case NotificationEvent.NEW_MESSAGE:
 			return 'info';
+		case NotificationEvent.SUPPORT_UPDATE:
+			return 'success';
 		default:
 			return 'info';
 	}
@@ -52,6 +54,16 @@ export function NotificationListener() {
 		(payload: NotificationSocketPayload) => {
 			refetchCounts();
 			const notification = payload.notification;
+			const metadata = notification.metadata ?? {};
+			const isStaffNewSupportRequest =
+				(user?.role === Role.MODERATOR || user?.role === Role.ADMIN) &&
+				notification.event === NotificationEvent.SUPPORT_UPDATE &&
+				metadata.action === SUPPORT_NOTIFICATION_ACTION.NEW_REQUEST;
+
+			if (isStaffNewSupportRequest) {
+				return;
+			}
+
 			const { title, body } = notificationDisplayText(notification, t);
 			const route = notificationRoute(notification, user?.role);
 

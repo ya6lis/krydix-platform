@@ -8,9 +8,31 @@ import {
 	requestReturn,
 	getMyOrders,
 	getMyOrder,
+	getMySellerOrders,
+	getMySellerOrder,
+	shipSellerOrder,
+	confirmSellerOrder,
+	markSellerOrderPacked,
+	markSellerOrderInTransit,
+	markSellerOrderDelivered,
+	cancelSellerOrder,
+	updateSellerOrderTracking,
+	reviewSellerReturnRequest,
+	markSellerReturnReceived,
+	processSellerReturnRefund,
 } from '../../../services/orderService.js';
-import { countOrdersByBuyerAndStatus } from '../../../repositories/orderRepository.js';
-import { MyOrdersFilterSchema } from '../../../validators/ordersValidators.js';
+import {
+	countOrdersByBuyerAndStatus,
+	countOrdersBySellerAndStatus,
+} from '../../../repositories/orderRepository.js';
+import {
+	MyOrdersFilterSchema,
+	ShipSellerOrderSchema,
+	CancelSellerOrderSchema,
+	UpdateSellerTrackingSchema,
+	ReviewSellerReturnSchema,
+	SellerOrderIdSchema,
+} from '../../../validators/ordersValidators.js';
 
 function requireAuth(context: GraphQLContext) {
 	if (!context.user) {
@@ -19,6 +41,34 @@ function requireAuth(context: GraphQLContext) {
 		});
 	}
 	return context.user;
+}
+
+function requireSeller(context: GraphQLContext) {
+	const user = requireAuth(context);
+	if (user.role !== 'SELLER' && user.role !== 'ADMIN') {
+		throw new GraphQLError('Seller access required', { extensions: { code: 'FORBIDDEN' } });
+	}
+	return user;
+}
+
+function parseOrdersFilter(args: {
+	filter?: {
+		status?: string;
+		dateFrom?: string;
+		dateTo?: string;
+		search?: string;
+		page?: number;
+		pageSize?: number;
+	};
+}) {
+	return MyOrdersFilterSchema.parse({
+		status: args.filter?.status as OrderStatus | undefined,
+		dateFrom: args.filter?.dateFrom,
+		dateTo: args.filter?.dateTo,
+		search: args.filter?.search,
+		page: args.filter?.page ?? 1,
+		pageSize: args.filter?.pageSize ?? 10,
+	});
 }
 
 export const ordersResolvers = {
@@ -38,15 +88,7 @@ export const ordersResolvers = {
 			context: GraphQLContext
 		) => {
 			const user = requireAuth(context);
-
-			const parsed = MyOrdersFilterSchema.parse({
-				status: args.filter?.status as OrderStatus | undefined,
-				dateFrom: args.filter?.dateFrom,
-				dateTo: args.filter?.dateTo,
-				search: args.filter?.search,
-				page: args.filter?.page ?? 1,
-				pageSize: args.filter?.pageSize ?? 10,
-			});
+			const parsed = parseOrdersFilter(args);
 
 			return getMyOrders(
 				user.id,
@@ -68,6 +110,45 @@ export const ordersResolvers = {
 		myOrderStats: async (_: unknown, __: unknown, context: GraphQLContext) => {
 			const user = requireAuth(context);
 			return countOrdersByBuyerAndStatus(user.id);
+		},
+
+		mySellerOrders: async (
+			_: unknown,
+			args: {
+				filter?: {
+					status?: string;
+					dateFrom?: string;
+					dateTo?: string;
+					search?: string;
+					page?: number;
+					pageSize?: number;
+				};
+			},
+			context: GraphQLContext
+		) => {
+			const user = requireSeller(context);
+			const parsed = parseOrdersFilter(args);
+
+			return getMySellerOrders(
+				user.id,
+				{
+					status: parsed.status,
+					dateFrom: parsed.dateFrom ? new Date(parsed.dateFrom) : undefined,
+					dateTo: parsed.dateTo ? new Date(parsed.dateTo) : undefined,
+					search: parsed.search,
+				},
+				{ page: parsed.page, pageSize: parsed.pageSize }
+			);
+		},
+
+		mySellerOrder: async (_: unknown, args: { id: string }, context: GraphQLContext) => {
+			const user = requireSeller(context);
+			return getMySellerOrder(args.id, user.id);
+		},
+
+		mySellerOrderStats: async (_: unknown, __: unknown, context: GraphQLContext) => {
+			const user = requireSeller(context);
+			return countOrdersBySellerAndStatus(user.id);
 		},
 	},
 
@@ -95,6 +176,108 @@ export const ordersResolvers = {
 			const user = requireAuth(context);
 			return requestReturn(args.orderId, user.id, args.reason, args.details);
 		},
+
+		shipSellerOrder: async (
+			_: unknown,
+			args: { orderId: string; trackingCode?: string },
+			context: GraphQLContext
+		) => {
+			const user = requireSeller(context);
+			const parsed = ShipSellerOrderSchema.parse(args);
+			return shipSellerOrder(parsed.orderId, user.id, parsed.trackingCode);
+		},
+
+		confirmSellerOrder: async (_: unknown, args: { orderId: string }, context: GraphQLContext) => {
+			const user = requireSeller(context);
+			const parsed = SellerOrderIdSchema.parse(args);
+			return confirmSellerOrder(parsed.orderId, user.id);
+		},
+
+		markSellerOrderPacked: async (_: unknown, args: { orderId: string }, context: GraphQLContext) => {
+			const user = requireSeller(context);
+			const parsed = SellerOrderIdSchema.parse(args);
+			return markSellerOrderPacked(parsed.orderId, user.id);
+		},
+
+		markSellerOrderInTransit: async (
+			_: unknown,
+			args: { orderId: string },
+			context: GraphQLContext
+		) => {
+			const user = requireSeller(context);
+			const parsed = SellerOrderIdSchema.parse(args);
+			return markSellerOrderInTransit(parsed.orderId, user.id);
+		},
+
+		markSellerOrderDelivered: async (
+			_: unknown,
+			args: { orderId: string },
+			context: GraphQLContext
+		) => {
+			const user = requireSeller(context);
+			const parsed = SellerOrderIdSchema.parse(args);
+			return markSellerOrderDelivered(parsed.orderId, user.id);
+		},
+
+		cancelSellerOrder: async (
+			_: unknown,
+			args: { orderId: string; reason?: string },
+			context: GraphQLContext
+		) => {
+			const user = requireSeller(context);
+			const parsed = CancelSellerOrderSchema.parse(args);
+			return cancelSellerOrder(parsed.orderId, user.id, parsed.reason);
+		},
+
+		updateSellerOrderTracking: async (
+			_: unknown,
+			args: { orderId: string; trackingCode: string },
+			context: GraphQLContext
+		) => {
+			const user = requireSeller(context);
+			const parsed = UpdateSellerTrackingSchema.parse(args);
+			return updateSellerOrderTracking(parsed.orderId, user.id, parsed.trackingCode);
+		},
+
+		reviewSellerReturnRequest: async (
+			_: unknown,
+			args: { orderId: string; approve: boolean; resolution?: string },
+			context: GraphQLContext
+		) => {
+			const user = requireSeller(context);
+			const parsed = ReviewSellerReturnSchema.parse(args);
+			return reviewSellerReturnRequest(
+				parsed.orderId,
+				user.id,
+				parsed.approve,
+				parsed.resolution
+			);
+		},
+
+		markSellerReturnReceived: async (
+			_: unknown,
+			args: { orderId: string },
+			context: GraphQLContext
+		) => {
+			const user = requireSeller(context);
+			const parsed = SellerOrderIdSchema.parse(args);
+			return markSellerReturnReceived(parsed.orderId, user.id);
+		},
+
+		processSellerReturnRefund: async (
+			_: unknown,
+			args: { orderId: string },
+			context: GraphQLContext
+		) => {
+			const user = requireSeller(context);
+			const parsed = SellerOrderIdSchema.parse(args);
+			return processSellerReturnRefund(parsed.orderId, user.id);
+		},
+	},
+
+	SellerOrder: {
+		createdAt: (order: { createdAt: Date }) => order.createdAt.toISOString(),
+		updatedAt: (order: { updatedAt: Date }) => order.updatedAt.toISOString(),
 	},
 
 	Order: {

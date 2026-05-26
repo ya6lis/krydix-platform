@@ -43,6 +43,10 @@ export type { AppLoaderProps } from './AppLoader';
 export { AppToastProvider, useAppToast } from './AppToast';
 export type { ToastAction, ToastMessage, ToastSeverity, ToastShowOptions } from './AppToast';
 
+export { ImageLightboxProvider, useImageLightbox } from './ImageLightbox';
+export { AppImage } from './AppImage';
+export type { AppImageProps } from './AppImage';
+
 export { PageSectionWrapper } from './PageSectionWrapper';
 export type { PageSectionWrapperProps } from './PageSectionWrapper';
 

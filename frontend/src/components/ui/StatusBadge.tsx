@@ -39,8 +39,12 @@ const STATUS_TONES: Record<string, StatusTone> = {
 	PACKED: 'amber',
 	SENT: 'amber',
 	SHIPPED: 'amber',
-	NEW: 'amber',
+	OPEN: 'amber',
+	IN_PROGRESS: 'accent',
 	IN_REVIEW: 'amber',
+	ACKNOWLEDGED: 'cyan',
+	PLANNED: 'accent',
+	DISMISSED: 'neutral',
 	PROCESSING: 'amber',
 	// coral — negative / terminal
 	REFUNDED: 'coral',
@@ -54,6 +58,7 @@ const STATUS_TONES: Record<string, StatusTone> = {
 	DISABLED: 'coral',
 	// accent — moderation
 	PENDING_MODERATION: 'accent',
+	PUBLISHED: 'cyan',
 };
 
 export interface StatusBadgeProps {

@@ -3,6 +3,8 @@ import * as notificationRepo from '../repositories/notificationRepository.js';
 import type { OrderRecord } from '../repositories/orderRepository.js';
 import { emitUserNotification } from '../socket/chatSocket.js';
 import { NOTIFICATION_SOCKET_EVENT } from '../constants/notificationEvents.js';
+import { SUPPORT_NOTIFICATION_ACTION } from '../constants/supportNotifications.js';
+import type { SupportNotificationAction } from '../constants/supportNotifications.js';
 
 function serializeNotification(notification: notificationRepo.NotificationRecord) {
 	const metadata =
@@ -46,20 +48,120 @@ export async function notifyNewMessage(input: {
 	conversationId: string;
 	senderName: string;
 	preview: string;
+	isSupportChat?: boolean;
 }) {
 	if (input.recipientId === input.senderId) return;
+
+	const title = input.isSupportChat ? 'Support reply' : 'New message';
+	const body = input.isSupportChat
+		? `${input.senderName} replied to your support request: ${input.preview}`
+		: `${input.senderName}: ${input.preview}`;
 
 	await pushNotification({
 		userId: input.recipientId,
 		event: 'NEW_MESSAGE',
-		title: 'New message',
-		body: `${input.senderName}: ${input.preview}`,
+		title,
+		body,
 		metadata: {
 			conversationId: input.conversationId,
 			senderId: input.senderId,
 			senderName: input.senderName,
 			preview: input.preview,
+			isSupportChat: input.isSupportChat ?? false,
 		},
+	});
+}
+
+async function notifySupportUpdate(input: {
+	userId: string;
+	conversationId: string;
+	subject: string | null;
+	action: SupportNotificationAction;
+	title: string;
+	body: string;
+	staffName?: string;
+	requesterName?: string;
+}) {
+	await pushNotification({
+		userId: input.userId,
+		event: 'SUPPORT_UPDATE',
+		title: input.title,
+		body: input.body,
+		metadata: {
+			conversationId: input.conversationId,
+			subject: input.subject,
+			action: input.action,
+			staffName: input.staffName ?? null,
+			requesterName: input.requesterName ?? null,
+			isSupportChat: true,
+		},
+	});
+}
+
+export async function notifySupportNewRequest(input: {
+	staffUserIds: string[];
+	conversationId: string;
+	subject: string | null;
+	requesterName: string;
+}) {
+	await Promise.all(
+		input.staffUserIds.map((userId) =>
+			notifySupportUpdate({
+				userId,
+				conversationId: input.conversationId,
+				subject: input.subject,
+				action: SUPPORT_NOTIFICATION_ACTION.NEW_REQUEST,
+				title: 'New support request',
+				body: `${input.requesterName} opened a support request${input.subject ? `: ${input.subject}` : '.'}`,
+				requesterName: input.requesterName,
+			}),
+		),
+	);
+}
+
+export async function notifySupportAssigned(input: {
+	requesterId: string;
+	conversationId: string;
+	subject: string | null;
+	staffName: string;
+}) {
+	await notifySupportUpdate({
+		userId: input.requesterId,
+		conversationId: input.conversationId,
+		subject: input.subject,
+		action: SUPPORT_NOTIFICATION_ACTION.ASSIGNED,
+		title: 'Support request in progress',
+		body: `${input.staffName} is now working on your support request${input.subject ? `: ${input.subject}` : '.'}`,
+		staffName: input.staffName,
+	});
+}
+
+export async function notifySupportStatusChange(input: {
+	requesterId: string;
+	conversationId: string;
+	subject: string | null;
+	status: 'RESOLVED' | 'CLOSED';
+	staffName?: string;
+}) {
+	const action =
+		input.status === 'RESOLVED'
+			? SUPPORT_NOTIFICATION_ACTION.RESOLVED
+			: SUPPORT_NOTIFICATION_ACTION.CLOSED;
+	const title =
+		input.status === 'RESOLVED' ? 'Support request resolved' : 'Support request closed';
+	const body =
+		input.status === 'RESOLVED'
+			? `Your support request${input.subject ? ` "${input.subject}"` : ''} was marked as resolved.`
+			: `Your support request${input.subject ? ` "${input.subject}"` : ''} was closed.`;
+
+	await notifySupportUpdate({
+		userId: input.requesterId,
+		conversationId: input.conversationId,
+		subject: input.subject,
+		action,
+		title,
+		body,
+		staffName: input.staffName ?? null,
 	});
 }
 
@@ -144,4 +246,12 @@ export async function markOrderNotificationsRead(userId: string, orderId: string
 export async function markConversationNotificationsRead(userId: string, conversationId: string) {
 	const count = await notificationRepo.markConversationNotificationsRead(userId, conversationId);
 	return count > 0;
+}
+
+export async function deleteNotification(userId: string, notificationId: string) {
+	return notificationRepo.deleteNotification(notificationId, userId);
+}
+
+export async function deleteReadNotifications(userId: string) {
+	return notificationRepo.deleteReadNotifications(userId);
 }

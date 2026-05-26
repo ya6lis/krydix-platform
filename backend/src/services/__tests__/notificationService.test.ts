@@ -49,3 +49,63 @@ describe('notificationService.notifyNewMessage', () => {
 		);
 	});
 });
+
+describe('notificationService.notifySupportAssigned', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+		mockRepo.isNotificationEnabled.mockResolvedValue(true);
+		mockRepo.createNotification.mockResolvedValue({
+			id: 'notif-support-1',
+			userId: 'buyer-1',
+			event: 'SUPPORT_UPDATE',
+			title: 'Support request in progress',
+			body: 'Mod is working',
+			isRead: false,
+			metadata: { action: 'ASSIGNED' },
+			createdAt: new Date('2026-01-02T10:00:00.000Z'),
+		});
+		mockRepo.countUnreadByUserId.mockResolvedValue(1);
+	});
+
+	it('creates a support assignment notification', async () => {
+		await notificationService.notifySupportAssigned({
+			requesterId: 'buyer-1',
+			conversationId: 'support-1',
+			subject: 'Order issue',
+			staffName: 'Mod User',
+		});
+
+		expect(mockRepo.createNotification).toHaveBeenCalledWith(
+			expect.objectContaining({
+				userId: 'buyer-1',
+				event: 'SUPPORT_UPDATE',
+			}),
+		);
+	});
+});
+
+describe('notificationService.deleteNotification', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
+	it('delegates to repository and returns result', async () => {
+		mockRepo.deleteNotification.mockResolvedValue(true);
+		const result = await notificationService.deleteNotification('user-1', 'notif-1');
+		expect(mockRepo.deleteNotification).toHaveBeenCalledWith('notif-1', 'user-1');
+		expect(result).toBe(true);
+	});
+});
+
+describe('notificationService.deleteReadNotifications', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
+	it('delegates to repository and returns deleted count', async () => {
+		mockRepo.deleteReadNotifications.mockResolvedValue(3);
+		const result = await notificationService.deleteReadNotifications('user-1');
+		expect(mockRepo.deleteReadNotifications).toHaveBeenCalledWith('user-1');
+		expect(result).toBe(3);
+	});
+});

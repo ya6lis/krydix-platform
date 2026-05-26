@@ -11,6 +11,15 @@ jest.mock('react-i18next', () => ({
 	}),
 }));
 
+jest.mock('@/hooks/useAuth', () => ({
+	useAuth: () => ({ logout: jest.fn().mockResolvedValue(undefined) }),
+}));
+
+jest.mock('react-router-dom', () => ({
+	...jest.requireActual('react-router-dom'),
+	useNavigate: () => jest.fn(),
+}));
+
 jest.mock('@fortawesome/react-fontawesome', () => ({
 	FontAwesomeIcon: () => <span data-testid="icon" />,
 }));
@@ -44,25 +53,20 @@ function renderPage() {
 	);
 }
 
-// ── tests ────────────────────────────────────────────────────────────────────
 describe('BuyerSettingsPage — layout', () => {
 	it('renders page title', () => {
 		renderPage();
 		expect(screen.getByText('account.settings.title')).toBeInTheDocument();
 	});
 
-	it('renders page subtitle', () => {
-		renderPage();
-		expect(screen.getByText('account.settings.subtitle')).toBeInTheDocument();
-	});
-
-	it('renders account settings nav', () => {
+	it('renders account settings nav with profile, security, and close account', () => {
 		renderPage();
 		expect(screen.getByTestId('account-settings-nav')).toBeInTheDocument();
 		expect(screen.getByText('account.settings.nav.profile')).toBeInTheDocument();
 		expect(screen.getByText('account.settings.nav.security')).toBeInTheDocument();
-		expect(screen.getByText('account.settings.nav.notifications')).toBeInTheDocument();
-		expect(screen.getByText('account.settings.nav.language')).toBeInTheDocument();
+		expect(screen.getByText('account.settings.nav.closeAccount')).toBeInTheDocument();
+		expect(screen.queryByText('account.settings.nav.notifications')).not.toBeInTheDocument();
+		expect(screen.queryByText('account.settings.nav.language')).not.toBeInTheDocument();
 	});
 });
 
@@ -74,124 +78,49 @@ describe('BuyerSettingsPage — profile section', () => {
 	});
 });
 
-describe('BuyerSettingsPage — notifications section', () => {
-	it('renders notifications section title', () => {
-		renderPage();
-		expect(screen.getByText('account.settings.notifications.title')).toBeInTheDocument();
-	});
-
-	it('renders all 8 notification toggle labels', () => {
-		renderPage();
-		const keys = [
-			'newOrder',
-			'orderStatus',
-			'newMessage',
-			'moderation',
-			'verification',
-			'complaint',
-			'weekly',
-			'updates',
-		];
-		keys.forEach((key) => {
-			expect(screen.getByText(`account.settings.notifications.${key}`)).toBeInTheDocument();
-		});
-	});
-
-	it('toggles a notification switch on click', async () => {
-		renderPage();
-		// Get all checkboxes; 'weekly' is at index 6 (0-based) and starts OFF
-		const checkboxes = screen.getAllByRole('checkbox') as HTMLInputElement[];
-		// weekly is the 7th toggle (index 6)
-		const weekly = checkboxes[6];
-		expect(weekly).not.toBeChecked();
-		fireEvent.click(weekly);
-		await waitFor(() => {
-			expect(weekly).toBeChecked();
-		});
-	});
-});
-
-describe('BuyerSettingsPage — language section', () => {
-	it('renders language section title', () => {
-		renderPage();
-		expect(screen.getByText('account.settings.language.title')).toBeInTheDocument();
-	});
-
-	it('renders interface language label', () => {
-		renderPage();
-		// MUI Select renders label in two DOM nodes; use getAllByText
-		expect(screen.getAllByText('account.settings.language.interfaceLang').length).toBeGreaterThan(
-			0
-		);
-	});
-
-	it('renders timezone label', () => {
-		renderPage();
-		expect(screen.getAllByText('account.settings.language.timezone').length).toBeGreaterThan(0);
-	});
-
-	it('renders currency label', () => {
-		renderPage();
-		expect(screen.getAllByText('account.settings.language.currency').length).toBeGreaterThan(0);
-	});
-
-	it('renders date format label', () => {
-		renderPage();
-		expect(screen.getAllByText('account.settings.language.dateFormat').length).toBeGreaterThan(0);
-	});
-});
-
 describe('BuyerSettingsPage — security section', () => {
-	it('renders security section title', () => {
+	it('renders password fields and change password button', () => {
 		renderPage();
 		expect(screen.getByText('account.settings.security.title')).toBeInTheDocument();
-	});
-
-	it('renders current password field', () => {
-		renderPage();
-		// MUI TextField renders label in two DOM nodes; use getAllByText
-		expect(screen.getAllByText('account.settings.security.currentPassword').length).toBeGreaterThan(
-			0
-		);
-	});
-
-	it('renders new password field', () => {
-		renderPage();
+		expect(screen.getAllByText('account.settings.security.currentPassword').length).toBeGreaterThan(0);
 		expect(screen.getAllByText('account.settings.security.newPassword').length).toBeGreaterThan(0);
+		expect(screen.getAllByText('account.settings.security.confirmPassword').length).toBeGreaterThan(0);
+		expect(
+			screen.getByRole('button', { name: 'account.settings.security.changePassword' }),
+		).toBeInTheDocument();
 	});
 
-	it('renders two-factor toggle label', () => {
+	it('does not render two-factor authentication toggle', () => {
 		renderPage();
-		expect(screen.getByText('Two-factor authentication')).toBeInTheDocument();
+		expect(screen.queryByText('Two-factor authentication')).not.toBeInTheDocument();
 	});
 });
 
-describe('BuyerSettingsPage — danger zone', () => {
-	it('renders Close account button', () => {
+describe('BuyerSettingsPage — close account', () => {
+	it('renders close account action', () => {
 		renderPage();
-		expect(screen.getByRole('button', { name: 'Close account' })).toBeInTheDocument();
+		expect(
+			screen.getByRole('button', { name: 'account.settings.closeAccount.action' }),
+		).toBeInTheDocument();
 	});
 
-	it('opens confirm dialog when Close account clicked', async () => {
+	it('opens confirm dialog with password field when close account clicked', async () => {
 		renderPage();
-		fireEvent.click(screen.getByRole('button', { name: 'Close account' }));
-		// Dialog renders cancel button with default i18n key
+		fireEvent.click(screen.getByRole('button', { name: 'account.settings.closeAccount.action' }));
 		await waitFor(() => {
+			expect(screen.getAllByText('account.settings.closeAccount.passwordLabel').length).toBeGreaterThan(0);
 			expect(screen.getByText('confirmDialog.cancel')).toBeInTheDocument();
 		});
 	});
 });
 
-describe('BuyerSettingsPage — save bar', () => {
-	it('renders save preferences button', () => {
+describe('BuyerSettingsPage — removed sections', () => {
+	it('does not render notifications or language sections', () => {
 		renderPage();
+		expect(screen.queryByText('account.settings.notifications.title')).not.toBeInTheDocument();
+		expect(screen.queryByText('account.settings.language.title')).not.toBeInTheDocument();
 		expect(
-			screen.getByRole('button', { name: 'account.settings.notifications.savePreferences' }),
-		).toBeInTheDocument();
-	});
-
-	it('renders Discard buttons for profile and notification sections', () => {
-		renderPage();
-		expect(screen.getAllByRole('button', { name: 'common.discard' }).length).toBeGreaterThanOrEqual(1);
+			screen.queryByRole('button', { name: 'account.settings.notifications.savePreferences' }),
+		).not.toBeInTheDocument();
 	});
 });

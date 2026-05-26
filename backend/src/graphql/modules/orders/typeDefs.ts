@@ -97,6 +97,34 @@ export const ordersTypeDefs = `#graphql
 		refunded: Int!
 	}
 
+	type SellerOrderBuyer {
+		id: ID!
+		name: String!
+		email: String!
+		phone: String
+	}
+
+	type SellerOrder {
+		id: ID!
+		status: OrderStatus!
+		sellerSubtotal: Float!
+		itemCount: Int!
+		buyer: SellerOrderBuyer!
+		items: [OrderItem!]!
+		payment: PaymentRecord
+		delivery: DeliveryRecord
+		returnRequest: ReturnRequest
+		createdAt: String!
+		updatedAt: String!
+	}
+
+	type PaginatedSellerOrders {
+		items: [SellerOrder!]!
+		total: Int!
+		page: Int!
+		pageSize: Int!
+	}
+
 	input MyOrdersFilter {
 		status: OrderStatus
 		dateFrom: String
@@ -110,6 +138,9 @@ export const ordersTypeDefs = `#graphql
 		myOrders(filter: MyOrdersFilter): PaginatedOrders!
 		myOrder(id: ID!): Order!
 		myOrderStats: OrderStats!
+		mySellerOrders(filter: MyOrdersFilter): PaginatedSellerOrders!
+		mySellerOrder(id: ID!): SellerOrder!
+		mySellerOrderStats: OrderStats!
 	}
 
 	extend type Mutation {
@@ -117,5 +148,15 @@ export const ordersTypeDefs = `#graphql
 		confirmDelivery(orderId: ID!): Order!
 		requestRefund(orderId: ID!): Order!
 		requestReturn(orderId: ID!, reason: String!, details: String): ReturnRequest!
+		confirmSellerOrder(orderId: ID!): SellerOrder!
+		markSellerOrderPacked(orderId: ID!): SellerOrder!
+		shipSellerOrder(orderId: ID!, trackingCode: String): SellerOrder!
+		markSellerOrderInTransit(orderId: ID!): SellerOrder!
+		markSellerOrderDelivered(orderId: ID!): SellerOrder!
+		cancelSellerOrder(orderId: ID!, reason: String): SellerOrder!
+		updateSellerOrderTracking(orderId: ID!, trackingCode: String!): SellerOrder!
+		reviewSellerReturnRequest(orderId: ID!, approve: Boolean!, resolution: String): SellerOrder!
+		markSellerReturnReceived(orderId: ID!): SellerOrder!
+		processSellerReturnRefund(orderId: ID!): SellerOrder!
 	}
 `;

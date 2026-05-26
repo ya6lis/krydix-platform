@@ -34,6 +34,12 @@ export const REMOVE_PROFILE_AVATAR_MUTATION = gql`
 	}
 `;
 
+export const CLOSE_ACCOUNT_MUTATION = gql`
+	mutation CloseAccount($password: String!) {
+		closeAccount(password: $password)
+	}
+`;
+
 export interface UpdateProfileInput {
 	firstName: string;
 	lastName: string;

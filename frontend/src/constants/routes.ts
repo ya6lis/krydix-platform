@@ -15,6 +15,7 @@ export const ROUTES = {
 
 	// Cart & Checkout (public — guest accessible)
 	CART: '/cart',
+	WISHLIST: '/wishlist',
 	CHECKOUT: '/checkout',
 
 	// Buyer cabinet
@@ -53,6 +54,7 @@ export const ROUTES = {
 	MODERATOR_ALL_PRODUCTS: '/moderator/all-products',
 	MODERATOR_ALL_REVIEWS: '/moderator/all-reviews',
 	MODERATOR_VERIFICATION: '/moderator/verification',
+	MODERATOR_SUPPORT: '/moderator/support',
 
 	// Admin panel
 	ADMIN: '/admin',
@@ -64,6 +66,11 @@ export const ROUTES = {
 	ADMIN_REVIEWS: '/admin/reviews',
 	ADMIN_SETTINGS: '/admin/settings',
 	ADMIN_AUDIT: '/admin/audit',
+	ADMIN_FEEDBACK: '/admin/feedback',
+	ADMIN_RELEASE_NOTES: '/admin/release-notes',
+
+	// Help
+	SUPPORT: '/support',
 
 	// Misc
 	NOT_FOUND: '/404',

@@ -102,6 +102,27 @@ enum ComplaintTarget {
   REVIEW
 }
 
+enum FeedbackCategory {
+  BUG
+  FEATURE
+  UX
+  OTHER
+}
+
+enum FeedbackStatus {
+  NEW
+  UNDER_REVIEW
+  ACKNOWLEDGED
+  PLANNED
+  RESOLVED
+  DISMISSED
+}
+
+enum ReleaseNoteStatus {
+  DRAFT
+  PUBLISHED
+}
+
 enum MediaType {
   IMAGE
   VIDEO
@@ -115,6 +136,7 @@ enum NotificationEvent {
   VERIFICATION_RESULT
   COMPLAINT_UPDATE
   REVIEW_RECEIVED
+  SUPPORT_UPDATE
 }
 
 enum AuditAction {
@@ -125,6 +147,8 @@ enum AuditAction {
   REVIEW_DELETED
   HARD_DELETE
   CATEGORY_CHANGE
+  FEEDBACK_STATUS_CHANGE
+  RELEASE_NOTE_CHANGE
 }
 
 enum Language {
@@ -167,6 +191,7 @@ model User {
   sellerApplication    SellerApplication?
   products             Product[]
   cartItems            CartItem[]
+  wishlistItems        WishlistItem[]
   orders               Order[]
   sellerOrderItems     OrderItem[]          @relation("SellerOrderItems")
   productReviews       ProductReview[]
@@ -178,11 +203,16 @@ model User {
   auditLogs            AuditLog[]           @relation("ActorAuditLogs")
   notifications        Notification[]
   notificationPrefs    NotificationPreference[]
-  chatParticipations   ChatParticipant[]
-  chatMessages         ChatMessage[]
+  chatParticipations       ChatParticipant[]
+  chatMessages             ChatMessage[]
+  supportRequestsRequested Chat[]               @relation("SupportRequester")
+  supportRequestsAssigned  Chat[]               @relation("SupportAssignee")
   imports              ImportJob[]
   returnRequestsBought ReturnRequest[]      @relation("BuyerReturnRequests")
   returnRequestsSold   ReturnRequest[]      @relation("SellerReturnRequests")
+  feedbacksSubmitted   UserFeedback[]       @relation("FeedbackAuthor")
+  feedbacksHandled     UserFeedback[]       @relation("FeedbackHandler")
+  releaseNotesCreated  ReleaseNote[]        @relation("ReleaseNoteAuthor")
 
   @@index([email])
   @@index([role])
@@ -358,6 +388,7 @@ model Product {
   media           Media[]
   attributes      ProductAttributeValue[]
   cartItems       CartItem[]
+  wishlistItems   WishlistItem[]
   orderItems      OrderItem[]
   reviews         ProductReview[]
   complaints      Complaint[]             @relation("ProductComplaints")
@@ -440,6 +471,19 @@ model CartItem {
   variant ProductVariant? @relation(fields: [variantId], references: [id])
 
   @@unique([userId, productId, variantId])
+  @@index([userId])
+}
+
+model WishlistItem {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
   @@index([userId])
 }
 
@@ -677,6 +721,62 @@ model Complaint {
   @@index([complainantId])
 }
 
+// ─── Platform Feedback ────────────────────────────────────────────────────────
+
+model UserFeedback {
+  id          String           @id @default(cuid())
+  userId      String
+  category    FeedbackCategory
+  subject     String
+  message     String
+  attachments Json?
+  status      FeedbackStatus   @default(NEW)
+  adminNotes  String?
+  handledById String?
+  handledAt   DateTime?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  user      User  @relation("FeedbackAuthor", fields: [userId], references: [id])
+  handledBy User? @relation("FeedbackHandler", fields: [handledById], references: [id])
+
+  @@index([status])
+  @@index([userId])
+  @@index([category])
+  @@index([createdAt])
+}
+
+// ─── Release Notes ────────────────────────────────────────────────────────────
+
+model ReleaseNote {
+  id          String            @id @default(cuid())
+  version     String            @unique
+  status      ReleaseNoteStatus @default(DRAFT)
+  publishedAt DateTime?
+  createdById String
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  createdBy    User                     @relation("ReleaseNoteAuthor", fields: [createdById], references: [id])
+  translations ReleaseNoteTranslation[]
+
+  @@index([status])
+  @@index([publishedAt])
+  @@index([createdAt])
+}
+
+model ReleaseNoteTranslation {
+  id            String   @id @default(cuid())
+  releaseNoteId String
+  language      Language
+  title         String
+  body          String
+
+  releaseNote ReleaseNote @relation(fields: [releaseNoteId], references: [id], onDelete: Cascade)
+
+  @@unique([releaseNoteId, language])
+}
+
 // ─── Audit Log ────────────────────────────────────────────────────────────────
 
 model AuditLog {
@@ -697,13 +797,36 @@ model AuditLog {
 
 // ─── Chat ─────────────────────────────────────────────────────────────────────
 
-model Chat {
-  id        String   @id @default(cuid())
-  productId String?
-  createdAt DateTime @default(now())
+enum ChatType {
+  MARKETPLACE
+  SUPPORT
+}
 
+enum SupportChatStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+model Chat {
+  id           String              @id @default(cuid())
+  type         ChatType            @default(MARKETPLACE)
+  productId    String?
+  subject      String?
+  status       SupportChatStatus?
+  requesterId  String?
+  assignedToId String?
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  requester    User? @relation("SupportRequester", fields: [requesterId], references: [id], onDelete: SetNull)
+  assignedTo   User? @relation("SupportAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
   participants ChatParticipant[]
   messages     ChatMessage[]
+
+  @@index([type, status])
+  @@index([requesterId])
 }
 
 model ChatParticipant {

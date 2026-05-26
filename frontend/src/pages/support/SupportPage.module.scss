@@ -1,0 +1,673 @@
+$bg: #f4f6f8;
+$surface: #ffffff;
+$ink1: #1c252e;
+$ink2: #455463;
+$ink3: #8794a1;
+$line: #e1e5ea;
+$line2: #edf0f3;
+$accent: #7635dc;
+$accentSoft: #f1eafc;
+$accentInk: #200a69;
+$cyan: #00b8d9;
+$cyanInk: #006c7f;
+
+.page {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 380px;
+	gap: 24px;
+	align-items: start;
+	width: 100%;
+	max-width: 1120px;
+	margin: 0 auto;
+}
+
+.pageHead {
+	grid-column: 1 / -1;
+	display: flex;
+	align-items: flex-start;
+	justify-content: flex-start;
+	gap: 16px;
+	margin-bottom: 4px;
+	text-align: left;
+}
+
+.pageTitle {
+	margin: 0;
+	font-size: 28px;
+	font-weight: 800;
+	letter-spacing: -0.03em;
+	color: $ink1;
+}
+
+.pageSub {
+	margin-top: 6px;
+	font-size: 14.5px;
+	color: $ink3;
+	line-height: 1.5;
+}
+
+.channels {
+	grid-column: 1 / -1;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 16px;
+}
+
+.channel {
+	background: $surface;
+	border: 1px solid $line;
+	border-radius: 16px;
+	padding: 20px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	text-decoration: none;
+	color: inherit;
+	transition: border-color 120ms, transform 120ms;
+	cursor: pointer;
+}
+
+.channel:hover {
+	border-color: $ink3;
+	transform: translateY(-2px);
+}
+
+.channelPrimary {
+	background: $accentInk;
+	color: #fff;
+	border-color: transparent;
+	position: relative;
+	overflow: hidden;
+}
+
+.channelPrimary::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: radial-gradient(circle at 80% 30%, rgba(187, 160, 236, 0.45) 0%, transparent 55%);
+	opacity: 0.4;
+}
+
+.channelPrimary > * {
+	position: relative;
+}
+
+.channelIcon {
+	width: 36px;
+	height: 36px;
+	border-radius: 10px;
+	background: $accentSoft;
+	color: $accentInk;
+	display: grid;
+	place-items: center;
+}
+
+.channelPrimary .channelIcon {
+	background: rgba(255, 255, 255, 0.14);
+	color: #fff;
+}
+
+.channelName {
+	font-weight: 700;
+	font-size: 15px;
+}
+
+.channelSub {
+	font-size: 12.5px;
+	color: $ink3;
+	line-height: 1.5;
+}
+
+.channelPrimary .channelSub {
+	color: rgba(255, 255, 255, 0.65);
+}
+
+.channelMeta {
+	margin-top: auto;
+	padding-top: 6px;
+	font-size: 11.5px;
+	font-weight: 700;
+	color: $ink2;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.channelPrimary .channelMeta {
+	color: rgba(255, 255, 255, 0.92);
+}
+
+.statusDot {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: $cyan;
+	box-shadow: 0 0 0 3px rgba(0, 184, 217, 0.3);
+}
+
+.chatPanel {
+	min-height: 0;
+	height: auto;
+}
+
+.chatHead {
+	padding: 16px 22px;
+	border-bottom: 1px solid $line;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.agentAvatar {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background: linear-gradient(135deg, $accent, $cyan);
+	color: #fff;
+	display: grid;
+	place-items: center;
+	font-size: 13px;
+	font-weight: 700;
+	position: relative;
+	flex-shrink: 0;
+}
+
+.agentAvatar::after {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: $cyan;
+	border: 2px solid $surface;
+}
+
+.chatHeadInfo {
+	flex: 1;
+	min-width: 0;
+}
+
+.chatHeadName {
+	font-weight: 700;
+	font-size: 14px;
+	color: $ink1;
+}
+
+.chatHeadSub {
+	font-size: 12px;
+	color: $cyanInk;
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.chatHeadSub::before {
+	content: '';
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: $cyan;
+}
+
+.ticketBadge {
+	font-family: 'JetBrains Mono', ui-monospace, monospace;
+	font-size: 11.5px;
+	background: $bg;
+	color: $ink2;
+	border: 1px solid $line;
+	padding: 4px 10px;
+	border-radius: 6px;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.contextStrip {
+	padding: 12px 22px;
+	background: $accentSoft;
+	border-bottom: 1px solid $line;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 12.5px;
+	color: $accentInk;
+}
+
+.messages {
+	overflow-y: auto;
+	padding: 22px;
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+
+.daySep {
+	text-align: center;
+	font-size: 11px;
+	color: $ink3;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	position: relative;
+	padding: 6px 0;
+}
+
+.daySep::before,
+.daySep::after {
+	content: '';
+	position: absolute;
+	top: 50%;
+	width: calc(50% - 64px);
+	height: 1px;
+	background: $line;
+}
+
+.daySep::before {
+	left: 0;
+}
+
+.daySep::after {
+	right: 0;
+}
+
+.messageRow {
+	display: flex;
+	gap: 10px;
+	max-width: 78%;
+}
+
+.messageRowMe {
+	align-self: end;
+	flex-direction: row-reverse;
+}
+
+.messageAvatar {
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+	flex-shrink: 0;
+	display: grid;
+	place-items: center;
+	font-size: 10.5px;
+	font-weight: 700;
+}
+
+.messageAvatarBot {
+	background: $ink1;
+	color: #fff;
+}
+
+.messageStack {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	min-width: 0;
+}
+
+.messageBubble {
+	background: $bg;
+	border: 1px solid $line;
+	padding: 10px 14px;
+	border-radius: 14px;
+	font-size: 13.5px;
+	line-height: 1.5;
+	color: $ink1;
+}
+
+.messageBubbleBot {
+	background: $ink1;
+	color: #fff;
+	border-color: $ink1;
+}
+
+.botPill {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 10.5px;
+	font-weight: 700;
+	background: rgba(255, 255, 255, 0.14);
+	color: rgba(255, 255, 255, 0.92);
+	padding: 2px 7px;
+	border-radius: 999px;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	margin-bottom: 6px;
+}
+
+.messageMeta {
+	font-size: 11px;
+	color: $ink3;
+}
+
+.quickReplies {
+	align-self: start;
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+	margin-left: 38px;
+}
+
+.quickReplies button {
+	background: $surface;
+	border: 1px solid $accent;
+	color: $accentInk;
+	padding: 8px 14px;
+	border-radius: 999px;
+	font: inherit;
+	font-size: 12.5px;
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.quickReplies button:hover {
+	background: $accentSoft;
+}
+
+.composer {
+	border-top: 1px solid $line;
+	padding: 12px 22px;
+	display: flex;
+	align-items: end;
+	gap: 10px;
+}
+
+.inputBox {
+	flex: 1;
+	background: $bg;
+	border: 1px solid $line;
+	border-radius: 12px;
+	padding: 10px 14px;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.inputBox textarea {
+	border: 0;
+	background: transparent;
+	outline: none;
+	font: inherit;
+	font-size: 13.5px;
+	line-height: 1.5;
+	resize: none;
+	min-height: 36px;
+	max-height: 140px;
+	color: $ink1;
+	width: 100%;
+}
+
+.composerTools {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.composerHint {
+	margin-left: auto;
+	font-size: 11px;
+	color: $ink3;
+}
+
+.sendButton {
+	background: $ink1;
+	color: #fff;
+	width: 42px;
+	height: 42px;
+	border-radius: 12px;
+	display: grid;
+	place-items: center;
+	border: 0;
+	cursor: pointer;
+	flex-shrink: 0;
+}
+
+.sendButton:hover:not(:disabled) {
+	background: $accent;
+}
+
+.sendButton:disabled {
+	opacity: 0.45;
+	cursor: default;
+}
+
+.side {
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+	position: sticky;
+	top: 84px;
+}
+
+.sideCard {
+	background: $surface;
+	border: 1px solid $line;
+	border-radius: 16px;
+	padding: 18px 20px;
+}
+
+.sideCardAccent {
+	background: $accentSoft;
+	border-color: transparent;
+}
+
+.sideCardTitle {
+	font-size: 10.5px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: $ink3;
+	margin: 0 0 12px;
+}
+
+.sideCardAccent .sideCardTitle {
+	color: $accentInk;
+}
+
+.faqList {
+	display: flex;
+	flex-direction: column;
+}
+
+.faqLink {
+	padding: 10px 0;
+	font-size: 13px;
+	text-decoration: none;
+	color: $ink2;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	border-bottom: 1px solid $line2;
+	background: transparent;
+	border-left: 0;
+	border-right: 0;
+	border-top: 0;
+	width: 100%;
+	text-align: left;
+	cursor: pointer;
+	font: inherit;
+}
+
+.faqLink:last-child {
+	border-bottom: 0;
+}
+
+.faqLink:hover,
+.faqLinkActive {
+	color: $ink1;
+}
+
+.faqIcon {
+	width: 28px;
+	height: 28px;
+	border-radius: 7px;
+	background: $bg;
+	color: $ink3;
+	display: grid;
+	place-items: center;
+	flex-shrink: 0;
+}
+
+.faqLink:hover .faqIcon,
+.faqLinkActive .faqIcon {
+	background: $accentSoft;
+	color: $accentInk;
+}
+
+.faqArrow {
+	margin-left: auto;
+	color: $ink3;
+}
+
+.faqBody {
+	margin-top: 12px;
+	padding-top: 12px;
+	border-top: 1px solid $line2;
+	font-size: 13px;
+	line-height: 1.6;
+	color: $ink2;
+	white-space: pre-wrap;
+}
+
+.ticketsEmpty {
+	font-size: 13px;
+	color: $ink3;
+	line-height: 1.55;
+}
+
+.ticketList {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.ticketItem {
+	padding: 10px 0;
+	border-bottom: 1px solid $line2;
+}
+
+.ticketItem:last-child {
+	border-bottom: 0;
+}
+
+.ticketTop {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+}
+
+.ticketSubject {
+	font-size: 13px;
+	font-weight: 700;
+	color: $ink1;
+}
+
+.ticketMeta {
+	margin-top: 4px;
+	font-size: 11.5px;
+	color: $ink3;
+}
+
+.loginPrompt,
+.newRequest {
+	background: $surface;
+	border: 1px solid $line;
+	border-radius: 16px;
+	padding: 24px;
+}
+
+.loginPrompt {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 12px;
+}
+
+.newRequestHead h2 {
+	margin: 0;
+	font-size: 18px;
+	font-weight: 800;
+	color: $ink1;
+}
+
+.newRequestHead p {
+	margin: 6px 0 0;
+	font-size: 13.5px;
+	color: $ink3;
+	line-height: 1.5;
+}
+
+.newRequestForm {
+	margin-top: 18px;
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+
+.textareaLabel {
+	font-size: 13px;
+	font-weight: 600;
+	color: $ink2;
+}
+
+.newRequestTextarea {
+	width: 100%;
+	resize: vertical;
+	border: 1px solid $line;
+	border-radius: 12px;
+	padding: 10px 12px;
+	font: inherit;
+	color: $ink1;
+	background: $bg;
+	min-height: 120px;
+}
+
+.newRequestTextarea:focus {
+	outline: none;
+	border-color: $accent;
+}
+
+.statusRow {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 13px;
+	color: $accentInk;
+	font-weight: 700;
+}
+
+.statusSub {
+	font-size: 12px;
+	color: $accentInk;
+	opacity: 0.7;
+	margin-top: 4px;
+}
+
+@media (max-width: 1100px) {
+	.page {
+		grid-template-columns: 1fr;
+	}
+
+	.side {
+		position: static;
+	}
+
+	.chatPanel {
+		height: auto;
+	}
+}
+
+@media (max-width: 720px) {
+	.channels {
+		grid-template-columns: 1fr;
+	}
+
+	.pageHead {
+		flex-direction: column;
+	}
+}

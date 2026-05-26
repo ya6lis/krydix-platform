@@ -7,6 +7,7 @@
 		"products": "Products",
 		"search": "Search",
 		"cart": "Cart",
+		"wishlist": "Wishlist",
 		"account": "Account",
 		"sellerCabinet": "Seller Cabinet",
 		"moderator": "Moderator Panel",
@@ -22,6 +23,7 @@
 		},
 		"dashboard": "Dashboard",
 		"catalog": "Catalog",
+		"wishlist": "Wishlist",
 		"product": "Product page",
 		"orders": "Orders",
 		"verification": "Verification",
@@ -29,8 +31,11 @@
 		"productModeration": "Product moderation",
 		"reviewModeration": "Review moderation",
 		"complaints": "Complaints",
+		"feedback": "User feedback",
+		"releaseNotes": "What's new",
 		"reviews": "Reviews",
 		"messages": "Messages",
+		"notifications": "Notifications",
 		"users": "Users & roles",
 		"allProducts": "All products",
 		"allReviews": "All reviews",
@@ -39,7 +44,13 @@
 		"platform": "Platform settings",
 		"audit": "Audit log",
 		"settings": "Settings",
-		"help": "Help & support"
+		"help": "Help & support",
+		"userSupport": "User support",
+		"sections": {
+			"moderation": "Moderation",
+			"management": "Management",
+			"system": "System"
+		}
 	},
 	"shell": {
 		"search": {
@@ -54,6 +65,14 @@
 			"shippingCalc": "Calculated at checkout",
 			"viewCart": "View cart",
 			"checkout": "Checkout",
+			"remove": "Remove"
+		},
+		"wishlist": {
+			"title": "Saved items",
+			"itemsCount": "{{count}} saved items",
+			"empty": "No saved items yet",
+			"signInHint": "Sign in to save products to your list",
+			"viewAll": "View all saved items",
 			"remove": "Remove"
 		},
 		"guest": {
@@ -94,6 +113,29 @@
 			"newMessage": {
 				"title": "New message from {{name}}"
 			},
+			"supportReply": {
+				"title": "Support reply from {{name}}"
+			},
+			"supportAssigned": {
+				"title": "Someone is working on your request",
+				"body": "{{name}} is now handling your support request.",
+				"bodyWithSubject": "{{name}} is now handling: {{subject}}"
+			},
+			"supportResolved": {
+				"title": "Support request resolved",
+				"body": "Your support request was marked as resolved.",
+				"bodyWithSubject": "Your request \"{{subject}}\" was marked as resolved."
+			},
+			"supportClosed": {
+				"title": "Support request closed",
+				"body": "Your support request was closed.",
+				"bodyWithSubject": "Your request \"{{subject}}\" was closed."
+			},
+			"supportNewRequest": {
+				"title": "New support request",
+				"body": "{{name}} opened a new support request.",
+				"bodyWithSubject": "{{name}} opened a support request: {{subject}}"
+			},
 			"newOrder": {
 				"title": "New order",
 				"body": "Order #{{order}} was placed."
@@ -102,6 +144,86 @@
 				"title": "Order update",
 				"body": "Order #{{order}} is now {{status}}."
 			}
+		}
+	},
+	"notificationsPage": {
+		"title": "Notifications",
+		"subtitle": "{{count}} total · {{unread}} unread",
+		"listTitle": "Your notifications",
+		"backToAccount": "Back to orders",
+		"delete": "Delete notification",
+		"deleteRead": "Delete read notifications",
+		"emptyTitle": "No notifications yet",
+		"emptyDescription": "Order updates, messages, and moderation results will appear here.",
+		"summary": {
+			"title": "Overview",
+			"subtitle": "{{count}} notifications in your inbox",
+			"read": "Read"
+		},
+		"trust": {
+			"realtime": "Real-time alerts",
+			"realtimeSub": "Stay on top of orders and messages",
+			"orders": "Order tracking",
+			"ordersSub": "Status changes appear instantly",
+			"control": "You're in control",
+			"controlSub": "Mark read or delete anytime"
+		}
+	},
+	"error404": {
+		"eyebrow": "Error 404",
+		"title": "This page <em>wandered off.</em>",
+		"description": "The link you followed might be broken, or the listing was archived by its seller. You can search for what you wanted, or jump back to your dashboard.",
+		"pathHint": "Requested path: <code>{{path}}</code>",
+		"actions": {
+			"dashboard": "Back to dashboard",
+			"catalog": "Search catalog",
+			"support": "Contact support"
+		},
+		"quick": {
+			"title": "Or jump to",
+			"orders": {
+				"title": "Orders",
+				"subtitleBuyer": "Track your purchases",
+				"subtitleSeller": "Manage incoming & fulfillment"
+			},
+			"catalog": {
+				"title": "Catalog",
+				"subtitle": "Browse the marketplace",
+				"subtitleGuest": "Discover verified sellers"
+			},
+			"cart": {
+				"title": "Cart",
+				"subtitle": "Review items before checkout"
+			},
+			"support": {
+				"title": "Support",
+				"subtitle": "Get help from our team",
+				"subtitleStaff": "Handle user requests"
+			},
+			"signIn": {
+				"title": "Sign in",
+				"subtitle": "Access your account"
+			},
+			"verification": {
+				"title": "Verification",
+				"subtitle": "Your seller status"
+			},
+			"settings": {
+				"title": "Settings",
+				"subtitle": "Profile & preferences"
+			},
+			"messages": {
+				"title": "Messages",
+				"subtitle": "Chat with sellers"
+			},
+			"moderation": {
+				"title": "Moderation",
+				"subtitle": "Review pending listings"
+			}
+		},
+		"art": {
+			"caption": "Lost in the marketplace",
+			"chipHint": "Try the search"
 		}
 	},
 	"auth": {
@@ -206,6 +328,8 @@
 		"noData": "No data available",
 		"error": "Something went wrong",
 		"success": "Success",
+		"supportTeam": "Support team",
+		"user": "User",
 		"required": "This field is required",
 		"back": "Back",
 		"next": "Next",
@@ -233,6 +357,13 @@
 			"info": "Notification"
 		},
 		"open": "Open"
+	},
+	"imageLightbox": {
+		"close": "Close image viewer",
+		"previous": "Previous image",
+		"next": "Next image",
+		"counter": "{{current}} / {{total}}",
+		"goTo": "Go to image {{index}}"
 	},
 	"status": {
 		"product": {
@@ -528,6 +659,43 @@
 			"collapse": "Collapse"
 		}
 	},
+	"wishlist": {
+		"title": "Saved items",
+		"subtitle": "{{count}} saved items from {{sellers}} sellers",
+		"subtitleOne": "1 saved item from 1 seller",
+		"sellerSubtotal_other": "Subtotal · {{count}} items",
+		"emptyTitle": "No saved items yet",
+		"emptyDescription": "Tap the heart on any product to save it here.",
+		"browseCatalog": "Browse catalog",
+		"viewProduct": "View product",
+		"remove": "Remove from saved",
+		"inStock": "{{count}} in stock",
+		"added": "Added to saved items",
+		"removed": "Removed from saved items",
+		"signInRequired": "Sign in to save items to your list",
+		"sellerNotAllowed": "Seller accounts cannot use the buyer wishlist",
+		"error": "Could not update saved items",
+		"summary": {
+			"title": "Saved summary",
+			"subtitle": "{{count}} items from {{sellers}} sellers",
+			"subtotal": "Subtotal",
+			"savings": "Total savings",
+			"inStock": "Available now",
+			"outOfStock": "Out of stock",
+			"total": "Total value",
+			"addAllToCart": "Add all to cart",
+			"addedAll": "Added {{count}} items to cart",
+			"noInStock": "No saved items are currently in stock"
+		},
+		"trust": {
+			"saved": "Saved for later",
+			"savedSub": "Items stay here until you remove them",
+			"updated": "Live availability",
+			"updatedSub": "Stock status updates when you open this page",
+			"secure": "Buyer protection",
+			"secureSub": "Same checkout protections as cart"
+		}
+	},
 	"product": {
 		"variant": "Variant",
 		"reviewCount": "{{count}} reviews",
@@ -780,15 +948,14 @@
 		},
 		"settings": {
 			"title": "Settings",
-			"subtitle": "Manage your account, notifications, and preferences.",
+			"subtitle": "Manage your profile, password, and account.",
 			"nav": {
 				"account": "Account",
 				"selling": "Selling",
 				"other": "Other",
 				"profile": "Profile",
 				"security": "Security",
-				"notifications": "Notifications",
-				"language": "Language & region",
+				"closeAccount": "Close account",
 				"verification": "Verification",
 				"payouts": "Payouts",
 				"shipping": "Shipping methods",
@@ -813,12 +980,23 @@
 			},
 			"security": {
 				"title": "Security",
-				"subtitle": "Password, sessions, and two-factor auth.",
+				"subtitle": "Update your password.",
 				"currentPassword": "Current password",
 				"newPassword": "New password",
 				"confirmPassword": "Confirm new password",
 				"changePassword": "Change password",
 				"passwordUpdated": "Password updated successfully."
+			},
+			"closeAccount": {
+				"title": "Close account",
+				"subtitle": "Permanently close your account. Active buy and sell orders will be cancelled automatically, and paid orders will be refunded.",
+				"action": "Close account",
+				"confirmTitle": "Close account",
+				"confirmMessage": "All your active orders as a buyer and seller will be cancelled. Paid orders will be refunded to the original payment method. This cannot be undone.",
+				"passwordLabel": "Confirm your password",
+				"passwordRequired": "Enter your password to confirm.",
+				"error": "Could not close account. Check your password and try again.",
+				"success": "Your account has been closed."
 			},
 			"notifications": {
 				"title": "Notifications",
@@ -923,6 +1101,159 @@
 			"sizeHint": "Max 5MB per file. JPG, PNG, WEBP.",
 			"limitReached": "Maximum 9 images reached",
 			"uploading": "Uploading…"
+		}
+	},
+	"sellerOrders": {
+		"title": "Orders",
+		"subtitle": "Manage incoming orders, fulfillment, and refunds.",
+		"export": "Export CSV",
+		"printLabels": "Bulk print labels",
+		"filters": "Filters",
+		"tabs": {
+			"all": "All",
+			"pending": "Pending",
+			"confirmed": "Confirmed",
+			"shipped": "Shipped",
+			"delivered": "Delivered",
+			"cancelled": "Cancelled",
+			"refunded": "Refunded"
+		},
+		"stats": {
+			"all": "All orders",
+			"pending": "Pending",
+			"completed": "Completed",
+			"refunded": "Refunded"
+		},
+		"table": {
+			"order": "Order",
+			"customer": "Customer",
+			"date": "Date",
+			"items": "Items",
+			"amount": "Amount",
+			"payment": "Payment",
+			"status": "Order status",
+			"actions": ""
+		},
+		"search": "Search customer name, email, or order #…",
+		"startDate": "Start date",
+		"endDate": "End date",
+		"empty": {
+			"title": "No orders yet",
+			"description": "Orders containing your products will appear here."
+		},
+		"emptyFiltered": {
+			"title": "No orders found",
+			"description": "Try adjusting your filters."
+		},
+		"viewDetails": "View details",
+		"cancelOrder": "Cancel order",
+		"detail": {
+			"orderNumberPrefix": "Order #",
+			"title": "Order {{order}}",
+			"placedAt": "Placed on {{date}}",
+			"backToOrders": "Back to orders",
+			"history": "Order history",
+			"confirmOrder": "Confirm order",
+			"markPacked": "Mark as packed",
+			"confirmShipment": "Ship order",
+			"markInTransit": "Mark in transit",
+			"markDelivered": "Mark as delivered",
+			"cancelOrder": "Cancel order",
+			"updateTracking": "Update tracking",
+			"approveReturn": "Approve return",
+			"rejectReturn": "Reject return",
+			"markReturnReceived": "Mark return received",
+			"processRefund": "Process refund",
+			"success": "Order updated successfully.",
+			"shipSuccess": "Shipment confirmed successfully.",
+			"itemsTitle": "Details",
+			"itemsSubtitle_one": "{{count}} item · your products",
+			"itemsSubtitle_other": "{{count}} items · your products",
+			"qty": "Qty: {{count}}",
+			"subtotal": "Your subtotal",
+			"buyerTitle": "Customer",
+			"shippingTitle": "Shipping",
+			"print": "Print",
+			"manage": "Manage order",
+			"phone": "Phone",
+			"returnTitle": "Return request",
+			"deliveryTitle": "Delivery",
+			"paymentTitle": "Payment",
+			"timeline": {
+				"orderPlaced": "Order placed",
+				"orderConfirmed": "Order confirmed",
+				"packed": "Packed",
+				"shipped": "Shipped",
+				"inTransit": "In transit",
+				"delivered": "Delivered",
+				"cancelled": "Cancelled",
+				"refunded": "Refunded"
+			},
+			"delivery": {
+				"method": "Method",
+				"status": "Status",
+				"address": "Address",
+				"tracking": "Tracking code",
+				"methods": {
+					"courier": "Courier",
+					"branchPickup": "Branch pickup",
+					"selfPickup": "Self pickup"
+				}
+			},
+			"payment": {
+				"method": "Method",
+				"status": "Status",
+				"amount": "Amount",
+				"methods": {
+					"card": "Card",
+					"cashOnDelivery": "Cash on delivery",
+					"bankTransfer": "Bank transfer"
+				}
+			},
+			"return": {
+				"reason": "Reason",
+				"details": "Details",
+				"resolution": "Resolution",
+				"status": "Return status"
+			},
+			"shipForm": {
+				"title": "Ship order",
+				"description": "Mark this order as shipped. Optionally add a tracking code for the buyer.",
+				"trackingCode": "Tracking code",
+				"trackingPlaceholder": "e.g. TTN123456789",
+				"submit": "Confirm shipment"
+			},
+			"trackingForm": {
+				"title": "Update tracking code",
+				"trackingCode": "Tracking code",
+				"trackingPlaceholder": "Enter tracking number",
+				"submit": "Save tracking"
+			},
+			"cancelConfirm": {
+				"title": "Cancel order?",
+				"message": "The buyer will be notified. This cannot be undone.",
+				"reasonLabel": "Cancellation reason (optional)",
+				"reasonPlaceholder": "Out of stock, unable to fulfill, etc.",
+				"submit": "Cancel order"
+			},
+			"deliverConfirm": {
+				"title": "Mark as delivered?",
+				"message": "Confirm that this order has been delivered to the buyer."
+			},
+			"rejectReturnConfirm": {
+				"title": "Reject return request?",
+				"reasonLabel": "Rejection reason",
+				"reasonPlaceholder": "Explain why the return is rejected",
+				"submit": "Reject return"
+			},
+			"refundConfirm": {
+				"title": "Process refund?",
+				"message": "The buyer will be refunded and the order will be marked as refunded."
+			},
+			"notFound": {
+				"title": "Order not found",
+				"description": "This order does not exist or does not include your products."
+			}
 		}
 	},
 	"sellerProducts": {
@@ -1062,6 +1393,31 @@
 			"emptyDesc": "All products have sufficient inventory.",
 			"stockLabel": "in stock",
 			"variantLabel": "Variant"
+		},
+		"viewOrders": "View orders",
+		"alerts": {
+			"lowStock": "{{count}} variants are low on stock",
+			"pendingModeration": "{{count}} products awaiting moderation",
+			"unrepliedReviews": "{{count}} reviews waiting for your reply"
+		},
+		"recentOrders": {
+			"title": "New orders",
+			"subtitle": "Latest orders to fulfill",
+			"empty": "No orders yet",
+			"emptyDesc": "New customer orders will appear here.",
+			"process": "Process"
+		},
+		"moderation": {
+			"title": "Moderation & reviews",
+			"pending": "Products on moderation",
+			"unrepliedReviews": "Reviews without reply"
+		},
+		"quickActions": {
+			"title": "Quick actions",
+			"addProduct": "Add product",
+			"orders": "View orders",
+			"import": "Bulk import",
+			"products": "My products"
 		}
 	},
 	"moderation": {
@@ -1519,6 +1875,277 @@
 			"moveError": "Failed to reorder category"
 		}
 	},
+	"feedback": {
+		"modal": {
+			"title": "Send feedback",
+			"subtitle": "Share a bug, feature idea, or UX suggestion. Screenshots help us understand faster.",
+			"categoryLabel": "Category",
+			"subjectLabel": "Subject",
+			"subjectPlaceholder": "Brief summary of your feedback",
+			"messageLabel": "Details",
+			"messagePlaceholder": "Describe what happened, what you expected, or what you'd like to see improved…",
+			"photosLabel": "Screenshots (optional)",
+			"addPhoto": "Attach image",
+			"submit": "Send feedback",
+			"cancel": "Cancel",
+			"success": "Thanks! Your feedback was sent to the team.",
+			"error": "Could not send feedback. Please try again.",
+			"subjectRequired": "Please enter a subject.",
+			"messageRequired": "Please provide at least 10 characters of detail."
+		},
+		"category": {
+			"BUG": "Bug report",
+			"FEATURE": "Feature request",
+			"UX": "UX / design",
+			"OTHER": "Other"
+		}
+	},
+	"whatsNew": {
+		"modal": {
+			"title": "What's new",
+			"version": "Version {{version}}",
+			"publishedAt": "Released {{date}}",
+			"gotIt": "Got it",
+			"latest": "Latest",
+			"new": "New",
+			"historyHint": "{{count}} previous updates in history",
+			"emptyTitle": "No updates yet",
+			"emptyDescription": "When the team publishes release notes, they'll appear here."
+		}
+	},
+	"support": {
+		"pageTitle": "Support",
+		"pageSubtitle": "Chat with a moderator or admin about orders, verification, payouts, and account issues.",
+		"loginRequired": "Sign in to start a support conversation with our team.",
+		"channels": {
+			"liveChat": {
+				"title": "Live chat",
+				"subtitle": "Real staff for billing, orders, and verifications.",
+				"meta": "We reply as soon as possible"
+			},
+			"helpCenter": {
+				"title": "Help center",
+				"subtitle": "Guides and answers for common marketplace tasks.",
+				"meta": "Browse articles →"
+			}
+		},
+		"newRequest": {
+			"title": "Start a support chat",
+			"subtitle": "Describe your issue and a moderator or admin will join the conversation.",
+			"subjectLabel": "Subject",
+			"subjectPlaceholder": "e.g. Refund for order #1042",
+			"messageLabel": "Message",
+			"messagePlaceholder": "Tell us what happened and what you need…",
+			"startChat": "Start chat"
+		},
+		"chat": {
+			"waitingForTeam": "Support team",
+			"staffOnline": "Online",
+			"staffOffline": "Away",
+			"queueHint": "Waiting for a team member",
+			"waitingBanner": "Your request is in the queue. A moderator or admin will reply here shortly."
+		},
+		"composer": {
+			"placeholder": "Write your message…",
+			"hint": "Press Enter to send",
+			"send": "Send"
+		},
+		"statuses": {
+			"OPEN": "Open",
+			"IN_PROGRESS": "In progress",
+			"RESOLVED": "Resolved",
+			"CLOSED": "Closed"
+		},
+		"faq": {
+			"title": "Popular help articles",
+			"articles": {
+				"refunds": {
+					"title": "How refunds work",
+					"body": "Buyers can request refunds after delivery depending on seller policy and order status. Sellers process refunds from the order detail page. Partial refunds are supported for shipping-only adjustments when the item is kept."
+				},
+				"verificationDocs": {
+					"title": "Re-uploading verification docs",
+					"body": "If verification was rejected, open Seller verification, review the moderator note, replace the affected documents, and resubmit. Make sure EDRPOU, tax number, and banking details match your uploaded files."
+				},
+				"payoutsFees": {
+					"title": "Payout schedule & fees",
+					"body": "Krydix releases seller payouts after the configured hold period once delivery is confirmed. Commission depends on category rules set by the platform. Check Seller dashboard for pending and completed payouts."
+				},
+				"bulkImport": {
+					"title": "Bulk-importing products",
+					"body": "Use Seller → Import to upload CSV or XLSX templates. Validate the preview, fix row errors, then confirm. Updates match products by SKU within your catalog."
+				},
+				"cancelOrder": {
+					"title": "Cancelling an order",
+					"body": "Buyers can cancel before shipment from order details when the status allows it. Sellers should cancel from their order view if the item cannot be fulfilled and add a short reason for the buyer."
+				}
+			}
+		},
+		"tickets": {
+			"title": "Your recent requests",
+			"empty": "No closed support requests yet.",
+			"unnamed": "Support request"
+		},
+		"status": {
+			"title": "Status",
+			"operational": "All systems operational",
+			"updated": "No known incidents · Updated recently"
+		}
+	},
+	"moderatorSupport": {
+		"pageTitle": "User support",
+		"pageSubtitle": "Review open requests, reply in chat, and mark issues resolved.",
+		"queueCount": "{{count}} requests",
+		"searchPlaceholder": "Search by subject, name, or email…",
+		"unnamedRequest": "Support request",
+		"unknownUser": "Unknown user",
+		"tabs": {
+			"open": "Open",
+			"inProgress": "In progress",
+			"resolved": "Resolved",
+			"all": "All"
+		},
+		"empty": {
+			"title": "No requests",
+			"description": "New user support chats will appear here."
+		},
+		"select": {
+			"title": "Select a request",
+			"description": "Pick a conversation from the queue to read messages and reply."
+		},
+		"actions": {
+			"assignToMe": "Assign to me",
+			"assigned": "Request assigned to you",
+			"markResolved": "Mark resolved",
+			"close": "Close request",
+			"statusUpdated": "Status updated"
+		}
+	},
+	"adminReleaseNotes": {
+		"pageTitle": "What's new",
+		"pageSubtitle": "Publish release notes for buyers, sellers, and moderators. Users see the latest update in the sidebar menu.",
+		"actions": {
+			"create": "New release"
+		},
+		"filters": {
+			"searchPlaceholder": "Search version or title…",
+			"status": "Status",
+			"allStatuses": "All statuses"
+		},
+		"table": {
+			"version": "Version",
+			"title": "Title",
+			"status": "Status",
+			"publishedAt": "Published",
+			"updatedAt": "Updated",
+			"author": "Author",
+			"actions": "Actions"
+		},
+		"form": {
+			"createTitle": "Create release note",
+			"editTitle": "Edit release note",
+			"version": "Version",
+			"versionPlaceholder": "e.g. 1.2.0",
+			"versionHint": "Use major.minor format, e.g. 1.0 or 1.2.0. A leading \"v\" is OK.",
+			"versionTooltip": "Examples: 1.0, 1.2.0, 2.1.0-beta. Single numbers like \"1\" are not valid.",
+			"titleHint": "At least {{min}} characters.",
+			"bodyHint": "At least {{min}} characters. Current: {{count}}.",
+			"status": "Status",
+			"publishNow": "Publish immediately",
+			"englishSection": "English",
+			"ukrainianSection": "Ukrainian",
+			"titleEn": "Title (English)",
+			"titleUk": "Title (Ukrainian)",
+			"bodyEn": "Changes (English)",
+			"bodyUk": "Changes (Ukrainian)",
+			"create": "Create",
+			"save": "Save changes"
+		},
+		"status": {
+			"DRAFT": "Draft",
+			"PUBLISHED": "Published"
+		},
+		"empty": {
+			"title": "No release notes yet",
+			"description": "Create the first release note to tell users what changed in the latest version."
+		},
+		"delete": {
+			"title": "Delete release note",
+			"message": "Delete version {{version}}? This cannot be undone."
+		},
+		"toast": {
+			"created": "Release note created",
+			"updated": "Release note updated",
+			"deleted": "Release note deleted",
+			"createError": "Could not create release note",
+			"updateError": "Could not update release note",
+			"deleteError": "Could not delete release note",
+			"validationError": "Please fix the highlighted fields before saving."
+		},
+		"validation": {
+			"versionRequired": "Version is required.",
+			"versionFormat": "Use format 1.0 or 1.2.0 (optional v prefix).",
+			"titleMin": "Title must be at least {{min}} characters.",
+			"bodyMin": "Changes must be at least {{min}} characters."
+		}
+	},
+	"adminFeedback": {
+		"pageTitle": "User feedback",
+		"pageSubtitle": "Review platform feedback, triage requests, and track follow-up.",
+		"stats": {
+			"total": "Total",
+			"new": "New",
+			"underReview": "Under review",
+			"acknowledged": "Acknowledged",
+			"planned": "Planned",
+			"resolved": "Resolved"
+		},
+		"tabs": {
+			"all": "All",
+			"new": "New",
+			"underReview": "Under review",
+			"acknowledged": "Acknowledged",
+			"planned": "Planned",
+			"resolved": "Resolved",
+			"dismissed": "Dismissed"
+		},
+		"filters": {
+			"searchPlaceholder": "Search subject, message, or user…",
+			"category": "Category"
+		},
+		"table": {
+			"date": "Submitted",
+			"user": "User",
+			"category": "Category",
+			"subject": "Subject",
+			"status": "Status",
+			"attachments": "Images"
+		},
+		"detail": {
+			"title": "Feedback details",
+			"message": "Message",
+			"attachments": "Attachments",
+			"adminNotes": "Internal notes",
+			"adminNotesPlaceholder": "Notes for your team (not visible to the user)",
+			"status": "Status",
+			"handledBy": "Last updated by",
+			"save": "Save changes",
+			"saved": "Feedback updated",
+			"saveError": "Could not update feedback"
+		},
+		"status": {
+			"NEW": "New",
+			"UNDER_REVIEW": "Under review",
+			"ACKNOWLEDGED": "Acknowledged",
+			"PLANNED": "Planned",
+			"RESOLVED": "Resolved",
+			"DISMISSED": "Dismissed"
+		},
+		"empty": {
+			"title": "No feedback yet",
+			"description": "User submissions will appear here once someone sends feedback from the sidebar menu."
+		}
+	},
 	"adminAudit": {
 		"pageTitle": "Audit log",
 		"pageSubtitle": "Every moderator and admin action, with actor and target.",
@@ -1703,6 +2330,150 @@
 			"saveError": "Failed to save platform settings",
 			"promoCreated": "Promo code created",
 			"promoCreateError": "Failed to create promo code"
+		}
+	},
+	"dashboard": {
+		"common": {
+			"greeting": "Welcome back",
+			"greetingNamed": "Welcome back, {{name}}",
+			"profile": "Profile & settings",
+			"notifications": "Notifications",
+			"viewAll": "View all",
+			"details": "Details",
+			"open": "Open",
+			"openQueue": "Open queue",
+			"openSettings": "Platform settings"
+		},
+		"role": {
+			"buyer": "Buyer",
+			"seller": "Seller",
+			"moderator": "Moderator",
+			"admin": "Administrator"
+		}
+	},
+	"buyerDashboard": {
+		"subtitle": "Your orders, messages, and saved items at a glance.",
+		"stats": {
+			"activeOrders": "Active orders",
+			"unreadMessages": "Unread messages",
+			"unreadNotifications": "New notifications",
+			"wishlist": "Wishlist items"
+		},
+		"recentOrders": {
+			"title": "Recent orders",
+			"subtitle": "Latest purchases and their status",
+			"empty": "No orders yet",
+			"emptyDesc": "Browse the catalog and place your first order."
+		},
+		"wishlist": {
+			"title": "Wishlist",
+			"subtitle": "Saved products you love",
+			"priceDropHint": "Some items may have dropped in price",
+			"empty": "Wishlist is empty",
+			"emptyDesc": "Save products while browsing to track them here."
+		},
+		"notifications": {
+			"title": "Recent notifications",
+			"empty": "No notifications",
+			"emptyDesc": "Order updates and messages will appear here."
+		},
+		"quickActions": {
+			"title": "Quick actions",
+			"catalog": "Browse catalog",
+			"orders": "My orders",
+			"profile": "Account settings",
+			"becomeSeller": "Become a seller"
+		}
+	},
+	"moderatorDashboard": {
+		"subtitle": "Moderation queues and platform alerts in one place.",
+		"stats": {
+			"pendingProducts": "Products pending",
+			"pendingReviews": "Reviews pending",
+			"supportOpen": "Support chats",
+			"systemAlerts": "System alerts"
+		},
+		"alerts": {
+			"pendingProducts": "{{count}} products waiting for moderation",
+			"flaggedReviews": "{{count}} flagged reviews need attention",
+			"openSupport": "{{count}} support requests are open"
+		},
+		"queue": {
+			"title": "Review queue",
+			"subtitle": "Counts by moderation type",
+			"products": "Product moderation",
+			"reviews": "Pending reviews",
+			"flaggedReviews": "Flagged reviews",
+			"support": "Support conversations",
+			"verifications": "Seller verifications",
+			"complaints": "Complaints"
+		},
+		"recentActions": {
+			"title": "Your recent actions",
+			"subtitle": "Latest moderation decisions you made",
+			"empty": "No recent actions",
+			"emptyDesc": "Your moderation activity will appear here."
+		},
+		"messages": {
+			"title": "Seller messages",
+			"unread": "Unread messages"
+		},
+		"notifications": {
+			"title": "System notifications",
+			"empty": "No alerts",
+			"emptyDesc": "Platform alerts will appear here."
+		},
+		"quickActions": {
+			"title": "Quick actions",
+			"products": "Product queue",
+			"reviews": "Review queue",
+			"support": "User support",
+			"users": "User management"
+		}
+	},
+	"adminDashboard": {
+		"subtitle": "Platform health, revenue, and critical queues.",
+		"stats": {
+			"totalUsers": "Total users",
+			"sellers": "Sellers",
+			"products": "Products",
+			"revenue30d": "Revenue (30d)"
+		},
+		"alerts": {
+			"feedback": "{{count}} feedback items need review",
+			"blockedProducts": "{{count}} products are blocked",
+			"blockedUsers": "{{count}} users are blocked"
+		},
+		"platform": {
+			"title": "Platform activity",
+			"subtitle": "Growth and commerce overview",
+			"gmv": "GMV (30 days)",
+			"newUsers": "New users this month",
+			"newSellers": "New sellers this month",
+			"newProducts": "New products this month",
+			"activeSellers": "Active sellers"
+		},
+		"critical": {
+			"title": "Critical queues",
+			"subtitle": "Items that may need immediate attention",
+			"feedback": "Feedback in review",
+			"blockedUsers": "Blocked users",
+			"rejectedProducts": "Rejected products",
+			"pendingReviews": "Pending reviews",
+			"flaggedReviews": "Flagged reviews"
+		},
+		"audit": {
+			"title": "Recent audit log",
+			"subtitle": "Latest moderator and admin actions",
+			"empty": "No audit entries",
+			"emptyDesc": "Staff actions will be logged here."
+		},
+		"quickActions": {
+			"title": "Quick access",
+			"categories": "Categories",
+			"users": "Users & roles",
+			"products": "Products",
+			"settings": "Platform settings"
 		}
 	}
 }

@@ -314,3 +314,145 @@ describe('getMyOrder', () => {
 		});
 	});
 });
+
+// ─── getMySellerOrder / shipSellerOrder ──────────────────────────────────────
+
+const SELLER_ID = 'seller-1';
+
+function makeSellerOrderRecord(overrides: Partial<Record<string, unknown>> = {}) {
+	return {
+		id: ORDER_ID,
+		buyerId: BUYER_ID,
+		status: OrderStatus.CONFIRMED,
+		totalAmount: 200,
+		discount: null,
+		promoCodeId: null,
+		notes: null,
+		deletedAt: null,
+		createdAt: new Date('2026-01-01'),
+		updatedAt: new Date('2026-01-01'),
+		buyer: {
+			id: BUYER_ID,
+			email: 'buyer@test.com',
+			profile: {
+				firstName: 'Jane',
+				lastName: 'Doe',
+				displayName: null,
+			},
+		},
+		items: [
+			{
+				id: 'item-1',
+				productId: 'p1',
+				variantId: null,
+				sellerId: SELLER_ID,
+				quantity: 2,
+				unitPrice: 100,
+				totalPrice: 200,
+				productTitle: 'Test Product',
+			},
+		],
+		payment: { id: 'pay-1', status: 'PAID', amount: 200 },
+		delivery: { id: 'del-1', status: 'PENDING', method: 'COURIER', trackingCode: null },
+		returnRequest: null,
+		promoCode: null,
+		...overrides,
+	};
+}
+
+describe('getMySellerOrder', () => {
+	it('returns seller-scoped order view', async () => {
+		mockRepo.findOrderByIdAndSeller.mockResolvedValue(makeSellerOrderRecord() as never);
+
+		const result = await orderService.getMySellerOrder(ORDER_ID, SELLER_ID);
+
+		expect(result.sellerSubtotal).toBe(200);
+		expect(result.itemCount).toBe(2);
+		expect(result.buyer.name).toBe('Jane Doe');
+		expect(result.items).toHaveLength(1);
+	});
+
+	it('throws NOT_FOUND when seller has no items on order', async () => {
+		mockRepo.findOrderByIdAndSeller.mockResolvedValue(null);
+
+		await expect(orderService.getMySellerOrder(ORDER_ID, SELLER_ID)).rejects.toMatchObject({
+			extensions: { code: 'NOT_FOUND' },
+		});
+	});
+});
+
+describe('shipSellerOrder', () => {
+	it('ships a CONFIRMED order and sets tracking code', async () => {
+		const order = makeSellerOrderRecord({ status: OrderStatus.CONFIRMED });
+		const shipped = makeSellerOrderRecord({
+			status: OrderStatus.SHIPPED,
+			delivery: { id: 'del-1', status: 'SENT', method: 'COURIER', trackingCode: 'TTN123' },
+		});
+
+		mockRepo.findOrderByIdAndSeller.mockResolvedValueOnce(order as never);
+		mockRepo.updateDeliveryShipment.mockResolvedValue({ ...order, status: OrderStatus.SHIPPED } as never);
+		mockRepo.findOrderByIdAndSeller.mockResolvedValueOnce(shipped as never);
+
+		const result = await orderService.shipSellerOrder(ORDER_ID, SELLER_ID, 'TTN123');
+
+		expect(mockRepo.updateDeliveryShipment).toHaveBeenCalledWith(ORDER_ID, 'TTN123');
+		expect(result.status).toBe(OrderStatus.SHIPPED);
+	});
+
+	it('throws when order is not CONFIRMED', async () => {
+		mockRepo.findOrderByIdAndSeller.mockResolvedValue(
+			makeSellerOrderRecord({ status: OrderStatus.PENDING }) as never
+		);
+
+		await expect(orderService.shipSellerOrder(ORDER_ID, SELLER_ID)).rejects.toMatchObject({
+			extensions: { code: 'BAD_USER_INPUT' },
+		});
+	});
+});
+
+describe('confirmSellerOrder', () => {
+	it('confirms a PENDING order', async () => {
+		const order = makeSellerOrderRecord({ status: OrderStatus.PENDING });
+		const confirmed = makeSellerOrderRecord({ status: OrderStatus.CONFIRMED });
+
+		mockRepo.findOrderByIdAndSeller.mockResolvedValueOnce(order as never);
+		mockRepo.updateOrderStatus.mockResolvedValue(confirmed as never);
+		mockRepo.findOrderById.mockResolvedValue(order as never);
+		mockRepo.findOrderByIdAndSeller.mockResolvedValueOnce(confirmed as never);
+
+		const result = await orderService.confirmSellerOrder(ORDER_ID, SELLER_ID);
+		expect(result.status).toBe(OrderStatus.CONFIRMED);
+	});
+});
+
+describe('cancelSellerOrder', () => {
+	it('cancels a CONFIRMED order with reason', async () => {
+		const order = makeSellerOrderRecord({ status: OrderStatus.CONFIRMED, notes: null });
+		const cancelled = makeSellerOrderRecord({ status: OrderStatus.CANCELLED });
+
+		mockRepo.findOrderByIdAndSeller.mockResolvedValueOnce(order as never);
+		mockRepo.updateOrderNotes.mockResolvedValue(undefined as never);
+		mockRepo.findOrderById.mockResolvedValue(order as never);
+		mockRepo.updateOrderStatus.mockResolvedValue(cancelled as never);
+		mockRepo.findOrderByIdAndSeller.mockResolvedValueOnce(cancelled as never);
+
+		const result = await orderService.cancelSellerOrder(ORDER_ID, SELLER_ID, 'Out of stock');
+		expect(mockRepo.updateOrderNotes).toHaveBeenCalled();
+		expect(result.status).toBe(OrderStatus.CANCELLED);
+	});
+});
+
+describe('markSellerOrderDelivered', () => {
+	it('marks a SHIPPED order as delivered', async () => {
+		const order = makeSellerOrderRecord({ status: OrderStatus.SHIPPED });
+		const delivered = makeSellerOrderRecord({ status: OrderStatus.DELIVERED });
+
+		mockRepo.findOrderByIdAndSeller.mockResolvedValueOnce(order as never);
+		mockRepo.markOrderDelivered.mockResolvedValue(delivered as never);
+		mockRepo.findOrderByIdAndSeller.mockResolvedValueOnce(delivered as never);
+
+		const result = await orderService.markSellerOrderDelivered(ORDER_ID, SELLER_ID);
+		expect(mockRepo.markOrderDelivered).toHaveBeenCalledWith(ORDER_ID);
+		expect(result.status).toBe(OrderStatus.DELIVERED);
+	});
+});

@@ -79,6 +79,39 @@ export enum ComplaintTarget {
 	REVIEW = 'REVIEW',
 }
 
+export enum FeedbackCategory {
+	BUG = 'BUG',
+	FEATURE = 'FEATURE',
+	UX = 'UX',
+	OTHER = 'OTHER',
+}
+
+export enum FeedbackStatus {
+	NEW = 'NEW',
+	UNDER_REVIEW = 'UNDER_REVIEW',
+	ACKNOWLEDGED = 'ACKNOWLEDGED',
+	PLANNED = 'PLANNED',
+	RESOLVED = 'RESOLVED',
+	DISMISSED = 'DISMISSED',
+}
+
+export enum ReleaseNoteStatus {
+	DRAFT = 'DRAFT',
+	PUBLISHED = 'PUBLISHED',
+}
+
+export enum ChatType {
+	MARKETPLACE = 'MARKETPLACE',
+	SUPPORT = 'SUPPORT',
+}
+
+export enum SupportChatStatus {
+	OPEN = 'OPEN',
+	IN_PROGRESS = 'IN_PROGRESS',
+	RESOLVED = 'RESOLVED',
+	CLOSED = 'CLOSED',
+}
+
 export enum Language {
 	EN = 'en',
 	UK = 'uk',
@@ -92,6 +125,7 @@ export enum NotificationEvent {
 	VERIFICATION_RESULT = 'VERIFICATION_RESULT',
 	COMPLAINT_UPDATE = 'COMPLAINT_UPDATE',
 	REVIEW_RECEIVED = 'REVIEW_RECEIVED',
+	SUPPORT_UPDATE = 'SUPPORT_UPDATE',
 }
 
 export enum ImportStatus {

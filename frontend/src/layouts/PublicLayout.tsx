@@ -7,6 +7,7 @@ import { AppAvatar, AppButton } from '@/components/ui';
 import { Icons } from '@/constants/icons';
 import { ROUTES } from '@/constants/routes';
 import { useAuthStore } from '@/store/authStore';
+import { useRoleHomeRoute } from '@/hooks/useRoleHomeRoute';
 import { tokens } from '@/theme';
 
 const NAV_LINK_SX = {
@@ -40,6 +41,7 @@ export default function PublicLayout() {
 	const { t, i18n } = useTranslation();
 	const navigate = useNavigate();
 	const user = useAuthStore((s) => s.user);
+	const homeRoute = useRoleHomeRoute();
 	const clearAuth = useAuthStore((s) => s.clearAuth);
 
 	const [accountAnchor, setAccountAnchor] = useState<null | HTMLElement>(null);
@@ -79,7 +81,7 @@ export default function PublicLayout() {
 				{/* Brand */}
 				<Box
 					component={RouterLink}
-					to={ROUTES.HOME}
+					to={homeRoute}
 					sx={{
 						display: 'flex',
 						alignItems: 'center',

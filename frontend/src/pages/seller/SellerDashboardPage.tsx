@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@apollo/client';
 import { Box, Grid, Stack, Typography, Link } from '@mui/material';
@@ -17,26 +17,43 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Icons } from '@/constants/icons';
 import { tokens } from '@/theme';
 import { ROUTES } from '@/constants/routes';
-import { AppButton, AppTable, EmptyState, SegmentedControl, StatCard } from '@/components/ui';
+import { AppButton, AppTable, EmptyState, SegmentedControl, StatCard, AppImage, StatusBadge } from '@/components/ui';
+import {
+	DashboardWelcomeHeader,
+	DashboardAlertBanner,
+	DashboardSectionCard,
+	DashboardQuickActions,
+} from '@/components/dashboard';
 import type { AppTableColumn } from '@/components/ui';
 import {
 	SELLER_STATS_QUERY,
 	SELLER_REVENUE_SERIES_QUERY,
 	SELLER_TOP_PRODUCTS_QUERY,
 	SELLER_LOW_STOCK_ALERTS_QUERY,
+	SELLER_DASHBOARD_SUMMARY_QUERY,
 } from '@/graphql/operations/sellerDashboard';
 import type {
 	SellerStatsData,
 	SellerRevenueSeriesData,
 	SellerTopProductsData,
 	SellerLowStockAlertsData,
+	SellerDashboardSummaryData,
 	TopProduct,
 	LowStockAlertItem,
 } from '@/graphql/operations/sellerDashboard';
+import { MY_SELLER_ORDERS_QUERY } from '@/graphql/operations/sellerOrders';
+import type { OrderStatus } from '@/types/orders';
+import { Role } from '@/constants/enums';
 import { useAuth } from '@/hooks/useAuth';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+type SellerRecentOrder = {
+	id: string;
+	status: OrderStatus;
+	sellerSubtotal: number;
+	buyer?: { name?: string | null; email?: string | null } | null;
+};
 type DashboardPeriod = 'WEEK' | 'MONTH' | 'QUARTER' | 'YEAR';
 type RevenueGranularity = 'DAY' | 'WEEK' | 'MONTH';
 
@@ -615,8 +632,7 @@ function LowStockSideCard({ items, loading }: LowStockSideCardProps) {
 									}}
 								>
 									{item.imageUrl ? (
-										<Box
-											component="img"
+										<AppImage
 											src={item.imageUrl}
 											alt={item.titleEn}
 											sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -708,8 +724,7 @@ function TopProductsTable({ products, loading }: TopProductsTableProps) {
 						}}
 					>
 						{row.imageUrl ? (
-							<Box
-								component="img"
+							<AppImage
 								src={row.imageUrl}
 								alt={row.titleEn}
 								sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -872,67 +887,102 @@ export default function SellerDashboardPage() {
 	);
 	const { data: topData, loading: topLoading } = useQuery<SellerTopProductsData>(
 		SELLER_TOP_PRODUCTS_QUERY,
-		{ variables: { limit: 10 }, fetchPolicy: 'cache-and-network' }
+		{ variables: { limit: 5 }, fetchPolicy: 'cache-and-network' }
 	);
 	const { data: stockData, loading: stockLoading } = useQuery<SellerLowStockAlertsData>(
 		SELLER_LOW_STOCK_ALERTS_QUERY,
 		{ variables: { threshold: 5 }, fetchPolicy: 'cache-and-network' }
 	);
+	const { data: summaryData } = useQuery<SellerDashboardSummaryData>(SELLER_DASHBOARD_SUMMARY_QUERY);
+	const { data: recentOrdersData, loading: recentOrdersLoading } = useQuery<{
+		mySellerOrders: { items: SellerRecentOrder[] };
+	}>(MY_SELLER_ORDERS_QUERY, {
+		variables: { filter: { page: 1, pageSize: 5 } },
+	});
 
 	const stats = statsData?.sellerStats;
 	const seriesPoints = seriesData?.sellerRevenueSeries ?? [];
 	const topProducts = topData?.sellerTopProducts ?? [];
 	const lowStockItems = stockData?.sellerLowStockAlerts ?? [];
+	const summary = summaryData?.sellerDashboardSummary;
+	const recentOrders = recentOrdersData?.mySellerOrders?.items ?? [];
 
 	const periodLabel = t(`sellerDashboard.period.${period}`);
 
+	const alerts = useMemo(() => {
+		const items = [];
+		if (lowStockItems.length > 0) {
+			items.push({
+				id: 'lowStock',
+				messageKey: 'sellerDashboard.alerts.lowStock',
+				messageParams: { count: lowStockItems.length },
+				href: ROUTES.SELLER_PRODUCTS,
+				tone: 'warning' as const,
+			});
+		}
+		if ((summary?.pendingModerationCount ?? 0) > 0) {
+			items.push({
+				id: 'moderation',
+				messageKey: 'sellerDashboard.alerts.pendingModeration',
+				messageParams: { count: summary!.pendingModerationCount },
+				href: ROUTES.SELLER_PRODUCTS,
+				tone: 'warning' as const,
+			});
+		}
+		if ((summary?.unrepliedReviewCount ?? 0) > 0) {
+			items.push({
+				id: 'reviews',
+				messageKey: 'sellerDashboard.alerts.unrepliedReviews',
+				messageParams: { count: summary!.unrepliedReviewCount },
+				href: ROUTES.SELLER_PRODUCTS,
+				tone: 'danger' as const,
+			});
+		}
+		return items;
+	}, [lowStockItems.length, summary]);
+
 	return (
 		<Box sx={{ width: '100%', maxWidth: 1200, mx: 'auto' }}>
-			{/* ── Page head ── */}
+			<DashboardWelcomeHeader
+				name={user?.profile?.firstName}
+				role={Role.SELLER}
+				subtitleKey="sellerDashboard.pageSubtitle"
+			/>
+
+			<DashboardAlertBanner alerts={alerts} />
+
 			<Box
 				sx={{
 					display: 'flex',
-					alignItems: 'flex-start',
-					justifyContent: 'space-between',
-					mb: 3,
+					alignItems: 'center',
+					justifyContent: 'flex-end',
+					mb: 2.5,
 					flexWrap: 'wrap',
-					gap: 2,
+					gap: 1.5,
 				}}
 			>
-				<Box>
-					<Typography variant="h4" sx={{ fontWeight: 800, letterSpacing: '-0.02em' }}>
-						{user?.profile?.firstName
-							? t('sellerDashboard.pageTitle', { name: user.profile.firstName })
-							: t('nav.dashboard')}
-					</Typography>
-					<Typography sx={{ color: tokens.ink3, mt: 0.5, fontSize: 14 }}>
-						{t('sellerDashboard.pageSubtitle')}
-					</Typography>
-				</Box>
-				<Stack direction="row" spacing={1.5} alignItems="center" flexWrap="wrap">
-					<SegmentedControl
-						options={PERIOD_OPTIONS}
-						value={period}
-						onChange={handlePeriodChange}
-						size="sm"
-					/>
-					<AppButton
-						variant="outlined"
-						size="small"
-						startIcon={<FontAwesomeIcon icon={Icons.add} />}
-						onClick={() => navigate(ROUTES.SELLER_PRODUCT_NEW)}
-					>
-						{t('sellerDashboard.addProduct')}
-					</AppButton>
-					<AppButton
-						variant="contained"
-						size="small"
-						startIcon={<FontAwesomeIcon icon={Icons.chartLine} />}
-						onClick={() => navigate(ROUTES.SELLER_PRODUCTS)}
-					>
-						{t('sellerDashboard.viewAnalytics')}
-					</AppButton>
-				</Stack>
+				<SegmentedControl
+					options={PERIOD_OPTIONS}
+					value={period}
+					onChange={handlePeriodChange}
+					size="sm"
+				/>
+				<AppButton
+					variant="outlined"
+					size="small"
+					startIcon={<FontAwesomeIcon icon={Icons.add} />}
+					onClick={() => navigate(ROUTES.SELLER_PRODUCT_NEW)}
+				>
+					{t('sellerDashboard.addProduct')}
+				</AppButton>
+				<AppButton
+					variant="contained"
+					size="small"
+					startIcon={<FontAwesomeIcon icon={Icons.order} />}
+					onClick={() => navigate(ROUTES.SELLER_ORDERS)}
+				>
+					{t('sellerDashboard.viewOrders')}
+				</AppButton>
 			</Box>
 
 			{/* ── Row 1: Hero (3-col) + Feature (1-col) ── */}
@@ -1009,8 +1059,122 @@ export default function SellerDashboardPage() {
 				</Grid>
 			</Grid>
 
-			{/* ── Row 4: Top products (full width) ── */}
+			{/* ── Row 4: Recent orders + moderation summary ── */}
+			<Grid container spacing={2.5} sx={{ mb: 2.5 }}>
+				<Grid item xs={12} md={8}>
+					<DashboardSectionCard
+						titleKey="sellerDashboard.recentOrders.title"
+						subtitleKey="sellerDashboard.recentOrders.subtitle"
+						actionLabelKey="dashboard.common.viewAll"
+						actionHref={ROUTES.SELLER_ORDERS}
+					>
+						{recentOrders.length === 0 && !recentOrdersLoading ? (
+							<EmptyState
+								icon={Icons.order}
+								title={t('sellerDashboard.recentOrders.empty')}
+								description={t('sellerDashboard.recentOrders.emptyDesc')}
+							/>
+						) : (
+							<Stack spacing={1.25}>
+								{recentOrders.map((order) => (
+									<Box
+										key={order.id}
+										sx={{
+											display: 'flex',
+											alignItems: 'center',
+											gap: 1.5,
+											p: 1.5,
+											borderRadius: 1.5,
+											border: `1px solid ${tokens.line}`,
+										}}
+									>
+										<Box sx={{ flex: 1, minWidth: 0 }}>
+											<Typography sx={{ fontSize: 13.5, fontWeight: 600 }}>
+												#KX-{order.id.slice(-4).toUpperCase()}
+											</Typography>
+											<Typography sx={{ fontSize: 12, color: tokens.ink3 }}>
+												{order.buyer?.name ?? order.buyer?.email} · $
+												{order.sellerSubtotal.toFixed(2)}
+											</Typography>
+										</Box>
+										<StatusBadge
+											status={order.status}
+											label={t(`status.order.${order.status}`)}
+										/>
+										<AppButton
+											variant="outlined"
+											size="small"
+											onClick={() => navigate(ROUTES.SELLER_ORDER(order.id))}
+										>
+											{t('sellerDashboard.recentOrders.process')}
+										</AppButton>
+									</Box>
+								))}
+							</Stack>
+						)}
+					</DashboardSectionCard>
+				</Grid>
+				<Grid item xs={12} md={4}>
+					<DashboardSectionCard titleKey="sellerDashboard.moderation.title">
+						<Stack spacing={1.25}>
+							<Box sx={{ p: 1.5, borderRadius: 1.5, bgcolor: tokens.surface2 }}>
+								<Typography sx={{ fontSize: 12, color: tokens.ink3 }}>
+									{t('sellerDashboard.moderation.pending')}
+								</Typography>
+								<Typography sx={{ fontSize: 22, fontWeight: 700 }}>
+									{summary?.pendingModerationCount ?? 0}
+								</Typography>
+							</Box>
+							<Box sx={{ p: 1.5, borderRadius: 1.5, bgcolor: tokens.surface2 }}>
+								<Typography sx={{ fontSize: 12, color: tokens.ink3 }}>
+									{t('sellerDashboard.moderation.unrepliedReviews')}
+								</Typography>
+								<Typography sx={{ fontSize: 22, fontWeight: 700 }}>
+									{summary?.unrepliedReviewCount ?? 0}
+								</Typography>
+							</Box>
+						</Stack>
+					</DashboardSectionCard>
+				</Grid>
+			</Grid>
+
+			{/* ── Row 5: Top products (full width) ── */}
 			<TopProductsTable products={topProducts} loading={topLoading} />
+
+			<Box sx={{ mt: 2.5 }}>
+				<DashboardQuickActions
+					titleKey="sellerDashboard.quickActions.title"
+					actions={[
+						{
+							id: 'addProduct',
+							labelKey: 'sellerDashboard.quickActions.addProduct',
+							href: ROUTES.SELLER_PRODUCT_NEW,
+							icon: Icons.add,
+						},
+						{
+							id: 'orders',
+							labelKey: 'sellerDashboard.quickActions.orders',
+							href: ROUTES.SELLER_ORDERS,
+							icon: Icons.order,
+							tone: 'cyan',
+						},
+						{
+							id: 'import',
+							labelKey: 'sellerDashboard.quickActions.import',
+							href: ROUTES.SELLER_IMPORT,
+							icon: Icons.upload,
+							tone: 'amber',
+						},
+						{
+							id: 'products',
+							labelKey: 'sellerDashboard.quickActions.products',
+							href: ROUTES.SELLER_PRODUCTS,
+							icon: Icons.products,
+							tone: 'coral',
+						},
+					]}
+				/>
+			</Box>
 		</Box>
 	);
 }

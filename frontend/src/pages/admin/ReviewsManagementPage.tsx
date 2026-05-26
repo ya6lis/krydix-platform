@@ -22,6 +22,7 @@ import {
 	ConfirmDialog,
 	StatusBadge,
 	useAppToast,
+	AppImage,
 } from '@/components/ui';
 import {
 	ADMIN_REVIEW_STATS_QUERY,
@@ -279,8 +280,7 @@ export default function ReviewsManagementPage() {
 						}}
 					>
 						{row.productImageUrl ? (
-							<Box
-								component="img"
+							<AppImage
 								src={row.productImageUrl}
 								alt={row.productTitle}
 								sx={{ width: '100%', height: '100%', objectFit: 'cover' }}

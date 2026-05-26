@@ -17,5 +17,6 @@ export const profileTypeDefs = `#graphql
 		updateProfile(input: UpdateProfileInput!): UserProfile!
 		uploadProfileAvatar(input: UploadProfileAvatarInput!): UserProfile!
 		removeProfileAvatar: UserProfile!
+		closeAccount(password: String!): Boolean!
 	}
 `;

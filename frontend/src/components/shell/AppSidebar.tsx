@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Box, Typography, Popover, Divider } from '@mui/material';
 import { useQuery } from '@apollo/client';
@@ -9,13 +9,23 @@ import { Icons } from '@/constants/icons';
 import { tokens } from '@/theme';
 import { useAuthStore, type AuthUser } from '@/store/authStore';
 import { ROUTES } from '@/constants/routes';
+import { useRoleHomeRoute } from '@/hooks/useRoleHomeRoute';
 import { Role } from '@/constants/enums';
+import { canSeeNavForRoles, isStaffRole } from '@/utils/roleAccess';
 import i18n from '@/i18n';
 import { UNREAD_MESSAGE_COUNT_QUERY } from '@/graphql/operations/chat';
 import {
 	UNREAD_NOTIFICATION_COUNT_QUERY,
 	UNREAD_ORDER_NOTIFICATION_COUNT_QUERY,
 } from '@/graphql/operations/notifications';
+import { SendFeedbackModal } from '@/components/feedback/SendFeedbackModal';
+import { RELEASE_NOTES_HISTORY_LIMIT } from '@/constants/releaseNotes';
+import { WhatsNewModal } from '@/components/releaseNotes/WhatsNewModal';
+import {
+	PUBLISHED_RELEASE_NOTES_QUERY,
+	UNSEEN_RELEASE_NOTES_COUNT_QUERY,
+} from '@/graphql/operations/releaseNotes';
+import { getLastSeenReleasePublishedAt } from '@/utils/releaseNotes';
 
 /* ── width constant ──────────────────────────────────────────── */
 export const SIDEBAR_WIDTH = 248;
@@ -59,7 +69,14 @@ const NAV_GROUPS: NavGroup[] = [
 				labelKey: 'nav.dashboard',
 				icon: Icons.chart,
 				href: ROUTES.ACCOUNT,
-				roles: [Role.BUYER, Role.MODERATOR],
+				roles: [Role.BUYER],
+			},
+			{
+				id: 'dashboard-moderator',
+				labelKey: 'nav.dashboard',
+				icon: Icons.chart,
+				href: ROUTES.MODERATOR,
+				roles: [Role.MODERATOR],
 			},
 			{
 				id: 'dashboard-admin',
@@ -111,7 +128,21 @@ const NAV_GROUPS: NavGroup[] = [
 				labelKey: 'nav.catalog',
 				icon: Icons.products,
 				href: ROUTES.PRODUCTS,
-				roles: [GUEST, Role.BUYER, Role.SELLER, Role.MODERATOR, Role.ADMIN],
+				roles: [GUEST, Role.BUYER, Role.MODERATOR, Role.ADMIN],
+			},
+			{
+				id: 'wishlist',
+				labelKey: 'nav.wishlist',
+				icon: Icons.heart,
+				href: ROUTES.WISHLIST,
+				roles: [Role.BUYER, Role.MODERATOR, Role.ADMIN],
+			},
+			{
+				id: 'cart',
+				labelKey: 'nav.cart',
+				icon: Icons.cart,
+				href: ROUTES.CART,
+				roles: [GUEST, Role.BUYER, Role.MODERATOR, Role.ADMIN],
 			},
 			{
 				id: 'orders',
@@ -119,13 +150,29 @@ const NAV_GROUPS: NavGroup[] = [
 				icon: Icons.order,
 				href: ROUTES.ACCOUNT_ORDERS,
 				badge: { variant: 'default' },
-				roles: [Role.BUYER, Role.ADMIN],
+				roles: [Role.BUYER, Role.MODERATOR, Role.ADMIN],
 			},
 			{
 				id: 'messages',
 				labelKey: 'nav.messages',
 				icon: Icons.chats,
 				href: ROUTES.CHAT,
+				badge: { variant: 'default' },
+				roles: [Role.BUYER, Role.MODERATOR, Role.ADMIN],
+			},
+			{
+				id: 'seller-messages',
+				labelKey: 'nav.messages',
+				icon: Icons.chats,
+				href: ROUTES.SELLER_CHAT,
+				badge: { variant: 'default' },
+				roles: [Role.SELLER],
+			},
+			{
+				id: 'notifications',
+				labelKey: 'nav.notifications',
+				icon: Icons.bell,
+				href: ROUTES.ACCOUNT_NOTIFICATIONS,
 				badge: { variant: 'default' },
 				roles: [Role.BUYER, Role.SELLER, Role.MODERATOR, Role.ADMIN],
 			},
@@ -158,6 +205,14 @@ const NAV_GROUPS: NavGroup[] = [
 				labelKey: 'nav.reviewModeration',
 				icon: Icons.star,
 				href: ROUTES.MODERATOR_REVIEW_MODERATION,
+				roles: [Role.MODERATOR, Role.ADMIN],
+			},
+			{
+				id: 'user-support',
+				labelKey: 'nav.userSupport',
+				icon: Icons.chat,
+				href: ROUTES.MODERATOR_SUPPORT,
+				badge: { variant: 'warn' },
 				roles: [Role.MODERATOR, Role.ADMIN],
 			},
 			{
@@ -218,6 +273,20 @@ const NAV_GROUPS: NavGroup[] = [
 				href: ROUTES.ADMIN_AUDIT,
 				roles: [Role.ADMIN],
 			},
+			{
+				id: 'feedback',
+				labelKey: 'nav.feedback',
+				icon: Icons.chat,
+				href: ROUTES.ADMIN_FEEDBACK,
+				roles: [Role.ADMIN],
+			},
+			{
+				id: 'releaseNotes',
+				labelKey: 'nav.releaseNotes',
+				icon: Icons.bolt,
+				href: ROUTES.ADMIN_RELEASE_NOTES,
+				roles: [Role.ADMIN],
+			},
 		],
 	},
 ];
@@ -232,7 +301,6 @@ const BADGE_STYLES: Record<BadgeVariant, { bg: string; color: string }> = {
 
 // Phase 13: replace with counts from API/store selectors.
 const NAV_BADGE_COUNTS: Partial<Record<string, number>> = {};
-const WHATS_NEW_COUNT = 0;
 
 /* ── role badge map ──────────────────────────────────────────── */
 const ROLE_BADGE: Record<string, { bg: string; color: string; label: string }> = {
@@ -246,8 +314,13 @@ const ROLE_BADGE: Record<string, { bg: string; color: string; label: string }> =
 export default function AppSidebar() {
 	const { t } = useTranslation();
 	const user = useAuthStore((s) => s.user);
+	const homeRoute = useRoleHomeRoute();
 	const role = user?.role ?? GUEST;
 	const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
+	const [feedbackOpen, setFeedbackOpen] = useState(false);
+	const [whatsNewOpen, setWhatsNewOpen] = useState(false);
+	const autoWhatsNewShownRef = useRef(false);
+	const releaseLanguage = i18n.language.startsWith('uk') ? 'UK' : 'EN';
 	const { data: unreadData } = useQuery<{ unreadMessageCount: number }>(UNREAD_MESSAGE_COUNT_QUERY, {
 		skip: !user,
 		fetchPolicy: 'cache-and-network',
@@ -259,8 +332,42 @@ export default function AppSidebar() {
 			fetchPolicy: 'cache-and-network',
 		},
 	);
+	const { data: unreadNotifData } = useQuery<{ unreadNotificationCount: number }>(
+		UNREAD_NOTIFICATION_COUNT_QUERY,
+		{
+			skip: !user,
+			fetchPolicy: 'cache-and-network',
+		},
+	);
 	const unreadMessageCount = unreadData?.unreadMessageCount ?? 0;
 	const unreadOrderCount = unreadOrderData?.unreadOrderNotificationCount ?? 0;
+	const unreadNotificationCount = unreadNotifData?.unreadNotificationCount ?? 0;
+
+	const { data: unseenReleaseData, refetch: refetchUnseenReleaseNotes } = useQuery(
+		UNSEEN_RELEASE_NOTES_COUNT_QUERY,
+		{
+			skip: !user,
+			variables: { sincePublishedAt: getLastSeenReleasePublishedAt() },
+			fetchPolicy: 'cache-and-network',
+		},
+	);
+
+	const { data: publishedReleaseData, loading: publishedReleaseLoading } = useQuery(
+		PUBLISHED_RELEASE_NOTES_QUERY,
+		{
+			skip: !user,
+			variables: { language: releaseLanguage, limit: RELEASE_NOTES_HISTORY_LIMIT },
+			fetchPolicy: 'cache-and-network',
+		},
+	);
+
+	const whatsNewCount = unseenReleaseData?.unseenReleaseNotesCount ?? 0;
+
+	useEffect(() => {
+		if (!user || autoWhatsNewShownRef.current || whatsNewCount === 0) return;
+		autoWhatsNewShownRef.current = true;
+		setWhatsNewOpen(true);
+	}, [user, whatsNewCount]);
 
 	const initials = user?.profile
 		? `${user.profile.firstName[0]}${user.profile.lastName[0]}`.toUpperCase()
@@ -290,7 +397,7 @@ export default function AppSidebar() {
 			{/* ── brand ── */}
 			<Box
 				component={NavLink}
-				to={ROUTES.HOME}
+				to={homeRoute}
 				sx={{
 					display: 'flex',
 					alignItems: 'center',
@@ -333,16 +440,17 @@ export default function AppSidebar() {
 			{/* ── nav groups ── */}
 			{NAV_GROUPS.map((group) => {
 				const visibleItems = group.items
-					.filter((item) => item.roles.includes(role))
+					.filter((item) => canSeeNavForRoles(item.roles, role))
 					.map((item) => {
-						const href =
-							item.id === 'messages' && role === Role.SELLER ? ROUTES.SELLER_CHAT : item.href;
+						const href = item.href;
 						const count =
-							item.id === 'messages'
+							item.id === 'messages' || item.id === 'seller-messages'
 								? unreadMessageCount
 								: item.id === 'orders' || item.id === 'seller-orders'
 									? unreadOrderCount
-									: (NAV_BADGE_COUNTS[item.id] ?? 0);
+									: item.id === 'notifications'
+										? unreadNotificationCount
+										: (NAV_BADGE_COUNTS[item.id] ?? 0);
 
 						if (!item.badge) {
 							return { ...item, href };
@@ -357,7 +465,11 @@ export default function AppSidebar() {
 											...item.badge,
 											count,
 											variant:
-												item.id === 'messages' || item.id === 'orders' || item.id === 'seller-orders'
+												item.id === 'messages' ||
+												item.id === 'seller-messages' ||
+												item.id === 'orders' ||
+												item.id === 'seller-orders' ||
+												item.id === 'notifications'
 													? 'accent'
 													: item.badge.variant,
 										}
@@ -476,8 +588,33 @@ export default function AppSidebar() {
 							},
 						}}
 					>
-						<UserMenu user={user} onClose={() => setMenuAnchor(null)} />
+						<UserMenu
+							user={user}
+							onClose={() => setMenuAnchor(null)}
+							onOpenFeedback={() => {
+								setMenuAnchor(null);
+								setFeedbackOpen(true);
+							}}
+							onOpenWhatsNew={() => {
+								setMenuAnchor(null);
+								setWhatsNewOpen(true);
+							}}
+							whatsNewCount={whatsNewCount}
+						/>
 					</Popover>
+					<SendFeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
+					<WhatsNewModal
+						open={whatsNewOpen}
+						onClose={() => setWhatsNewOpen(false)}
+						notes={publishedReleaseData?.publishedReleaseNotes ?? []}
+						loading={publishedReleaseLoading}
+						lastSeenPublishedAt={getLastSeenReleasePublishedAt()}
+						onSeen={() => {
+							void refetchUnseenReleaseNotes({
+								sincePublishedAt: getLastSeenReleasePublishedAt(),
+							});
+						}}
+					/>
 				</>
 			) : (
 				/* Guest sign-in prompt */
@@ -620,7 +757,19 @@ interface MenuTag {
 }
 
 /* ── UserMenu ────────────────────────────────────────────────── */
-function UserMenu({ user, onClose }: { user: AuthUser; onClose: () => void }) {
+function UserMenu({
+	user,
+	onClose,
+	onOpenFeedback,
+	onOpenWhatsNew,
+	whatsNewCount,
+}: {
+	user: AuthUser;
+	onClose: () => void;
+	onOpenFeedback: () => void;
+	onOpenWhatsNew: () => void;
+	whatsNewCount: number;
+}) {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const clearAuth = useAuthStore((s) => s.clearAuth);
@@ -644,9 +793,18 @@ function UserMenu({ user, onClose }: { user: AuthUser; onClose: () => void }) {
 
 	const badge = ROLE_BADGE[user.role] ?? ROLE_BADGE.BUYER;
 
+	const profileHref =
+		user.role === Role.SELLER && !isStaffRole(user.role)
+			? ROUTES.SELLER_DASHBOARD
+			: ROUTES.ACCOUNT_PROFILE;
+	const settingsHref =
+		user.role === Role.SELLER && !isStaffRole(user.role)
+			? ROUTES.SELLER_SETTINGS
+			: ROUTES.ACCOUNT_SETTINGS;
+
 	const newTag: MenuTag | undefined =
-		WHATS_NEW_COUNT > 0
-			? { label: String(WHATS_NEW_COUNT), bg: tokens.amber, color: tokens.amberInk }
+		whatsNewCount > 0
+			? { label: String(whatsNewCount), bg: tokens.amber, color: tokens.amberInk }
 			: undefined;
 
 	const handleLogout = () => {
@@ -725,12 +883,12 @@ function UserMenu({ user, onClose }: { user: AuthUser; onClose: () => void }) {
 				<MenuRow
 					icon={Icons.user}
 					label={t('shell.menu.profile')}
-					onClick={() => go(ROUTES.ACCOUNT_PROFILE)}
+					onClick={() => go(profileHref)}
 				/>
 				<MenuRow
 					icon={Icons.settings}
 					label={t('shell.menu.settings')}
-					onClick={() => go(ROUTES.ACCOUNT_SETTINGS)}
+					onClick={() => go(settingsHref)}
 				/>
 			</Box>
 
@@ -800,15 +958,15 @@ function UserMenu({ user, onClose }: { user: AuthUser; onClose: () => void }) {
 				<MenuRow
 					icon={Icons.question}
 					label={t('shell.menu.help')}
-					onClick={() => go('/support')}
+					onClick={() => go(ROUTES.SUPPORT)}
 				/>
 				<MenuRow
 					icon={Icons.bolt}
 					label={t('shell.menu.whatsNew')}
 					tag={newTag}
-					onClick={() => onClose()}
+					onClick={onOpenWhatsNew}
 				/>
-				<MenuRow icon={Icons.chat} label={t('shell.menu.feedback')} onClick={() => onClose()} />
+				<MenuRow icon={Icons.chat} label={t('shell.menu.feedback')} onClick={onOpenFeedback} />
 			</Box>
 
 			<Divider sx={{ borderColor: tokens.line, mx: '6px' }} />

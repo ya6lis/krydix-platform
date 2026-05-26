@@ -15,4 +15,33 @@ export const MyOrdersFilterSchema = z.object({
 });
 
 export type OrderIdInput = z.infer<typeof OrderIdSchema>;
-export type MyOrdersFilterInput = z.infer<typeof MyOrdersFilterSchema>;
+export const ShipSellerOrderSchema = z.object({
+	orderId: z.string().min(1, 'Order ID is required'),
+	trackingCode: z.string().max(100).optional(),
+});
+
+export const CancelSellerOrderSchema = z.object({
+	orderId: z.string().min(1, 'Order ID is required'),
+	reason: z.string().max(500).optional(),
+});
+
+export const UpdateSellerTrackingSchema = z.object({
+	orderId: z.string().min(1, 'Order ID is required'),
+	trackingCode: z.string().min(1).max(100),
+});
+
+export const ReviewSellerReturnSchema = z.object({
+	orderId: z.string().min(1, 'Order ID is required'),
+	approve: z.boolean(),
+	resolution: z.string().max(1000).optional(),
+});
+
+export const SellerOrderIdSchema = z.object({
+	orderId: z.string().min(1, 'Order ID is required'),
+});
+
+export type ShipSellerOrderInput = z.infer<typeof ShipSellerOrderSchema>;
+export type CancelSellerOrderInput = z.infer<typeof CancelSellerOrderSchema>;
+export type UpdateSellerTrackingInput = z.infer<typeof UpdateSellerTrackingSchema>;
+export type ReviewSellerReturnInput = z.infer<typeof ReviewSellerReturnSchema>;
+export type SellerOrderIdInput = z.infer<typeof SellerOrderIdSchema>;

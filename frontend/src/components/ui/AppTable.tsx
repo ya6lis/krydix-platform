@@ -26,6 +26,7 @@ export interface AppTableProps<T> {
 	rowKey: (row: T, index: number) => string | number;
 	emptyTitle?: string;
 	emptyDescription?: string;
+	onRowClick?: (row: T, index: number) => void;
 }
 
 export function AppTable<T>({
@@ -35,6 +36,7 @@ export function AppTable<T>({
 	rowKey,
 	emptyTitle,
 	emptyDescription,
+	onRowClick,
 }: AppTableProps<T>) {
 	const { t } = useTranslation();
 
@@ -77,7 +79,12 @@ export function AppTable<T>({
 						</TableRow>
 					) : (
 						rows.map((row, index) => (
-							<TableRow key={rowKey(row, index)} hover>
+							<TableRow
+								key={rowKey(row, index)}
+								hover
+								onClick={onRowClick ? () => onRowClick(row, index) : undefined}
+								sx={onRowClick ? { cursor: 'pointer' } : undefined}
+							>
 								{columns.map((col) => (
 									<TableCell key={col.key} align={col.align ?? 'left'}>
 										{col.render

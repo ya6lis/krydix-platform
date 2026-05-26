@@ -47,6 +47,7 @@ async function findAffectedOrderIds(userId: string): Promise<string[]> {
 async function cancelAndRefundOrders(
 	tx: Parameters<Parameters<typeof prisma.$transaction>[0]>[0],
 	orderIds: string[],
+	options?: { softDeleteOrders?: boolean },
 ): Promise<{ ordersCancelled: number; ordersRefunded: number }> {
 	if (orderIds.length === 0) {
 		return { ordersCancelled: 0, ordersRefunded: 0 };
@@ -59,6 +60,7 @@ async function cancelAndRefundOrders(
 
 	let ordersCancelled = 0;
 	let ordersRefunded = 0;
+	const softDeleteAt = options?.softDeleteOrders ? new Date() : undefined;
 
 	for (const order of orders) {
 		if (order.status === OrderStatus.CANCELLED || order.status === OrderStatus.REFUNDED) {
@@ -75,13 +77,19 @@ async function cancelAndRefundOrders(
 			});
 			await tx.order.update({
 				where: { id: order.id },
-				data: { status: OrderStatus.REFUNDED },
+				data: {
+					status: OrderStatus.REFUNDED,
+					...(softDeleteAt && { deletedAt: softDeleteAt }),
+				},
 			});
 			ordersRefunded++;
 		} else {
 			await tx.order.update({
 				where: { id: order.id },
-				data: { status: OrderStatus.CANCELLED },
+				data: {
+					status: OrderStatus.CANCELLED,
+					...(softDeleteAt && { deletedAt: softDeleteAt }),
+				},
 			});
 			ordersCancelled++;
 		}
@@ -122,7 +130,9 @@ export async function applySoftDeleteEffects(userId: string): Promise<UserEnforc
 			},
 		});
 
-		const { ordersCancelled, ordersRefunded } = await cancelAndRefundOrders(tx, orderIds);
+		const { ordersCancelled, ordersRefunded } = await cancelAndRefundOrders(tx, orderIds, {
+			softDeleteOrders: true,
+		});
 
 		return {
 			productsAffected: products.count,

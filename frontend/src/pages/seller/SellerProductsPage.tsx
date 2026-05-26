@@ -32,6 +32,7 @@ import {
 	ConfirmDialog,
 	StatusBadge,
 	useAppToast,
+	AppImage,
 } from '@/components/ui';
 import {
 	MY_PRODUCTS_QUERY,
@@ -535,6 +536,8 @@ export default function SellerProductsPage() {
 			label: t('sellerProducts.col.product'),
 			render: (p) => {
 				const img = mainImage(p);
+				const galleryUrls = p.media.map((media) => media.url);
+				const galleryIndex = img ? galleryUrls.indexOf(img.url) : 0;
 				return (
 					<Stack direction="row" alignItems="center" spacing={1.5}>
 						<Box
@@ -548,10 +551,11 @@ export default function SellerProductsPage() {
 							}}
 						>
 							{img ? (
-								<Box
-									component="img"
+								<AppImage
 									src={img.url}
 									alt={p.titleEn}
+									gallery={galleryUrls}
+									galleryIndex={galleryIndex}
 									sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
 								/>
 							) : (

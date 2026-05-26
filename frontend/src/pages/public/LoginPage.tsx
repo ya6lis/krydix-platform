@@ -14,6 +14,7 @@ import { Icons } from '@/constants/icons';
 import { LOGIN_MUTATION } from '@/graphql/operations/auth';
 import { useAuthStore } from '@/store/authStore';
 import { ROUTES } from '@/constants/routes';
+import { getHomeRouteForRole } from '@/utils/roleAccess';
 import { tokens } from '@/theme';
 import type { AuthUser } from '@/store/authStore';
 
@@ -58,7 +59,9 @@ export default function LoginPage() {
 				user: AuthUser;
 			};
 			setAuth(user, accessToken, refreshToken);
-			navigate(from, { replace: true });
+			const destination =
+				!from || from === ROUTES.HOME ? getHomeRouteForRole(user.role) : from;
+			navigate(destination, { replace: true });
 		} catch (err: unknown) {
 			const message = err instanceof Error ? err.message : t('common.error');
 			setError('root', { message });

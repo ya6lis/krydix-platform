@@ -47,6 +47,15 @@ export const SELLER_LOW_STOCK_ALERTS_QUERY = gql`
 	}
 `;
 
+export const SELLER_DASHBOARD_SUMMARY_QUERY = gql`
+	query SellerDashboardSummary {
+		sellerDashboardSummary {
+			pendingModerationCount
+			unrepliedReviewCount
+		}
+	}
+`;
+
 // ─── TypeScript interfaces ────────────────────────────────────────────────────
 
 export interface SellerStatsData {
@@ -92,4 +101,11 @@ export interface LowStockAlertItem {
 
 export interface SellerLowStockAlertsData {
 	sellerLowStockAlerts: LowStockAlertItem[];
+}
+
+export interface SellerDashboardSummaryData {
+	sellerDashboardSummary: {
+		pendingModerationCount: number;
+		unrepliedReviewCount: number;
+	};
 }

@@ -74,6 +74,7 @@ function combineWhere(...parts: Array<Prisma.AuditLogWhereInput | undefined>): P
 }
 
 export async function findAuditLogs(input: {
+	actorId?: string;
 	actorRoles?: AuditActorRoleFilter[];
 	actionKeys?: AuditActionKeyValue[];
 	datePreset?: AuditDateRangePreset;
@@ -84,6 +85,7 @@ export async function findAuditLogs(input: {
 }) {
 	const where = combineWhere(
 		buildDateWhere(input),
+		input.actorId ? { actorId: input.actorId } : undefined,
 		buildActorRoleWhere(input.actorRoles),
 		buildActionKeyWhere(input.actionKeys),
 	);

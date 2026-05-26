@@ -1,6 +1,6 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
-import { Role } from '@/constants/enums';
+import { RouteZone } from '@/utils/roleAccess';
 
 import PublicLayout from '@/layouts/PublicLayout';
 import BuyerLayout from '@/layouts/BuyerLayout';
@@ -16,24 +16,37 @@ import VerifyEmailPage from '@/pages/public/VerifyEmailPage';
 import CatalogPage from '@/pages/public/CatalogPage';
 import ProductPage from '@/pages/public/ProductPage';
 import CartPage from '@/pages/public/CartPage';
+import WishlistPage from '@/pages/public/WishlistPage';
 import CheckoutPage from '@/pages/public/CheckoutPage';
+import BuyerDashboardPage from '@/pages/buyer/BuyerDashboardPage';
 import BuyerOrdersPage from '@/pages/buyer/BuyerOrdersPage';
 import BuyerOrderDetailPage from '@/pages/buyer/BuyerOrderDetailPage';
 import BuyerSettingsPage from '@/pages/buyer/BuyerSettingsPage';
+import NotificationsPage from '@/pages/buyer/NotificationsPage';
 import PublicSellerProfilePage from '@/pages/public/PublicSellerProfilePage';
 import AccountProfileRedirect from '@/pages/buyer/AccountProfileRedirect';
 import ChatPage from '@/pages/chat/ChatPage';
 import SellerProductFormPage from '@/pages/seller/SellerProductFormPage';
 import SellerProductsPage from '@/pages/seller/SellerProductsPage';
 import SellerDashboardPage from '@/pages/seller/SellerDashboardPage';
+import SellerOrdersPage from '@/pages/seller/SellerOrdersPage';
+import SellerOrderDetailPage from '@/pages/seller/SellerOrderDetailPage';
 import ProductModerationPage from '@/pages/moderator/ProductModerationPage';
+import ModeratorDashboardPage from '@/pages/moderator/ModeratorDashboardPage';
 import ReviewModerationPage from '@/pages/moderator/ReviewModerationPage';
+import ModeratorSupportPage from '@/pages/moderator/ModeratorSupportPage';
 import UsersManagementPage from '@/pages/admin/UsersManagementPage';
 import ProductsManagementPage from '@/pages/admin/ProductsManagementPage';
 import ReviewsManagementPage from '@/pages/admin/ReviewsManagementPage';
 import AdminCategoriesPage from '@/pages/admin/AdminCategoriesPage';
 import AdminAuditPage from '@/pages/admin/AdminAuditPage';
+import AdminFeedbackPage from '@/pages/admin/AdminFeedbackPage';
+import AdminReleaseNotesPage from '@/pages/admin/AdminReleaseNotesPage';
+import SupportPage from '@/pages/support/SupportPage';
 import AdminPlatformPage from '@/pages/admin/AdminPlatformPage';
+import AdminDashboardPage from '@/pages/admin/AdminDashboardPage';
+import NotFound404Page from '@/pages/public/404Page';
+import HomeRedirectPage from '@/pages/public/HomeRedirectPage';
 
 const Placeholder = ({ name }: { name: string }) => (
 	<div style={{ padding: 32 }}>
@@ -62,23 +75,36 @@ export const router = createBrowserRouter([
 	{
 		element: <AppShell />,
 		children: [
-			{ path: ROUTES.HOME, element: <Placeholder name="Home" /> },
+			{ path: ROUTES.HOME, element: <HomeRedirectPage /> },
 			{ path: ROUTES.PRODUCTS, element: <CatalogPage /> },
 			{ path: '/catalog/:slug', element: <ProductPage /> },
 			{ path: ROUTES.SEARCH, element: <Placeholder name="Search" /> },
-			{ path: ROUTES.CART, element: <CartPage /> },
+			{ path: ROUTES.CART, element: (
+					<ProtectedRoute zone={RouteZone.BUYER_COMMERCE}>
+						<CartPage />
+					</ProtectedRoute>
+				) },
 			{
-				path: ROUTES.CHECKOUT,
+				path: ROUTES.WISHLIST,
 				element: (
-					<ProtectedRoute allowedRoles={[Role.BUYER, Role.SELLER, Role.MODERATOR, Role.ADMIN]}>
-						<CheckoutPage />
+					<ProtectedRoute zone={RouteZone.BUYER}>
+						<WishlistPage />
 					</ProtectedRoute>
 				),
 			},
 			{
+				path: ROUTES.CHECKOUT,
+				element: (
+					<ProtectedRoute zone={RouteZone.BUYER}>
+						<CheckoutPage />
+					</ProtectedRoute>
+				),
+			},
+			{ path: ROUTES.SUPPORT, element: <SupportPage /> },
+			{
 				path: ROUTES.CHAT,
 				element: (
-					<ProtectedRoute allowedRoles={[Role.BUYER, Role.SELLER, Role.MODERATOR, Role.ADMIN]}>
+					<ProtectedRoute zone={RouteZone.BUYER}>
 						<ChatPage />
 					</ProtectedRoute>
 				),
@@ -86,28 +112,36 @@ export const router = createBrowserRouter([
 			{
 				path: ROUTES.SELLER_CHAT,
 				element: (
-					<ProtectedRoute allowedRoles={[Role.SELLER, Role.ADMIN]}>
+					<ProtectedRoute zone={RouteZone.SELLER}>
 						<ChatPage />
 					</ProtectedRoute>
 				),
 			},
 			{ path: '/seller/:id', element: <PublicSellerProfilePage /> },
-			{ path: ROUTES.NOT_FOUND, element: <Placeholder name="404 Not Found" /> },
-			{ path: ROUTES.FORBIDDEN, element: <Placeholder name="403 Forbidden" /> },
-			{ path: '*', element: <Placeholder name="404 Not Found" /> },
+			{
+				path: ROUTES.ACCOUNT_NOTIFICATIONS,
+				element: (
+					<ProtectedRoute zone={RouteZone.AUTH}>
+						<NotificationsPage />
+					</ProtectedRoute>
+				),
+			},
 		],
 	},
+
+	// ── Standalone error pages — no AppShell ───────────────────────
+	{ path: ROUTES.NOT_FOUND, element: <NotFound404Page /> },
 
 	// ── Protected: buyer account ───────────────────────────────────
 	{
 		path: '/account',
 		element: (
-			<ProtectedRoute allowedRoles={[Role.BUYER, Role.SELLER, Role.MODERATOR, Role.ADMIN]}>
+			<ProtectedRoute zone={RouteZone.BUYER}>
 				<BuyerLayout />
 			</ProtectedRoute>
 		),
 		children: [
-			{ index: true, element: <Placeholder name="Account Home" /> },
+			{ index: true, element: <BuyerDashboardPage /> },
 			{ path: 'orders', element: <BuyerOrdersPage /> },
 			{ path: 'orders/:id', element: <BuyerOrderDetailPage /> },
 			{ path: 'profile', element: <AccountProfileRedirect /> },
@@ -115,7 +149,6 @@ export const router = createBrowserRouter([
 			{ path: 'reviews', element: <Placeholder name="My Reviews" /> },
 			{ path: 'cart', element: <Placeholder name="Cart" /> },
 			{ path: 'checkout', element: <Placeholder name="Checkout" /> },
-			{ path: 'notifications', element: <Placeholder name="Notifications" /> },
 		],
 	},
 
@@ -123,7 +156,7 @@ export const router = createBrowserRouter([
 	{
 		path: '/seller-cabinet',
 		element: (
-			<ProtectedRoute allowedRoles={[Role.SELLER, Role.ADMIN]}>
+			<ProtectedRoute zone={RouteZone.SELLER}>
 				<SellerLayout />
 			</ProtectedRoute>
 		),
@@ -133,8 +166,8 @@ export const router = createBrowserRouter([
 			{ path: 'products', element: <SellerProductsPage /> },
 			{ path: 'products/new', element: <SellerProductFormPage /> },
 			{ path: 'products/:id/edit', element: <SellerProductFormPage /> },
-			{ path: 'orders', element: <Placeholder name="Seller Orders" /> },
-			{ path: 'orders/:id', element: <Placeholder name="Seller Order Detail" /> },
+			{ path: 'orders', element: <SellerOrdersPage /> },
+			{ path: 'orders/:id', element: <SellerOrderDetailPage /> },
 			{ path: 'import', element: <Placeholder name="Bulk Import" /> },
 			{ path: 'verification', element: <Placeholder name="Seller Verification" /> },
 			{ path: 'settings', element: <Placeholder name="Seller Settings" /> },
@@ -145,12 +178,12 @@ export const router = createBrowserRouter([
 	{
 		path: '/moderator',
 		element: (
-			<ProtectedRoute allowedRoles={[Role.MODERATOR, Role.ADMIN]}>
+			<ProtectedRoute zone={RouteZone.MODERATOR}>
 				<ModeratorLayout />
 			</ProtectedRoute>
 		),
 		children: [
-			{ index: true, element: <Placeholder name="Moderator Home" /> },
+			{ index: true, element: <ModeratorDashboardPage /> },
 			{ path: 'product-moderation', element: <ProductModerationPage /> },
 			{ path: 'products', element: <Navigate to={ROUTES.MODERATOR_PRODUCT_MODERATION} replace /> },
 			{ path: 'queue', element: <Navigate to={ROUTES.MODERATOR_PRODUCT_MODERATION} replace /> },
@@ -162,6 +195,7 @@ export const router = createBrowserRouter([
 			{ path: 'all-products', element: <ProductsManagementPage /> },
 			{ path: 'all-reviews', element: <ReviewsManagementPage /> },
 			{ path: 'verification', element: <Placeholder name="Seller Verification Queue" /> },
+			{ path: 'support', element: <ModeratorSupportPage /> },
 		],
 	},
 
@@ -169,12 +203,12 @@ export const router = createBrowserRouter([
 	{
 		path: '/admin',
 		element: (
-			<ProtectedRoute allowedRoles={[Role.ADMIN]}>
+			<ProtectedRoute zone={RouteZone.ADMIN}>
 				<AdminLayout />
 			</ProtectedRoute>
 		),
 		children: [
-			{ index: true, element: <Placeholder name="Admin Home" /> },
+			{ index: true, element: <AdminDashboardPage /> },
 			{ path: 'users', element: <UsersManagementPage /> },
 			{ path: 'users/:id', element: <Placeholder name="User Profile" /> },
 			{ path: 'categories', element: <AdminCategoriesPage /> },
@@ -183,6 +217,11 @@ export const router = createBrowserRouter([
 			{ path: 'reviews', element: <ReviewsManagementPage /> },
 			{ path: 'settings', element: <AdminPlatformPage /> },
 			{ path: 'audit', element: <AdminAuditPage /> },
+			{ path: 'feedback', element: <AdminFeedbackPage /> },
+			{ path: 'release-notes', element: <AdminReleaseNotesPage /> },
 		],
 	},
+
+	{ path: ROUTES.FORBIDDEN, element: <Placeholder name="403 Forbidden" /> },
+	{ path: '*', element: <NotFound404Page /> },
 ]);
