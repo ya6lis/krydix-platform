@@ -87,6 +87,8 @@ import {
 	faPrint,
 	faCalendar,
 	faCopy,
+	faPaperclip,
+	faCheckDouble,
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -137,6 +139,7 @@ export const Icons = {
 	minus: faMinus,
 	close: faTimes,
 	check: faCheck,
+	checkDouble: faCheckDouble,
 	upload: faUpload,
 	download: faDownload,
 	filter: faFilter,
@@ -190,6 +193,7 @@ export const Icons = {
 	fileCsv: faFileCsv,
 	fileExcel: faFileExcel,
 	file: faFileAlt,
+	paperclip: faPaperclip,
 
 	// Misc
 	building: faBuilding,

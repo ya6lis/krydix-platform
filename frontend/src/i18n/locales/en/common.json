@@ -89,6 +89,21 @@
 			}
 		}
 	},
+	"notifications": {
+		"events": {
+			"newMessage": {
+				"title": "New message from {{name}}"
+			},
+			"newOrder": {
+				"title": "New order",
+				"body": "Order #{{order}} was placed."
+			},
+			"orderStatus": {
+				"title": "Order update",
+				"body": "Order #{{order}} is now {{status}}."
+			}
+		}
+	},
 	"auth": {
 		"login": "Sign In",
 		"register": "Sign Up",
@@ -209,6 +224,15 @@
 		"createdAt": "Created",
 		"updatedAt": "Updated",
 		"discard": "Discard"
+	},
+	"toast": {
+		"title": {
+			"success": "Success",
+			"error": "Error",
+			"warning": "Warning",
+			"info": "Notification"
+		},
+		"open": "Open"
 	},
 	"status": {
 		"product": {
@@ -679,7 +703,81 @@
 		"qty": "×{{count}}",
 		"sku": "SKU"
 	},
+	"publicProfile": {
+		"verifiedSeller": "Verified seller",
+		"memberSince": "Member since {{date}}",
+		"products": "products",
+		"reviewsCount": "({{count}} reviews)",
+		"contactSeller": "Contact seller",
+		"ownerHint": "This is how buyers see your storefront.",
+		"editProfile": "Edit public profile",
+		"shopTitle": "Products from this seller",
+		"shopSubtitle": "Browse listings sold by {{name}}",
+		"searchPlaceholder": "Search in this store…",
+		"noProductsTitle": "No products yet",
+		"noProductsDescription": "This seller has no active listings right now.",
+		"noFilterResultsTitle": "No matching products",
+		"noFilterResultsDescription": "Try adjusting filters or search terms in this store.",
+		"notFoundTitle": "Seller not found",
+		"notFoundDescription": "This profile may have been removed or is unavailable.",
+		"backToCatalog": "Back to catalog"
+	},
+	"chat": {
+		"pageTitle": "Messages",
+		"pageSubtitle": "Buyer ↔ seller conversations and moderator inbox.",
+		"inbox": "Inbox",
+		"newChat": "New chat",
+		"searchPlaceholder": "Search messages…",
+		"filters": {
+			"all": "All",
+			"buyers": "Buyers",
+			"mods": "Mods",
+			"unread": "Unread"
+		},
+		"contextProductPrefix": "re:",
+		"contextGeneral": "General question",
+		"noMessagesYet": "No messages yet",
+		"selectConversation": "Select a conversation to start messaging",
+		"onlineNow": "Online now",
+		"lastSeenAt": "Last seen {{time}}",
+		"moreActions": "More actions",
+		"openProduct": "Open product →",
+		"composerPlaceholder": "Write a reply…",
+		"attach": "Attach file",
+		"image": "Attach image",
+		"send": "Send message",
+		"about": "About",
+		"email": "Email",
+		"location": "Location",
+		"sharedInChat": "Shared in chat",
+		"noAttachments": "No attachments in this conversation yet.",
+		"memberSince": "since {{date}}",
+		"deleteConversation": "Delete chat",
+		"deleteConversationTitle": "Delete this conversation?",
+		"deleteConversationMessage": "All messages in this chat will be permanently removed.",
+		"typing": "{{name}} is typing…",
+		"roleModerator": "Moderator",
+		"role": {
+			"buyer": "Buyer",
+			"seller": "Seller",
+			"moderator": "Moderator",
+			"admin": "Administrator"
+		}
+	},
 	"account": {
+		"profile": {
+			"pageTitle": "Profile",
+			"pageSubtitle": "Manage how you appear on Krydix.",
+			"emailReadonly": "Contact support to change your email.",
+			"toast": {
+				"saved": "Profile saved",
+				"saveError": "Failed to save profile",
+				"avatarUpdated": "Avatar updated",
+				"avatarRemoved": "Avatar removed",
+				"avatarError": "Avatar update failed",
+				"avatarTooLarge": "Image must be 2MB or smaller"
+			}
+		},
 		"settings": {
 			"title": "Settings",
 			"subtitle": "Manage your account, notifications, and preferences.",

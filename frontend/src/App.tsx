@@ -6,6 +6,7 @@ import { apolloClient } from '@/graphql/client';
 import { router } from '@/router';
 import { AppToastProvider } from '@/components/ui';
 import { AuthInitializer } from '@/components/auth/AuthInitializer';
+import { NotificationListener } from '@/components/notifications/NotificationListener';
 import '@/i18n';
 
 export default function App() {
@@ -15,6 +16,7 @@ export default function App() {
 				<CssBaseline />
 				<AppToastProvider>
 					<AuthInitializer>
+						<NotificationListener />
 						<RouterProvider router={router} />
 					</AuthInitializer>
 				</AppToastProvider>

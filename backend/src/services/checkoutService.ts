@@ -4,6 +4,7 @@ import * as cartRepo from '../repositories/cartRepository.js';
 import * as orderRepo from '../repositories/orderRepository.js';
 import * as promoRepo from '../repositories/promoCodeRepository.js';
 import * as productRepo from '../repositories/productRepository.js';
+import * as notificationService from './notificationService.js';
 import { Language } from '../constants/enums.js';
 
 export interface PromoResult {
@@ -238,6 +239,8 @@ export async function createOrder(
 
 	// Clear cart
 	await cartRepo.clearCart(userId);
+
+	void notificationService.notifyNewOrder(order).catch(() => undefined);
 
 	return mapOrder(order);
 }

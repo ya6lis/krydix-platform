@@ -285,15 +285,29 @@ export const theme = createTheme({
 			},
 		},
 		MuiTooltip: {
+			defaultProps: {
+				arrow: true,
+				placement: 'top',
+				enterDelay: 300,
+				enterNextDelay: 120,
+			},
 			styleOverrides: {
 				tooltip: {
 					backgroundColor: tokens.ink1,
+					color: tokens.white,
+					fontFamily: tokens.fontSans,
 					fontSize: '11.5px',
 					fontWeight: 600,
-					borderRadius: 6,
+					lineHeight: 1.45,
+					borderRadius: '6px',
 					padding: '6px 10px',
+					maxWidth: 280,
+					boxShadow: 'none',
 				},
-				arrow: { color: tokens.ink1 },
+				arrow: {
+					color: tokens.ink1,
+					fontSize: '8px',
+				},
 			},
 		},
 		MuiLinearProgress: {

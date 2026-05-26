@@ -20,6 +20,9 @@ import CheckoutPage from '@/pages/public/CheckoutPage';
 import BuyerOrdersPage from '@/pages/buyer/BuyerOrdersPage';
 import BuyerOrderDetailPage from '@/pages/buyer/BuyerOrderDetailPage';
 import BuyerSettingsPage from '@/pages/buyer/BuyerSettingsPage';
+import PublicSellerProfilePage from '@/pages/public/PublicSellerProfilePage';
+import AccountProfileRedirect from '@/pages/buyer/AccountProfileRedirect';
+import ChatPage from '@/pages/chat/ChatPage';
 import SellerProductFormPage from '@/pages/seller/SellerProductFormPage';
 import SellerProductsPage from '@/pages/seller/SellerProductsPage';
 import SellerDashboardPage from '@/pages/seller/SellerDashboardPage';
@@ -72,7 +75,23 @@ export const router = createBrowserRouter([
 					</ProtectedRoute>
 				),
 			},
-			{ path: '/seller/:id', element: <Placeholder name="Seller Profile" /> },
+			{
+				path: ROUTES.CHAT,
+				element: (
+					<ProtectedRoute allowedRoles={[Role.BUYER, Role.SELLER, Role.MODERATOR, Role.ADMIN]}>
+						<ChatPage />
+					</ProtectedRoute>
+				),
+			},
+			{
+				path: ROUTES.SELLER_CHAT,
+				element: (
+					<ProtectedRoute allowedRoles={[Role.SELLER, Role.ADMIN]}>
+						<ChatPage />
+					</ProtectedRoute>
+				),
+			},
+			{ path: '/seller/:id', element: <PublicSellerProfilePage /> },
 			{ path: ROUTES.NOT_FOUND, element: <Placeholder name="404 Not Found" /> },
 			{ path: ROUTES.FORBIDDEN, element: <Placeholder name="403 Forbidden" /> },
 			{ path: '*', element: <Placeholder name="404 Not Found" /> },
@@ -91,7 +110,7 @@ export const router = createBrowserRouter([
 			{ index: true, element: <Placeholder name="Account Home" /> },
 			{ path: 'orders', element: <BuyerOrdersPage /> },
 			{ path: 'orders/:id', element: <BuyerOrderDetailPage /> },
-			{ path: 'profile', element: <Placeholder name="Profile" /> },
+			{ path: 'profile', element: <AccountProfileRedirect /> },
 			{ path: 'settings', element: <BuyerSettingsPage /> },
 			{ path: 'reviews', element: <Placeholder name="My Reviews" /> },
 			{ path: 'cart', element: <Placeholder name="Cart" /> },

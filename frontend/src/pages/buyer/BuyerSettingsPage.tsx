@@ -1,30 +1,19 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Box, Grid, Typography, Divider } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
 	AppInput,
-	AppTextarea,
 	AppSelect,
 	AppButton,
 	AppSwitch,
 	ConfirmDialog,
 } from '@/components/ui';
-import { Icons } from '@/constants/icons';
+import { AccountSettingsNav, type AccountSettingsSection } from '@/components/account/AccountSettingsNav';
+import { ProfileEditSection } from '@/components/account/ProfileEditSection';
 import { tokens } from '@/theme';
-import { useAuthStore } from '@/store/authStore';
-
-// ── validation schemas ───────────────────────────────────────────────────────
-const ProfileSchema = z.object({
-	firstName: z.string().min(1).max(60),
-	lastName: z.string().min(1).max(60),
-	displayName: z.string().max(80).optional(),
-	email: z.string().email(),
-	bio: z.string().max(500).optional(),
-});
 
 const PasswordSchema = z
 	.object({
@@ -37,10 +26,9 @@ const PasswordSchema = z
 		path: ['confirmPassword'],
 	});
 
-type ProfileForm = z.infer<typeof ProfileSchema>;
 type PasswordForm = z.infer<typeof PasswordSchema>;
 
-// ── notification toggle state ────────────────────────────────────────────────
+type SettingsSection = AccountSettingsSection;
 interface NotifPrefs {
 	newOrder: boolean;
 	orderStatus: boolean;
@@ -52,23 +40,7 @@ interface NotifPrefs {
 	updates: boolean;
 }
 
-// ── nav items ────────────────────────────────────────────────────────────────
-type NavSection = 'profile' | 'security' | 'notifications' | 'language';
-
-interface NavItem {
-	id: NavSection;
-	labelKey: string;
-	icon: (typeof Icons)[keyof typeof Icons];
-}
-
-const ACCOUNT_NAV: NavItem[] = [
-	{ id: 'profile', labelKey: 'account.settings.nav.profile', icon: Icons.user },
-	{ id: 'security', labelKey: 'account.settings.nav.security', icon: Icons.lock },
-	{ id: 'notifications', labelKey: 'account.settings.nav.notifications', icon: Icons.bell },
-	{ id: 'language', labelKey: 'account.settings.nav.language', icon: Icons.globe },
-];
-
-// ── sub-components ────────────────────────────────────────────────────────────
+// ── notification toggle state ────────────────────────────────────────────────
 function SectionCard({
 	id,
 	title,
@@ -164,28 +136,21 @@ function ToggleRow({
 // ── main component ────────────────────────────────────────────────────────────
 export default function BuyerSettingsPage() {
 	const { t } = useTranslation();
-	const user = useAuthStore((s) => s.user);
-	const [activeSection, setActiveSection] = useState<NavSection>('profile');
+	const [activeSection, setActiveSection] = useState<SettingsSection>('notifications');
 	const [closeDialogOpen, setCloseDialogOpen] = useState(false);
 
-	const fullName = user
-		? `${user.profile?.firstName ?? ''} ${user.profile?.lastName ?? ''}`.trim()
-		: 'User';
-
-	const {
-		control: profileCtrl,
-		handleSubmit: handleProfileSubmit,
-		formState: { isSubmitting: profileSubmitting },
-	} = useForm<ProfileForm>({
-		resolver: zodResolver(ProfileSchema),
-		defaultValues: {
-			firstName: user?.profile?.firstName ?? '',
-			lastName: user?.profile?.lastName ?? '',
-			displayName: '',
-			email: user?.email ?? '',
-			bio: '',
-		},
-	});
+	useEffect(() => {
+		const syncHash = () => {
+			const hash = window.location.hash.replace('#', '') as SettingsSection;
+			if (hash === 'profile' || hash === 'security' || hash === 'notifications' || hash === 'language') {
+				setActiveSection(hash);
+				document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+			}
+		};
+		syncHash();
+		window.addEventListener('hashchange', syncHash);
+		return () => window.removeEventListener('hashchange', syncHash);
+	}, []);
 
 	const {
 		control: passCtrl,
@@ -211,17 +176,8 @@ export default function BuyerSettingsPage() {
 	const [currency, setCurrency] = useState('USD');
 	const [dateFormat, setDateFormat] = useState('dd MMM yyyy');
 
-	const onSaveProfile = (_data: ProfileForm) => {
-		// TODO: wire to UPDATE_PROFILE mutation
-	};
-
 	const onChangePassword = (_data: PasswordForm) => {
 		// TODO: wire to CHANGE_PASSWORD mutation
-	};
-
-	const scrollTo = (id: NavSection) => {
-		setActiveSection(id);
-		document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 	};
 
 	return (
@@ -239,215 +195,18 @@ export default function BuyerSettingsPage() {
 			<Grid container spacing={4.5} alignItems="flex-start">
 				{/* ── LEFT NAV ── */}
 				<Grid item xs={12} md="auto" sx={{ width: { md: 220 } }}>
-					<Box
-						sx={{
-							position: 'sticky',
-							top: 84,
-							display: 'flex',
-							flexDirection: 'column',
-							gap: 0.25,
-						}}
-					>
-						{/* Account group */}
-						<Typography
-							sx={{
-								fontSize: 10.5,
-								fontWeight: 700,
-								letterSpacing: '0.08em',
-								textTransform: 'uppercase',
-								color: tokens.ink3,
-								px: 1.75,
-								pt: 0,
-								pb: 0.75,
-							}}
-						>
-							{t('account.settings.nav.account')}
-						</Typography>
-
-						{ACCOUNT_NAV.map((item) => {
-							const active = activeSection === item.id;
-							return (
-								<Box
-									key={item.id}
-									component="a"
-									href={`#${item.id}`}
-									onClick={(e: React.MouseEvent) => {
-										e.preventDefault();
-										scrollTo(item.id);
-									}}
-									sx={{
-										px: 1.75,
-										py: 1.125,
-										borderRadius: 2,
-										fontSize: 13.5,
-										fontWeight: active ? 700 : 500,
-										color: active ? tokens.accentInk : tokens.ink2,
-										background: active ? tokens.accentSoft : 'transparent',
-										textDecoration: 'none',
-										display: 'flex',
-										alignItems: 'center',
-										gap: 1.25,
-										cursor: 'pointer',
-										'&:hover': { background: tokens.surface2, color: tokens.ink1 },
-									}}
-								>
-									<Box
-										component="span"
-										sx={{
-											color: active ? tokens.accent : tokens.ink3,
-											fontSize: 13,
-											flexShrink: 0,
-										}}
-									>
-										<FontAwesomeIcon icon={item.icon} />
-									</Box>
-									{t(item.labelKey)}
-								</Box>
-							);
-						})}
-					</Box>
+					<AccountSettingsNav active={activeSection} />
 				</Grid>
 
 				{/* ── RIGHT BODY ── */}
 				<Grid item xs={12} md>
 					<Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-						{/* ── Profile ── */}
 						<SectionCard
 							id="profile"
 							title={t('account.settings.profile.title')}
 							subtitle={t('account.settings.profile.subtitle')}
 						>
-							{/* Avatar block */}
-							<Box
-								sx={{
-									display: 'grid',
-									gridTemplateColumns: '96px 1fr',
-									gap: 2.75,
-									alignItems: 'center',
-									mb: 2.5,
-								}}
-							>
-								<Box
-									sx={{
-										width: 96,
-										height: 96,
-										borderRadius: '50%',
-										background: `linear-gradient(135deg, ${tokens.accent}, ${tokens.cyan})`,
-										color: '#fff',
-										display: 'grid',
-										placeItems: 'center',
-										fontSize: 30,
-										fontWeight: 700,
-									}}
-								>
-									{fullName
-										.trim()
-										.split(/\s+/)
-										.filter(Boolean)
-										.slice(0, 2)
-										.map((w) => w[0])
-										.join('')
-										.toUpperCase() || 'U'}
-								</Box>
-								<Box>
-									<Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
-										<AppButton tone="ghost" size="small">
-											{t('account.settings.profile.uploadAvatar')}
-										</AppButton>
-										<AppButton tone="ghost" size="small" sx={{ color: tokens.coralInk }}>
-											{t('account.settings.profile.removeAvatar')}
-										</AppButton>
-									</Box>
-									<Typography sx={{ fontSize: 12.5, color: tokens.ink3 }}>
-										{t('account.settings.profile.avatarHelp')}
-									</Typography>
-								</Box>
-							</Box>
-
-							<Divider sx={{ mb: 2.5 }} />
-
-							<form onSubmit={handleProfileSubmit(onSaveProfile)}>
-								<Grid container spacing={2}>
-									<Grid item xs={12} sm={6}>
-										<Controller
-											name="firstName"
-											control={profileCtrl}
-											render={({ field, fieldState }) => (
-												<AppInput
-													{...field}
-													label={t('account.settings.profile.firstName')}
-													required
-													error={!!fieldState.error}
-													helperText={fieldState.error?.message}
-												/>
-											)}
-										/>
-									</Grid>
-									<Grid item xs={12} sm={6}>
-										<Controller
-											name="lastName"
-											control={profileCtrl}
-											render={({ field, fieldState }) => (
-												<AppInput
-													{...field}
-													label={t('account.settings.profile.lastName')}
-													required
-													error={!!fieldState.error}
-													helperText={fieldState.error?.message}
-												/>
-											)}
-										/>
-									</Grid>
-									<Grid item xs={12} sm={6}>
-										<Controller
-											name="displayName"
-											control={profileCtrl}
-											render={({ field, fieldState }) => (
-												<AppInput
-													{...field}
-													label={t('account.settings.profile.displayName')}
-													helperText={
-														fieldState.error?.message ??
-														t('account.settings.profile.displayNameHelp')
-													}
-													error={!!fieldState.error}
-												/>
-											)}
-										/>
-									</Grid>
-									<Grid item xs={12} sm={6}>
-										<Controller
-											name="email"
-											control={profileCtrl}
-											render={({ field, fieldState }) => (
-												<AppInput
-													{...field}
-													label={t('account.settings.profile.email')}
-													type="email"
-													required
-													error={!!fieldState.error}
-													helperText={fieldState.error?.message}
-												/>
-											)}
-										/>
-									</Grid>
-									<Grid item xs={12}>
-										<Controller
-											name="bio"
-											control={profileCtrl}
-											render={({ field }) => (
-												<AppTextarea
-													{...field}
-													label={t('account.settings.profile.bio')}
-													placeholder={t('account.settings.profile.bioPlaceholder')}
-													rows={4}
-													maxLength={500}
-												/>
-											)}
-										/>
-									</Grid>
-								</Grid>
-							</form>
+							<ProfileEditSection />
 						</SectionCard>
 
 						{/* ── Notifications ── */}
@@ -627,12 +386,8 @@ export default function BuyerSettingsPage() {
 						{/* ── Save bar ── */}
 						<Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1.25, pt: 0.75 }}>
 							<AppButton tone="ghost">{t('common.discard')}</AppButton>
-							<AppButton
-								tone="accent"
-								loading={profileSubmitting || passSubmitting}
-								onClick={handleProfileSubmit(onSaveProfile)}
-							>
-								{t('account.settings.profile.saveChanges')}
+							<AppButton tone="accent" loading={passSubmitting}>
+								{t('account.settings.notifications.savePreferences')}
 							</AppButton>
 						</Box>
 					</Box>

@@ -1,22 +1,60 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
 import { act } from '@testing-library/react';
+import { MockedProvider } from '@apollo/client/testing';
+import { MemoryRouter } from 'react-router-dom';
 import AppNavbar from '../AppNavbar';
 import { useCartStore } from '@/store/cartStore';
+import {
+	MARK_ALL_NOTIFICATIONS_READ_MUTATION,
+	MARK_NOTIFICATION_READ_MUTATION,
+	MY_NOTIFICATIONS_QUERY,
+	UNREAD_NOTIFICATION_COUNT_QUERY,
+} from '@/graphql/operations/notifications';
 
 jest.mock('react-i18next', () => ({
-	useTranslation: () => ({ t: (key: string) => key }),
+	useTranslation: () => ({ t: (key: string) => key, i18n: { language: 'en' } }),
+}));
+
+jest.mock('react-router-dom', () => ({
+	...jest.requireActual('react-router-dom'),
+	useNavigate: () => jest.fn(),
 }));
 
 jest.mock('@fortawesome/react-fontawesome', () => ({
 	FontAwesomeIcon: () => <span data-testid="fa-icon" />,
 }));
 
+jest.mock('@/store/authStore', () => ({
+	useAuthStore: (selector: (state: { user: { id: string; role: string } | null }) => unknown) =>
+		selector({ user: { id: 'user-1', role: 'BUYER' } }),
+}));
+
+const apolloMocks = [
+	{
+		request: { query: MY_NOTIFICATIONS_QUERY, variables: { limit: 30 } },
+		result: { data: { myNotifications: [] } },
+	},
+	{
+		request: { query: UNREAD_NOTIFICATION_COUNT_QUERY },
+		result: { data: { unreadNotificationCount: 0 } },
+	},
+	{
+		request: { query: MARK_ALL_NOTIFICATIONS_READ_MUTATION },
+		result: { data: { markAllNotificationsRead: true } },
+	},
+	{
+		request: { query: MARK_NOTIFICATION_READ_MUTATION, variables: { id: 'notif-1' } },
+		result: { data: { markNotificationRead: true } },
+	},
+];
+
 function renderNavbar(breadcrumbs?: Array<{ label: string; href?: string }>) {
 	return render(
-		<MemoryRouter>
-			<AppNavbar breadcrumbs={breadcrumbs} />
-		</MemoryRouter>
+		<MockedProvider mocks={apolloMocks} addTypename={false}>
+			<MemoryRouter>
+				<AppNavbar breadcrumbs={breadcrumbs} />
+			</MemoryRouter>
+		</MockedProvider>,
 	);
 }
 
@@ -44,7 +82,6 @@ describe('AppNavbar', () => {
 
 	it('shows no cart count badge when cart is empty', () => {
 		renderNavbar();
-		// badge not rendered for 0 count — MUI Box with count is conditional
 		expect(screen.queryByText('0')).not.toBeInTheDocument();
 	});
 
@@ -57,7 +94,7 @@ describe('AppNavbar', () => {
 				sellerName: 'Test Seller',
 				name: 'Test Item',
 				price: 100,
-				qty: 7, // use 7 to distinguish from static notif badge (3)
+				qty: 7,
 				stock: 10,
 			});
 		});
@@ -67,7 +104,6 @@ describe('AppNavbar', () => {
 
 	it('hides notification badge when there are no unread notifications', () => {
 		renderNavbar();
-		// MOCK_NOTIFICATIONS is empty so unreadCount = 0, badge not rendered
 		expect(screen.queryByText('3')).not.toBeInTheDocument();
 	});
 
@@ -85,7 +121,6 @@ describe('AppNavbar', () => {
 	it('opens cart popover on cart button click', () => {
 		renderNavbar();
 		fireEvent.click(screen.getByLabelText('shell.cart.title'));
-		// cart.title appears as heading in popover; cart.empty may appear twice (subtitle + body)
 		expect(screen.getAllByText('shell.cart.empty').length).toBeGreaterThanOrEqual(1);
 	});
 

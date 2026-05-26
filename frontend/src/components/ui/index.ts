@@ -41,7 +41,7 @@ export { AppLoader } from './AppLoader';
 export type { AppLoaderProps } from './AppLoader';
 
 export { AppToastProvider, useAppToast } from './AppToast';
-export type { ToastMessage } from './AppToast';
+export type { ToastAction, ToastMessage, ToastSeverity, ToastShowOptions } from './AppToast';
 
 export { PageSectionWrapper } from './PageSectionWrapper';
 export type { PageSectionWrapperProps } from './PageSectionWrapper';

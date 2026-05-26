@@ -4,6 +4,9 @@ jest.mock('../../repositories/cartRepository.js');
 jest.mock('../../repositories/orderRepository.js');
 jest.mock('../../repositories/promoCodeRepository.js');
 jest.mock('../../repositories/productRepository.js');
+jest.mock('../notificationService.js', () => ({
+	notifyNewOrder: jest.fn().mockResolvedValue(undefined),
+}));
 
 import * as cartRepo from '../../repositories/cartRepository.js';
 import * as orderRepo from '../../repositories/orderRepository.js';

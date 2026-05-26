@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { RangeSlider } from '@/components/ui';
 import { tokens } from '@/theme';
 import { CategoryFilterTree } from '@/components/features/catalog/CategoryFilterTree';
-import type { BrandCount, CategoryNode } from '@/types/catalog';
+import type { BrandCount, CategoryNode, ProductFilterInput } from '@/types/catalog';
 
 export const PRICE_MIN = 0;
 export const PRICE_MAX = 1000;
@@ -14,6 +14,32 @@ export interface CatalogFilterState {
 	priceRange: [number, number];
 	minRating?: number;
 	inStockOnly: boolean;
+}
+
+export function buildCatalogFilterInput(
+	f: CatalogFilterState,
+	extra: Partial<ProductFilterInput> = {},
+): ProductFilterInput {
+	const input: ProductFilterInput = { ...extra };
+	if (f.categorySlug) input.categorySlug = f.categorySlug;
+	if (f.brands.length > 0) input.brands = f.brands;
+	if (f.priceRange[0] > PRICE_MIN) input.minPrice = f.priceRange[0];
+	if (f.priceRange[1] < PRICE_MAX) input.maxPrice = f.priceRange[1];
+	if (f.minRating) input.minRating = f.minRating;
+	if (f.inStockOnly) input.inStockOnly = true;
+	return input;
+}
+
+export function hasActiveCatalogFilters(f: CatalogFilterState, search = ''): boolean {
+	return (
+		!!search.trim() ||
+		!!f.categorySlug ||
+		f.brands.length > 0 ||
+		f.priceRange[0] > PRICE_MIN ||
+		f.priceRange[1] < PRICE_MAX ||
+		!!f.minRating ||
+		f.inStockOnly
+	);
 }
 
 export interface CatalogFiltersProps {

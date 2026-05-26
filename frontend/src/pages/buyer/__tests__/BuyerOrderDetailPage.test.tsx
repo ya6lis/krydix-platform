@@ -10,6 +10,12 @@ import {
 	CANCEL_ORDER_MUTATION,
 	REQUEST_RETURN_MUTATION,
 } from '@/graphql/operations/orders';
+import {
+	MARK_ORDER_NOTIFICATIONS_READ_MUTATION,
+	MY_NOTIFICATIONS_QUERY,
+	UNREAD_NOTIFICATION_COUNT_QUERY,
+	UNREAD_ORDER_NOTIFICATION_COUNT_QUERY,
+} from '@/graphql/operations/notifications';
 import type { Order } from '@/types/orders';
 
 jest.mock('react-i18next', () => ({
@@ -110,10 +116,31 @@ const ordersMock: MockedResponse = {
 	},
 };
 
+function notificationMocks(orderId: string): MockedResponse[] {
+	return [
+		{
+			request: { query: MARK_ORDER_NOTIFICATIONS_READ_MUTATION, variables: { orderId } },
+			result: { data: { markOrderNotificationsRead: true } },
+		},
+		{
+			request: { query: MY_NOTIFICATIONS_QUERY, variables: { limit: 30 } },
+			result: { data: { myNotifications: [] } },
+		},
+		{
+			request: { query: UNREAD_NOTIFICATION_COUNT_QUERY },
+			result: { data: { unreadNotificationCount: 0 } },
+		},
+		{
+			request: { query: UNREAD_ORDER_NOTIFICATION_COUNT_QUERY },
+			result: { data: { unreadOrderNotificationCount: 0 } },
+		},
+	];
+}
+
 function renderPage(mocks: MockedResponse[], id: string = ORDER_ID) {
 	return render(
 		<AppToastProvider>
-			<MockedProvider mocks={mocks}>
+			<MockedProvider mocks={[...mocks, ...notificationMocks(id)]}>
 				<MemoryRouter initialEntries={[`/account/orders/${id}`]}>
 					<Routes>
 						<Route path="/account/orders/:id" element={<BuyerOrderDetailPage />} />

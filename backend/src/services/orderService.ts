@@ -16,6 +16,7 @@ import {
 	findReturnRequestByOrderId,
 	type ReturnRequestRecord,
 } from '../repositories/returnRequestRepository.js';
+import * as notificationService from './notificationService.js';
 
 const CANCELLABLE_STATUSES: OrderStatus[] = [OrderStatus.PENDING, OrderStatus.CONFIRMED];
 const DELIVERABLE_STATUSES: OrderStatus[] = [OrderStatus.SHIPPED];
@@ -23,6 +24,15 @@ const DELIVERABLE_STATUSES: OrderStatus[] = [OrderStatus.SHIPPED];
 // Post-delivery refunds must go through requestReturn → return flow.
 const REFUNDABLE_STATUSES: OrderStatus[] = [OrderStatus.CONFIRMED];
 const RETURNABLE_STATUSES: OrderStatus[] = [OrderStatus.DELIVERED];
+
+async function applyOrderStatusChange(orderId: string, status: OrderStatus): Promise<OrderRecord> {
+	const before = await findOrderById(orderId);
+	const order = await updateOrderStatus(orderId, status);
+	if (before) {
+		void notificationService.notifyOrderStatusChange(order, before.status).catch(() => undefined);
+	}
+	return order;
+}
 
 export async function cancelOrder(orderId: string, buyerId: string): Promise<OrderRecord> {
 	const order = await findOrderByIdAndBuyer(orderId, buyerId);
@@ -38,7 +48,7 @@ export async function cancelOrder(orderId: string, buyerId: string): Promise<Ord
 		);
 	}
 
-	return updateOrderStatus(orderId, OrderStatus.CANCELLED);
+	return applyOrderStatusChange(orderId, OrderStatus.CANCELLED);
 }
 
 export async function confirmDelivery(orderId: string, buyerId: string): Promise<OrderRecord> {
@@ -55,7 +65,7 @@ export async function confirmDelivery(orderId: string, buyerId: string): Promise
 		);
 	}
 
-	return updateOrderStatus(orderId, OrderStatus.DELIVERED);
+	return applyOrderStatusChange(orderId, OrderStatus.DELIVERED);
 }
 
 export async function requestRefund(orderId: string, buyerId: string): Promise<OrderRecord> {
@@ -73,7 +83,7 @@ export async function requestRefund(orderId: string, buyerId: string): Promise<O
 	}
 
 	await updatePaymentStatus(orderId, PaymentStatus.REFUNDED);
-	return updateOrderStatus(orderId, OrderStatus.REFUNDED);
+	return applyOrderStatusChange(orderId, OrderStatus.REFUNDED);
 }
 
 export async function requestReturn(

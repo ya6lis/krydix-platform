@@ -19,6 +19,8 @@ export const LOGIN_MUTATION = gql`
 				profile {
 					firstName
 					lastName
+					displayName
+					bio
 					avatarUrl
 				}
 			}
@@ -57,6 +59,8 @@ export const ME_QUERY = gql`
 			profile {
 				firstName
 				lastName
+				displayName
+				bio
 				avatarUrl
 			}
 		}

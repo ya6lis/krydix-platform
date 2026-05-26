@@ -55,10 +55,14 @@ function CheckRow({ label, count, checked, onChange }: CheckRowProps) {
 	);
 }
 
+function getChildren(node: CategoryNode): CategoryNode[] {
+	return node.children ?? [];
+}
+
 function findCategoryPath(nodes: CategoryNode[], slug: string): string[] {
 	for (const node of nodes) {
 		if (node.slug === slug) return [node.id];
-		const childPath = findCategoryPath(node.children, slug);
+		const childPath = findCategoryPath(getChildren(node), slug);
 		if (childPath.length > 0) return [node.id, ...childPath];
 	}
 	return [];
@@ -91,7 +95,8 @@ export function CategoryFilterTree({ categories, selectedSlug, onSelect }: Categ
 	};
 
 	const renderNode = (node: CategoryNode, depth: number) => {
-		const hasChildren = node.children.length > 0;
+		const children = getChildren(node);
+		const hasChildren = children.length > 0;
 		const isExpanded = expandedIds.has(node.id);
 
 		return (
@@ -142,7 +147,7 @@ export function CategoryFilterTree({ categories, selectedSlug, onSelect }: Categ
 				</Box>
 				{hasChildren &&
 					isExpanded &&
-					node.children.map((child) => renderNode(child, depth + 1))}
+					children.map((child) => renderNode(child, depth + 1))}
 			</Box>
 		);
 	};
@@ -157,7 +162,7 @@ export function CategoryFilterTree({ categories, selectedSlug, onSelect }: Categ
 export function findCategoryName(nodes: CategoryNode[], slug: string): string | undefined {
 	for (const node of nodes) {
 		if (node.slug === slug) return node.name;
-		const childName = findCategoryName(node.children, slug);
+		const childName = findCategoryName(getChildren(node), slug);
 		if (childName) return childName;
 	}
 	return undefined;

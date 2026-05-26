@@ -80,6 +80,22 @@ export async function findVariantById(id: string): Promise<{
 	});
 }
 
+/** Product counts per category for a seller's visible catalog listings. */
+export async function categoryCountsBySeller(
+	sellerId: string,
+	visibleWhere: Prisma.ProductWhereInput
+): Promise<Map<string, number>> {
+	const rows = await prisma.productCategory.groupBy({
+		by: ['categoryId'],
+		where: {
+			product: { ...visibleWhere, sellerId },
+			category: { isActive: true, deletedAt: null },
+		},
+		_count: { productId: true },
+	});
+	return new Map(rows.map((row) => [row.categoryId, row._count.productId]));
+}
+
 /** Brand names with product counts across visible products. */
 export async function brandsWithCounts(
 	visibleWhere: Prisma.ProductWhereInput

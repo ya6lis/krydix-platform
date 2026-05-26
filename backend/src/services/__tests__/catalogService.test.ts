@@ -205,6 +205,15 @@ describe('catalogService.getProductBrandsWithCounts', () => {
 			{ name: 'Maru Studio', count: 5 },
 		]);
 	});
+
+	it('scopes brand counts to a seller when sellerId is provided', async () => {
+		mockProductRepo.brandsWithCounts.mockResolvedValue([{ name: 'Heritage Co.', count: 2 }]);
+		const result = await catalogService.getProductBrandsWithCounts('seller-1');
+		expect(mockProductRepo.brandsWithCounts).toHaveBeenCalledWith(
+			expect.objectContaining({ sellerId: 'seller-1' })
+		);
+		expect(result).toEqual([{ name: 'Heritage Co.', count: 2 }]);
+	});
 });
 
 describe('catalogService.getProducts — comparePrice mapping', () => {

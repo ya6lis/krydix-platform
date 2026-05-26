@@ -20,8 +20,11 @@ export const catalogResolvers = {
 	JSON: JSONResolver,
 
 	Query: {
-		categories: async (_: unknown, { language }: { language?: Language }) => {
-			return catalogService.getCategories(resolveLanguage(language));
+		categories: async (
+			_: unknown,
+			{ language, sellerId }: { language?: Language; sellerId?: string }
+		) => {
+			return catalogService.getCategories(resolveLanguage(language), sellerId);
 		},
 
 		category: async (_: unknown, { slug, language }: { slug: string; language?: Language }) => {
@@ -51,8 +54,8 @@ export const catalogResolvers = {
 			return catalogService.getProductBrands();
 		},
 
-		productBrandsWithCounts: async () => {
-			return catalogService.getProductBrandsWithCounts();
+		productBrandsWithCounts: async (_: unknown, { sellerId }: { sellerId?: string }) => {
+			return catalogService.getProductBrandsWithCounts(sellerId);
 		},
 	},
 };
