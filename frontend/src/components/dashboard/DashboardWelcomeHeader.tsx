@@ -7,6 +7,8 @@ import { Icons } from '@/constants/icons';
 import { tokens } from '@/theme';
 import { ROUTES } from '@/constants/routes';
 import { Role } from '@/constants/enums';
+import { useAuthStore } from '@/store/authStore';
+import { getProfileRouteForUser } from '@/utils/roleAccess';
 
 const ROLE_STYLES: Record<string, { bg: string; color: string; labelKey: string }> = {
 	[Role.BUYER]: { bg: tokens.accentSoft, color: tokens.accentInk, labelKey: 'dashboard.role.buyer' },
@@ -23,7 +25,9 @@ interface DashboardWelcomeHeaderProps {
 
 export function DashboardWelcomeHeader({ name, role, subtitleKey }: DashboardWelcomeHeaderProps) {
 	const { t } = useTranslation();
+	const user = useAuthStore((s) => s.user);
 	const roleStyle = ROLE_STYLES[role] ?? ROLE_STYLES[Role.BUYER];
+	const profileHref = getProfileRouteForUser(user);
 
 	return (
 		<Box
@@ -63,7 +67,7 @@ export function DashboardWelcomeHeader({ name, role, subtitleKey }: DashboardWel
 			<Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
 				<Link
 					component={RouterLink}
-					to={ROUTES.ACCOUNT_SETTINGS}
+					to={profileHref}
 					underline="none"
 					sx={{
 						display: 'inline-flex',
@@ -80,7 +84,7 @@ export function DashboardWelcomeHeader({ name, role, subtitleKey }: DashboardWel
 				</Link>
 				<Link
 					component={RouterLink}
-					to={ROUTES.ACCOUNT_NOTIFICATIONS}
+					to={ROUTES.NOTIFICATIONS}
 					underline="none"
 					sx={{
 						display: 'inline-flex',

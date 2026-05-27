@@ -24,6 +24,7 @@ import {
 	PRODUCT_BRANDS_WITH_COUNTS_QUERY,
 } from '@/graphql/operations/catalog';
 import { useAuthStore } from '@/store/authStore';
+import { getSettingsRouteForUser } from '@/utils/roleAccess';
 import type { BrandCount, CatalogProduct, CategoryNode, ProductListResult, ProductSort } from '@/types/catalog';
 import styles from './PublicSellerProfilePage.module.scss';
 
@@ -210,7 +211,7 @@ export default function PublicSellerProfilePage() {
 				{isOwner ? (
 					<div className={styles.ownerBanner} data-testid="seller-profile-owner-banner">
 						<span>{t('publicProfile.ownerHint')}</span>
-						<RouterLink to={`${ROUTES.ACCOUNT_SETTINGS}#profile`}>
+						<RouterLink to={getSettingsRouteForUser(currentUser)}>
 							<AppButton tone="accent">{t('publicProfile.editProfile')}</AppButton>
 						</RouterLink>
 					</div>

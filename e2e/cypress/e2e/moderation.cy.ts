@@ -66,7 +66,7 @@ function stubGraphQL(overrides: Record<string, object> = {}) {
 describe('ProductModerationPage', () => {
 	beforeEach(() => {
 		stubGraphQL();
-		cy.visit('/moderator/product-moderation', {
+		cy.visit('/moderation/products', {
 			onBeforeLoad: stubAuth,
 		});
 	});
@@ -120,7 +120,7 @@ describe('ProductModerationPage', () => {
 			}
 		}).as('graphqlAfterApprove');
 
-		cy.visit('/moderator/product-moderation', { onBeforeLoad: stubAuth });
+		cy.visit('/moderation/products', { onBeforeLoad: stubAuth });
 
 		cy.contains('Wool Cardigan — Oat').click();
 		cy.contains('Approve').click();
@@ -164,7 +164,7 @@ describe('ProductModerationPage', () => {
 			}
 		}).as('graphqlAfterReject');
 
-		cy.visit('/moderator/product-moderation', { onBeforeLoad: stubAuth });
+		cy.visit('/moderation/products', { onBeforeLoad: stubAuth });
 
 		cy.contains('Wool Cardigan — Oat').click();
 
@@ -205,7 +205,7 @@ describe('ProductModerationPage', () => {
 			}
 		}).as('emptyQueue');
 
-		cy.visit('/moderator/product-moderation', { onBeforeLoad: stubAuth });
+		cy.visit('/moderation/products', { onBeforeLoad: stubAuth });
 
 		cy.contains('No items in queue').should('be.visible');
 		cy.contains('All product submissions have been reviewed').should('be.visible');

@@ -36,7 +36,7 @@ function stubGraphQL(overrides: Record<string, object> = {}) {
 
 describe('SellerProductFormPage — Create', () => {
 	beforeEach(() => {
-		cy.visit('/seller-cabinet/products/new', {
+		cy.visit('/seller/products/new', {
 			onBeforeLoad: stubSellerAuth,
 		});
 		stubGraphQL();
@@ -109,13 +109,13 @@ describe('SellerProductFormPage — Create', () => {
 		});
 
 		// Redirects to edit page with new product ID
-		cy.url().should('include', '/seller-cabinet/products/prod-new-1/edit');
+		cy.url().should('include', '/seller/products/prod-new-1/edit');
 	});
 });
 
 describe('SellerProductFormPage — Edit', () => {
 	beforeEach(() => {
-		cy.visit('/seller-cabinet/products/prod-existing-1/edit', {
+		cy.visit('/seller/products/prod-existing-1/edit', {
 			onBeforeLoad: stubSellerAuth,
 		});
 		stubGraphQL();

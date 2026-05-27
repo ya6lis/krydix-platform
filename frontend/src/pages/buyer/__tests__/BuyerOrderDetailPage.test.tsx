@@ -141,9 +141,9 @@ function renderPage(mocks: MockedResponse[], id: string = ORDER_ID) {
 	return render(
 		<AppToastProvider>
 			<MockedProvider mocks={[...mocks, ...notificationMocks(id)]}>
-				<MemoryRouter initialEntries={[`/account/orders/${id}`]}>
+				<MemoryRouter initialEntries={[`/orders/${id}`]}>
 					<Routes>
-						<Route path="/account/orders/:id" element={<BuyerOrderDetailPage />} />
+						<Route path="/orders/:id" element={<BuyerOrderDetailPage />} />
 					</Routes>
 				</MemoryRouter>
 			</MockedProvider>

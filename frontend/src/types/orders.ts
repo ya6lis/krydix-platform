@@ -6,7 +6,15 @@ export type OrderStatus =
 	| 'CANCELLED'
 	| 'REFUNDED';
 
-export type PaymentStatus = 'PENDING' | 'AUTHORIZED' | 'PAID' | 'FAILED' | 'REFUNDED';
+export type PaymentStatus =
+	| 'PENDING'
+	| 'AUTHORIZED'
+	| 'PAID'
+	| 'IN_ESCROW'
+	| 'FAILED'
+	| 'REFUNDED'
+	| 'CHARGEBACK'
+	| 'CANCELED';
 export type ReturnRequestStatus =
 	| 'REQUESTED'
 	| 'UNDER_REVIEW'

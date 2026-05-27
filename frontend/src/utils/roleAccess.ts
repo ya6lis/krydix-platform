@@ -60,6 +60,12 @@ export function canSell(role: Role | string | undefined): boolean {
 	return isSellerRole(role);
 }
 
+/** Import/export — seller, moderator, and admin. */
+export function canImportExport(role: Role | string | undefined): boolean {
+	if (!role) return false;
+	return role === Role.SELLER || role === Role.MODERATOR || role === Role.ADMIN;
+}
+
 export function canAccessRouteZone(
 	role: Role | string | undefined,
 	zone: RouteZone,
@@ -103,16 +109,40 @@ export function canSeeNavForRoles(itemRoles: readonly string[], userRole: string
 
 /** Default landing route after visiting `/` or clicking the brand home link. */
 export function getHomeRouteForRole(role: Role | string | undefined): string {
-	switch (role) {
-		case Role.SELLER:
-			return ROUTES.SELLER_DASHBOARD;
-		case Role.ADMIN:
-			return ROUTES.ADMIN;
-		case Role.MODERATOR:
-			return ROUTES.MODERATOR;
-		case Role.BUYER:
-			return ROUTES.ACCOUNT;
-		default:
-			return ROUTES.PRODUCTS;
+	if (!role || role === Role.GUEST) {
+		return ROUTES.PRODUCTS;
 	}
+	return ROUTES.DASHBOARD;
+}
+
+/** Public profile URL — sellers use storefront, everyone else uses user profile. */
+export function getPublicProfileRoute(
+	userId: string,
+	role: Role | string | undefined,
+): string {
+	if (role === Role.SELLER) {
+		return ROUTES.SELLER_PUBLIC(userId);
+	}
+	return ROUTES.USER_PUBLIC(userId);
+}
+
+/** Profile menu target — storefront for sellers, user profile for others. */
+export function getProfileRouteForUser(
+	user: { id: string; role: Role | string } | null | undefined,
+): string {
+	if (!user) return ROUTES.LOGIN;
+	return getPublicProfileRoute(user.id, user.role);
+}
+
+/** Profile menu label key — sellers see storefront wording. */
+export function getProfileMenuLabelKey(role: Role | string | undefined): string {
+	return role === Role.SELLER ? 'shell.menu.store' : 'shell.menu.profile';
+}
+
+/** Settings menu target — same URL for every role. */
+export function getSettingsRouteForUser(
+	user: { id: string; role: Role | string } | null | undefined,
+): string {
+	if (!user) return ROUTES.LOGIN;
+	return ROUTES.SETTINGS;
 }

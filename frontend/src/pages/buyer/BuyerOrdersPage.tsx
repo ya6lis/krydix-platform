@@ -188,7 +188,7 @@ export default function BuyerOrdersPage() {
 					label: t('orders.viewDetails'),
 					icon: Icons.order,
 					onClick: () => {
-						window.location.href = ROUTES.ACCOUNT_ORDER(menuOrder.id);
+						window.location.href = ROUTES.ORDER(menuOrder.id);
 					},
 				},
 				...(menuOrder.status === 'PENDING' || menuOrder.status === 'CONFIRMED'
@@ -214,7 +214,7 @@ export default function BuyerOrdersPage() {
 			render: (row) => (
 				<Link
 					component={RouterLink}
-					to={ROUTES.ACCOUNT_ORDER(row.id)}
+					to={ROUTES.ORDER(row.id)}
 					sx={{
 						fontFamily: 'JetBrains Mono, monospace',
 						fontSize: 13,
@@ -340,13 +340,6 @@ export default function BuyerOrdersPage() {
 					</Typography>
 				</Box>
 				<Box sx={{ display: 'flex', gap: 1.5, flexShrink: 0 }}>
-					<AppButton
-						variant="outlined"
-						size="small"
-						startIcon={<FontAwesomeIcon icon={Icons.download} />}
-					>
-						{t('orders.export')}
-					</AppButton>
 					<AppButton
 						variant="contained"
 						size="small"

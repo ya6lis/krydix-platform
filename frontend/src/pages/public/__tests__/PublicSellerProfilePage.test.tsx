@@ -111,9 +111,9 @@ function renderPage() {
 			mocks={[profileMock, categoriesMock, brandsMock, productsMock]}
 			addTypename={false}
 		>
-			<MemoryRouter initialEntries={['/seller/seller-1']}>
+			<MemoryRouter initialEntries={['/sellers/seller-1']}>
 				<Routes>
-					<Route path="/seller/:id" element={<PublicSellerProfilePage />} />
+					<Route path="/sellers/:id" element={<PublicSellerProfilePage />} />
 				</Routes>
 			</MemoryRouter>
 		</MockedProvider>,

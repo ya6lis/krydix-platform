@@ -133,7 +133,7 @@ export function AuditLogDetailModal({ item, open, onClose }: AuditLogDetailModal
 					<DetailRow
 						label={t('adminAudit.detail.fields.actorId')}
 						value={
-							<RouterLink to={ROUTES.ADMIN_USER(item.actor.id)} className={styles.inlineLink}>
+							<RouterLink to={ROUTES.USER(item.actor.id)} className={styles.inlineLink}>
 								{item.actor.id}
 							</RouterLink>
 						}

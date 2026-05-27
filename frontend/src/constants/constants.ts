@@ -17,3 +17,4 @@ export const SUPPORTED_LANGUAGES = ['en', 'uk'] as const;
 export const DEFAULT_LANGUAGE = 'en';
 
 export const DEBOUNCE_SEARCH_MS = 400;
+export const CATALOG_SEARCH_QUERY_PARAM = 'q';

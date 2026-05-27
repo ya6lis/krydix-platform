@@ -97,7 +97,7 @@ export async function getPlatformOverview() {
 	const gmvCurrent = toNumber(current._sum.totalAmount);
 	const gmvPrevious = toNumber(previous._sum.totalAmount);
 	const gmvDelta = gmvPrevious > 0 ? ((gmvCurrent - gmvPrevious) / gmvPrevious) * 100 : 0;
-	const takeRate = defaultRule ? toNumber(defaultRule.percent) : 12;
+	const takeRate = defaultRule ? toNumber(defaultRule.percent) : toNumber(config.defaultPlatformFeePercent) || 2;
 	const platformRevenue = gmvCurrent * (takeRate / 100);
 	const pendingPayouts = toNumber(pendingRaw);
 
@@ -123,6 +123,7 @@ export async function getPayoutConfig() {
 	return {
 		schedule: config.payoutSchedule,
 		holdPeriodDays: config.payoutHoldDays,
+		autoConfirmDays: config.autoConfirmDays,
 		minimumPayout: toNumber(config.payoutMinimum),
 		currency: config.payoutCurrency,
 	};
@@ -168,6 +169,7 @@ export async function savePayoutConfig(
 	input: {
 		schedule: string;
 		holdPeriodDays: number;
+		autoConfirmDays: number;
 		minimumPayout: number;
 		currency: string;
 	},
@@ -177,25 +179,37 @@ export async function savePayoutConfig(
 			extensions: { code: 'BAD_USER_INPUT' },
 		});
 	}
+	if (input.autoConfirmDays < 1 || input.autoConfirmDays > 90) {
+		throw new GraphQLError('Auto-confirm period must be between 1 and 90 days', {
+			extensions: { code: 'BAD_USER_INPUT' },
+		});
+	}
 
 	const updated = await repo.updatePlatformConfig({
 		payoutSchedule: input.schedule as never,
 		payoutHoldDays: input.holdPeriodDays,
+		autoConfirmDays: input.autoConfirmDays,
 		payoutMinimum: input.minimumPayout,
 		payoutCurrency: input.currency,
 	});
 
 	await auditLog.log({
 		actorId,
-		action: 'CATEGORY_CHANGE',
+		action: 'PLATFORM_CONFIG_CHANGE',
 		targetType: 'PlatformConfig',
 		targetId: 'payout-config',
-		metadata: { operation: 'update', schedule: input.schedule },
+		metadata: {
+			operation: 'update',
+			schedule: input.schedule,
+			holdPeriodDays: input.holdPeriodDays,
+			autoConfirmDays: input.autoConfirmDays,
+		},
 	});
 
 	return {
 		schedule: updated.payoutSchedule,
 		holdPeriodDays: updated.payoutHoldDays,
+		autoConfirmDays: updated.autoConfirmDays,
 		minimumPayout: toNumber(updated.payoutMinimum),
 		currency: updated.payoutCurrency,
 	};

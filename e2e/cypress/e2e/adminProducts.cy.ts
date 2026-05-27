@@ -60,7 +60,7 @@ function stubGraphQL() {
 describe('ProductsManagementPage — Admin', () => {
 	beforeEach(() => {
 		stubGraphQL();
-		cy.visit('/admin/products', {
+		cy.visit('/manage/products', {
 			onBeforeLoad: (win) => stubAuth(win),
 		});
 	});
@@ -138,7 +138,7 @@ describe('ProductsManagementPage — Moderator', () => {
 			}
 		}).as('graphql');
 
-		cy.visit('/moderator/all-products', {
+		cy.visit('/manage/products', {
 			onBeforeLoad: (win) => {
 				win.localStorage.setItem('krydix_refresh_token', 'stub-rt');
 				win.localStorage.setItem('krydix_stub_role', 'MODERATOR');

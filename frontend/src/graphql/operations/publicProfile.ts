@@ -21,6 +21,23 @@ export const PUBLIC_SELLER_PROFILE_QUERY = gql`
 	}
 `;
 
+export const PUBLIC_USER_PROFILE_QUERY = gql`
+	query PublicUserProfile($userId: ID!) {
+		publicUserProfile(userId: $userId) {
+			id
+			displayName
+			firstName
+			lastName
+			avatarUrl
+			bio
+			country
+			city
+			role
+			memberSince
+		}
+	}
+`;
+
 export interface PublicSellerProfile {
 	id: string;
 	displayName: string;
@@ -36,4 +53,17 @@ export interface PublicSellerProfile {
 	productCount: number;
 	averageRating: number;
 	reviewCount: number;
+}
+
+export interface PublicUserProfile {
+	id: string;
+	displayName: string;
+	firstName: string;
+	lastName: string;
+	avatarUrl: string | null;
+	bio: string | null;
+	country: string | null;
+	city: string | null;
+	role: string;
+	memberSince: string;
 }

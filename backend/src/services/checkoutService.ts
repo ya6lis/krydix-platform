@@ -5,7 +5,10 @@ import * as orderRepo from '../repositories/orderRepository.js';
 import * as promoRepo from '../repositories/promoCodeRepository.js';
 import * as productRepo from '../repositories/productRepository.js';
 import * as notificationService from './notificationService.js';
+import * as feeCalculationService from './feeCalculationService.js';
+import * as auditLog from './auditLogService.js';
 import { Language } from '../constants/enums.js';
+import { DEFAULT_ORDER_CURRENCY } from '../constants/monetization.js';
 
 export interface PromoResult {
 	promoCodeId: string;
@@ -116,20 +119,24 @@ export interface CartItemInput {
 	quantity: number;
 }
 
-export async function createOrder(
+interface PreparedOrderItem {
+	productId: string;
+	variantId?: string;
+	sellerId: string;
+	quantity: number;
+	unitPrice: number;
+	productTitle: string;
+	categoryIds: string[];
+}
+
+async function prepareOrderItems(
 	userId: string,
-	paymentMethod: PaymentMethod,
-	deliveryMethod: DeliveryMethod,
-	deliveryAddress: string | undefined,
-	promoCode: string | undefined,
-	notes: string | undefined,
 	clientItems?: CartItemInput[]
-): Promise<OrderOut> {
-	const orderItems: orderRepo.CreateOrderInput['items'] = [];
+): Promise<{ items: PreparedOrderItem[]; subtotal: number }> {
+	const orderItems: PreparedOrderItem[] = [];
 	let subtotal = 0;
 
 	if (clientItems && clientItems.length > 0) {
-		// Use items passed directly from the frontend (local cart)
 		for (const item of clientItems) {
 			const product = await productRepo.findProductById(item.productId);
 			if (!product || !product.isAvailable) {
@@ -162,10 +169,10 @@ export async function createOrder(
 				quantity: item.quantity,
 				unitPrice,
 				productTitle: translation?.title ?? '',
+				categoryIds: product.categories.map((c) => c.categoryId),
 			});
 		}
 	} else {
-		// Fall back to DB cart
 		const cartItems = await cartRepo.findCartByUser(userId);
 		if (cartItems.length === 0) {
 			throw new GraphQLError('Cart is empty', { extensions: { code: 'EMPTY_CART' } });
@@ -206,9 +213,44 @@ export async function createOrder(
 				quantity: item.quantity,
 				unitPrice,
 				productTitle: translation?.title ?? '',
+				categoryIds: item.product.categories?.map((c) => c.categoryId) ?? [],
 			});
 		}
 	}
+
+	return { items: orderItems, subtotal };
+}
+
+export async function createOrder(
+	userId: string,
+	paymentMethod: PaymentMethod,
+	deliveryMethod: DeliveryMethod,
+	deliveryAddress: string | undefined,
+	promoCode: string | undefined,
+	notes: string | undefined,
+	clientItems?: CartItemInput[]
+): Promise<OrderOut> {
+	const { items: preparedItems, subtotal } = await prepareOrderItems(userId, clientItems);
+
+	const feeSnapshots = await feeCalculationService.buildFeeSnapshots(
+		preparedItems.map((item) => ({
+			productId: item.productId,
+			categoryIds: item.categoryIds,
+			lineTotal: item.unitPrice * item.quantity,
+		}))
+	);
+
+	const orderItems: orderRepo.CreateOrderInput['items'] = preparedItems.map((item, index) => ({
+		productId: item.productId,
+		variantId: item.variantId,
+		sellerId: item.sellerId,
+		quantity: item.quantity,
+		unitPrice: item.unitPrice,
+		productTitle: item.productTitle,
+		feeSnapshot: feeSnapshots[index],
+	}));
+
+	const currency = feeSnapshots[0]?.currency ?? DEFAULT_ORDER_CURRENCY;
 
 	// Validate promo
 	let promoResult: PromoResult | undefined;
@@ -223,6 +265,7 @@ export async function createOrder(
 	const order = await orderRepo.createOrder({
 		buyerId: userId,
 		totalAmount,
+		currency,
 		discount: discount > 0 ? discount : undefined,
 		promoCodeId: promoResult?.promoCodeId,
 		notes,
@@ -232,6 +275,19 @@ export async function createOrder(
 		items: orderItems,
 	});
 
+	if (paymentMethod !== PaymentMethod.CASH_ON_DELIVERY) {
+		await orderRepo.capturePaymentInEscrow(order.id);
+		await auditLog.log({
+			actorId: userId,
+			action: 'PAYMENT_CAPTURED',
+			targetType: 'Order',
+			targetId: order.id,
+			metadata: { amount: totalAmount, currency, method: paymentMethod },
+		});
+	}
+
+	const refreshed = await orderRepo.findOrderById(order.id);
+
 	// Increment promo usage outside transaction (best-effort)
 	if (promoResult) {
 		await promoRepo.incrementPromoUsage(promoResult.promoCodeId);
@@ -240,7 +296,7 @@ export async function createOrder(
 	// Clear cart
 	await cartRepo.clearCart(userId);
 
-	void notificationService.notifyNewOrder(order).catch(() => undefined);
+	void notificationService.notifyNewOrder(refreshed ?? order).catch(() => undefined);
 
-	return mapOrder(order);
+	return mapOrder(refreshed ?? order);
 }

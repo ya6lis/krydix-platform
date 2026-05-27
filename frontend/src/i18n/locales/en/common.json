@@ -26,6 +26,7 @@
 		"wishlist": "Wishlist",
 		"product": "Product page",
 		"orders": "Orders",
+		"finance": "Finance",
 		"verification": "Verification",
 		"queue": "Queue",
 		"productModeration": "Product moderation",
@@ -54,7 +55,7 @@
 	},
 	"shell": {
 		"search": {
-			"placeholder": "Search products, orders, users…"
+			"placeholder": "Search by title, description, or SKU…"
 		},
 		"cart": {
 			"title": "Your cart",
@@ -81,6 +82,7 @@
 		},
 		"menu": {
 			"profile": "My profile",
+			"store": "My store",
 			"settings": "Account settings",
 			"verification": "Verification",
 			"switchRole": "Switch role",
@@ -890,6 +892,25 @@
 		"notFoundDescription": "This profile may have been removed or is unavailable.",
 		"backToCatalog": "Back to catalog"
 	},
+	"publicUserProfile": {
+		"memberSince": "Member since {{date}}",
+		"aboutTitle": "About",
+		"emptyBio": "This user has not added a bio yet.",
+		"contact": "Send message",
+		"viewStorefront": "View storefront",
+		"ownerHint": "This is your public profile.",
+		"editProfile": "Edit profile",
+		"notFoundTitle": "User not found",
+		"notFoundDescription": "This profile may have been removed or is unavailable.",
+		"backToCatalog": "Back to catalog",
+		"roles": {
+			"buyer": "Buyer",
+			"seller": "Seller",
+			"moderator": "Moderator",
+			"admin": "Administrator",
+			"member": "Member"
+		}
+	},
 	"chat": {
 		"pageTitle": "Messages",
 		"pageSubtitle": "Buyer ↔ seller conversations and moderator inbox.",
@@ -1103,6 +1124,44 @@
 			"uploading": "Uploading…"
 		}
 	},
+	"sellerFinance": {
+		"title": "Finance",
+		"subtitle": "Track escrow payouts, platform fees, and withdrawals.",
+		"stats": {
+			"onHold": "On hold",
+			"withdrawable": "Withdrawable",
+			"released": "Released",
+			"withdrawnLifetime": "Withdrawn (lifetime)"
+		},
+		"minimumHint": "Minimum withdrawal: {{amount}}",
+		"blockedHint": "{{count}} payout(s) blocked due to returns or disputes.",
+		"table": {
+			"product": "Product",
+			"gross": "Gross",
+			"fee": "Platform fee",
+			"net": "Net payout",
+			"status": "Status",
+			"available": "Available from"
+		},
+		"payoutStatus": {
+			"ON_HOLD": "On hold",
+			"ELIGIBLE_FOR_RELEASE": "Eligible",
+			"RELEASED": "Released",
+			"WITHDRAWN": "Withdrawn",
+			"BLOCKED": "Blocked",
+			"REFUNDED": "Refunded"
+		},
+		"withdraw": {
+			"action": "Withdraw funds",
+			"confirmTitle": "Confirm withdrawal",
+			"confirmMessage": "Withdraw {{amount}} to your payout account?",
+			"success": "Withdrawal completed: {{amount}}"
+		},
+		"empty": {
+			"title": "No payouts yet",
+			"description": "Payouts appear after buyers confirm delivery and the hold period ends."
+		}
+	},
 	"sellerOrders": {
 		"title": "Orders",
 		"subtitle": "Manage incoming orders, fulfillment, and refunds.",
@@ -1307,7 +1366,8 @@
 				"sku": "SKU",
 				"slug": "Slug",
 				"price": "Price",
-				"status": "Valid"
+				"status": "Valid",
+				"action": "Action"
 			},
 			"confirmBtn": "Import {{count}} valid rows",
 			"cancelBtn": "Cancel",
@@ -1325,6 +1385,25 @@
 		"activateSuccess": "Product activated",
 		"deactivateError": "Failed to deactivate product",
 		"activateError": "Failed to activate product"
+	},
+	"importExport": {
+		"mode": {
+			"label": "Import mode",
+			"upsert": "Create or update",
+			"createOnly": "Create only",
+			"updateOnly": "Update only"
+		},
+		"action": {
+			"create": "Create",
+			"update": "Update"
+		},
+		"exportSuccess": "Export downloaded successfully",
+		"exportError": "Failed to export data",
+		"previewError": "Failed to parse import file",
+		"confirmError": "Import failed",
+		"templateError": "Failed to download template",
+		"success": "Import completed",
+		"skipped": "{{count}} row(s) skipped"
 	},
 	"sellerDashboard": {
 		"pageTitle": "Welcome back, {{name}}.",
@@ -2315,9 +2394,15 @@
 			"title": "Payout cycle",
 			"subtitle": "When sellers receive funds and minimum hold for refunds.",
 			"schedule": "Schedule",
-			"holdDays": "Hold period (days)",
-			"holdHelp": "Funds release this many days after delivery.",
+			"scheduleHelp": "How often eligible seller payouts are batched for release.",
+			"holdDays": "Payout hold (days)",
+			"holdHelp": "Seller funds stay on hold this many days after delivery is confirmed.",
+			"autoConfirmDays": "Auto-confirm delivery (days)",
+			"autoConfirmHelp": "If the buyer does not confirm receipt, delivery is auto-confirmed after this period.",
 			"minimum": "Minimum payout",
+			"minimumHelp": "Minimum balance required before a seller can withdraw funds.",
+			"saveHold": "Save hold settings",
+			"editHold": "Edit hold settings",
 			"schedules": {
 				"WEEKLY_TUESDAY": "Weekly · every Tuesday",
 				"BIWEEKLY": "Bi-weekly",
@@ -2327,6 +2412,7 @@
 		},
 		"toast": {
 			"saved": "Platform settings saved",
+			"payoutSaved": "Payout hold settings saved",
 			"saveError": "Failed to save platform settings",
 			"promoCreated": "Promo code created",
 			"promoCreateError": "Failed to create promo code"
@@ -2404,9 +2490,7 @@
 			"products": "Product moderation",
 			"reviews": "Pending reviews",
 			"flaggedReviews": "Flagged reviews",
-			"support": "Support conversations",
-			"verifications": "Seller verifications",
-			"complaints": "Complaints"
+			"support": "Support conversations"
 		},
 		"recentActions": {
 			"title": "Your recent actions",

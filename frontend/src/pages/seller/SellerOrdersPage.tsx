@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Box, Grid, Typography, Link, InputBase, IconButton } from '@mui/material';
-import { useQuery, useMutation } from '@apollo/client';
+import { useQuery, useMutation, useLazyQuery } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -15,6 +15,7 @@ import {
 	AppMenu,
 	ConfirmDialog,
 	AppButton,
+	useAppToast,
 } from '@/components/ui';
 import type { AppTableColumn, AppMenuItem } from '@/components/ui';
 import { Icons } from '@/constants/icons';
@@ -26,6 +27,9 @@ import {
 	CANCEL_SELLER_ORDER_MUTATION,
 } from '@/graphql/operations/sellerOrders';
 import type { OrderStatus, OrderStats, PaginatedSellerOrders, SellerOrder } from '@/types/orders';
+import { EXPORT_MY_SELLER_ORDERS_QUERY } from '@/graphql/operations/importExport';
+import { useAuth } from '@/hooks/useAuth';
+import { downloadSpreadsheetFile } from '@/utils/downloadSpreadsheet';
 
 const PAGE_SIZE = 8;
 
@@ -176,6 +180,8 @@ function DateField({
 
 export default function SellerOrdersPage() {
 	const { t } = useTranslation();
+	const { showToast } = useAppToast();
+	const { canImportExport } = useAuth();
 	const [tab, setTab] = useState<TabValue>('ALL');
 	const [page, setPage] = useState(1);
 	const [pageSize, setPageSize] = useState(PAGE_SIZE);
@@ -210,6 +216,29 @@ export default function SellerOrdersPage() {
 			refetch();
 		},
 	});
+
+	const [exportOrders, { loading: exporting }] = useLazyQuery(EXPORT_MY_SELLER_ORDERS_QUERY, {
+		fetchPolicy: 'network-only',
+	});
+
+	const handleExport = async () => {
+		try {
+			const { data } = await exportOrders({
+				variables: {
+					filter: {
+						...(tab !== 'ALL' ? { status: tab } : {}),
+						...(search ? { search } : {}),
+					},
+				},
+			});
+			if (data?.exportMySellerOrders) {
+				downloadSpreadsheetFile(data.exportMySellerOrders);
+				showToast(t('importExport.exportSuccess'), 'success');
+			}
+		} catch {
+			showToast(t('importExport.exportError'), 'error');
+		}
+	};
 
 	const orders = data?.mySellerOrders.items ?? [];
 	const total = data?.mySellerOrders.total ?? 0;
@@ -369,13 +398,17 @@ export default function SellerOrdersPage() {
 					</Typography>
 				</Box>
 				<Box sx={{ display: 'flex', gap: 1.5, flexShrink: 0 }}>
-					<AppButton
-						variant="outlined"
-						size="small"
-						startIcon={<FontAwesomeIcon icon={Icons.download} />}
-					>
-						{t('sellerOrders.export')}
-					</AppButton>
+					{canImportExport && (
+						<AppButton
+							variant="outlined"
+							size="small"
+							startIcon={<FontAwesomeIcon icon={Icons.download} />}
+							onClick={handleExport}
+							loading={exporting}
+						>
+							{t('sellerOrders.export')}
+						</AppButton>
+					)}
 					<AppButton
 						variant="contained"
 						size="small"

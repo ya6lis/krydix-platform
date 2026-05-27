@@ -26,9 +26,11 @@ import {
 	type ReturnRequestRecord,
 } from '../repositories/returnRequestRepository.js';
 import * as notificationService from './notificationService.js';
+import * as payoutService from './payoutService.js';
+import * as auditLog from './auditLogService.js';
 
 const CANCELLABLE_STATUSES: OrderStatus[] = [OrderStatus.PENDING, OrderStatus.CONFIRMED];
-const DELIVERABLE_STATUSES: OrderStatus[] = [OrderStatus.SHIPPED];
+const DELIVERABLE_STATUSES: OrderStatus[] = [OrderStatus.SHIPPED, OrderStatus.DELIVERED];
 // requestRefund is for pre-shipment cancellation refunds only (CONFIRMED = paid but not yet shipped).
 // Post-delivery refunds must go through requestReturn → return flow.
 const REFUNDABLE_STATUSES: OrderStatus[] = [OrderStatus.CONFIRMED];
@@ -182,12 +184,24 @@ export async function confirmDelivery(orderId: string, buyerId: string): Promise
 
 	if (!DELIVERABLE_STATUSES.includes(order.status)) {
 		throw new GraphQLError(
-			`Delivery can only be confirmed when order is SHIPPED. Current status: "${order.status}".`,
+			`Delivery can only be confirmed when order is SHIPPED or DELIVERED. Current status: "${order.status}".`,
 			{ extensions: { code: 'BAD_USER_INPUT' } }
 		);
 	}
 
-	return applyOrderStatusChange(orderId, OrderStatus.DELIVERED);
+	if (order.items.every((item) => item.confirmedReceivedAt)) {
+		throw new GraphQLError('Receipt has already been confirmed for this order.', {
+			extensions: { code: 'BAD_USER_INPUT' },
+		});
+	}
+
+	let confirmed = order;
+	if (order.status !== OrderStatus.DELIVERED) {
+		confirmed = await applyOrderStatusChange(orderId, OrderStatus.DELIVERED);
+	}
+
+	await payoutService.createPayoutsForOrder(orderId, new Date());
+	return findOrderByIdAndBuyer(orderId, buyerId) ?? confirmed;
 }
 
 export async function requestRefund(orderId: string, buyerId: string): Promise<OrderRecord> {
@@ -205,6 +219,14 @@ export async function requestRefund(orderId: string, buyerId: string): Promise<O
 	}
 
 	await updatePaymentStatus(orderId, PaymentStatus.REFUNDED);
+	await payoutService.refundPayoutsForOrder(orderId);
+	await auditLog.log({
+		actorId: buyerId,
+		action: 'REFUND_ISSUED',
+		targetType: 'Order',
+		targetId: orderId,
+		metadata: { reason: 'buyer_pre_shipment_refund' },
+	});
 	return applyOrderStatusChange(orderId, OrderStatus.REFUNDED);
 }
 
@@ -260,6 +282,16 @@ export async function requestReturn(
 		sellerId,
 		reason: reason.trim(),
 		details: details?.trim() || null,
+	}).then(async (request) => {
+		await payoutService.blockPayoutsForOrder(orderId, sellerId);
+		await auditLog.log({
+			actorId: buyerId,
+			action: 'PAYOUT_BLOCKED',
+			targetType: 'Order',
+			targetId: orderId,
+			metadata: { reason: 'return_requested', sellerId },
+		});
+		return request;
 	});
 }
 
@@ -538,6 +570,14 @@ export async function processSellerReturnRefund(
 		refundedAt: new Date(),
 	});
 	await updatePaymentStatus(orderId, PaymentStatus.REFUNDED);
+	await payoutService.refundPayoutsForOrder(orderId, sellerId);
+	await auditLog.log({
+		actorId: sellerId,
+		action: 'REFUND_ISSUED',
+		targetType: 'Order',
+		targetId: orderId,
+		metadata: { reason: 'return_refund' },
+	});
 	await applyOrderStatusChange(orderId, OrderStatus.REFUNDED);
 	return finishSellerMutation(orderId, sellerId, beforeStatus);
 }

@@ -87,7 +87,7 @@ function stubGraphQL() {
 describe('PublicSellerProfilePage', () => {
 	beforeEach(() => {
 		stubGraphQL();
-		cy.visit('/seller/seller-1');
+		cy.visit('/sellers/seller-1');
 		cy.wait('@graphql');
 	});
 

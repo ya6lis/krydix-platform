@@ -126,7 +126,7 @@ export default function BuyerDashboardPage() {
 						titleKey="buyerDashboard.recentOrders.title"
 						subtitleKey="buyerDashboard.recentOrders.subtitle"
 						actionLabelKey="dashboard.common.viewAll"
-						actionHref={ROUTES.ACCOUNT_ORDERS}
+						actionHref={ROUTES.ORDERS}
 					>
 						{recentOrders.length === 0 && !ordersLoading ? (
 							<EmptyState
@@ -165,7 +165,7 @@ export default function BuyerDashboardPage() {
 										<AppButton
 											variant="outlined"
 											size="small"
-											onClick={() => navigate(ROUTES.ACCOUNT_ORDER(order.id))}
+											onClick={() => navigate(ROUTES.ORDER(order.id))}
 										>
 											{t('dashboard.common.details')}
 										</AppButton>
@@ -278,7 +278,7 @@ export default function BuyerDashboardPage() {
 						<DashboardSectionCard
 							titleKey="buyerDashboard.notifications.title"
 							actionLabelKey="dashboard.common.viewAll"
-							actionHref={ROUTES.ACCOUNT_NOTIFICATIONS}
+							actionHref={ROUTES.NOTIFICATIONS}
 						>
 							{notifications.length === 0 ? (
 								<EmptyState
@@ -292,7 +292,7 @@ export default function BuyerDashboardPage() {
 										const display = notificationDisplayText(notification, t);
 										const href =
 											notificationRoute(notification, Role.BUYER) ??
-											ROUTES.ACCOUNT_NOTIFICATIONS;
+											ROUTES.NOTIFICATIONS;
 										return (
 											<Link
 												key={notification.id}
@@ -340,14 +340,14 @@ export default function BuyerDashboardPage() {
 					{
 						id: 'orders',
 						labelKey: 'buyerDashboard.quickActions.orders',
-						href: ROUTES.ACCOUNT_ORDERS,
+						href: ROUTES.ORDERS,
 						icon: Icons.order,
 						tone: 'accent',
 					},
 					{
 						id: 'profile',
 						labelKey: 'buyerDashboard.quickActions.profile',
-						href: ROUTES.ACCOUNT_SETTINGS,
+						href: ROUTES.SETTINGS,
 						icon: Icons.user,
 						tone: 'amber',
 					},

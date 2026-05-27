@@ -173,7 +173,7 @@ export default function ReviewsManagementPage() {
 	const tabCounts = list?.tabCounts;
 
 	const userProfileHref = (userId: string) =>
-		isAdmin ? ROUTES.ADMIN_USER(userId) : ROUTES.MODERATOR_USER(userId);
+		ROUTES.USER(userId);
 
 	const tabs = useMemo(
 		() => [

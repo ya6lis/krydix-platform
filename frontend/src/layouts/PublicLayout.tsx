@@ -180,7 +180,7 @@ export default function PublicLayout() {
 								transformOrigin={{ horizontal: 'right', vertical: 'top' }}
 								anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
 							>
-								<MenuItem component={RouterLink} to={ROUTES.ACCOUNT} onClick={handleAccountClose}>
+								<MenuItem component={RouterLink} to={ROUTES.DASHBOARD} onClick={handleAccountClose}>
 									{t('nav.account')}
 								</MenuItem>
 								<MenuItem onClick={handleLogout}>{t('auth.logout')}</MenuItem>

@@ -54,7 +54,7 @@ function stubGraphQL() {
 describe('AdminAuditPage', () => {
 	beforeEach(() => {
 		stubGraphQL();
-		cy.visit('/admin/audit', {
+		cy.visit('/audit', {
 			onBeforeLoad: (win) => stubAuth(win),
 		});
 		cy.wait('@graphql');

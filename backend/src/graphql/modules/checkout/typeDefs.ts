@@ -18,8 +18,11 @@ export const checkoutTypeDefs = `#graphql
 		PENDING
 		AUTHORIZED
 		PAID
+		IN_ESCROW
 		FAILED
 		REFUNDED
+		CHARGEBACK
+		CANCELED
 	}
 
 	enum DeliveryStatus {

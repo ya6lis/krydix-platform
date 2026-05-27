@@ -66,7 +66,7 @@ export default function AdminDashboardPage() {
 				id: 'feedback',
 				messageKey: 'adminDashboard.alerts.feedback',
 				messageParams: { count: criticalFeedback },
-				href: ROUTES.ADMIN_FEEDBACK,
+				href: ROUTES.FEEDBACK,
 				tone: 'warning' as const,
 				icon: Icons.chat,
 			});
@@ -76,7 +76,7 @@ export default function AdminDashboardPage() {
 				id: 'blockedProducts',
 				messageKey: 'adminDashboard.alerts.blockedProducts',
 				messageParams: { count: productStats!.blocked },
-				href: ROUTES.ADMIN_PRODUCTS,
+				href: ROUTES.MANAGE_PRODUCTS,
 				tone: 'danger' as const,
 				icon: Icons.warning,
 			});
@@ -86,7 +86,7 @@ export default function AdminDashboardPage() {
 				id: 'blockedUsers',
 				messageKey: 'adminDashboard.alerts.blockedUsers',
 				messageParams: { count: userStats!.blocked },
-				href: ROUTES.ADMIN_USERS,
+				href: ROUTES.USERS,
 				tone: 'danger' as const,
 				icon: Icons.users,
 			});
@@ -145,7 +145,7 @@ export default function AdminDashboardPage() {
 						titleKey="adminDashboard.platform.title"
 						subtitleKey="adminDashboard.platform.subtitle"
 						actionLabelKey="dashboard.common.openSettings"
-						actionHref={ROUTES.ADMIN_SETTINGS}
+						actionHref={ROUTES.SETTINGS}
 					>
 						<Stack spacing={1.25}>
 							<MetricRow
@@ -181,27 +181,27 @@ export default function AdminDashboardPage() {
 							<CriticalRow
 								label={t('adminDashboard.critical.feedback')}
 								count={criticalFeedback}
-								href={ROUTES.ADMIN_FEEDBACK}
+								href={ROUTES.FEEDBACK}
 							/>
 							<CriticalRow
 								label={t('adminDashboard.critical.blockedUsers')}
 								count={userStats?.blocked ?? 0}
-								href={ROUTES.ADMIN_USERS}
+								href={ROUTES.USERS}
 							/>
 							<CriticalRow
 								label={t('adminDashboard.critical.rejectedProducts')}
 								count={productStats?.rejected ?? 0}
-								href={ROUTES.ADMIN_PRODUCTS}
+								href={ROUTES.MANAGE_PRODUCTS}
 							/>
 							<CriticalRow
 								label={t('adminDashboard.critical.pendingReviews')}
 								count={reviewStats?.pending ?? 0}
-								href={ROUTES.ADMIN_REVIEWS}
+								href={ROUTES.MANAGE_REVIEWS}
 							/>
 							<CriticalRow
 								label={t('adminDashboard.critical.flaggedReviews')}
 								count={reviewStats?.flagged ?? 0}
-								href={ROUTES.ADMIN_REVIEWS}
+								href={ROUTES.MANAGE_REVIEWS}
 							/>
 						</Stack>
 					</DashboardSectionCard>
@@ -212,7 +212,7 @@ export default function AdminDashboardPage() {
 				titleKey="adminDashboard.audit.title"
 				subtitleKey="adminDashboard.audit.subtitle"
 				actionLabelKey="dashboard.common.viewAll"
-				actionHref={ROUTES.ADMIN_AUDIT}
+				actionHref={ROUTES.AUDIT}
 			>
 				{auditItems.length === 0 ? (
 					<EmptyState
@@ -259,27 +259,27 @@ export default function AdminDashboardPage() {
 						{
 							id: 'categories',
 							labelKey: 'adminDashboard.quickActions.categories',
-							href: ROUTES.ADMIN_CATEGORIES,
+							href: ROUTES.CATEGORIES,
 							icon: Icons.category,
 						},
 						{
 							id: 'users',
 							labelKey: 'adminDashboard.quickActions.users',
-							href: ROUTES.ADMIN_USERS,
+							href: ROUTES.USERS,
 							icon: Icons.users,
 							tone: 'cyan',
 						},
 						{
 							id: 'products',
 							labelKey: 'adminDashboard.quickActions.products',
-							href: ROUTES.ADMIN_PRODUCTS,
+							href: ROUTES.MANAGE_PRODUCTS,
 							icon: Icons.products,
 							tone: 'amber',
 						},
 						{
 							id: 'settings',
 							labelKey: 'adminDashboard.quickActions.settings',
-							href: ROUTES.ADMIN_SETTINGS,
+							href: ROUTES.SETTINGS,
 							icon: Icons.settings,
 							tone: 'coral',
 						},

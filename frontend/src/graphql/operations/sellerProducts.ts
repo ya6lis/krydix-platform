@@ -179,27 +179,41 @@ export const ACTIVATE_PRODUCT_MUTATION = gql`
 `;
 
 export const PREVIEW_IMPORT_MUTATION = gql`
-	mutation PreviewImport($dataUrl: String!, $fileType: String) {
-		previewImport(dataUrl: $dataUrl, fileType: $fileType) {
+	mutation PreviewImport($dataUrl: String!, $fileType: String, $mode: ImportMode) {
+		previewImport(dataUrl: $dataUrl, fileType: $fileType, mode: $mode) {
 			rowIndex
-			titleEn
-			titleUk
+			nameEn
+			nameUk
+			descriptionEn
+			descriptionUk
 			sku
 			slug
-			basePrice
+			price
+			currency
+			quantity
+			category
+			status
 			brand
+			images
+			isActive
+			discountPrice
+			seoTitle
+			seoDescription
 			isValid
 			errors
+			willCreate
+			willUpdate
 		}
 	}
 `;
 
 export const CONFIRM_IMPORT_MUTATION = gql`
-	mutation ConfirmImport($rows: [ImportRowInput!]!) {
-		confirmImport(rows: $rows) {
+	mutation ConfirmImport($rows: [ImportRowInput!]!, $mode: ImportMode) {
+		confirmImport(rows: $rows, mode: $mode) {
 			created
 			updated
 			failed
+			skipped
 			errors {
 				rowIndex
 				error
@@ -239,14 +253,27 @@ export interface MyProductsResult {
 
 export interface ImportPreviewRow {
 	rowIndex: number;
-	titleEn: string;
-	titleUk: string;
+	nameEn: string;
+	nameUk: string;
+	descriptionEn: string;
+	descriptionUk: string;
 	sku: string;
 	slug: string;
-	basePrice: number;
+	price: number;
+	currency: string;
+	quantity: number;
+	category: string;
+	status: string;
 	brand: string | null;
+	images: string;
+	isActive: boolean;
+	discountPrice: number | null;
+	seoTitle: string | null;
+	seoDescription: string | null;
 	isValid: boolean;
 	errors: string[];
+	willCreate: boolean;
+	willUpdate: boolean;
 }
 
 export interface ImportResultData {
@@ -254,6 +281,7 @@ export interface ImportResultData {
 		created: number;
 		updated: number;
 		failed: number;
+		skipped: number;
 		errors: Array<{ rowIndex: number; error: string }>;
 	};
 }

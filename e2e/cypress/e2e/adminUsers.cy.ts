@@ -90,7 +90,7 @@ function stubGraphQL(role: 'ADMIN' | 'MODERATOR', overrides: Record<string, obje
 describe('UsersManagementPage — Admin', () => {
 	beforeEach(() => {
 		stubGraphQL('ADMIN');
-		cy.visit('/admin/users', {
+		cy.visit('/users', {
 			onBeforeLoad: (win) => stubAuth(win, 'ADMIN'),
 		});
 	});
@@ -124,7 +124,7 @@ describe('UsersManagementPage — Admin', () => {
 describe('UsersManagementPage — Moderator', () => {
 	beforeEach(() => {
 		stubGraphQL('MODERATOR');
-		cy.visit('/moderator/users', {
+		cy.visit('/users', {
 			onBeforeLoad: (win) => stubAuth(win, 'MODERATOR'),
 		});
 	});

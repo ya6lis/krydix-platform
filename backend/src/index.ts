@@ -9,6 +9,7 @@ import { schema } from './graphql/schema.js';
 import { extractAuthUser } from './middleware/auth.js';
 import { touchLastSeen } from './services/presenceService.js';
 import { initChatSocket } from './socket/chatSocket.js';
+import { startOrderMonetizationJobs } from './services/orderJobService.js';
 import { UPLOAD_MAX_FILE_SIZE_MB } from './constants/constants.js';
 import type { GraphQLContext } from './types/context.js';
 
@@ -67,6 +68,7 @@ async function bootstrap() {
 		logger.info(`GraphQL endpoint: http://localhost:${env.PORT}/graphql`);
 		logger.info(`Socket.IO chat enabled`);
 		logger.info({ allowedOrigins }, 'CORS allowed origins');
+		startOrderMonetizationJobs();
 	});
 }
 

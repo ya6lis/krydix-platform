@@ -7,7 +7,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Icons } from '@/constants/icons';
 import { tokens } from '@/theme';
 import {
-	AppButton,
 	AppCard,
 	AppInput,
 	AppPagination,
@@ -155,9 +154,6 @@ export default function ReviewModerationPage() {
 						{t('reviewModeration.pageSubtitle')}
 					</Typography>
 				</Box>
-				<AppButton tone="ghost" size="small" startIcon={<FontAwesomeIcon icon={Icons.download} />}>
-					{t('reviewModeration.exportBtn')}
-				</AppButton>
 			</Box>
 
 			<AppCard disablePadding>

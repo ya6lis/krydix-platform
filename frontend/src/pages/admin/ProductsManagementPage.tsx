@@ -231,8 +231,7 @@ export default function ProductsManagementPage() {
 		}
 	}, [deleteTarget, deleteProduct, showToast, t, refetch]);
 
-	const sellerProfileHref = (sellerId: string) =>
-		isAdmin ? ROUTES.ADMIN_USER(sellerId) : ROUTES.MODERATOR_USER(sellerId);
+	const sellerProfileHref = (sellerId: string) => ROUTES.SELLER_PUBLIC(sellerId);
 
 	const columns: AppTableColumn<AdminProductItem>[] = [
 		{

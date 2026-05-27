@@ -24,6 +24,12 @@ function stubGraphQL(overrides: Record<string, object> = {}) {
 			req.reply({ data: overrides['PreviewImport'] ?? sellerFixture.previewImport });
 		} else if (op === 'ConfirmImport') {
 			req.reply({ data: overrides['ConfirmImport'] ?? sellerFixture.confirmImport });
+		} else if (op === 'ExportMyProducts') {
+			req.reply({ data: overrides['ExportMyProducts'] ?? sellerFixture.exportMyProducts });
+		} else if (op === 'DownloadProductImportTemplate') {
+			req.reply({
+				data: overrides['DownloadProductImportTemplate'] ?? sellerFixture.downloadProductImportTemplate,
+			});
 		} else {
 			req.continue();
 		}
@@ -34,7 +40,7 @@ function stubGraphQL(overrides: Record<string, object> = {}) {
 
 describe('SellerProductsPage — List', () => {
 	beforeEach(() => {
-		cy.visit('/seller-cabinet/products', {
+		cy.visit('/seller/products', {
 			onBeforeLoad: stubSellerAuth,
 		});
 		stubGraphQL();
@@ -71,18 +77,18 @@ describe('SellerProductsPage — List', () => {
 
 	it('navigates to edit page on product title click', () => {
 		cy.contains('Heritage Jacket').click();
-		cy.url().should('include', '/seller-cabinet/products/prod-existing-1/edit');
+		cy.url().should('include', '/seller/products/prod-existing-1/edit');
 	});
 
 	it('navigates to new product page on create button', () => {
 		cy.contains('sellerProducts.createButton').click();
-		cy.url().should('include', '/seller-cabinet/products/new');
+		cy.url().should('include', '/seller/products/new');
 	});
 });
 
 describe('SellerProductsPage — Duplicate', () => {
 	beforeEach(() => {
-		cy.visit('/seller-cabinet/products', {
+		cy.visit('/seller/products', {
 			onBeforeLoad: stubSellerAuth,
 		});
 		stubGraphQL();
@@ -110,7 +116,7 @@ describe('SellerProductsPage — Duplicate', () => {
 
 describe('SellerProductsPage — Archive', () => {
 	beforeEach(() => {
-		cy.visit('/seller-cabinet/products', {
+		cy.visit('/seller/products', {
 			onBeforeLoad: stubSellerAuth,
 		});
 		stubGraphQL();
@@ -142,7 +148,7 @@ describe('SellerProductsPage — Archive', () => {
 
 describe('SellerProductsPage — Bulk Import', () => {
 	beforeEach(() => {
-		cy.visit('/seller-cabinet/products', {
+		cy.visit('/seller/products', {
 			onBeforeLoad: stubSellerAuth,
 		});
 		stubGraphQL();
@@ -206,5 +212,21 @@ describe('SellerProductsPage — Bulk Import', () => {
 
 		cy.contains('sellerProducts.import.resultTitle').should('exist');
 		cy.contains(/sellerProducts\.import\.created/).should('exist');
+	});
+
+	it('exports products via API', () => {
+		cy.contains('sellerProducts.exportButton').click();
+		cy.wait('@graphql').then((interception) => {
+			expect(interception.request.body.operationName).to.eq('ExportMyProducts');
+		});
+		cy.contains('importExport.exportSuccess').should('exist');
+	});
+
+	it('downloads import template', () => {
+		cy.contains('sellerProducts.importButton').click();
+		cy.contains('sellerProducts.downloadTemplate').click();
+		cy.wait('@graphql').then((interception) => {
+			expect(interception.request.body.operationName).to.eq('DownloadProductImportTemplate');
+		});
 	});
 });

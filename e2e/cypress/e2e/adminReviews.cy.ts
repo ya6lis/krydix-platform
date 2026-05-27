@@ -84,7 +84,7 @@ function stubGraphQL(role: 'ADMIN' | 'MODERATOR') {
 describe('ReviewsManagementPage — Admin', () => {
 	beforeEach(() => {
 		stubGraphQL('ADMIN');
-		cy.visit('/admin/reviews', {
+		cy.visit('/manage/reviews', {
 			onBeforeLoad: (win) => stubAuth(win, 'ADMIN'),
 		});
 	});
@@ -113,7 +113,7 @@ describe('ReviewsManagementPage — Admin', () => {
 describe('ReviewsManagementPage — Moderator', () => {
 	beforeEach(() => {
 		stubGraphQL('MODERATOR');
-		cy.visit('/moderator/all-reviews', {
+		cy.visit('/manage/reviews', {
 			onBeforeLoad: (win) => stubAuth(win, 'MODERATOR'),
 		});
 	});

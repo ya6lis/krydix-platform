@@ -1159,13 +1159,6 @@ export default function SellerDashboardPage() {
 							tone: 'cyan',
 						},
 						{
-							id: 'import',
-							labelKey: 'sellerDashboard.quickActions.import',
-							href: ROUTES.SELLER_IMPORT,
-							icon: Icons.upload,
-							tone: 'amber',
-						},
-						{
 							id: 'products',
 							labelKey: 'sellerDashboard.quickActions.products',
 							href: ROUTES.SELLER_PRODUCTS,

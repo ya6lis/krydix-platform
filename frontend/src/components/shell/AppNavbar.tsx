@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { Box, Popover, Typography, Divider } from '@mui/material';
 import { useMutation, useQuery } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +17,7 @@ import { useCartStore } from '@/store/cartStore';
 import { useWishlist } from '@/hooks/useWishlist';
 import { useAuthStore } from '@/store/authStore';
 import { ROUTES } from '@/constants/routes';
+import { CATALOG_SEARCH_QUERY_PARAM } from '@/constants/constants';
 import { canUseBuyerCommerce } from '@/utils/roleAccess';
 import { Icons } from '@/constants/icons';
 import { NotificationsPanel } from '@/components/notifications/NotificationsPanel';
@@ -72,6 +73,9 @@ const iconBtnSx = {
 export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
 	const { t, i18n } = useTranslation();
 	const navigate = useNavigate();
+	const location = useLocation();
+	const [searchParams] = useSearchParams();
+	const [searchQuery, setSearchQuery] = useState('');
 	const user = useAuthStore((s) => s.user);
 	const showCommerceNav = canUseBuyerCommerce(user?.role);
 	const cartItems = useCartStore((s) => s.items);
@@ -129,6 +133,22 @@ export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
 	const notifications = notificationsData?.myNotifications ?? [];
 	const unreadCount = unreadData?.unreadNotificationCount ?? 0;
 	const wishlistItems = wishlistData?.myWishlist.items ?? [];
+
+	useEffect(() => {
+		if (location.pathname === ROUTES.PRODUCTS) {
+			setSearchQuery(searchParams.get(CATALOG_SEARCH_QUERY_PARAM) ?? '');
+		}
+	}, [location.pathname, searchParams]);
+
+	const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		const trimmed = searchQuery.trim();
+		if (!trimmed) {
+			navigate(ROUTES.PRODUCTS);
+			return;
+		}
+		navigate(`${ROUTES.PRODUCTS}?${CATALOG_SEARCH_QUERY_PARAM}=${encodeURIComponent(trimmed)}`);
+	};
 
 	const refetchNotificationsState = async () => {
 		await Promise.all([refetchNotifications(), refetchUnreadCount()]);
@@ -217,6 +237,8 @@ export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
 
 			{/* ── search ── */}
 			<Box
+				component="form"
+				onSubmit={handleSearchSubmit}
 				sx={{
 					marginLeft: 'auto',
 					flex: 1,
@@ -230,16 +252,29 @@ export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
 					padding: '7px 14px',
 					color: tokens.ink3,
 					fontSize: 13,
-					cursor: 'text',
-					userSelect: 'none',
 					transition: 'border-color 120ms',
-					'&:hover': { borderColor: tokens.ink3 },
+					'&:focus-within': { borderColor: tokens.accent },
 				}}
 			>
 				<FontAwesomeIcon icon={faSearch} style={{ width: 14, height: 14 }} />
-				<Box component="span" sx={{ flex: 1 }}>
-					{t('shell.search.placeholder')}
-				</Box>
+				<Box
+					component="input"
+					type="search"
+					value={searchQuery}
+					onChange={(event: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(event.target.value)}
+					placeholder={t('shell.search.placeholder')}
+					aria-label={t('shell.search.placeholder')}
+					sx={{
+						flex: 1,
+						border: 'none',
+						outline: 'none',
+						background: 'transparent',
+						color: tokens.ink1,
+						fontSize: 13,
+						fontFamily: 'inherit',
+						'&::placeholder': { color: tokens.ink3 },
+					}}
+				/>
 			</Box>
 
 			{showCommerceNav && (

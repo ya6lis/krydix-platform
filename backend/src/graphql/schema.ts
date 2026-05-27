@@ -38,6 +38,8 @@ import { releaseNotesTypeDefs } from './modules/releaseNotes/typeDefs.js';
 import { releaseNotesResolvers } from './modules/releaseNotes/resolvers.js';
 import { wishlistTypeDefs } from './modules/wishlist/typeDefs.js';
 import { wishlistResolvers } from './modules/wishlist/resolvers.js';
+import { paymentsTypeDefs } from './modules/payments/typeDefs.js';
+import { paymentsResolvers } from './modules/payments/resolvers.js';
 
 const rootTypeDefs = `#graphql
 	type Query
@@ -66,6 +68,7 @@ export const schema = makeExecutableSchema({
 		feedbackTypeDefs,
 		releaseNotesTypeDefs,
 		wishlistTypeDefs,
+		paymentsTypeDefs,
 	]),
 	resolvers: mergeResolvers([
 		authResolvers,
@@ -87,5 +90,6 @@ export const schema = makeExecutableSchema({
 		feedbackResolvers,
 		releaseNotesResolvers,
 		wishlistResolvers,
+		paymentsResolvers,
 	]),
 });

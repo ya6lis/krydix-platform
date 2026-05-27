@@ -6,7 +6,29 @@ function buildDisplayName(user: NonNullable<Awaited<ReturnType<typeof repo.findP
 	if (profile?.displayName?.trim()) return profile.displayName.trim();
 	if (user.sellerApplication?.companyName?.trim()) return user.sellerApplication.companyName.trim();
 	if (profile) return `${profile.firstName} ${profile.lastName}`.trim();
-	return 'Seller';
+	return 'User';
+}
+
+export async function getPublicUserProfile(userId: string) {
+	const user = await repo.findPublicUser(userId);
+	if (!user) {
+		throw new GraphQLError('Profile not found', { extensions: { code: 'NOT_FOUND' } });
+	}
+
+	const profile = user.profile;
+
+	return {
+		id: user.id,
+		displayName: buildDisplayName(user),
+		firstName: profile?.firstName ?? '',
+		lastName: profile?.lastName ?? '',
+		avatarUrl: profile?.avatarUrl ?? null,
+		bio: profile?.bio ?? null,
+		country: profile?.country ?? null,
+		city: profile?.city ?? null,
+		role: user.role,
+		memberSince: user.createdAt.toISOString(),
+	};
 }
 
 export async function getPublicSellerProfile(sellerId: string) {

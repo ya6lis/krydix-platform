@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
 import { Box, Typography } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { AppLoader, AppPagination, EmptyState } from '@/components/ui';
 import { ProductCard } from '@/components/features/catalog/ProductCard';
@@ -21,6 +21,7 @@ import {
 } from '@/graphql/operations/catalog';
 import { Icons } from '@/constants/icons';
 import { ROUTES } from '@/constants/routes';
+import { CATALOG_SEARCH_QUERY_PARAM } from '@/constants/constants';
 import { tokens } from '@/theme';
 import { useAuth } from '@/hooks/useAuth';
 import type {
@@ -65,6 +66,8 @@ export default function CatalogPage() {
 	const language = i18n.language === 'uk' ? 'UK' : 'EN';
 	const { user, canUseSellerCabinet } = useAuth();
 	const showSellerActions = canUseSellerCabinet;
+	const [searchParams] = useSearchParams();
+	const searchQuery = searchParams.get(CATALOG_SEARCH_QUERY_PARAM) ?? '';
 
 	const [filters, setFilters] = useState<CatalogFilterState>(INITIAL_FILTERS);
 	const [sort, setSort] = useState<ProductSort>('NEWEST');
@@ -72,7 +75,10 @@ export default function CatalogPage() {
 	const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
 	const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
-	const filterInput = useMemo(() => buildCatalogFilterInput(filters), [filters]);
+	const filterInput = useMemo(() => {
+		const trimmedSearch = searchQuery.trim();
+		return buildCatalogFilterInput(filters, trimmedSearch ? { search: trimmedSearch } : {});
+	}, [filters, searchQuery]);
 
 	const { data: categoryData } = useQuery<{ categories: CategoryNode[] }>(CATEGORIES_QUERY, {
 		variables: { language },
@@ -138,31 +144,9 @@ export default function CatalogPage() {
 					</Typography>
 				</Box>
 
-				{/* ── page actions: Export + New product (SELLER / ADMIN only) ── */}
+				{/* ── page actions: New product (SELLER / ADMIN only) ── */}
 				{showSellerActions && (
 					<Box sx={{ display: 'flex', gap: '10px', alignItems: 'center', flexShrink: 0 }}>
-						<Box
-							component="button"
-							sx={{
-								display: 'inline-flex',
-								alignItems: 'center',
-								gap: '6px',
-								border: `1px solid ${tokens.line}`,
-								borderRadius: '8px',
-								background: tokens.surface,
-								color: tokens.ink1,
-								fontSize: 13,
-								fontWeight: 600,
-								fontFamily: 'inherit',
-								padding: '7px 14px',
-								cursor: 'pointer',
-								transition: 'border-color 120ms',
-								'&:hover': { borderColor: tokens.ink3 },
-							}}
-						>
-							<FontAwesomeIcon icon={Icons.upload} style={{ width: 13, height: 13 }} />
-							{t('catalog.export')}
-						</Box>
 						<Box
 							component={RouterLink}
 							to={ROUTES.SELLER_PRODUCT_NEW}

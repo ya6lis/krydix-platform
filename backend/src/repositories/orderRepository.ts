@@ -1,4 +1,11 @@
-import { Prisma, DeliveryMethod, PaymentMethod, OrderStatus, DeliveryStatus } from '@prisma/client';
+import {
+	Prisma,
+	DeliveryMethod,
+	PaymentMethod,
+	OrderStatus,
+	DeliveryStatus,
+	PaymentStatus,
+} from '@prisma/client';
 import { prisma } from '../utils/prisma.js';
 
 const orderInclude = {
@@ -35,6 +42,7 @@ export interface CreateOrderInput {
 	paymentMethod: PaymentMethod;
 	deliveryMethod: DeliveryMethod;
 	deliveryAddress?: string;
+	currency?: string;
 	items: Array<{
 		productId: string;
 		variantId?: string;
@@ -42,6 +50,16 @@ export interface CreateOrderInput {
 		quantity: number;
 		unitPrice: number;
 		productTitle: string;
+		feeSnapshot?: {
+			currency: string;
+			buyerFeePercent: number;
+			buyerFeeAmount: number;
+			sellerFeePercent: number;
+			sellerFeeAmount: number;
+			platformFeePercent: number;
+			platformFeeAmount: number;
+			sellerPayoutAmount: number;
+		};
 	}>;
 }
 
@@ -66,10 +84,12 @@ export interface PaginatedOrders {
 
 export async function createOrder(input: CreateOrderInput): Promise<OrderRecord> {
 	return prisma.$transaction(async (tx) => {
+		const currency = input.currency ?? 'UAH';
 		const order = await tx.order.create({
 			data: {
 				buyerId: input.buyerId,
 				totalAmount: input.totalAmount,
+				currencySnapshot: currency,
 				discount: input.discount ?? null,
 				promoCodeId: input.promoCodeId ?? null,
 				notes: input.notes ?? null,
@@ -82,6 +102,14 @@ export async function createOrder(input: CreateOrderInput): Promise<OrderRecord>
 						unitPrice: item.unitPrice,
 						totalPrice: item.unitPrice * item.quantity,
 						productTitle: item.productTitle,
+						currencySnapshot: item.feeSnapshot?.currency ?? currency,
+						buyerFeePercentSnapshot: item.feeSnapshot?.buyerFeePercent ?? 0,
+						buyerFeeAmountSnapshot: item.feeSnapshot?.buyerFeeAmount ?? 0,
+						sellerFeePercentSnapshot: item.feeSnapshot?.sellerFeePercent ?? 0,
+						sellerFeeAmountSnapshot: item.feeSnapshot?.sellerFeeAmount ?? 0,
+						platformFeePercentSnapshot: item.feeSnapshot?.platformFeePercent ?? 0,
+						platformFeeAmountSnapshot: item.feeSnapshot?.platformFeeAmount ?? 0,
+						sellerPayoutAmountSnapshot: item.feeSnapshot?.sellerPayoutAmount ?? item.unitPrice * item.quantity,
 					})),
 				},
 			},
@@ -306,6 +334,28 @@ export async function updatePaymentStatus(orderId: string, status: string): Prom
 		where: { orderId },
 		data: { status: status as never },
 	});
+}
+
+export async function capturePaymentInEscrow(
+	orderId: string,
+	transactionId?: string
+): Promise<void> {
+	const now = new Date();
+	await prisma.$transaction([
+		prisma.paymentRecord.updateMany({
+			where: { orderId },
+			data: {
+				status: PaymentStatus.IN_ESCROW,
+				paidAt: now,
+				escrowAt: now,
+				transactionId: transactionId ?? `mock_${orderId.slice(-8)}`,
+			},
+		}),
+		prisma.order.update({
+			where: { id: orderId },
+			data: { status: OrderStatus.CONFIRMED },
+		}),
+	]);
 }
 
 export async function countOrdersByBuyerAndStatus(buyerId: string): Promise<{

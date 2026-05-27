@@ -1,7 +1,7 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useQuery, useMutation } from '@apollo/client';
+import { useQuery, useMutation, useLazyQuery } from '@apollo/client';
 import {
 	Box,
 	Breadcrumbs,
@@ -20,6 +20,7 @@ import {
 } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Icons } from '@/constants/icons';
+import { ROUTES } from '@/constants/routes';
 import { tokens } from '@/theme';
 import {
 	AppButton,
@@ -27,6 +28,7 @@ import {
 	AppInput,
 	AppModal,
 	AppPagination,
+	AppSelect,
 	AppTable,
 	AppTableColumn,
 	ConfirmDialog,
@@ -46,6 +48,13 @@ import {
 	type ImportPreviewRow,
 	type MyProductsResult,
 } from '@/graphql/operations/sellerProducts';
+import {
+	DOWNLOAD_PRODUCT_IMPORT_TEMPLATE_QUERY,
+	EXPORT_MY_PRODUCTS_QUERY,
+	type ImportMode,
+} from '@/graphql/operations/importExport';
+import { useAuth } from '@/hooks/useAuth';
+import { downloadSpreadsheetFile } from '@/utils/downloadSpreadsheet';
 // ─── Status filter tabs ───────────────────────────────────────────────────────
 
 const STATUS_TABS = [
@@ -142,18 +151,41 @@ function ImportModal({ open, onClose, onDone }: ImportModalProps) {
 	const fileRef = useRef<HTMLInputElement>(null);
 	const [step, setStep] = useState<ImportStep>(0);
 	const [fileName, setFileName] = useState('');
+	const [importMode, setImportMode] = useState<ImportMode>('UPSERT');
 	const [previewRows, setPreviewRows] = useState<ImportPreviewRow[]>([]);
 	const [importResult, setImportResult] = useState<{
 		created: number;
 		updated: number;
 		failed: number;
+		skipped: number;
 	} | null>(null);
 
 	const [previewImport, { loading: previewing }] = useMutation(PREVIEW_IMPORT_MUTATION);
 	const [confirmImport, { loading: confirming }] = useMutation(CONFIRM_IMPORT_MUTATION);
+	const [downloadTemplate, { loading: downloadingTemplate }] = useLazyQuery(
+		DOWNLOAD_PRODUCT_IMPORT_TEMPLATE_QUERY,
+		{ fetchPolicy: 'network-only' },
+	);
 
 	const validRows = previewRows.filter((r) => r.isValid);
 	const invalidCount = previewRows.length - validRows.length;
+
+	const importModeOptions = [
+		{ value: 'UPSERT', label: t('importExport.mode.upsert') },
+		{ value: 'CREATE_ONLY', label: t('importExport.mode.createOnly') },
+		{ value: 'UPDATE_ONLY', label: t('importExport.mode.updateOnly') },
+	];
+
+	const handleDownloadTemplate = async () => {
+		try {
+			const { data } = await downloadTemplate();
+			if (data?.downloadProductImportTemplate) {
+				downloadSpreadsheetFile(data.downloadProductImportTemplate);
+			}
+		} catch {
+			showToast(t('importExport.templateError'), 'error');
+		}
+	};
 
 	const handleFile = async (file: File) => {
 		setFileName(file.name);
@@ -162,11 +194,13 @@ function ImportModal({ open, onClose, onDone }: ImportModalProps) {
 			const dataUrl = e.target?.result as string;
 			const fileType = file.name.endsWith('.csv') ? 'csv' : 'xlsx';
 			try {
-				const { data } = await previewImport({ variables: { dataUrl, fileType } });
+				const { data } = await previewImport({
+					variables: { dataUrl, fileType, mode: importMode },
+				});
 				setPreviewRows(data?.previewImport ?? []);
 				setStep(1);
 			} catch {
-				showToast(t('common.error'), 'error');
+				showToast(t('importExport.previewError'), 'error');
 			}
 		};
 		reader.readAsDataURL(file);
@@ -175,20 +209,33 @@ function ImportModal({ open, onClose, onDone }: ImportModalProps) {
 	const handleConfirm = async () => {
 		try {
 			const rows = validRows.map((r) => ({
-				titleEn: r.titleEn,
-				titleUk: r.titleUk,
-				descriptionEn: r.titleEn, // fallback — import template has these columns
-				descriptionUk: r.titleUk,
+				rowIndex: r.rowIndex,
+				nameEn: r.nameEn,
+				nameUk: r.nameUk,
+				descriptionEn: r.descriptionEn,
+				descriptionUk: r.descriptionUk,
 				slug: r.slug,
 				sku: r.sku,
 				brand: r.brand,
-				basePrice: r.basePrice,
+				price: r.price,
+				currency: r.currency,
+				quantity: r.quantity,
+				category: r.category,
+				status: r.status,
+				images: r.images,
+				isActive: r.isActive,
+				discountPrice: r.discountPrice,
+				seoTitle: r.seoTitle,
+				seoDescription: r.seoDescription,
 			}));
-			const { data } = await confirmImport({ variables: { rows } });
-			setImportResult(data?.confirmImport ?? { created: 0, updated: 0, failed: 0 });
+			const { data } = await confirmImport({ variables: { rows, mode: importMode } });
+			setImportResult(
+				data?.confirmImport ?? { created: 0, updated: 0, failed: 0, skipped: 0 },
+			);
 			setStep(2);
+			showToast(t('importExport.success'), 'success');
 		} catch {
-			showToast(t('common.error'), 'error');
+			showToast(t('importExport.confirmError'), 'error');
 		}
 	};
 
@@ -228,10 +275,10 @@ function ImportModal({ open, onClose, onDone }: ImportModalProps) {
 			),
 		},
 		{
-			key: 'titleEn',
+			key: 'nameEn',
 			label: t('sellerProducts.import.previewCol.titleEn'),
 			render: (r) => (
-				<Typography sx={{ fontSize: 13 }}>{r.titleEn || '—'}</Typography>
+				<Typography sx={{ fontSize: 13 }}>{r.nameEn || '—'}</Typography>
 			),
 		},
 		{
@@ -241,12 +288,26 @@ function ImportModal({ open, onClose, onDone }: ImportModalProps) {
 			render: (r) => <Typography sx={{ fontSize: 13 }}>{r.sku}</Typography>,
 		},
 		{
-			key: 'basePrice',
+			key: 'price',
 			label: t('sellerProducts.import.previewCol.price'),
 			width: 80,
 			align: 'right',
 			render: (r) => (
-				<Typography sx={{ fontSize: 13 }}>${r.basePrice.toFixed(2)}</Typography>
+				<Typography sx={{ fontSize: 13 }}>{r.price.toFixed(2)}</Typography>
+			),
+		},
+		{
+			key: 'action',
+			label: t('sellerProducts.import.previewCol.action'),
+			width: 90,
+			render: (r) => (
+				<Typography sx={{ fontSize: 12, color: tokens.ink3 }}>
+					{r.willCreate
+						? t('importExport.action.create')
+						: r.willUpdate
+							? t('importExport.action.update')
+							: '—'}
+				</Typography>
 			),
 		},
 		{
@@ -306,6 +367,24 @@ function ImportModal({ open, onClose, onDone }: ImportModalProps) {
 			{/* Step 0: Upload */}
 			{step === 0 && (
 				<Box>
+					<Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 2 }}>
+						<AppSelect
+							label={t('importExport.mode.label')}
+							value={importMode}
+							onChange={(e) => setImportMode(e.target.value as ImportMode)}
+							options={importModeOptions}
+							fullWidth
+						/>
+						<AppButton
+							variant="outlined"
+							startIcon={<FontAwesomeIcon icon={Icons.download} />}
+							onClick={handleDownloadTemplate}
+							loading={downloadingTemplate}
+							sx={{ flexShrink: 0, alignSelf: { sm: 'flex-end' } }}
+						>
+							{t('sellerProducts.downloadTemplate')}
+						</AppButton>
+					</Stack>
 					<Box
 						onDragOver={(e) => e.preventDefault()}
 						onDrop={handleDrop}
@@ -404,6 +483,11 @@ function ImportModal({ open, onClose, onDone }: ImportModalProps) {
 								{t('sellerProducts.import.failed', { count: importResult.failed })}
 							</Typography>
 						)}
+						{importResult.skipped > 0 && (
+							<Typography sx={{ color: tokens.amberInk }}>
+								{t('importExport.skipped', { count: importResult.skipped })}
+							</Typography>
+						)}
 					</Stack>
 				</Box>
 			)}
@@ -417,6 +501,7 @@ export default function SellerProductsPage() {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const { showToast } = useAppToast();
+	const { canImportExport } = useAuth();
 
 	// Filters & pagination (0-based page for AppPagination)
 	const [statusFilter, setStatusFilter] = useState('');
@@ -440,6 +525,9 @@ export default function SellerProductsPage() {
 	const [archiveProduct, { loading: archiving }] = useMutation(ARCHIVE_PRODUCT_MUTATION);
 	const [deactivateProduct] = useMutation(DEACTIVATE_PRODUCT_MUTATION);
 	const [activateProduct] = useMutation(ACTIVATE_PRODUCT_MUTATION);
+	const [exportProducts, { loading: exporting }] = useLazyQuery(EXPORT_MY_PRODUCTS_QUERY, {
+		fetchPolicy: 'network-only',
+	});
 
 	const products = data?.myProducts?.items ?? [];
 	const total = data?.myProducts?.total ?? 0;
@@ -496,33 +584,24 @@ export default function SellerProductsPage() {
 		[]
 	);
 
-	const handleExport = useCallback(() => {
-		const rows = products.map((p) => [
-			p.titleEn,
-			p.sku,
-			p.slug,
-			p.basePrice,
-			p.comparePrice ?? '',
-			p.status,
-			p.isAvailable ? 'true' : 'false',
-			p.categories.map((c) => c.nameEn).join('; '),
-			totalStock(p),
-			new Date(p.createdAt).toLocaleDateString(),
-		]);
-
-		const headers = ['Title EN', 'SKU', 'Slug', 'Base Price', 'Compare Price', 'Status', 'Available', 'Categories', 'Stock', 'Created'];
-		const csvContent = [headers, ...rows]
-			.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
-			.join('\n');
-
-		const blob = new Blob(['﻿' + csvContent], { type: 'text/csv;charset=utf-8;' });
-		const url = URL.createObjectURL(blob);
-		const a = document.createElement('a');
-		a.href = url;
-		a.download = `${t('sellerProducts.exportFilename')}.csv`;
-		a.click();
-		URL.revokeObjectURL(url);
-	}, [products, totalStock, t]);
+	const handleExport = useCallback(async () => {
+		try {
+			const { data } = await exportProducts({
+				variables: {
+					filter: {
+						...(statusFilter ? { status: statusFilter } : {}),
+						...(search ? { search } : {}),
+					},
+				},
+			});
+			if (data?.exportMyProducts) {
+				downloadSpreadsheetFile(data.exportMyProducts);
+				showToast(t('importExport.exportSuccess'), 'success');
+			}
+		} catch {
+			showToast(t('importExport.exportError'), 'error');
+		}
+	}, [exportProducts, statusFilter, search, showToast, t]);
 
 	const mainImage = useCallback(
 		(p: SellerProductListItem) => p.media.find((m) => m.isMain) ?? p.media[0] ?? null,
@@ -582,7 +661,7 @@ export default function SellerProductsPage() {
 									'&:hover': { color: tokens.accent },
 								}}
 								onClick={() =>
-									navigate(`/seller-cabinet/products/${p.id}/edit`)
+									navigate(ROUTES.SELLER_PRODUCT_EDIT(p.id))
 								}
 							>
 								{p.titleEn}
@@ -669,7 +748,7 @@ export default function SellerProductsPage() {
 			render: (p) => (
 				<RowMenu
 					product={p}
-					onEdit={() => navigate(`/seller-cabinet/products/${p.id}/edit`)}
+					onEdit={() => navigate(ROUTES.SELLER_PRODUCT_EDIT(p.id))}
 					onDuplicate={() => handleDuplicate(p)}
 					onToggleActive={() => handleToggleActive(p)}
 					onArchive={() => setArchiveTarget(p)}
@@ -686,7 +765,7 @@ export default function SellerProductsPage() {
 					underline="hover"
 					color="inherit"
 					sx={{ cursor: 'pointer' }}
-					onClick={() => navigate('/seller-cabinet')}
+					onClick={() => navigate(ROUTES.DASHBOARD)}
 				>
 					{t('nav.sellerCabinet')}
 				</Link>
@@ -705,25 +784,29 @@ export default function SellerProductsPage() {
 					{t('sellerProducts.title')}
 				</Typography>
 				<Stack direction="row" spacing={1.5}>
-					<AppButton
-						variant="outlined"
-						startIcon={<FontAwesomeIcon icon={Icons.download} />}
-						onClick={handleExport}
-						disabled={products.length === 0}
-					>
-						{t('sellerProducts.exportButton')}
-					</AppButton>
-					<AppButton
-						variant="outlined"
-						startIcon={<FontAwesomeIcon icon={Icons.upload} />}
-						onClick={() => setImportOpen(true)}
-					>
-						{t('sellerProducts.importButton')}
-					</AppButton>
+					{canImportExport && (
+						<>
+							<AppButton
+								variant="outlined"
+								startIcon={<FontAwesomeIcon icon={Icons.download} />}
+								onClick={handleExport}
+								loading={exporting}
+							>
+								{t('sellerProducts.exportButton')}
+							</AppButton>
+							<AppButton
+								variant="outlined"
+								startIcon={<FontAwesomeIcon icon={Icons.upload} />}
+								onClick={() => setImportOpen(true)}
+							>
+								{t('sellerProducts.importButton')}
+							</AppButton>
+						</>
+					)}
 					<AppButton
 						variant="contained"
 						startIcon={<FontAwesomeIcon icon={Icons.add} />}
-						onClick={() => navigate('/seller-cabinet/products/new')}
+						onClick={() => navigate(ROUTES.SELLER_PRODUCT_NEW)}
 					>
 						{t('sellerProducts.createButton')}
 					</AppButton>

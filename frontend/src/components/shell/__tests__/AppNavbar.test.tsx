@@ -79,9 +79,22 @@ beforeEach(() => {
 });
 
 describe('AppNavbar', () => {
-	it('renders search bar with placeholder i18n key', () => {
+	it('renders search input with placeholder i18n key', () => {
 		renderNavbar();
-		expect(screen.getByText('shell.search.placeholder')).toBeInTheDocument();
+		expect(screen.getByPlaceholderText('shell.search.placeholder')).toBeInTheDocument();
+	});
+
+	it('submits search and navigates to catalog with query', () => {
+		const navigate = jest.fn();
+		jest.spyOn(require('react-router-dom'), 'useNavigate').mockReturnValue(navigate);
+
+		renderNavbar();
+		fireEvent.change(screen.getByPlaceholderText('shell.search.placeholder'), {
+			target: { value: 'laptop' },
+		});
+		fireEvent.submit(screen.getByPlaceholderText('shell.search.placeholder').closest('form')!);
+
+		expect(navigate).toHaveBeenCalledWith('/catalog?q=laptop');
 	});
 
 	it('renders wishlist icon button', () => {
@@ -134,7 +147,7 @@ describe('AppNavbar', () => {
 	});
 
 	it('renders breadcrumbs when provided', () => {
-		renderNavbar([{ label: 'Orders', href: '/account/orders' }, { label: 'Order #123' }]);
+		renderNavbar([{ label: 'Orders', href: '/orders' }, { label: 'Order #123' }]);
 		expect(screen.getByText('Orders')).toBeInTheDocument();
 		expect(screen.getByText('Order #123')).toBeInTheDocument();
 	});

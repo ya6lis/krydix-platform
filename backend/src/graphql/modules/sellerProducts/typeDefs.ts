@@ -132,32 +132,67 @@ export const sellerProductsTypeDefs = `#graphql
 
 	type ImportPreviewRow {
 		rowIndex: Int!
-		titleEn: String!
-		titleUk: String!
+		nameEn: String!
+		nameUk: String!
+		descriptionEn: String!
+		descriptionUk: String!
 		sku: String!
 		slug: String!
-		basePrice: Float!
+		price: Float!
+		currency: String!
+		quantity: Int!
+		category: String!
+		status: String!
 		brand: String
+		images: String!
+		isActive: Boolean!
+		discountPrice: Float
+		seoTitle: String
+		seoDescription: String
 		isValid: Boolean!
 		errors: [String!]!
+		willCreate: Boolean!
+		willUpdate: Boolean!
 	}
 
 	input ImportRowInput {
-		titleEn: String!
-		titleUk: String!
+		rowIndex: Int
+		nameEn: String!
+		nameUk: String!
 		descriptionEn: String!
 		descriptionUk: String!
 		slug: String!
 		sku: String!
 		brand: String
-		basePrice: Float!
-		comparePrice: Float
+		price: Float!
+		currency: String!
+		quantity: Int!
+		category: String!
+		status: String!
+		images: String!
+		isActive: Boolean!
+		discountPrice: Float
+		seoTitle: String
+		seoDescription: String
+	}
+
+	enum ImportMode {
+		CREATE_ONLY
+		UPDATE_ONLY
+		UPSERT
+	}
+
+	type SpreadsheetFile {
+		fileName: String!
+		mimeType: String!
+		base64: String!
 	}
 
 	type ImportResult {
 		created: Int!
 		updated: Int!
 		failed: Int!
+		skipped: Int!
 		errors: [ImportError!]!
 	}
 
@@ -169,6 +204,8 @@ export const sellerProductsTypeDefs = `#graphql
 	extend type Query {
 		myProducts(filter: ProductListFilterInput, pagination: ProductListPaginationInput!): SellerProductList!
 		myProduct(id: ID!): SellerProduct
+		exportMyProducts(filter: ProductListFilterInput): SpreadsheetFile!
+		downloadProductImportTemplate: SpreadsheetFile!
 	}
 
 	extend type Mutation {
@@ -185,7 +222,7 @@ export const sellerProductsTypeDefs = `#graphql
 		archiveProduct(id: ID!): SellerProduct!
 		deactivateProduct(id: ID!): SellerProduct!
 		activateProduct(id: ID!): SellerProduct!
-		previewImport(dataUrl: String!, fileType: String): [ImportPreviewRow!]!
-		confirmImport(rows: [ImportRowInput!]!): ImportResult!
+		previewImport(dataUrl: String!, fileType: String, mode: ImportMode): [ImportPreviewRow!]!
+		confirmImport(rows: [ImportRowInput!]!, mode: ImportMode): ImportResult!
 	}
 `;

@@ -16,7 +16,21 @@ export const publicProfileTypeDefs = `#graphql
 		reviewCount: Int!
 	}
 
+	type PublicUserProfile {
+		id: ID!
+		displayName: String!
+		firstName: String!
+		lastName: String!
+		avatarUrl: String
+		bio: String
+		country: String
+		city: String
+		role: String!
+		memberSince: String!
+	}
+
 	extend type Query {
 		publicSellerProfile(sellerId: ID!): PublicSellerProfile!
+		publicUserProfile(userId: ID!): PublicUserProfile!
 	}
 `;

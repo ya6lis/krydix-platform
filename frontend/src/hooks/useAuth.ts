@@ -5,6 +5,7 @@ import { AUTH_REFRESH_TOKEN_KEY } from '@/constants/constants';
 import { Role } from '@/constants/enums';
 import {
 	canBuyAsUser,
+	canImportExport as canImportExportRole,
 	canSell,
 	canUseBuyerCommerce,
 	isStaffRole,
@@ -43,6 +44,7 @@ export function useAuth() {
 		canBuy,
 		canUseWishlist,
 		canUseSellerCabinet,
+		canImportExport: canImportExportRole(role),
 		logout,
 	};
 }

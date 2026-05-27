@@ -25,6 +25,7 @@ export function AppImage({
 		onClick?.(event);
 		if (!zoomable || !src || event.defaultPrevented) return;
 
+		event.preventDefault();
 		event.stopPropagation();
 
 		const images = gallery && gallery.length > 0 ? gallery.filter(Boolean) : [src];

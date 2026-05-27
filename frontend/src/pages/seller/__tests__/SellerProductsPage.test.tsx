@@ -83,13 +83,13 @@ const emptyProductsMock: MockedResponse = {
 function renderPage(mocks: MockedResponse[] = [myProductsMock]) {
 	return render(
 		<MockedProvider mocks={mocks} addTypename={false}>
-			<MemoryRouter initialEntries={['/seller-cabinet/products']}>
+			<MemoryRouter initialEntries={['/seller/products']}>
 				<AppToastProvider>
 					<Routes>
-						<Route path="/seller-cabinet/products" element={<SellerProductsPage />} />
-						<Route path="/seller-cabinet/products/new" element={<div>New product</div>} />
+						<Route path="/seller/products" element={<SellerProductsPage />} />
+						<Route path="/seller/products/new" element={<div>New product</div>} />
 						<Route
-							path="/seller-cabinet/products/:id/edit"
+							path="/seller/products/:id/edit"
 							element={<div>Edit product</div>}
 						/>
 					</Routes>

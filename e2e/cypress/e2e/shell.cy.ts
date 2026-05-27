@@ -88,7 +88,7 @@ describe('App shell — sidebar', () => {
 describe('App shell — sidebar moderator role', () => {
 	beforeEach(() => {
 		stubAuthenticatedSession('MODERATOR');
-		cy.visit('/moderator/product-moderation');
+		cy.visit('/moderation/products');
 	});
 
 	it('shows moderation nav group for MODERATOR', () => {
@@ -107,7 +107,7 @@ describe('App shell — sidebar moderator role', () => {
 describe('App shell — sidebar administrator role', () => {
 	beforeEach(() => {
 		stubAuthenticatedSession('ADMINISTRATOR');
-		cy.visit('/admin/users');
+		cy.visit('/users');
 	});
 
 	it('shows admin nav items for ADMINISTRATOR', () => {
@@ -239,8 +239,8 @@ describe('App shell — sidebar navigation', () => {
 		cy.url().should('include', '/catalog');
 	});
 
-	it('Settings link navigates to /account/profile', () => {
+	it('Settings link navigates to /profile', () => {
 		cy.contains('a', 'Settings').click();
-		cy.url().should('include', '/account/profile');
+		cy.url().should('include', '/profile');
 	});
 });

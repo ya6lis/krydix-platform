@@ -1,5 +1,5 @@
 import { Box, Typography } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Icons } from '@/constants/icons';
@@ -28,12 +28,16 @@ const HATCH = `repeating-linear-gradient(135deg, ${tokens.surface2} 0 6px, trans
 /** Product grid card — matches Catalog.html .product design exactly. */
 export function ProductCard({ product }: ProductCardProps) {
 	const { t } = useTranslation();
+	const navigate = useNavigate();
 	const { canBuy, canUseWishlist } = useAuth();
 	const { isWishlisted, toggleWishlist, toggling } = useWishlist();
 	const addItem = useCartStore((s) => s.addItem);
 	const cartItems = useCartStore((s) => s.items);
 	const { showToast } = useAppToast();
 	const wishlisted = isWishlisted(product.id);
+	const productHref = ROUTES.PRODUCT(product.slug);
+
+	const goToProduct = () => navigate(productHref);
 
 	const handleAddToCart = (e: React.MouseEvent) => {
 		e.preventDefault();
@@ -91,8 +95,6 @@ export function ProductCard({ product }: ProductCardProps) {
 	return (
 		<Box
 			data-cy="product-card"
-			component={RouterLink}
-			to={ROUTES.PRODUCT(product.slug)}
 			sx={{
 				display: 'flex',
 				flexDirection: 'column',
@@ -100,7 +102,6 @@ export function ProductCard({ product }: ProductCardProps) {
 				maxWidth: 280,
 				minHeight: 430,
 				margin: '0 auto',
-				textDecoration: 'none',
 				color: 'inherit',
 				background: tokens.surface,
 				border: `1px solid ${tokens.line}`,
@@ -112,11 +113,12 @@ export function ProductCard({ product }: ProductCardProps) {
 					boxShadow: tokens.shadowMd,
 					transform: 'translateY(-2px)',
 				},
-				'& *': { textDecoration: 'none' },
 			}}
 		>
-			{/* ── media ── */}
+			{/* ── media: click opens lightbox ── */}
 			<Box
+				component={product.mainImage ? 'div' : RouterLink}
+				to={product.mainImage ? undefined : productHref}
 				sx={{
 					position: 'relative',
 					aspectRatio: '1.1 / 1',
@@ -127,6 +129,7 @@ export function ProductCard({ product }: ProductCardProps) {
 					fontFamily: tokens.fontMono,
 					fontSize: 11,
 					overflow: 'hidden',
+					textDecoration: 'none',
 				}}
 			>
 				{product.mainImage && (
@@ -207,8 +210,30 @@ export function ProductCard({ product }: ProductCardProps) {
 				</Box>
 			</Box>
 
-			{/* ── body ── */}
-			<Box sx={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
+			{/* ── body: click anywhere (except add to cart) → product page ── */}
+			<Box
+				role="link"
+				tabIndex={0}
+				aria-label={product.title}
+				onClick={goToProduct}
+				onKeyDown={(e) => {
+					if (e.key === 'Enter' || e.key === ' ') {
+						e.preventDefault();
+						goToProduct();
+					}
+				}}
+				sx={{
+					padding: '16px',
+					display: 'flex',
+					flexDirection: 'column',
+					gap: '8px',
+					flex: 1,
+					cursor: 'pointer',
+					textDecoration: 'none',
+					color: 'inherit',
+					'&:hover .product-card-title': { color: tokens.accent },
+				}}
+			>
 				{/* seller + verified icon */}
 				<Box
 					sx={{
@@ -227,6 +252,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
 				{/* product name */}
 				<Typography
+					className="product-card-title"
 					sx={{
 						fontSize: 14.5,
 						fontWeight: 700,
@@ -237,6 +263,7 @@ export function ProductCard({ product }: ProductCardProps) {
 						WebkitBoxOrient: 'vertical',
 						overflow: 'hidden',
 						minHeight: '36px',
+						transition: 'color 120ms',
 					}}
 				>
 					{product.title}
@@ -305,7 +332,6 @@ export function ProductCard({ product }: ProductCardProps) {
 							color: tokens.ink1,
 							fontSize: 12.5,
 							fontWeight: 600,
-							textDecoration: 'none',
 							transition: 'border-color 120ms',
 							'&:hover': { borderColor: tokens.ink3 },
 						}}
@@ -315,7 +341,11 @@ export function ProductCard({ product }: ProductCardProps) {
 					{canBuy && (
 						<Box
 							component="button"
-							onClick={handleAddToCart}
+							type="button"
+							onClick={(e: React.MouseEvent) => {
+								e.stopPropagation();
+								handleAddToCart(e);
+							}}
 							sx={{
 								flex: 1,
 								display: 'grid',

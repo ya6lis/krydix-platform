@@ -245,7 +245,7 @@ export default function BuyerOrderDetailPage() {
 			<Box sx={{ mb: 3 }}>
 				<Link
 					component={RouterLink}
-					to={ROUTES.ACCOUNT_ORDERS}
+					to={ROUTES.ORDERS}
 					sx={{
 						display: 'inline-flex',
 						alignItems: 'center',

@@ -35,6 +35,7 @@ export const PAYOUT_CONFIG_QUERY = gql`
 		payoutConfig {
 			schedule
 			holdPeriodDays
+			autoConfirmDays
 			minimumPayout
 			currency
 		}
@@ -127,6 +128,7 @@ export interface CommissionRuleItem {
 export interface PayoutConfig {
 	schedule: string;
 	holdPeriodDays: number;
+	autoConfirmDays: number;
 	minimumPayout: number;
 	currency: string;
 }

@@ -38,7 +38,7 @@ function stubGraphQL(overrides: Record<string, object> = {}) {
 describe('SellerDashboardPage', () => {
 	beforeEach(() => {
 		stubGraphQL();
-		cy.visit('/seller-cabinet/dashboard', { onBeforeLoad: stubAuth });
+		cy.visit('/dashboard', { onBeforeLoad: stubAuth });
 	});
 
 	it('renders the page title and subtitle', () => {
@@ -81,7 +81,7 @@ describe('SellerDashboardPage', () => {
 
 	it('shows "All stocked up" when no low stock alerts', () => {
 		stubGraphQL({ SellerLowStockAlerts: { sellerLowStockAlerts: [] } });
-		cy.visit('/seller-cabinet/dashboard', { onBeforeLoad: stubAuth });
+		cy.visit('/dashboard', { onBeforeLoad: stubAuth });
 		cy.contains('sellerDashboard.featureCard.okTitle').should('exist');
 		cy.contains('sellerDashboard.lowStock.empty').should('exist');
 	});
@@ -106,11 +106,11 @@ describe('SellerDashboardPage', () => {
 
 	it('hero CTA navigates to products page', () => {
 		cy.contains('sellerDashboard.hero.cta').click();
-		cy.url().should('include', '/seller-cabinet/products');
+		cy.url().should('include', '/seller/products');
 	});
 
 	it('top products "View all" navigates to products page', () => {
 		cy.contains('sellerDashboard.topProducts.viewAll').click();
-		cy.url().should('include', '/seller-cabinet/products');
+		cy.url().should('include', '/seller/products');
 	});
 });

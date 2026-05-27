@@ -50,11 +50,11 @@ function stubOrders(overrides: Record<string, object> = {}) {
 
 // ─── Orders list ──────────────────────────────────────────────────────────────
 
-describe('Buyer orders list — /account/orders', () => {
+describe('Buyer orders list — /orders', () => {
 	beforeEach(() => {
 		cy.clearLocalStorage();
 		stubOrders();
-		cy.visit('/account/orders', {
+		cy.visit('/orders', {
 			onBeforeLoad: setRefreshToken,
 		});
 	});
@@ -94,7 +94,7 @@ describe('Buyer orders list — /account/orders', () => {
 
 	it('navigates to order detail when order link clicked', () => {
 		cy.contains('#001').click(); // short id suffix
-		cy.url().should('include', '/account/orders/order-pending-001');
+		cy.url().should('include', '/orders/order-pending-001');
 	});
 
 	it('renders search input', () => {
@@ -108,7 +108,7 @@ describe('Buyer order detail — PENDING order', () => {
 	beforeEach(() => {
 		cy.clearLocalStorage();
 		stubOrders();
-		cy.visit('/account/orders/order-pending-001', {
+		cy.visit('/orders/order-pending-001', {
 			onBeforeLoad: setRefreshToken,
 		});
 	});
@@ -163,7 +163,7 @@ describe('Buyer order detail — SHIPPED order', () => {
 	beforeEach(() => {
 		cy.clearLocalStorage();
 		stubOrders();
-		cy.visit('/account/orders/order-shipped-002', {
+		cy.visit('/orders/order-shipped-002', {
 			onBeforeLoad: setRefreshToken,
 		});
 	});
@@ -203,7 +203,7 @@ describe('Buyer order detail — SHIPPED order', () => {
 
 // ─── Settings ─────────────────────────────────────────────────────────────────
 
-describe('Buyer settings — /account/settings', () => {
+describe('Buyer settings — /settings', () => {
 	beforeEach(() => {
 		cy.clearLocalStorage();
 		cy.intercept('POST', '**/graphql', (req) => {
@@ -217,7 +217,7 @@ describe('Buyer settings — /account/settings', () => {
 			}
 		}).as('graphql');
 
-		cy.visit('/account/settings', {
+		cy.visit('/settings', {
 			onBeforeLoad: setRefreshToken,
 		});
 	});

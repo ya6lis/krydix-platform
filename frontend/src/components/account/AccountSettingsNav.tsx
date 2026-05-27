@@ -18,19 +18,19 @@ const ACCOUNT_ITEMS: Array<{
 		id: 'profile',
 		labelKey: 'account.settings.nav.profile',
 		icon: Icons.user,
-		href: `${ROUTES.ACCOUNT_SETTINGS}#profile`,
+		href: ROUTES.PROFILE,
 	},
 	{
 		id: 'security',
 		labelKey: 'account.settings.nav.security',
 		icon: Icons.lock,
-		href: `${ROUTES.ACCOUNT_SETTINGS}#security`,
+		href: `${ROUTES.SETTINGS}#security`,
 	},
 	{
 		id: 'danger',
 		labelKey: 'account.settings.nav.closeAccount',
 		icon: Icons.ban,
-		href: `${ROUTES.ACCOUNT_SETTINGS}#danger`,
+		href: `${ROUTES.SETTINGS}#danger`,
 	},
 ];
 

@@ -348,6 +348,7 @@ export const adminTypeDefs = `#graphql
 	type PayoutConfig {
 		schedule: String!
 		holdPeriodDays: Int!
+		autoConfirmDays: Int!
 		minimumPayout: Float!
 		currency: String!
 	}
@@ -378,6 +379,7 @@ export const adminTypeDefs = `#graphql
 	input PayoutConfigInput {
 		schedule: String!
 		holdPeriodDays: Int!
+		autoConfirmDays: Int!
 		minimumPayout: Float!
 		currency: String!
 	}

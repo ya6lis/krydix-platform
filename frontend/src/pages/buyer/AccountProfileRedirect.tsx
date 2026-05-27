@@ -1,9 +1,9 @@
 import { Navigate } from 'react-router-dom';
-import { ROUTES } from '@/constants/routes';
 import { useAuthStore } from '@/store/authStore';
 import { AppLoader } from '@/components/ui';
+import { getProfileRouteForUser } from '@/utils/roleAccess';
 
-/** Sends logged-in user to their public storefront/profile page. */
+/** Sends logged-in user to their role-appropriate profile page. */
 export default function AccountProfileRedirect() {
 	const user = useAuthStore((s) => s.user);
 
@@ -11,5 +11,5 @@ export default function AccountProfileRedirect() {
 		return <AppLoader />;
 	}
 
-	return <Navigate to={ROUTES.SELLER_PUBLIC(user.id)} replace />;
+	return <Navigate to={getProfileRouteForUser(user)} replace />;
 }

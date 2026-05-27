@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { ProductCard } from '../ProductCard';
 import { AppToastProvider } from '@/components/ui';
@@ -6,6 +6,21 @@ import type { CatalogProduct } from '@/types/catalog';
 
 jest.mock('react-i18next', () => ({
 	useTranslation: () => ({ t: (key: string) => key }),
+}));
+
+jest.mock('@/hooks/useAuth', () => ({
+	useAuth: () => ({ canBuy: true, canUseWishlist: false }),
+}));
+
+jest.mock('@/hooks/useWishlist', () => ({
+	useWishlist: () => ({ isWishlisted: () => false, toggleWishlist: jest.fn(), toggling: false }),
+}));
+
+const mockNavigate = jest.fn();
+
+jest.mock('react-router-dom', () => ({
+	...jest.requireActual('react-router-dom'),
+	useNavigate: () => mockNavigate,
 }));
 
 jest.mock('@fortawesome/react-fontawesome', () => ({
@@ -50,6 +65,10 @@ function renderCard(product: CatalogProduct) {
 }
 
 describe('ProductCard', () => {
+	beforeEach(() => {
+		mockNavigate.mockClear();
+	});
+
 	it('renders title, seller and price', () => {
 		renderCard(makeProduct());
 		expect(screen.getByText('Heritage Field Jacket')).toBeInTheDocument();
@@ -57,12 +76,10 @@ describe('ProductCard', () => {
 		expect(screen.getByText('$184.00')).toBeInTheDocument();
 	});
 
-	it('links to the product detail page', () => {
+	it('navigates to the product page when the body block is clicked', () => {
 		renderCard(makeProduct());
-		expect(screen.getByText('Heritage Field Jacket').closest('a')).toHaveAttribute(
-			'href',
-			'/catalog/field-jacket'
-		);
+		fireEvent.click(screen.getByRole('link', { name: 'Heritage Field Jacket' }));
+		expect(mockNavigate).toHaveBeenCalledWith('/catalog/field-jacket');
 	});
 
 	it('shows the low-stock badge when stock is low', () => {

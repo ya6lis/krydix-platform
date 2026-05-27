@@ -79,7 +79,7 @@ export default function ModeratorDashboardPage() {
 				id: 'products',
 				messageKey: 'moderatorDashboard.alerts.pendingProducts',
 				messageParams: { count: pendingProducts },
-				href: ROUTES.MODERATOR_PRODUCT_MODERATION,
+				href: ROUTES.PRODUCT_MODERATION,
 				tone: 'warning' as const,
 				icon: Icons.clipboardCheck,
 			});
@@ -89,7 +89,7 @@ export default function ModeratorDashboardPage() {
 				id: 'reviews',
 				messageKey: 'moderatorDashboard.alerts.flaggedReviews',
 				messageParams: { count: flaggedReviews },
-				href: ROUTES.MODERATOR_REVIEW_MODERATION,
+				href: ROUTES.REVIEW_MODERATION,
 				tone: 'danger' as const,
 				icon: Icons.star,
 			});
@@ -99,7 +99,7 @@ export default function ModeratorDashboardPage() {
 				id: 'support',
 				messageKey: 'moderatorDashboard.alerts.openSupport',
 				messageParams: { count: openSupport },
-				href: ROUTES.MODERATOR_SUPPORT,
+				href: ROUTES.STAFF_SUPPORT,
 				tone: 'warning' as const,
 				icon: Icons.chat,
 			});
@@ -158,40 +158,28 @@ export default function ModeratorDashboardPage() {
 						titleKey="moderatorDashboard.queue.title"
 						subtitleKey="moderatorDashboard.queue.subtitle"
 						actionLabelKey="dashboard.common.openQueue"
-						actionHref={ROUTES.MODERATOR_PRODUCT_MODERATION}
+						actionHref={ROUTES.PRODUCT_MODERATION}
 					>
 						<Stack spacing={1.25}>
 							<QueueRow
 								label={t('moderatorDashboard.queue.products')}
 								count={pendingProducts}
-								href={ROUTES.MODERATOR_PRODUCT_MODERATION}
+								href={ROUTES.PRODUCT_MODERATION}
 							/>
 							<QueueRow
 								label={t('moderatorDashboard.queue.reviews')}
 								count={pendingReviews}
-								href={ROUTES.MODERATOR_REVIEW_MODERATION}
+								href={ROUTES.REVIEW_MODERATION}
 							/>
 							<QueueRow
 								label={t('moderatorDashboard.queue.flaggedReviews')}
 								count={flaggedReviews}
-								href={ROUTES.MODERATOR_REVIEW_MODERATION}
+								href={ROUTES.REVIEW_MODERATION}
 							/>
 							<QueueRow
 								label={t('moderatorDashboard.queue.support')}
 								count={openSupport + inProgressSupport}
-								href={ROUTES.MODERATOR_SUPPORT}
-							/>
-							<QueueRow
-								label={t('moderatorDashboard.queue.verifications')}
-								count={0}
-								href={ROUTES.MODERATOR_VERIFICATION}
-								muted
-							/>
-							<QueueRow
-								label={t('moderatorDashboard.queue.complaints')}
-								count={0}
-								href={ROUTES.MODERATOR_COMPLAINTS}
-								muted
+								href={ROUTES.STAFF_SUPPORT}
 							/>
 						</Stack>
 					</DashboardSectionCard>
@@ -238,7 +226,7 @@ export default function ModeratorDashboardPage() {
 					<DashboardSectionCard
 						titleKey="moderatorDashboard.messages.title"
 						actionLabelKey="dashboard.common.open"
-						actionHref={ROUTES.MODERATOR_SUPPORT}
+						actionHref={ROUTES.STAFF_SUPPORT}
 					>
 						<StatCard
 							icon={Icons.chats}
@@ -252,7 +240,7 @@ export default function ModeratorDashboardPage() {
 					<DashboardSectionCard
 						titleKey="moderatorDashboard.notifications.title"
 						actionLabelKey="dashboard.common.viewAll"
-						actionHref={ROUTES.ACCOUNT_NOTIFICATIONS}
+						actionHref={ROUTES.NOTIFICATIONS}
 					>
 						{notifications.length === 0 ? (
 							<EmptyState
@@ -266,7 +254,7 @@ export default function ModeratorDashboardPage() {
 									const display = notificationDisplayText(notification, t);
 									const href =
 										notificationRoute(notification, Role.MODERATOR) ??
-										ROUTES.ACCOUNT_NOTIFICATIONS;
+										ROUTES.NOTIFICATIONS;
 									return (
 										<Link
 											key={notification.id}
@@ -301,26 +289,26 @@ export default function ModeratorDashboardPage() {
 					{
 						id: 'products',
 						labelKey: 'moderatorDashboard.quickActions.products',
-						href: ROUTES.MODERATOR_PRODUCT_MODERATION,
+						href: ROUTES.PRODUCT_MODERATION,
 						icon: Icons.clipboardCheck,
 					},
 					{
 						id: 'reviews',
 						labelKey: 'moderatorDashboard.quickActions.reviews',
-						href: ROUTES.MODERATOR_REVIEW_MODERATION,
+						href: ROUTES.REVIEW_MODERATION,
 						icon: Icons.star,
 					},
 					{
 						id: 'support',
 						labelKey: 'moderatorDashboard.quickActions.support',
-						href: ROUTES.MODERATOR_SUPPORT,
+						href: ROUTES.STAFF_SUPPORT,
 						icon: Icons.chat,
 						tone: 'cyan',
 					},
 					{
 						id: 'users',
 						labelKey: 'moderatorDashboard.quickActions.users',
-						href: ROUTES.MODERATOR_USERS,
+						href: ROUTES.USERS,
 						icon: Icons.users,
 						tone: 'amber',
 					},

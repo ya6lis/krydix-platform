@@ -33,6 +33,7 @@ import {
 	useAppToast,
 } from '@/components/ui';
 import { RoleBadge } from '@/components/users/RoleBadge';
+import { getPublicProfileRoute } from '@/utils/roleAccess';
 import {
 	ADMIN_STATS_QUERY,
 	ALL_USERS_QUERY,
@@ -359,7 +360,7 @@ export default function UsersManagementPage() {
 			key: 'user',
 			label: t('users.table.user'),
 			render: (row) => {
-				const profileHref = isAdmin ? ROUTES.ADMIN_USER(row.id) : ROUTES.MODERATOR_USER(row.id);
+				const profileHref = getPublicProfileRoute(row.id, row.role);
 				return (
 					<Box
 						component={RouterLink}
@@ -487,9 +488,6 @@ export default function UsersManagementPage() {
 					</Typography>
 				</Box>
 				<Stack direction="row" spacing={1}>
-					{/*<AppButton tone="ghost" size="small" startIcon={<FontAwesomeIcon icon={Icons.download} />}>
-						{t('users.exportBtn')}
-					</AppButton>*/}
 					{isAdmin && (
 						<AppButton
 							tone="accent"

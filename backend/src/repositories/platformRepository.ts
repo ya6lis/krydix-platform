@@ -1,5 +1,6 @@
 import type { Prisma } from '@prisma/client';
 import { prisma } from '../utils/prisma.js';
+import * as payoutRepo from './payoutRepository.js';
 
 const COMMISSION_INCLUDE = {
 	category: {
@@ -24,6 +25,7 @@ export async function updatePlatformConfig(data: {
 	payoutHoldDays?: number;
 	payoutMinimum?: number;
 	payoutCurrency?: string;
+	autoConfirmDays?: number;
 }) {
 	return prisma.platformConfig.upsert({
 		where: { id: 'default' },
@@ -32,7 +34,8 @@ export async function updatePlatformConfig(data: {
 			payoutSchedule: (data.payoutSchedule as never) ?? 'WEEKLY_TUESDAY',
 			payoutHoldDays: data.payoutHoldDays ?? 3,
 			payoutMinimum: data.payoutMinimum ?? 25,
-			payoutCurrency: data.payoutCurrency ?? 'USD',
+			payoutCurrency: data.payoutCurrency ?? 'UAH',
+			autoConfirmDays: data.autoConfirmDays ?? 7,
 		},
 	});
 }
@@ -124,7 +127,7 @@ export async function getOverviewOrderStats(since: Date, until: Date) {
 		where: {
 			deletedAt: null,
 			createdAt: { gte: since, lte: until },
-			payment: { status: 'PAID' },
+			payment: { status: { in: ['PAID', 'IN_ESCROW'] } },
 		},
 		_sum: { totalAmount: true },
 		_count: true,
@@ -143,20 +146,6 @@ export async function countNewSellersSince(since: Date) {
 	});
 }
 
-export async function sumPendingPayoutOrders(holdDays: number) {
-	const cutoff = new Date();
-	cutoff.setDate(cutoff.getDate() - holdDays);
-
-	const result = await prisma.orderItem.aggregate({
-		where: {
-			order: {
-				deletedAt: null,
-				payment: { status: 'PAID' },
-				delivery: { status: 'DELIVERED', deliveredAt: { lte: cutoff } },
-			},
-		},
-		_sum: { totalPrice: true },
-	});
-
-	return result._sum.totalPrice ?? 0;
+export async function sumPendingPayoutOrders(_holdDays: number) {
+	return payoutRepo.sumPendingPlatformPayouts();
 }

@@ -141,6 +141,7 @@ export const ordersTypeDefs = `#graphql
 		mySellerOrders(filter: MyOrdersFilter): PaginatedSellerOrders!
 		mySellerOrder(id: ID!): SellerOrder!
 		mySellerOrderStats: OrderStats!
+		exportMySellerOrders(filter: MyOrdersFilter): SpreadsheetFile!
 	}
 
 	extend type Mutation {

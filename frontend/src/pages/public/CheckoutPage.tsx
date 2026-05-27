@@ -253,7 +253,7 @@ function CheckoutConfirmation({ order }: { order: OrderOut }) {
 				</Typography>
 			</Box>
 			<Box sx={{ display: 'flex', gap: 1.5, justifyContent: 'center', flexWrap: 'wrap' }}>
-				<AppButton tone="primary" onClick={() => navigate(ROUTES.ACCOUNT_ORDERS)}>
+				<AppButton tone="primary" onClick={() => navigate(ROUTES.ORDERS)}>
 					{t('checkout.confirmed.viewOrders')}
 				</AppButton>
 				<AppButton tone="ghost" onClick={() => navigate(ROUTES.PRODUCTS)}>

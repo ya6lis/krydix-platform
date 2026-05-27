@@ -3,10 +3,6 @@ import { ROUTES } from '@/constants/routes';
 import { RouteZone } from '@/utils/roleAccess';
 
 import PublicLayout from '@/layouts/PublicLayout';
-import BuyerLayout from '@/layouts/BuyerLayout';
-import SellerLayout from '@/layouts/SellerLayout';
-import ModeratorLayout from '@/layouts/ModeratorLayout';
-import AdminLayout from '@/layouts/AdminLayout';
 import AppShell from '@/components/shell/AppShell';
 
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -18,21 +14,21 @@ import ProductPage from '@/pages/public/ProductPage';
 import CartPage from '@/pages/public/CartPage';
 import WishlistPage from '@/pages/public/WishlistPage';
 import CheckoutPage from '@/pages/public/CheckoutPage';
-import BuyerDashboardPage from '@/pages/buyer/BuyerDashboardPage';
 import BuyerOrdersPage from '@/pages/buyer/BuyerOrdersPage';
 import BuyerOrderDetailPage from '@/pages/buyer/BuyerOrderDetailPage';
-import BuyerSettingsPage from '@/pages/buyer/BuyerSettingsPage';
 import NotificationsPage from '@/pages/buyer/NotificationsPage';
 import PublicSellerProfilePage from '@/pages/public/PublicSellerProfilePage';
+import PublicUserProfilePage from '@/pages/public/PublicUserProfilePage';
 import AccountProfileRedirect from '@/pages/buyer/AccountProfileRedirect';
 import ChatPage from '@/pages/chat/ChatPage';
+import DashboardPage from '@/pages/DashboardPage';
+import SettingsPage from '@/pages/SettingsPage';
 import SellerProductFormPage from '@/pages/seller/SellerProductFormPage';
 import SellerProductsPage from '@/pages/seller/SellerProductsPage';
-import SellerDashboardPage from '@/pages/seller/SellerDashboardPage';
 import SellerOrdersPage from '@/pages/seller/SellerOrdersPage';
 import SellerOrderDetailPage from '@/pages/seller/SellerOrderDetailPage';
+import SellerFinancePage from '@/pages/seller/SellerFinancePage';
 import ProductModerationPage from '@/pages/moderator/ProductModerationPage';
-import ModeratorDashboardPage from '@/pages/moderator/ModeratorDashboardPage';
 import ReviewModerationPage from '@/pages/moderator/ReviewModerationPage';
 import ModeratorSupportPage from '@/pages/moderator/ModeratorSupportPage';
 import UsersManagementPage from '@/pages/admin/UsersManagementPage';
@@ -43,16 +39,19 @@ import AdminAuditPage from '@/pages/admin/AdminAuditPage';
 import AdminFeedbackPage from '@/pages/admin/AdminFeedbackPage';
 import AdminReleaseNotesPage from '@/pages/admin/AdminReleaseNotesPage';
 import SupportPage from '@/pages/support/SupportPage';
-import AdminPlatformPage from '@/pages/admin/AdminPlatformPage';
-import AdminDashboardPage from '@/pages/admin/AdminDashboardPage';
 import NotFound404Page from '@/pages/public/404Page';
 import HomeRedirectPage from '@/pages/public/HomeRedirectPage';
+import { LegacyOrderRedirect, LegacyUserRedirect } from '@/router/legacyRedirects';
 
 const Placeholder = ({ name }: { name: string }) => (
 	<div style={{ padding: 32 }}>
 		<h2>{name}</h2>
 		<p>Coming soon.</p>
 	</div>
+);
+
+const auth = (zone: RouteZone, element: React.ReactNode) => (
+	<ProtectedRoute zone={zone}>{element}</ProtectedRoute>
 );
 
 export const router = createBrowserRouter([
@@ -70,158 +69,92 @@ export const router = createBrowserRouter([
 		],
 	},
 
-	// ── Public content + error pages — AppShell visible to all ────
-	// Guests see minimal sidebar (catalog only); auth'd users see full nav.
+	// ── App shell — unified routes for all roles ───────────────────
 	{
 		element: <AppShell />,
 		children: [
 			{ path: ROUTES.HOME, element: <HomeRedirectPage /> },
+
+			// Public marketplace
 			{ path: ROUTES.PRODUCTS, element: <CatalogPage /> },
 			{ path: '/catalog/:slug', element: <ProductPage /> },
 			{ path: ROUTES.SEARCH, element: <Placeholder name="Search" /> },
-			{ path: ROUTES.CART, element: (
-					<ProtectedRoute zone={RouteZone.BUYER_COMMERCE}>
-						<CartPage />
-					</ProtectedRoute>
-				) },
-			{
-				path: ROUTES.WISHLIST,
-				element: (
-					<ProtectedRoute zone={RouteZone.BUYER}>
-						<WishlistPage />
-					</ProtectedRoute>
-				),
-			},
-			{
-				path: ROUTES.CHECKOUT,
-				element: (
-					<ProtectedRoute zone={RouteZone.BUYER}>
-						<CheckoutPage />
-					</ProtectedRoute>
-				),
-			},
+			{ path: ROUTES.CART, element: auth(RouteZone.BUYER_COMMERCE, <CartPage />) },
+			{ path: ROUTES.WISHLIST, element: auth(RouteZone.BUYER, <WishlistPage />) },
+			{ path: ROUTES.CHECKOUT, element: auth(RouteZone.BUYER, <CheckoutPage />) },
 			{ path: ROUTES.SUPPORT, element: <SupportPage /> },
-			{
-				path: ROUTES.CHAT,
-				element: (
-					<ProtectedRoute zone={RouteZone.BUYER}>
-						<ChatPage />
-					</ProtectedRoute>
-				),
-			},
-			{
-				path: ROUTES.SELLER_CHAT,
-				element: (
-					<ProtectedRoute zone={RouteZone.SELLER}>
-						<ChatPage />
-					</ProtectedRoute>
-				),
-			},
-			{ path: '/seller/:id', element: <PublicSellerProfilePage /> },
-			{
-				path: ROUTES.ACCOUNT_NOTIFICATIONS,
-				element: (
-					<ProtectedRoute zone={RouteZone.AUTH}>
-						<NotificationsPage />
-					</ProtectedRoute>
-				),
-			},
+			{ path: ROUTES.CHAT, element: auth(RouteZone.AUTH, <ChatPage />) },
+			{ path: '/sellers/:id', element: <PublicSellerProfilePage /> },
+
+			// Shared authenticated
+			{ path: ROUTES.DASHBOARD, element: auth(RouteZone.AUTH, <DashboardPage />) },
+			{ path: ROUTES.ORDERS, element: auth(RouteZone.BUYER, <BuyerOrdersPage />) },
+			{ path: `${ROUTES.ORDERS}/:id`, element: auth(RouteZone.BUYER, <BuyerOrderDetailPage />) },
+			{ path: ROUTES.NOTIFICATIONS, element: auth(RouteZone.AUTH, <NotificationsPage />) },
+			{ path: ROUTES.SETTINGS, element: auth(RouteZone.AUTH, <SettingsPage />) },
+			{ path: ROUTES.PROFILE, element: auth(RouteZone.AUTH, <AccountProfileRedirect />) },
+			{ path: ROUTES.MY_REVIEWS, element: auth(RouteZone.BUYER, <Placeholder name="My Reviews" />) },
+
+			// Seller cabinet
+			{ path: ROUTES.SELLER, element: auth(RouteZone.SELLER, <Navigate to={ROUTES.DASHBOARD} replace />) },
+			{ path: ROUTES.SELLER_PRODUCTS, element: auth(RouteZone.SELLER, <SellerProductsPage />) },
+			{ path: ROUTES.SELLER_PRODUCT_NEW, element: auth(RouteZone.SELLER, <SellerProductFormPage />) },
+			{ path: '/seller/products/:id/edit', element: auth(RouteZone.SELLER, <SellerProductFormPage />) },
+			{ path: ROUTES.SELLER_ORDERS, element: auth(RouteZone.SELLER, <SellerOrdersPage />) },
+			{ path: '/seller/orders/:id', element: auth(RouteZone.SELLER, <SellerOrderDetailPage />) },
+			{ path: ROUTES.SELLER_FINANCE, element: auth(RouteZone.SELLER, <SellerFinancePage />) },
+			{ path: ROUTES.SELLER_IMPORT, element: auth(RouteZone.SELLER, <Navigate to={ROUTES.SELLER_PRODUCTS} replace />) },
+			{ path: ROUTES.SELLER_VERIFICATION, element: auth(RouteZone.SELLER, <Placeholder name="Seller Verification" />) },
+
+			// Staff (moderator + admin)
+			{ path: ROUTES.PRODUCT_MODERATION, element: auth(RouteZone.MODERATOR, <ProductModerationPage />) },
+			{ path: ROUTES.REVIEW_MODERATION, element: auth(RouteZone.MODERATOR, <ReviewModerationPage />) },
+			{ path: ROUTES.STAFF_SUPPORT, element: auth(RouteZone.MODERATOR, <ModeratorSupportPage />) },
+			{ path: ROUTES.USERS, element: auth(RouteZone.MODERATOR, <UsersManagementPage />) },
+			{ path: `${ROUTES.USERS}/:id`, element: <PublicUserProfilePage /> },
+			{ path: ROUTES.MANAGE_PRODUCTS, element: auth(RouteZone.MODERATOR, <ProductsManagementPage />) },
+			{ path: ROUTES.MANAGE_REVIEWS, element: auth(RouteZone.MODERATOR, <ReviewsManagementPage />) },
+			{ path: ROUTES.COMPLAINTS, element: auth(RouteZone.MODERATOR, <Placeholder name="Complaints" />) },
+
+			// Admin only
+			{ path: ROUTES.CATEGORIES, element: auth(RouteZone.ADMIN, <AdminCategoriesPage />) },
+			{ path: ROUTES.AUDIT, element: auth(RouteZone.ADMIN, <AdminAuditPage />) },
+			{ path: ROUTES.FEEDBACK, element: auth(RouteZone.ADMIN, <AdminFeedbackPage />) },
+			{ path: ROUTES.RELEASE_NOTES, element: auth(RouteZone.ADMIN, <AdminReleaseNotesPage />) },
+
+			// Legacy redirects (old role-prefixed URLs)
+			{ path: '/account', element: <Navigate to={ROUTES.DASHBOARD} replace /> },
+			{ path: '/account/orders', element: <Navigate to={ROUTES.ORDERS} replace /> },
+			{ path: '/account/orders/:id', element: <LegacyOrderRedirect /> },
+			{ path: '/account/profile', element: <Navigate to={ROUTES.PROFILE} replace /> },
+			{ path: '/account/settings', element: <Navigate to={ROUTES.SETTINGS} replace /> },
+			{ path: '/account/notifications', element: <Navigate to={ROUTES.NOTIFICATIONS} replace /> },
+			{ path: '/account/reviews', element: <Navigate to={ROUTES.MY_REVIEWS} replace /> },
+			{ path: '/seller/dashboard', element: <Navigate to={ROUTES.DASHBOARD} replace /> },
+			{ path: '/seller/settings', element: <Navigate to={ROUTES.SETTINGS} replace /> },
+			{ path: '/moderator', element: <Navigate to={ROUTES.DASHBOARD} replace /> },
+			{ path: '/admin', element: <Navigate to={ROUTES.DASHBOARD} replace /> },
+			{ path: '/moderator/product-moderation', element: <Navigate to={ROUTES.PRODUCT_MODERATION} replace /> },
+			{ path: '/moderator/review-moderation', element: <Navigate to={ROUTES.REVIEW_MODERATION} replace /> },
+			{ path: '/moderator/support', element: <Navigate to={ROUTES.STAFF_SUPPORT} replace /> },
+			{ path: '/moderator/users', element: <Navigate to={ROUTES.USERS} replace /> },
+			{ path: '/moderator/users/:id', element: <LegacyUserRedirect /> },
+			{ path: '/moderator/all-products', element: <Navigate to={ROUTES.MANAGE_PRODUCTS} replace /> },
+			{ path: '/moderator/all-reviews', element: <Navigate to={ROUTES.MANAGE_REVIEWS} replace /> },
+			{ path: '/admin/users', element: <Navigate to={ROUTES.USERS} replace /> },
+			{ path: '/admin/users/:id', element: <LegacyUserRedirect /> },
+			{ path: '/admin/products', element: <Navigate to={ROUTES.MANAGE_PRODUCTS} replace /> },
+			{ path: '/admin/reviews', element: <Navigate to={ROUTES.MANAGE_REVIEWS} replace /> },
+			{ path: '/admin/categories', element: <Navigate to={ROUTES.CATEGORIES} replace /> },
+			{ path: '/admin/settings', element: <Navigate to={ROUTES.SETTINGS} replace /> },
+			{ path: '/admin/audit', element: <Navigate to={ROUTES.AUDIT} replace /> },
+			{ path: '/admin/feedback', element: <Navigate to={ROUTES.FEEDBACK} replace /> },
+			{ path: '/admin/release-notes', element: <Navigate to={ROUTES.RELEASE_NOTES} replace /> },
 		],
 	},
 
 	// ── Standalone error pages — no AppShell ───────────────────────
 	{ path: ROUTES.NOT_FOUND, element: <NotFound404Page /> },
-
-	// ── Protected: buyer account ───────────────────────────────────
-	{
-		path: '/account',
-		element: (
-			<ProtectedRoute zone={RouteZone.BUYER}>
-				<BuyerLayout />
-			</ProtectedRoute>
-		),
-		children: [
-			{ index: true, element: <BuyerDashboardPage /> },
-			{ path: 'orders', element: <BuyerOrdersPage /> },
-			{ path: 'orders/:id', element: <BuyerOrderDetailPage /> },
-			{ path: 'profile', element: <AccountProfileRedirect /> },
-			{ path: 'settings', element: <BuyerSettingsPage /> },
-			{ path: 'reviews', element: <Placeholder name="My Reviews" /> },
-			{ path: 'cart', element: <Placeholder name="Cart" /> },
-			{ path: 'checkout', element: <Placeholder name="Checkout" /> },
-		],
-	},
-
-	// ── Protected: seller cabinet ──────────────────────────────────
-	{
-		path: '/seller-cabinet',
-		element: (
-			<ProtectedRoute zone={RouteZone.SELLER}>
-				<SellerLayout />
-			</ProtectedRoute>
-		),
-		children: [
-			{ index: true, element: <SellerDashboardPage /> },
-			{ path: 'dashboard', element: <SellerDashboardPage /> },
-			{ path: 'products', element: <SellerProductsPage /> },
-			{ path: 'products/new', element: <SellerProductFormPage /> },
-			{ path: 'products/:id/edit', element: <SellerProductFormPage /> },
-			{ path: 'orders', element: <SellerOrdersPage /> },
-			{ path: 'orders/:id', element: <SellerOrderDetailPage /> },
-			{ path: 'import', element: <Placeholder name="Bulk Import" /> },
-			{ path: 'verification', element: <Placeholder name="Seller Verification" /> },
-			{ path: 'settings', element: <Placeholder name="Seller Settings" /> },
-		],
-	},
-
-	// ── Protected: moderator panel ─────────────────────────────────
-	{
-		path: '/moderator',
-		element: (
-			<ProtectedRoute zone={RouteZone.MODERATOR}>
-				<ModeratorLayout />
-			</ProtectedRoute>
-		),
-		children: [
-			{ index: true, element: <ModeratorDashboardPage /> },
-			{ path: 'product-moderation', element: <ProductModerationPage /> },
-			{ path: 'products', element: <Navigate to={ROUTES.MODERATOR_PRODUCT_MODERATION} replace /> },
-			{ path: 'queue', element: <Navigate to={ROUTES.MODERATOR_PRODUCT_MODERATION} replace /> },
-			{ path: 'complaints', element: <Placeholder name="Complaints" /> },
-			{ path: 'review-moderation', element: <ReviewModerationPage /> },
-			{ path: 'reviews', element: <Navigate to={ROUTES.MODERATOR_REVIEW_MODERATION} replace /> },
-			{ path: 'users', element: <UsersManagementPage /> },
-			{ path: 'users/:id', element: <Placeholder name="User Profile" /> },
-			{ path: 'all-products', element: <ProductsManagementPage /> },
-			{ path: 'all-reviews', element: <ReviewsManagementPage /> },
-			{ path: 'verification', element: <Placeholder name="Seller Verification Queue" /> },
-			{ path: 'support', element: <ModeratorSupportPage /> },
-		],
-	},
-
-	// ── Protected: admin panel ─────────────────────────────────────
-	{
-		path: '/admin',
-		element: (
-			<ProtectedRoute zone={RouteZone.ADMIN}>
-				<AdminLayout />
-			</ProtectedRoute>
-		),
-		children: [
-			{ index: true, element: <AdminDashboardPage /> },
-			{ path: 'users', element: <UsersManagementPage /> },
-			{ path: 'users/:id', element: <Placeholder name="User Profile" /> },
-			{ path: 'categories', element: <AdminCategoriesPage /> },
-			{ path: 'products', element: <ProductsManagementPage /> },
-			{ path: 'complaints', element: <Placeholder name="All Complaints" /> },
-			{ path: 'reviews', element: <ReviewsManagementPage /> },
-			{ path: 'settings', element: <AdminPlatformPage /> },
-			{ path: 'audit', element: <AdminAuditPage /> },
-			{ path: 'feedback', element: <AdminFeedbackPage /> },
-			{ path: 'release-notes', element: <AdminReleaseNotesPage /> },
-		],
-	},
-
 	{ path: ROUTES.FORBIDDEN, element: <Placeholder name="403 Forbidden" /> },
 	{ path: '*', element: <NotFound404Page /> },
 ]);

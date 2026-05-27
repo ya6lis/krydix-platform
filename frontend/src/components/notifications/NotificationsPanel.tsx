@@ -190,7 +190,7 @@ export function NotificationsPanel({
 				>
 					<Box
 						component={Link}
-						to={ROUTES.ACCOUNT_NOTIFICATIONS}
+						to={ROUTES.NOTIFICATIONS}
 						sx={{
 							display: 'inline-flex',
 							alignItems: 'center',

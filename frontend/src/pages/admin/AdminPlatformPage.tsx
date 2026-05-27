@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@apollo/client';
+import { useSearchParams } from 'react-router-dom';
 import { Stack } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useTranslation } from 'react-i18next';
@@ -103,6 +104,7 @@ function buildCategoryOptions(
 export default function AdminPlatformPage() {
 	const { t, i18n } = useTranslation();
 	const { showToast } = useAppToast();
+	const [searchParams] = useSearchParams();
 	const contentLanguage = i18n.language === 'uk' ? 'UK' : 'EN';
 
 	const [activeSection, setActiveSection] = useState<PlatformNavSection>('overview');
@@ -132,15 +134,28 @@ export default function AdminPlatformPage() {
 
 	useEffect(() => {
 		if (payoutData?.payoutConfig) {
-			const { schedule, holdPeriodDays, minimumPayout, currency } = payoutData.payoutConfig;
-			setPayoutDraft({ schedule, holdPeriodDays, minimumPayout, currency });
+			const { schedule, holdPeriodDays, autoConfirmDays, minimumPayout, currency } =
+				payoutData.payoutConfig;
+			setPayoutDraft({ schedule, holdPeriodDays, autoConfirmDays, minimumPayout, currency });
 		}
 	}, [payoutData]);
+
+	useEffect(() => {
+		const section = searchParams.get('section');
+		if (section === 'payouts') {
+			setActiveSection('payouts');
+			requestAnimationFrame(() => {
+				document.getElementById('payouts')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+			});
+		}
+	}, [searchParams]);
 
 	const [saveRules, { loading: savingRules }] = useMutation(SAVE_COMMISSION_RULES_MUTATION, {
 		refetchQueries: [{ query: COMMISSION_RULES_QUERY }],
 	});
-	const [savePayout, { loading: savingPayout }] = useMutation(SAVE_PAYOUT_CONFIG_MUTATION);
+	const [savePayout, { loading: savingPayout }] = useMutation(SAVE_PAYOUT_CONFIG_MUTATION, {
+		refetchQueries: [{ query: PAYOUT_CONFIG_QUERY }],
+	});
 	const [createPromo, { loading: creatingPromo }] = useMutation(CREATE_ADMIN_PROMO_CODE_MUTATION);
 	const [updatePromo] = useMutation(UPDATE_ADMIN_PROMO_CODE_MUTATION);
 
@@ -176,8 +191,32 @@ export default function AdminPlatformPage() {
 		setRulesDraft((prev) => prev.map((r) => (r.id === id ? { ...r, ...patch } : r)));
 	};
 
+	const buildPayoutInput = useCallback(() => {
+		if (!payoutDraft) return null;
+		return {
+			schedule: payoutDraft.schedule,
+			holdPeriodDays: payoutDraft.holdPeriodDays,
+			autoConfirmDays: payoutDraft.autoConfirmDays,
+			minimumPayout: payoutDraft.minimumPayout,
+			currency: payoutDraft.currency,
+		};
+	}, [payoutDraft]);
+
+	const handleSavePayout = async () => {
+		const input = buildPayoutInput();
+		if (!input) return;
+		try {
+			await savePayout({ variables: { input } });
+			showToast(t('adminPlatform.toast.payoutSaved'), 'success');
+		} catch {
+			showToast(t('adminPlatform.toast.saveError'), 'error');
+		}
+	};
+
 	const handleSave = async () => {
 		if (!payoutDraft) return;
+		const input = buildPayoutInput();
+		if (!input) return;
 		try {
 			await Promise.all([
 				saveRules({
@@ -192,16 +231,7 @@ export default function AdminPlatformPage() {
 						})),
 					},
 				}),
-				savePayout({
-					variables: {
-						input: {
-							schedule: payoutDraft.schedule,
-							holdPeriodDays: payoutDraft.holdPeriodDays,
-							minimumPayout: payoutDraft.minimumPayout,
-							currency: payoutDraft.currency,
-						},
-					},
-				}),
+				savePayout({ variables: { input } }),
 			]);
 			showToast(t('adminPlatform.toast.saved'), 'success');
 		} catch {
@@ -212,8 +242,9 @@ export default function AdminPlatformPage() {
 	const handleDiscard = () => {
 		if (rulesData?.commissionRules) setRulesDraft(rulesData.commissionRules);
 		if (payoutData?.payoutConfig) {
-			const { schedule, holdPeriodDays, minimumPayout, currency } = payoutData.payoutConfig;
-			setPayoutDraft({ schedule, holdPeriodDays, minimumPayout, currency });
+			const { schedule, holdPeriodDays, autoConfirmDays, minimumPayout, currency } =
+				payoutData.payoutConfig;
+			setPayoutDraft({ schedule, holdPeriodDays, autoConfirmDays, minimumPayout, currency });
 		}
 	};
 
@@ -523,17 +554,22 @@ export default function AdminPlatformPage() {
 							<h2 className={styles.sectionTitle}>{t('adminPlatform.payouts.title')}</h2>
 							<p className={styles.sectionSub}>{t('adminPlatform.payouts.subtitle')}</p>
 						</div>
+						<AppButton
+							tone="accent"
+							loading={savingPayout}
+							onClick={handleSavePayout}
+							data-testid="platform-save-payout-btn"
+						>
+							{t('adminPlatform.payouts.saveHold')}
+						</AppButton>
 					</div>
 					{payoutDraft ? (
 						<div className={styles.sectionBody}>
-							<div className={styles.grid3}>
-								<div className={styles.fieldGroup}>
-									<label className={styles.fieldLabel} htmlFor="payout-schedule">
-										{t('adminPlatform.payouts.schedule')}
-									</label>
-									<select
+							<div className={styles.payoutGrid}>
+								<div className={styles.payoutField}>
+									<AppSelect
 										id="payout-schedule"
-										className={styles.select}
+										label={t('adminPlatform.payouts.schedule')}
 										value={payoutDraft.schedule}
 										onChange={(e) =>
 											setPayoutDraft({
@@ -541,22 +577,19 @@ export default function AdminPlatformPage() {
 												schedule: e.target.value as PayoutConfig['schedule'],
 											})
 										}
-									>
-										{PAYOUT_OPTIONS.map((value) => (
-											<option key={value} value={value}>
-												{t(`adminPlatform.payouts.schedules.${value}`)}
-											</option>
-										))}
-									</select>
+										options={PAYOUT_OPTIONS.map((value) => ({
+											value,
+											label: t(`adminPlatform.payouts.schedules.${value}`),
+										}))}
+										helperText={t('adminPlatform.payouts.scheduleHelp')}
+									/>
 								</div>
-								<div className={styles.fieldGroup}>
-									<label className={styles.fieldLabel} htmlFor="payout-hold">
-										{t('adminPlatform.payouts.holdDays')}
-									</label>
-									<input
+								<div className={styles.payoutField}>
+									<AppInput
 										id="payout-hold"
-										className={styles.textInput}
+										label={t('adminPlatform.payouts.holdDays')}
 										type="number"
+										inputProps={{ min: 0, max: 90 }}
 										value={String(payoutDraft.holdPeriodDays)}
 										onChange={(e) =>
 											setPayoutDraft({
@@ -564,17 +597,31 @@ export default function AdminPlatformPage() {
 												holdPeriodDays: Number(e.target.value) || 0,
 											})
 										}
+										helperText={t('adminPlatform.payouts.holdHelp')}
 									/>
-									<span className={styles.fieldHelp}>{t('adminPlatform.payouts.holdHelp')}</span>
 								</div>
-								<div className={styles.fieldGroup}>
-									<label className={styles.fieldLabel} htmlFor="payout-minimum">
-										{t('adminPlatform.payouts.minimum')}
-									</label>
-									<input
-										id="payout-minimum"
-										className={styles.textInput}
+								<div className={styles.payoutField}>
+									<AppInput
+										id="payout-auto-confirm"
+										label={t('adminPlatform.payouts.autoConfirmDays')}
 										type="number"
+										inputProps={{ min: 1, max: 90 }}
+										value={String(payoutDraft.autoConfirmDays)}
+										onChange={(e) =>
+											setPayoutDraft({
+												...payoutDraft,
+												autoConfirmDays: Number(e.target.value) || 1,
+											})
+										}
+										helperText={t('adminPlatform.payouts.autoConfirmHelp')}
+									/>
+								</div>
+								<div className={styles.payoutField}>
+									<AppInput
+										id="payout-minimum"
+										label={t('adminPlatform.payouts.minimum')}
+										type="number"
+										inputProps={{ min: 0 }}
 										value={String(payoutDraft.minimumPayout)}
 										onChange={(e) =>
 											setPayoutDraft({
@@ -582,6 +629,7 @@ export default function AdminPlatformPage() {
 												minimumPayout: Number(e.target.value) || 0,
 											})
 										}
+										helperText={t('adminPlatform.payouts.minimumHelp')}
 									/>
 								</div>
 							</div>

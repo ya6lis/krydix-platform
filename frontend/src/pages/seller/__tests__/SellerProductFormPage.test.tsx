@@ -113,11 +113,11 @@ const existingProductMock: MockedResponse = {
 function renderNewForm(mocks: MockedResponse[] = []) {
 	return render(
 		<MockedProvider mocks={[categoriesMock, ...mocks]} addTypename={false}>
-			<MemoryRouter initialEntries={['/seller-cabinet/products/new']}>
+			<MemoryRouter initialEntries={['/seller/products/new']}>
 				<AppToastProvider>
 					<Routes>
-						<Route path="/seller-cabinet/products/new" element={<SellerProductFormPage />} />
-						<Route path="/seller-cabinet/products/:id/edit" element={<div>Edit page</div>} />
+						<Route path="/seller/products/new" element={<SellerProductFormPage />} />
+						<Route path="/seller/products/:id/edit" element={<div>Edit page</div>} />
 					</Routes>
 				</AppToastProvider>
 			</MemoryRouter>
@@ -128,10 +128,10 @@ function renderNewForm(mocks: MockedResponse[] = []) {
 function renderEditForm(mocks: MockedResponse[] = []) {
 	return render(
 		<MockedProvider mocks={[categoriesMock, existingProductMock, ...mocks]} addTypename={false}>
-			<MemoryRouter initialEntries={['/seller-cabinet/products/prod-123/edit']}>
+			<MemoryRouter initialEntries={['/seller/products/prod-123/edit']}>
 				<AppToastProvider>
 					<Routes>
-						<Route path="/seller-cabinet/products/:id/edit" element={<SellerProductFormPage />} />
+						<Route path="/seller/products/:id/edit" element={<SellerProductFormPage />} />
 					</Routes>
 				</AppToastProvider>
 			</MemoryRouter>

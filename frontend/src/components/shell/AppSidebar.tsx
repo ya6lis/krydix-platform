@@ -11,7 +11,7 @@ import { useAuthStore, type AuthUser } from '@/store/authStore';
 import { ROUTES } from '@/constants/routes';
 import { useRoleHomeRoute } from '@/hooks/useRoleHomeRoute';
 import { Role } from '@/constants/enums';
-import { canSeeNavForRoles, isStaffRole } from '@/utils/roleAccess';
+import { canSeeNavForRoles, getProfileMenuLabelKey, getProfileRouteForUser, getSettingsRouteForUser } from '@/utils/roleAccess';
 import i18n from '@/i18n';
 import { UNREAD_MESSAGE_COUNT_QUERY } from '@/graphql/operations/chat';
 import {
@@ -33,6 +33,10 @@ export const SIDEBAR_WIDTH = 248;
 /* ── role constant for guests ────────────────────────────────── */
 const GUEST = 'GUEST';
 
+function shouldShowNavItem(item: NavItem, userRole: string): boolean {
+	return canSeeNavForRoles(item.roles, userRole);
+}
+
 /* ── nav config ──────────────────────────────────────────────── */
 type BadgeVariant = 'default' | 'warn' | 'danger' | 'accent';
 
@@ -52,38 +56,17 @@ interface NavGroup {
 }
 
 const NAV_GROUPS: NavGroup[] = [
-	// ── Overview: one dashboard link per role ─────────────────────
+	// ── Overview: one dashboard for every authenticated role ───────
 	{
 		id: 'overview',
 		labelKey: 'nav.group.overview',
 		items: [
 			{
-				id: 'dashboard-seller',
-				labelKey: 'nav.dashboard',
-				icon: Icons.chart,
-				href: ROUTES.SELLER_DASHBOARD,
-				roles: [Role.SELLER],
-			},
-			{
 				id: 'dashboard',
 				labelKey: 'nav.dashboard',
 				icon: Icons.chart,
-				href: ROUTES.ACCOUNT,
-				roles: [Role.BUYER],
-			},
-			{
-				id: 'dashboard-moderator',
-				labelKey: 'nav.dashboard',
-				icon: Icons.chart,
-				href: ROUTES.MODERATOR,
-				roles: [Role.MODERATOR],
-			},
-			{
-				id: 'dashboard-admin',
-				labelKey: 'nav.dashboard',
-				icon: Icons.chart,
-				href: ROUTES.ADMIN,
-				roles: [Role.ADMIN],
+				href: ROUTES.DASHBOARD,
+				roles: [Role.BUYER, Role.SELLER, Role.MODERATOR, Role.ADMIN],
 			},
 		],
 	},
@@ -108,6 +91,13 @@ const NAV_GROUPS: NavGroup[] = [
 				badge: { variant: 'default' },
 				roles: [Role.SELLER],
 			},
+			{
+				id: 'seller-finance',
+				labelKey: 'nav.finance',
+				icon: Icons.wallet,
+				href: ROUTES.SELLER_FINANCE,
+				roles: [Role.SELLER],
+			},
 			//{
 			//	id: 'seller-verification',
 			//	labelKey: 'nav.verification',
@@ -128,7 +118,7 @@ const NAV_GROUPS: NavGroup[] = [
 				labelKey: 'nav.catalog',
 				icon: Icons.products,
 				href: ROUTES.PRODUCTS,
-				roles: [GUEST, Role.BUYER, Role.MODERATOR, Role.ADMIN],
+				roles: [GUEST, Role.BUYER, Role.SELLER, Role.MODERATOR, Role.ADMIN],
 			},
 			{
 				id: 'wishlist',
@@ -148,7 +138,7 @@ const NAV_GROUPS: NavGroup[] = [
 				id: 'orders',
 				labelKey: 'nav.orders',
 				icon: Icons.order,
-				href: ROUTES.ACCOUNT_ORDERS,
+				href: ROUTES.ORDERS,
 				badge: { variant: 'default' },
 				roles: [Role.BUYER, Role.MODERATOR, Role.ADMIN],
 			},
@@ -158,21 +148,13 @@ const NAV_GROUPS: NavGroup[] = [
 				icon: Icons.chats,
 				href: ROUTES.CHAT,
 				badge: { variant: 'default' },
-				roles: [Role.BUYER, Role.MODERATOR, Role.ADMIN],
-			},
-			{
-				id: 'seller-messages',
-				labelKey: 'nav.messages',
-				icon: Icons.chats,
-				href: ROUTES.SELLER_CHAT,
-				badge: { variant: 'default' },
-				roles: [Role.SELLER],
+				roles: [Role.BUYER, Role.SELLER, Role.MODERATOR, Role.ADMIN],
 			},
 			{
 				id: 'notifications',
 				labelKey: 'nav.notifications',
 				icon: Icons.bell,
-				href: ROUTES.ACCOUNT_NOTIFICATIONS,
+				href: ROUTES.NOTIFICATIONS,
 				badge: { variant: 'default' },
 				roles: [Role.BUYER, Role.SELLER, Role.MODERATOR, Role.ADMIN],
 			},
@@ -188,7 +170,7 @@ const NAV_GROUPS: NavGroup[] = [
 				id: 'product-moderation',
 				labelKey: 'nav.productModeration',
 				icon: Icons.clipboardCheck,
-				href: ROUTES.MODERATOR_PRODUCT_MODERATION,
+				href: ROUTES.PRODUCT_MODERATION,
 				badge: { variant: 'warn' },
 				roles: [Role.MODERATOR, Role.ADMIN],
 			},
@@ -204,14 +186,14 @@ const NAV_GROUPS: NavGroup[] = [
 				id: 'review-moderation',
 				labelKey: 'nav.reviewModeration',
 				icon: Icons.star,
-				href: ROUTES.MODERATOR_REVIEW_MODERATION,
+				href: ROUTES.REVIEW_MODERATION,
 				roles: [Role.MODERATOR, Role.ADMIN],
 			},
 			{
 				id: 'user-support',
 				labelKey: 'nav.userSupport',
 				icon: Icons.chat,
-				href: ROUTES.MODERATOR_SUPPORT,
+				href: ROUTES.STAFF_SUPPORT,
 				badge: { variant: 'warn' },
 				roles: [Role.MODERATOR, Role.ADMIN],
 			},
@@ -219,21 +201,21 @@ const NAV_GROUPS: NavGroup[] = [
 				id: 'all-reviews',
 				labelKey: 'nav.allReviews',
 				icon: Icons.star,
-				href: ROUTES.MODERATOR_ALL_REVIEWS,
+				href: ROUTES.MANAGE_REVIEWS,
 				roles: [Role.MODERATOR, Role.ADMIN],
 			},
 			{
 				id: 'all-products',
 				labelKey: 'nav.allProducts',
 				icon: Icons.products,
-				href: ROUTES.MODERATOR_ALL_PRODUCTS,
+				href: ROUTES.MANAGE_PRODUCTS,
 				roles: [Role.MODERATOR, Role.ADMIN],
 			},
 			{
 				id: 'users',
 				labelKey: 'nav.users',
 				icon: Icons.users,
-				href: ROUTES.MODERATOR_USERS,
+				href: ROUTES.USERS,
 				roles: [Role.MODERATOR, Role.ADMIN],
 			},
 			//{
@@ -256,35 +238,35 @@ const NAV_GROUPS: NavGroup[] = [
 				id: 'categories',
 				labelKey: 'nav.categories',
 				icon: Icons.category,
-				href: ROUTES.ADMIN_CATEGORIES,
+				href: ROUTES.CATEGORIES,
 				roles: [Role.ADMIN],
 			},
 			{
 				id: 'platform',
 				labelKey: 'nav.platform',
 				icon: Icons.settings,
-				href: ROUTES.ADMIN_SETTINGS,
+				href: ROUTES.SETTINGS,
 				roles: [Role.ADMIN],
 			},
 			{
 				id: 'audit',
 				labelKey: 'nav.audit',
 				icon: Icons.file,
-				href: ROUTES.ADMIN_AUDIT,
+				href: ROUTES.AUDIT,
 				roles: [Role.ADMIN],
 			},
 			{
 				id: 'feedback',
 				labelKey: 'nav.feedback',
 				icon: Icons.chat,
-				href: ROUTES.ADMIN_FEEDBACK,
+				href: ROUTES.FEEDBACK,
 				roles: [Role.ADMIN],
 			},
 			{
 				id: 'releaseNotes',
 				labelKey: 'nav.releaseNotes',
 				icon: Icons.bolt,
-				href: ROUTES.ADMIN_RELEASE_NOTES,
+				href: ROUTES.RELEASE_NOTES,
 				roles: [Role.ADMIN],
 			},
 		],
@@ -440,11 +422,11 @@ export default function AppSidebar() {
 			{/* ── nav groups ── */}
 			{NAV_GROUPS.map((group) => {
 				const visibleItems = group.items
-					.filter((item) => canSeeNavForRoles(item.roles, role))
+					.filter((item) => shouldShowNavItem(item, role))
 					.map((item) => {
 						const href = item.href;
 						const count =
-							item.id === 'messages' || item.id === 'seller-messages'
+							item.id === 'messages'
 								? unreadMessageCount
 								: item.id === 'orders' || item.id === 'seller-orders'
 									? unreadOrderCount
@@ -466,7 +448,6 @@ export default function AppSidebar() {
 											count,
 											variant:
 												item.id === 'messages' ||
-												item.id === 'seller-messages' ||
 												item.id === 'orders' ||
 												item.id === 'seller-orders' ||
 												item.id === 'notifications'
@@ -690,7 +671,7 @@ function SidebarNavItem({ item }: { item: NavItem }) {
 		<Box
 			component={NavLink}
 			to={item.href}
-			end={item.href === '/account' || item.href === ROUTES.SELLER_DASHBOARD}
+			end={item.href === ROUTES.DASHBOARD}
 			sx={{
 				display: 'flex',
 				alignItems: 'center',
@@ -793,14 +774,9 @@ function UserMenu({
 
 	const badge = ROLE_BADGE[user.role] ?? ROLE_BADGE.BUYER;
 
-	const profileHref =
-		user.role === Role.SELLER && !isStaffRole(user.role)
-			? ROUTES.SELLER_DASHBOARD
-			: ROUTES.ACCOUNT_PROFILE;
-	const settingsHref =
-		user.role === Role.SELLER && !isStaffRole(user.role)
-			? ROUTES.SELLER_SETTINGS
-			: ROUTES.ACCOUNT_SETTINGS;
+	const profileHref = getProfileRouteForUser(user);
+	const profileMenuLabelKey = getProfileMenuLabelKey(user.role);
+	const settingsHref = getSettingsRouteForUser(user);
 
 	const newTag: MenuTag | undefined =
 		whatsNewCount > 0
@@ -881,8 +857,8 @@ function UserMenu({
 			{/* ── group 1: profile / settings ── */}
 			<Box sx={{ padding: '4px 0' }}>
 				<MenuRow
-					icon={Icons.user}
-					label={t('shell.menu.profile')}
+					icon={user.role === Role.SELLER ? Icons.store : Icons.user}
+					label={t(profileMenuLabelKey)}
 					onClick={() => go(profileHref)}
 				/>
 				<MenuRow

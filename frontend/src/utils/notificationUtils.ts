@@ -23,7 +23,7 @@ function isSupportNotification(notification: AppNotification): boolean {
 
 function supportNotificationRoute(role: Role | string | undefined): string {
 	if (role && STAFF_ROLES.includes(role)) {
-		return ROUTES.MODERATOR_SUPPORT;
+		return ROUTES.STAFF_SUPPORT;
 	}
 	return ROUTES.SUPPORT;
 }
@@ -114,9 +114,7 @@ export function notificationRoute(
 	}
 
 	if (event === NotificationEvent.NEW_MESSAGE && typeof metadata.conversationId === 'string') {
-		return role === Role.SELLER
-			? `${ROUTES.SELLER_CHAT}?conversation=${metadata.conversationId}`
-			: `${ROUTES.CHAT}?conversation=${metadata.conversationId}`;
+		return `${ROUTES.CHAT}?conversation=${metadata.conversationId}`;
 	}
 
 	if (
@@ -125,10 +123,10 @@ export function notificationRoute(
 	) {
 		return role === Role.SELLER
 			? ROUTES.SELLER_ORDER(metadata.orderId)
-			: ROUTES.ACCOUNT_ORDER(metadata.orderId);
+			: ROUTES.ORDER(metadata.orderId);
 	}
 
-	return ROUTES.ACCOUNT_NOTIFICATIONS;
+	return ROUTES.NOTIFICATIONS;
 }
 
 export function formatNotificationTime(iso: string, locale: string): string {

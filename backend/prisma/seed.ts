@@ -291,9 +291,9 @@ async function main() {
 		create: {
 			id: 'default-commission',
 			isDefault: true,
-			percent: 12,
-			fixedFee: 0.5,
-			currency: 'USD',
+			percent: 2,
+			fixedFee: 0,
+			currency: 'UAH',
 		},
 	});
 	await prisma.platformConfig.upsert({

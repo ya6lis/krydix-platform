@@ -1,6 +1,9 @@
 import { GraphQLError } from 'graphql';
 import { OrderStatus } from '@prisma/client';
 import type { GraphQLContext } from '../../../types/context.js';
+import { requireImportExport } from '../../../utils/importExportAccess.js';
+import { requireSellerCabinet } from '../../../utils/sellerCabinetAccess.js';
+import { exportSellerOrders } from '../../../services/orderExportService.js';
 import {
 	cancelOrder,
 	confirmDelivery,
@@ -44,11 +47,7 @@ function requireAuth(context: GraphQLContext) {
 }
 
 function requireSeller(context: GraphQLContext) {
-	const user = requireAuth(context);
-	if (user.role !== 'SELLER' && user.role !== 'ADMIN') {
-		throw new GraphQLError('Seller access required', { extensions: { code: 'FORBIDDEN' } });
-	}
-	return user;
+	return requireSellerCabinet(context);
 }
 
 function parseOrdersFilter(args: {
@@ -149,6 +148,23 @@ export const ordersResolvers = {
 		mySellerOrderStats: async (_: unknown, __: unknown, context: GraphQLContext) => {
 			const user = requireSeller(context);
 			return countOrdersBySellerAndStatus(user.id);
+		},
+
+		exportMySellerOrders: async (
+			_: unknown,
+			args: {
+				filter?: {
+					status?: string;
+					search?: string;
+				};
+			},
+			context: GraphQLContext,
+		) => {
+			const user = requireImportExport(context);
+			return exportSellerOrders(user.id, {
+				status: args.filter?.status as OrderStatus | undefined,
+				search: args.filter?.search,
+			});
 		},
 	},
 

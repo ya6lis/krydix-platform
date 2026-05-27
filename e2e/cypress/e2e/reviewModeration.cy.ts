@@ -62,7 +62,7 @@ function stubGraphQL(overrides: Record<string, object> = {}) {
 describe('ReviewModerationPage', () => {
 	beforeEach(() => {
 		stubGraphQL();
-		cy.visit('/moderator/review-moderation', {
+		cy.visit('/moderation/reviews', {
 			onBeforeLoad: stubAuth,
 		});
 	});

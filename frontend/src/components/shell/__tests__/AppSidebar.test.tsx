@@ -2,11 +2,17 @@ import { render, screen } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import { MemoryRouter } from 'react-router-dom';
 import AppSidebar from '../AppSidebar';
+import { AppToastProvider } from '@/components/ui';
 import { UNREAD_MESSAGE_COUNT_QUERY } from '@/graphql/operations/chat';
 import {
 	UNREAD_NOTIFICATION_COUNT_QUERY,
 	UNREAD_ORDER_NOTIFICATION_COUNT_QUERY,
 } from '@/graphql/operations/notifications';
+import {
+	PUBLISHED_RELEASE_NOTES_QUERY,
+	UNSEEN_RELEASE_NOTES_COUNT_QUERY,
+} from '@/graphql/operations/releaseNotes';
+import { RELEASE_NOTES_HISTORY_LIMIT } from '@/constants/releaseNotes';
 
 jest.mock('react-i18next', () => ({
 	useTranslation: () => ({ t: (key: string) => key }),
@@ -42,7 +48,7 @@ jest.mock('@/store/authStore', () => ({
 	) => selector({ user: mockAuthUser, clearAuth: jest.fn() }),
 }));
 
-function renderSidebar(initialRoute = '/account') {
+function renderSidebar(initialRoute = '/dashboard') {
 	return render(
 		<MockedProvider
 			mocks={[
@@ -58,12 +64,25 @@ function renderSidebar(initialRoute = '/account') {
 					request: { query: UNREAD_NOTIFICATION_COUNT_QUERY },
 					result: { data: { unreadNotificationCount: 5 } },
 				},
+				{
+					request: { query: UNSEEN_RELEASE_NOTES_COUNT_QUERY },
+					variableMatcher: () => true,
+					result: { data: { unseenReleaseNotesCount: 0 } },
+				},
+				{
+					request: { query: PUBLISHED_RELEASE_NOTES_QUERY },
+					variableMatcher: (vars: { language?: string; limit?: number }) =>
+						vars.limit === RELEASE_NOTES_HISTORY_LIMIT,
+					result: { data: { publishedReleaseNotes: [] } },
+				},
 			]}
 			addTypename={false}
 		>
-			<MemoryRouter initialEntries={[initialRoute]}>
-				<AppSidebar />
-			</MemoryRouter>
+			<AppToastProvider>
+				<MemoryRouter initialEntries={[initialRoute]}>
+					<AppSidebar />
+				</MemoryRouter>
+			</AppToastProvider>
 		</MockedProvider>,
 	);
 }
@@ -106,6 +125,7 @@ describe('AppSidebar', () => {
 	it('shows admin nav items for ADMIN role', () => {
 		mockAuthUser = { ...mockUser, role: 'ADMIN' };
 		renderSidebar();
+		expect(screen.getAllByText('nav.dashboard')).toHaveLength(1);
 		expect(screen.getAllByText('nav.users').length).toBeGreaterThan(0);
 		expect(screen.getByText('nav.platform')).toBeInTheDocument();
 		expect(screen.getByText('nav.audit')).toBeInTheDocument();
@@ -118,6 +138,16 @@ describe('AppSidebar', () => {
 		expect(screen.getByText('nav.productModeration')).toBeInTheDocument();
 		expect(screen.getByText('nav.reviewModeration')).toBeInTheDocument();
 		expect(screen.getByText('nav.users')).toBeInTheDocument();
+	});
+
+	it('shows catalog browsing only for SELLER role', () => {
+		mockAuthUser = { ...mockUser, role: 'SELLER' };
+		renderSidebar();
+		expect(screen.getByText('nav.dashboard')).toBeInTheDocument();
+		expect(screen.getByText('nav.catalog')).toBeInTheDocument();
+		expect(screen.queryByText('nav.cart')).not.toBeInTheDocument();
+		expect(screen.queryByText('nav.wishlist')).not.toBeInTheDocument();
+		expect(screen.getAllByText('nav.orders')).toHaveLength(1);
 	});
 
 	it('hides moderation items for BUYER role', () => {

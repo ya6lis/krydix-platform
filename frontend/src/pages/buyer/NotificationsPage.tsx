@@ -205,7 +205,7 @@ export default function NotificationsPage() {
 			await refetchAll();
 		}
 		const route = notificationRoute(notification, user?.role);
-		if (route && route !== ROUTES.ACCOUNT_NOTIFICATIONS) {
+		if (route && route !== ROUTES.NOTIFICATIONS) {
 			navigate(route);
 		}
 	};
@@ -250,7 +250,7 @@ export default function NotificationsPage() {
 				</Box>
 				<AppButton
 					tone="ghost"
-					onClick={() => navigate(ROUTES.ACCOUNT_ORDERS)}
+					onClick={() => navigate(ROUTES.ORDERS)}
 					startIcon={<FontAwesomeIcon icon={Icons.chevronLeft} size="xs" />}
 				>
 					{t('notificationsPage.backToAccount')}

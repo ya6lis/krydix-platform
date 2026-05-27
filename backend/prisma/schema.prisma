@@ -51,7 +51,19 @@ enum PaymentStatus {
   PENDING
   AUTHORIZED
   PAID
+  IN_ESCROW
   FAILED
+  REFUNDED
+  CHARGEBACK
+  CANCELED
+}
+
+enum PayoutStatus {
+  ON_HOLD
+  ELIGIBLE_FOR_RELEASE
+  RELEASED
+  WITHDRAWN
+  BLOCKED
   REFUNDED
 }
 
@@ -149,6 +161,12 @@ enum AuditAction {
   CATEGORY_CHANGE
   FEEDBACK_STATUS_CHANGE
   RELEASE_NOTE_CHANGE
+  PAYMENT_CAPTURED
+  PAYOUT_RELEASED
+  PAYOUT_WITHDRAWN
+  PAYOUT_BLOCKED
+  REFUND_ISSUED
+  PLATFORM_CONFIG_CHANGE
 }
 
 enum Language {
@@ -210,6 +228,7 @@ model User {
   imports              ImportJob[]
   returnRequestsBought ReturnRequest[]      @relation("BuyerReturnRequests")
   returnRequestsSold   ReturnRequest[]      @relation("SellerReturnRequests")
+  sellerPayouts        SellerPayout[]       @relation("SellerPayouts")
   feedbacksSubmitted   UserFeedback[]       @relation("FeedbackAuthor")
   feedbacksHandled     UserFeedback[]       @relation("FeedbackHandler")
   releaseNotesCreated  ReleaseNote[]        @relation("ReleaseNoteAuthor")
@@ -490,23 +509,25 @@ model WishlistItem {
 // ─── Orders ──────────────────────────────────────────────────────────────────
 
 model Order {
-  id          String      @id @default(cuid())
-  buyerId     String
-  status      OrderStatus @default(PENDING)
-  totalAmount Decimal     @db.Decimal(10, 2)
-  promoCodeId String?
-  discount    Decimal?    @db.Decimal(10, 2)
-  notes       String?
-  deletedAt   DateTime?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id              String      @id @default(cuid())
+  buyerId         String
+  status          OrderStatus @default(PENDING)
+  totalAmount     Decimal     @db.Decimal(10, 2)
+  currencySnapshot String     @default("UAH")
+  promoCodeId     String?
+  discount        Decimal?    @db.Decimal(10, 2)
+  notes           String?
+  deletedAt       DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
 
-  buyer     User        @relation(fields: [buyerId], references: [id])
-  promoCode PromoCode?  @relation(fields: [promoCodeId], references: [id])
-  items     OrderItem[]
-  payment   PaymentRecord?
-  delivery  DeliveryRecord?
+  buyer         User             @relation(fields: [buyerId], references: [id])
+  promoCode     PromoCode?       @relation(fields: [promoCodeId], references: [id])
+  items         OrderItem[]
+  payment       PaymentRecord?
+  delivery      DeliveryRecord?
   returnRequest ReturnRequest?
+  sellerPayouts SellerPayout[]
 
   @@index([buyerId])
   @@index([status])
@@ -538,24 +559,61 @@ model ReturnRequest {
 }
 
 model OrderItem {
-  id           String   @id @default(cuid())
-  orderId      String
-  productId    String
-  variantId    String?
-  sellerId     String
-  quantity     Int
-  unitPrice    Decimal  @db.Decimal(10, 2)
-  totalPrice   Decimal  @db.Decimal(10, 2)
-  productTitle String
-  createdAt    DateTime @default(now())
+  id                         String    @id @default(cuid())
+  orderId                    String
+  productId                  String
+  variantId                  String?
+  sellerId                   String
+  quantity                   Int
+  unitPrice                  Decimal   @db.Decimal(10, 2)
+  totalPrice                 Decimal   @db.Decimal(10, 2)
+  productTitle               String
+  currencySnapshot           String    @default("UAH")
+  buyerFeePercentSnapshot    Decimal   @default(0) @db.Decimal(5, 2)
+  buyerFeeAmountSnapshot     Decimal   @default(0) @db.Decimal(10, 2)
+  sellerFeePercentSnapshot   Decimal   @default(0) @db.Decimal(5, 2)
+  sellerFeeAmountSnapshot    Decimal   @default(0) @db.Decimal(10, 2)
+  platformFeePercentSnapshot Decimal   @default(0) @db.Decimal(5, 2)
+  platformFeeAmountSnapshot  Decimal   @default(0) @db.Decimal(10, 2)
+  sellerPayoutAmountSnapshot Decimal   @default(0) @db.Decimal(10, 2)
+  confirmedReceivedAt        DateTime?
+  payoutHoldUntil            DateTime?
+  createdAt                  DateTime  @default(now())
 
-  order   Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product Product        @relation(fields: [productId], references: [id])
+  order   Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product         @relation(fields: [productId], references: [id])
   variant ProductVariant? @relation(fields: [variantId], references: [id])
-  seller  User           @relation("SellerOrderItems", fields: [sellerId], references: [id])
+  seller  User            @relation("SellerOrderItems", fields: [sellerId], references: [id])
+  payout  SellerPayout?
 
   @@index([orderId])
   @@index([sellerId])
+}
+
+model SellerPayout {
+  id                  String       @id @default(cuid())
+  orderId             String
+  orderItemId         String       @unique
+  sellerId            String
+  amountGross         Decimal      @db.Decimal(10, 2)
+  platformFeeAmount   Decimal      @db.Decimal(10, 2)
+  withdrawalFeeAmount Decimal      @default(0) @db.Decimal(10, 2)
+  amountNet           Decimal      @db.Decimal(10, 2)
+  currency            String       @default("UAH")
+  status              PayoutStatus @default(ON_HOLD)
+  availableAt         DateTime?
+  releasedAt          DateTime?
+  withdrawnAt         DateTime?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  order     Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderItem OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  seller    User      @relation("SellerPayouts", fields: [sellerId], references: [id])
+
+  @@index([sellerId])
+  @@index([orderId])
+  @@index([status])
 }
 
 model PaymentRecord {
@@ -568,6 +626,7 @@ model PaymentRecord {
   cardBrand     String?
   cardLast4     String?
   paidAt        DateTime?
+  escrowAt      DateTime?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
@@ -575,16 +634,17 @@ model PaymentRecord {
 }
 
 model DeliveryRecord {
-  id             String         @id @default(cuid())
-  orderId        String         @unique
-  status         DeliveryStatus @default(PENDING)
-  method         DeliveryMethod
-  address        String?
-  trackingCode   String?
-  shippedAt      DateTime?
-  deliveredAt    DateTime?
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  id                  String         @id @default(cuid())
+  orderId             String         @unique
+  status              DeliveryStatus @default(PENDING)
+  method              DeliveryMethod
+  address             String?
+  trackingCode        String?
+  shippedAt           DateTime?
+  deliveredAt         DateTime?
+  confirmedReceivedAt DateTime?
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
 
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
@@ -621,12 +681,21 @@ model CommissionRule {
 }
 
 model PlatformConfig {
-  id               String         @id @default("default")
-  payoutSchedule   PayoutSchedule @default(WEEKLY_TUESDAY)
-  payoutHoldDays   Int            @default(3)
-  payoutMinimum    Decimal        @default(25) @db.Decimal(10, 2)
-  payoutCurrency   String         @default("USD")
-  updatedAt        DateTime       @updatedAt
+  id                          String         @id @default("default")
+  payoutSchedule              PayoutSchedule @default(WEEKLY_TUESDAY)
+  payoutHoldDays              Int            @default(3)
+  payoutMinimum               Decimal        @default(25) @db.Decimal(10, 2)
+  payoutCurrency              String         @default("UAH")
+  defaultPlatformFeePercent   Decimal        @default(2) @db.Decimal(5, 2)
+  defaultBuyerFeePercent      Decimal        @default(0) @db.Decimal(5, 2)
+  defaultWithdrawalFeePercent Decimal        @default(0) @db.Decimal(5, 2)
+  autoConfirmDays             Int            @default(7)
+  returnWindowDays            Int            @default(14)
+  disputeResolutionDays       Int            @default(7)
+  refundProcessingDays        Int            @default(3)
+  buyerPaysReturnShipping     Boolean        @default(false)
+  returnRequiresApproval      Boolean        @default(true)
+  updatedAt                   DateTime       @updatedAt
 }
 
 // ─── Reviews ─────────────────────────────────────────────────────────────────

@@ -92,7 +92,7 @@ function stubGraphQL(treeState: 'empty' | 'parent' | 'hierarchy' = 'empty') {
 describe('AdminCategoriesPage', () => {
 	beforeEach(() => {
 		stubGraphQL('empty');
-		cy.visit('/admin/categories', {
+		cy.visit('/categories', {
 			onBeforeLoad: (win) => stubAuth(win),
 		});
 	});

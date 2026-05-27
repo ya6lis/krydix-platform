@@ -189,25 +189,51 @@
 		"previewImport": [
 			{
 				"rowIndex": 2,
-				"titleEn": "Imported Product A",
-				"titleUk": "Імпортований A",
+				"nameEn": "Imported Product A",
+				"nameUk": "Імпортований A",
+				"descriptionEn": "Desc EN",
+				"descriptionUk": "Опис UK",
 				"sku": "IMP-001",
 				"slug": "imported-product-a",
-				"basePrice": 29.99,
+				"price": 29.99,
+				"currency": "UAH",
+				"quantity": 5,
+				"category": "electronics",
+				"status": "DRAFT",
 				"brand": null,
+				"images": "",
+				"isActive": true,
+				"discountPrice": null,
+				"seoTitle": null,
+				"seoDescription": null,
 				"isValid": true,
-				"errors": []
+				"errors": [],
+				"willCreate": true,
+				"willUpdate": false
 			},
 			{
 				"rowIndex": 3,
-				"titleEn": "",
-				"titleUk": "",
+				"nameEn": "",
+				"nameUk": "",
+				"descriptionEn": "",
+				"descriptionUk": "",
 				"sku": "",
 				"slug": "",
-				"basePrice": 0,
+				"price": 0,
+				"currency": "UAH",
+				"quantity": 0,
+				"category": "",
+				"status": "DRAFT",
 				"brand": null,
+				"images": "",
+				"isActive": true,
+				"discountPrice": null,
+				"seoTitle": null,
+				"seoDescription": null,
 				"isValid": false,
-				"errors": ["Missing required field: titleEn", "Missing required field: sku"]
+				"errors": ["Missing required field: sku", "Missing required field: name_en"],
+				"willCreate": false,
+				"willUpdate": false
 			}
 		]
 	},
@@ -216,7 +242,22 @@
 			"created": 1,
 			"updated": 0,
 			"failed": 0,
+			"skipped": 0,
 			"errors": []
+		}
+	},
+	"exportMyProducts": {
+		"exportMyProducts": {
+			"fileName": "products_seller-1_2026-05-26.xlsx",
+			"mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+			"base64": "UEsDBBQAAAAI"
+		}
+	},
+	"downloadProductImportTemplate": {
+		"downloadProductImportTemplate": {
+			"fileName": "products_import_template.xlsx",
+			"mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+			"base64": "UEsDBBQAAAAI"
 		}
 	}
 }

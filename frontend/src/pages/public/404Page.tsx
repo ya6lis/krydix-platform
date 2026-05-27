@@ -85,7 +85,7 @@ function buildQuickLinks(role: Role | string | undefined, isAuthenticated: boole
 				subtitleKey: 'error404.quick.verification.subtitle',
 			},
 			{
-				href: ROUTES.ACCOUNT_SETTINGS,
+				href: ROUTES.SETTINGS,
 				icon: Icons.settings,
 				tone: 'coral',
 				titleKey: 'error404.quick.settings.title',
@@ -97,7 +97,7 @@ function buildQuickLinks(role: Role | string | undefined, isAuthenticated: boole
 	if (role === Role.MODERATOR || role === Role.ADMIN) {
 		return [
 			{
-				href: ROUTES.MODERATOR_PRODUCT_MODERATION,
+				href: ROUTES.PRODUCT_MODERATION,
 				icon: Icons.clipboardCheck,
 				tone: 'default',
 				titleKey: 'error404.quick.moderation.title',
@@ -111,14 +111,14 @@ function buildQuickLinks(role: Role | string | undefined, isAuthenticated: boole
 				subtitleKey: 'error404.quick.catalog.subtitle',
 			},
 			{
-				href: ROUTES.MODERATOR_SUPPORT,
+				href: ROUTES.STAFF_SUPPORT,
 				icon: Icons.question,
 				tone: 'amber',
 				titleKey: 'error404.quick.support.title',
 				subtitleKey: 'error404.quick.support.subtitleStaff',
 			},
 			{
-				href: ROUTES.ACCOUNT_SETTINGS,
+				href: ROUTES.SETTINGS,
 				icon: Icons.settings,
 				tone: 'coral',
 				titleKey: 'error404.quick.settings.title',
@@ -129,7 +129,7 @@ function buildQuickLinks(role: Role | string | undefined, isAuthenticated: boole
 
 	return [
 		{
-			href: ROUTES.ACCOUNT_ORDERS,
+			href: ROUTES.ORDERS,
 			icon: Icons.order,
 			tone: 'default',
 			titleKey: 'error404.quick.orders.title',
@@ -150,7 +150,7 @@ function buildQuickLinks(role: Role | string | undefined, isAuthenticated: boole
 			subtitleKey: 'error404.quick.messages.subtitle',
 		},
 		{
-			href: ROUTES.ACCOUNT_SETTINGS,
+			href: ROUTES.SETTINGS,
 			icon: Icons.settings,
 			tone: 'coral',
 			titleKey: 'error404.quick.settings.title',
