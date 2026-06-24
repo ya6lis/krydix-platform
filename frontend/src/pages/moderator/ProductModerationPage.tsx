@@ -47,6 +47,7 @@ import type {
 	ModerationQueueVars,
 	ModerationFilterType,
 } from '@/graphql/operations/moderation';
+import { formatMoney } from '@/utils/formatMoney';
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function formatRelativeTime(isoString: string): string {
@@ -201,7 +202,7 @@ function QueueRow({ item, selected, checked, onSelect, onCheck, isPending }: Que
 					)}
 					<Box component="span">·</Box>
 					<Box component="span" sx={{ color: tokens.ink1, fontWeight: 600 }}>
-						${item.basePrice.toFixed(2)}
+						{formatMoney(item.basePrice)}
 					</Box>
 				</Box>
 			</Box>
@@ -480,7 +481,7 @@ function PreviewPanel({ item, onApprove, onReject, approving, rejecting }: Previ
 						<Box>
 							<Typography sx={{ fontSize: 11, color: tokens.ink3 }}>Base price</Typography>
 							<Typography sx={{ fontSize: 15, fontWeight: 700 }}>
-								${item.basePrice.toFixed(2)}
+								{formatMoney(item.basePrice)}
 							</Typography>
 						</Box>
 						{item.comparePrice && (
@@ -496,7 +497,7 @@ function PreviewPanel({ item, onApprove, onReject, approving, rejecting }: Previ
 										color: tokens.ink3,
 									}}
 								>
-									${item.comparePrice.toFixed(2)}
+									{formatMoney(item.comparePrice)}
 								</Typography>
 							</Box>
 						)}
@@ -605,7 +606,7 @@ function PreviewPanel({ item, onApprove, onReject, approving, rejecting }: Previ
 													{v.sku ?? '—'}
 												</TableCell>
 												<TableCell align="right" sx={{ fontSize: 12, py: 0.5 }}>
-													{v.price != null ? `$${v.price.toFixed(2)}` : '—'}
+													{v.price != null ? formatMoney(v.price) : '—'}
 												</TableCell>
 												<TableCell
 													align="right"

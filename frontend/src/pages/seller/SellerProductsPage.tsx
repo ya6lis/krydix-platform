@@ -55,6 +55,7 @@ import {
 } from '@/graphql/operations/importExport';
 import { useAuth } from '@/hooks/useAuth';
 import { downloadSpreadsheetFile } from '@/utils/downloadSpreadsheet';
+import { formatMoney } from '@/utils/formatMoney';
 // ─── Status filter tabs ───────────────────────────────────────────────────────
 
 const STATUS_TABS = [
@@ -300,7 +301,7 @@ function ImportModal({ open, onClose, onDone }: ImportModalProps) {
 			label: t('sellerProducts.import.previewCol.price'),
 			width: 80,
 			align: 'right',
-			render: (r) => <Typography sx={{ fontSize: 13 }}>{r.price.toFixed(2)}</Typography>,
+			render: (r) => <Typography sx={{ fontSize: 13 }}>{formatMoney(r.price)}</Typography>,
 		},
 		{
 			key: 'action',
@@ -695,10 +696,10 @@ export default function SellerProductsPage() {
 			align: 'right',
 			render: (p) => (
 				<Stack alignItems="flex-end">
-					<Typography sx={{ fontSize: 13, fontWeight: 600 }}>${p.basePrice.toFixed(2)}</Typography>
+					<Typography sx={{ fontSize: 13, fontWeight: 600 }}>{formatMoney(p.basePrice)}</Typography>
 					{p.comparePrice && (
 						<Typography sx={{ fontSize: 11.5, color: tokens.ink3, textDecoration: 'line-through' }}>
-							${p.comparePrice.toFixed(2)}
+							{formatMoney(p.comparePrice)}
 						</Typography>
 					)}
 				</Stack>

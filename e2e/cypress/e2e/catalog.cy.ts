@@ -66,7 +66,7 @@ describe('Catalog page', () => {
 	it('shows sale badge and strike-through price for discounted product', () => {
 		// Heritage Field Jacket has basePrice 184, comparePrice 224 → −18%
 		cy.contains('−18%').should('be.visible');
-		cy.contains('$224.00').should('be.visible');
+		cy.contains('224,00').should('be.visible');
 	});
 
 	it('shows grid and list view toggle buttons', () => {

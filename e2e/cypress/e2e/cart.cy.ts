@@ -91,7 +91,7 @@ describe('Cart page — guest view', () => {
 
 		cy.contains('Your cart').should('be.visible');
 		cy.contains('Heritage Field Jacket').should('be.visible');
-		cy.contains('$100.00').should('be.visible');
+		cy.contains('100,00').should('be.visible');
 		cy.contains('Order summary').should('be.visible');
 		cy.contains('Proceed to checkout').should('be.visible');
 	});
@@ -102,7 +102,7 @@ describe('Cart page — guest view', () => {
 		});
 
 		cy.contains('John Doe').should('be.visible');
-		cy.contains('$200.00').should('be.visible'); // 100 × 2
+		cy.contains('200,00').should('be.visible'); // 100 × 2
 	});
 
 	it('shows empty state when cart is empty', () => {
@@ -123,14 +123,14 @@ describe('Cart page — guest view', () => {
 			onBeforeLoad: (win) => setCart(win),
 		});
 
-		// Initial total: $200.00 (qty=2)
-		cy.contains('$200.00').should('be.visible');
+		// Initial total: 200,00 (qty=2)
+		cy.contains('200,00').should('be.visible');
 
 		// Increase qty by 1
 		cy.get('[aria-label="Increase quantity"]').click();
 
-		// New total: $300.00 (qty=3)
-		cy.contains('$300.00').should('be.visible');
+		// New total: 300,00 (qty=3)
+		cy.contains('300,00').should('be.visible');
 	});
 
 	it('removes item when remove button is clicked', () => {
@@ -264,6 +264,6 @@ describe('Promo code on cart page', () => {
 		// Applied promo badge visible
 		cy.contains('SAVE10').should('be.visible');
 		// Discount row visible
-		cy.contains('−$20.00').should('be.visible');
+		cy.contains('−20,00').should('be.visible');
 	});
 });

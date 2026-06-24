@@ -27,6 +27,7 @@ import {
 	readCheckoutContactDraft,
 	saveCheckoutContactDraft,
 } from './checkoutUtils';
+import { formatMoney } from '@/utils/formatMoney';
 
 const checkoutSchema = z
 	.object({
@@ -829,12 +830,12 @@ export default function CheckoutPage() {
 									<Typography sx={{ fontSize: 12, color: tokens.ink3 }}>
 										{t('checkout.summary.quantityPrice', {
 											qty: item.qty,
-											price: item.price.toFixed(2),
+											price: formatMoney(item.price),
 										})}
 									</Typography>
 								</Box>
 								<Typography sx={{ fontSize: 13, fontWeight: 700 }}>
-									${(item.price * item.qty).toFixed(2)}
+									{formatMoney(item.price * item.qty)}
 								</Typography>
 							</Box>
 						))}
@@ -847,14 +848,14 @@ export default function CheckoutPage() {
 							<Typography sx={{ fontSize: 13, color: tokens.ink3 }}>
 								{t('checkout.summary.subtotal')}
 							</Typography>
-							<Typography sx={{ fontSize: 13, fontWeight: 700 }}>${subtotal.toFixed(2)}</Typography>
+							<Typography sx={{ fontSize: 13, fontWeight: 700 }}>{formatMoney(subtotal)}</Typography>
 						</Box>
 						<Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
 							<Typography sx={{ fontSize: 13, color: tokens.ink3 }}>
 								{t('checkout.summary.shipping')}
 							</Typography>
 							<Typography sx={{ fontSize: 13, fontWeight: 700 }}>
-								{shipping === 0 ? t('checkout.summary.shippingFree') : `$${shipping.toFixed(2)}`}
+								{shipping === 0 ? t('checkout.summary.shippingFree') : formatMoney(shipping)}
 							</Typography>
 						</Box>
 						{promoDiscount > 0 && (
@@ -865,7 +866,7 @@ export default function CheckoutPage() {
 										: t('checkout.summary.discount')}
 								</Typography>
 								<Typography sx={{ fontSize: 13, fontWeight: 700, color: tokens.coralInk }}>
-									−${promoDiscount.toFixed(2)}
+									−{formatMoney(promoDiscount)}
 								</Typography>
 							</Box>
 						)}
@@ -878,7 +879,7 @@ export default function CheckoutPage() {
 							{t('checkout.summary.total')}
 						</Typography>
 						<Typography sx={{ fontSize: 18, fontWeight: 900, letterSpacing: '-0.02em' }}>
-							${total.toFixed(2)}
+							{formatMoney(total)}
 						</Typography>
 					</Box>
 

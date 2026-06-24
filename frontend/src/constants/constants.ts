@@ -18,3 +18,7 @@ export const DEFAULT_LANGUAGE = 'en';
 
 export const DEBOUNCE_SEARCH_MS = 400;
 export const CATALOG_SEARCH_QUERY_PARAM = 'q';
+
+export const PLATFORM_CURRENCY = 'UAH';
+export const PLATFORM_CURRENCY_LOCALE = 'uk-UA';
+export const PLATFORM_CURRENCY_SYMBOL = '₴';

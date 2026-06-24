@@ -130,7 +130,7 @@ describe('Buyer order detail — PENDING order', () => {
 	});
 
 	it('renders formatted total', () => {
-		cy.contains('$184.00').should('be.visible');
+		cy.contains('184,00').should('be.visible');
 	});
 
 	it('shows Cancel button for PENDING order', () => {

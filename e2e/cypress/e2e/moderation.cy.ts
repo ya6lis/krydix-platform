@@ -80,7 +80,7 @@ describe('ProductModerationPage', () => {
 		cy.contains('Wool Cardigan — Oat').should('be.visible');
 		cy.contains('Heritage Field Jacket — Olive').should('be.visible');
 		cy.contains('Lichen Goods').should('be.visible');
-		cy.contains('$96.00').should('be.visible');
+		cy.contains('96,00').should('be.visible');
 	});
 
 	it('selects an item and shows preview panel', () => {

@@ -35,16 +35,13 @@ import {
 	UNREAD_ORDER_NOTIFICATION_COUNT_QUERY,
 } from '@/graphql/operations/notifications';
 import type { Order, DeliveryMethod, PaymentMethod } from '@/types/orders';
+import { formatMoney } from '@/utils/formatMoney';
 
 function formatDateTime(iso: string) {
 	const d = new Date(iso);
 	const date = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 	const time = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 	return `${date}, ${time}`;
-}
-
-function formatAmount(n: number) {
-	return `$${n.toFixed(2)}`;
 }
 
 function formatOrderItemCode(item: Order['items'][number]) {
@@ -439,7 +436,7 @@ export default function BuyerOrderDetailPage() {
 									</Typography>
 									{/* price */}
 									<Typography sx={{ fontWeight: 700, fontSize: 14 }}>
-										{formatAmount(item.totalPrice)}
+										{formatMoney(item.totalPrice)}
 									</Typography>
 								</Box>
 							))}
@@ -447,22 +444,22 @@ export default function BuyerOrderDetailPage() {
 
 						{/* price summary */}
 						<Box sx={{ pt: 1.75 }}>
-							<SumRow label={t('orderDetail.summary.subtotal')} value={formatAmount(subtotal)} />
+							<SumRow label={t('orderDetail.summary.subtotal')} value={formatMoney(subtotal)} />
 							{shipping > 0 && (
 								<SumRow
 									label={t('orderDetail.summary.shipping')}
-									value={`−${formatAmount(shipping)}`}
+									value={`−${formatMoney(shipping)}`}
 									neg
 								/>
 							)}
 							{discount > 0 && (
 								<SumRow
 									label={t('orderDetail.summary.discount', { code: order.promoCode?.code ?? '' })}
-									value={`−${formatAmount(discount)}`}
+									value={`−${formatMoney(discount)}`}
 									neg
 								/>
 							)}
-							<SumRow label={t('orderDetail.summary.tax')} value={formatAmount(taxes)} />
+							<SumRow label={t('orderDetail.summary.tax')} value={formatMoney(taxes)} />
 							<Box
 								sx={{
 									display: 'flex',
@@ -478,7 +475,7 @@ export default function BuyerOrderDetailPage() {
 									{t('orderDetail.summary.total')}
 								</Typography>
 								<Typography sx={{ fontSize: 'inherit', fontWeight: 'inherit' }}>
-									{formatAmount(order.totalAmount)}
+									{formatMoney(order.totalAmount)}
 								</Typography>
 							</Box>
 						</Box>

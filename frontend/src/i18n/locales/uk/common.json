@@ -320,7 +320,7 @@
 			"card2Pill": "Перевірено",
 			"card3Label": "Нове замовлення",
 			"card3Name": "Lucia O'Brien",
-			"card3Sub": "#KX-6011 · $83.74 · 2 хв. тому",
+			"card3Sub": "#KX-6011 · 3 450,00 ₴ · 2 хв. тому",
 			"footnoteCount": "До нас приєднались {{count}} людей з {{countries}} країн.",
 			"termsOfService": "Умови використання",
 			"privacyPolicy": "Політика конфіденційності",
@@ -495,7 +495,7 @@
 			"category": "Категорія",
 			"expandCategory": "Розгорнути категорію",
 			"collapseCategory": "Згорнути категорію",
-			"price": "Ціна (USD)",
+			"price": "Ціна (UAH)",
 			"brand": "Бренд",
 			"rating": "Рейтинг",
 			"andUp": "і вище",
@@ -643,7 +643,7 @@
 			"shippingFree": "Безкоштовно",
 			"total": "Разом",
 			"empty": "Поки не заповнено",
-			"quantityPrice": "{{qty}} × ${{price}}"
+			"quantityPrice": "{{qty}} × {{price}}"
 		},
 		"placeOrder": "Оформити замовлення",
 		"back": "Назад",

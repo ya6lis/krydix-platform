@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { formatMoney, formatMoneyChartTick, formatMoneyCompact } from '@/utils/formatMoney';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@apollo/client';
 import { Box, Grid, Stack, Typography, Link } from '@mui/material';
@@ -74,16 +75,6 @@ const DEFAULT_GRANULARITY: Record<DashboardPeriod, RevenueGranularity> = {
 	YEAR: 'MONTH',
 };
 
-function formatRevenueLarge(n: number): string {
-	if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
-	if (n >= 1_000) return `$${(n / 1_000).toFixed(1)}k`;
-	return `$${n.toFixed(0)}`;
-}
-
-function formatRevenueExact(n: number): string {
-	return `$${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-}
-
 function formatChartDate(dateStr: string, granularity: RevenueGranularity): string {
 	const d = new Date(dateStr);
 	if (granularity === 'MONTH') return d.toLocaleDateString('en-US', { month: 'short' });
@@ -116,7 +107,7 @@ function ChartTooltip({ active, payload, label }: ChartTooltipProps) {
 				{label}
 			</Typography>
 			<Typography sx={{ fontWeight: 700, color: 'white', fontSize: 14 }}>
-				{formatRevenueExact(payload[0].value)}
+				{formatMoney(payload[0].value)}
 			</Typography>
 		</Box>
 	);
@@ -194,7 +185,7 @@ function HeroCard({ revenue, orders, period: _period, periodLabel, loading }: He
 						component="em"
 						sx={{ fontStyle: 'italic', color: tokens.accentLight, display: 'block' }}
 					>
-						{loading ? '…' : formatRevenueExact(revenue)}
+						{loading ? '…' : formatMoney(revenue)}
 					</Box>
 				</Typography>
 
@@ -304,7 +295,7 @@ function HeroCard({ revenue, orders, period: _period, periodLabel, loading }: He
 						<Typography
 							sx={{ fontSize: 22, fontWeight: 700, color: 'white', letterSpacing: '-0.01em' }}
 						>
-							{loading ? '—' : formatRevenueLarge(revenue)}
+							{loading ? '—' : formatMoneyCompact(revenue)}
 						</Typography>
 					</Box>
 					<Box sx={{ ml: 'auto', color: tokens.cyan, fontSize: 12.5, fontWeight: 700 }}>
@@ -502,7 +493,7 @@ function RevenueChart({
 					<Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: tokens.accent }} />
 					{t('sellerDashboard.chart.legendRevenue')}
 					<Box component="strong" sx={{ fontWeight: 700, color: tokens.ink1, ml: 0.75 }}>
-						{formatRevenueExact(totalRevenue)}
+						{formatMoney(totalRevenue)}
 					</Box>
 				</Box>
 			</Stack>
@@ -539,7 +530,7 @@ function RevenueChart({
 							tick={{ fontSize: 11.5, fill: tokens.ink3 }}
 							axisLine={false}
 							tickLine={false}
-							tickFormatter={(v) => (v >= 1000 ? `$${(v / 1000).toFixed(0)}k` : `$${v}`)}
+							tickFormatter={formatMoneyChartTick}
 							width={52}
 						/>
 						<Tooltip content={<ChartTooltip />} />
@@ -776,7 +767,7 @@ function TopProductsTable({ products, loading }: TopProductsTableProps) {
 			align: 'right',
 			render: (row) => (
 				<Typography sx={{ fontSize: 13, fontWeight: 700, color: tokens.ink1 }}>
-					{formatRevenueExact(row.revenue)}
+					{formatMoney(row.revenue)}
 				</Typography>
 			),
 		},
@@ -1033,7 +1024,7 @@ export default function SellerDashboardPage() {
 					<StatCard
 						icon={Icons.wallet}
 						label={t('sellerDashboard.stats.revenue')}
-						value={statsLoading ? '…' : formatRevenueLarge(stats?.totalRevenue ?? 0)}
+						value={statsLoading ? '…' : formatMoneyCompact(stats?.totalRevenue ?? 0)}
 						tone="cyan"
 					/>
 				</Grid>
@@ -1104,7 +1095,7 @@ export default function SellerDashboardPage() {
 											</Typography>
 											<Typography sx={{ fontSize: 12, color: tokens.ink3 }}>
 												{order.buyer?.name ?? order.buyer?.email} · $
-												{order.sellerSubtotal.toFixed(2)}
+												{formatMoney(order.sellerSubtotal)}
 											</Typography>
 										</Box>
 										<StatusBadge status={order.status} label={t(`status.order.${order.status}`)} />

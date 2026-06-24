@@ -138,7 +138,7 @@ describe('SellerProductsPage', () => {
 		renderPage();
 		await waitFor(() => {
 			expect(screen.getByText('TEST-001')).toBeInTheDocument();
-			expect(screen.getAllByText(/99\.99/).length).toBeGreaterThan(0);
+			expect(screen.getAllByText(/99,99/).length).toBeGreaterThan(0);
 		});
 	});
 

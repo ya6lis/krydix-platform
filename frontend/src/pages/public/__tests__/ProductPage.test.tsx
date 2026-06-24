@@ -110,7 +110,7 @@ function renderPage(mocks: MockedResponse[]) {
 
 // Helper: wait until product data is rendered (price is unique, appears once).
 async function waitForProduct() {
-	await screen.findByText('$184.00');
+	await screen.findAllByText(/184,00/);
 }
 
 describe('ProductPage — not found', () => {
@@ -138,7 +138,7 @@ describe('ProductPage — product loaded', () => {
 	it('shows formatted base price', async () => {
 		renderPage([makeProductMock(makeProduct())]);
 		await waitForProduct();
-		expect(screen.getByText('$184.00')).toBeInTheDocument();
+		expect(screen.getAllByText(/184,00/).length).toBeGreaterThan(0);
 	});
 
 	it('shows seller initials in avatar', async () => {

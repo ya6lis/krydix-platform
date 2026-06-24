@@ -36,6 +36,7 @@ import {
 	PROCESS_SELLER_RETURN_REFUND_MUTATION,
 } from '@/graphql/operations/sellerOrders';
 import type { SellerOrder, DeliveryMethod, PaymentMethod } from '@/types/orders';
+import { formatMoney } from '@/utils/formatMoney';
 
 type DialogType = 'cancel' | 'deliver' | 'ship' | 'tracking' | 'rejectReturn' | 'refund' | null;
 
@@ -55,10 +56,6 @@ function formatDateTime(iso: string) {
 	const date = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 	const time = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 	return `${date}, ${time}`;
-}
-
-function formatAmount(n: number) {
-	return `$${n.toFixed(2)}`;
 }
 
 function formatOrderItemCode(item: SellerOrder['items'][number]) {
@@ -558,7 +555,7 @@ export default function SellerOrderDetailPage() {
 										{t('orderDetail.qty', { count: item.quantity })}
 									</Typography>
 									<Typography sx={{ fontWeight: 700, fontSize: 14 }}>
-										{formatAmount(item.totalPrice)}
+										{formatMoney(item.totalPrice)}
 									</Typography>
 								</Box>
 							))}
@@ -567,7 +564,7 @@ export default function SellerOrderDetailPage() {
 						<Box sx={{ pt: 1.75 }}>
 							<SumRow
 								label={t('orderDetail.summary.subtotal')}
-								value={formatAmount(order.sellerSubtotal)}
+								value={formatMoney(order.sellerSubtotal)}
 							/>
 							<Box
 								sx={{
@@ -584,7 +581,7 @@ export default function SellerOrderDetailPage() {
 									{t('orderDetail.summary.total')}
 								</Typography>
 								<Typography sx={{ fontSize: 'inherit', fontWeight: 'inherit' }}>
-									{formatAmount(order.sellerSubtotal)}
+									{formatMoney(order.sellerSubtotal)}
 								</Typography>
 							</Box>
 						</Box>

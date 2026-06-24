@@ -37,6 +37,7 @@ import type {
 	AdminProductStatusFilter,
 	AdminProductAvailabilityFilter,
 } from '@/graphql/operations/adminProducts';
+import { formatMoney } from '@/utils/formatMoney';
 
 type StatusTab =
 	| 'all'
@@ -68,14 +69,6 @@ function formatDate(iso: string): string {
 		month: 'short',
 		year: 'numeric',
 	});
-}
-
-function formatPrice(value: number): string {
-	return new Intl.NumberFormat(undefined, {
-		style: 'currency',
-		currency: 'UAH',
-		maximumFractionDigits: 0,
-	}).format(value);
 }
 
 function StatMini({ label, value, delta }: { label: string; value: number; delta?: string }) {
@@ -313,7 +306,7 @@ export default function ProductsManagementPage() {
 			key: 'price',
 			label: t('adminProducts.table.price'),
 			render: (row) => (
-				<Typography sx={{ fontSize: 13, fontWeight: 600 }}>{formatPrice(row.basePrice)}</Typography>
+				<Typography sx={{ fontSize: 13, fontWeight: 600 }}>{formatMoney(row.basePrice, { fractionDigits: 0 })}</Typography>
 			),
 		},
 		{

@@ -320,7 +320,7 @@
 			"card2Pill": "Verified",
 			"card3Label": "New order",
 			"card3Name": "Lucia O'Brien",
-			"card3Sub": "#KX-6011 · $83.74 · 2m ago",
+			"card3Sub": "#KX-6011 · 3 450,00 ₴ · 2m ago",
 			"footnoteCount": "Joined by {{count}} people across {{countries}} countries.",
 			"termsOfService": "Terms of Service",
 			"privacyPolicy": "Privacy Policy",
@@ -495,7 +495,7 @@
 			"category": "Category",
 			"expandCategory": "Expand category",
 			"collapseCategory": "Collapse category",
-			"price": "Price (USD)",
+			"price": "Price (UAH)",
 			"brand": "Brand",
 			"rating": "Rating",
 			"andUp": "& up",
@@ -643,7 +643,7 @@
 			"shippingFree": "Free",
 			"total": "Total",
 			"empty": "Not filled yet",
-			"quantityPrice": "{{qty}} x ${{price}}"
+			"quantityPrice": "{{qty}} × {{price}}"
 		},
 		"placeOrder": "Place order",
 		"back": "Back",

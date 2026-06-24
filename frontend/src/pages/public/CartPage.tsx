@@ -12,6 +12,7 @@ import { Icons } from '@/constants/icons';
 import { ROUTES } from '@/constants/routes';
 import { tokens } from '@/theme';
 import type { PromoValidationResult } from '@/types/cart';
+import { formatMoney } from '@/utils/formatMoney';
 
 // ─── Qty Stepper ─────────────────────────────────────────────────────────────
 
@@ -166,7 +167,7 @@ function LineItem({ item }: { item: CartItem }) {
 			{/* Unit price */}
 			<Box sx={{ textAlign: 'right', minWidth: 80 }}>
 				<Typography sx={{ fontSize: 14.5, fontWeight: 700, color: tokens.ink1 }}>
-					${item.price.toFixed(2)}
+					{formatMoney(item.price)}
 				</Typography>
 			</Box>
 
@@ -175,7 +176,7 @@ function LineItem({ item }: { item: CartItem }) {
 				<Typography
 					sx={{ fontSize: 17, fontWeight: 800, letterSpacing: '-0.01em', color: tokens.ink1 }}
 				>
-					${(item.price * item.qty).toFixed(2)}
+					{formatMoney(item.price * item.qty)}
 				</Typography>
 			</Box>
 
@@ -281,7 +282,7 @@ function SellerGroup({ sellerId, items }: { sellerId: string; items: CartItem[] 
 					{t('cart.sellerSubtotal_other', { count: items.length })}
 				</Typography>
 				<Typography sx={{ fontSize: 13, fontWeight: 700, color: tokens.ink1 }}>
-					${groupTotal.toFixed(2)}
+					{formatMoney(groupTotal)}
 				</Typography>
 			</Box>
 		</Box>
@@ -369,7 +370,7 @@ function OrderSummary() {
 					<Typography sx={{ fontSize: 13.5, color: tokens.ink3 }}>
 						{t('cart.summary.subtotal')}
 					</Typography>
-					<Typography sx={{ fontSize: 13.5, fontWeight: 600 }}>${subtotal.toFixed(2)}</Typography>
+					<Typography sx={{ fontSize: 13.5, fontWeight: 600 }}>{formatMoney(subtotal)}</Typography>
 				</Box>
 
 				{/* Promo discount row */}
@@ -382,7 +383,7 @@ function OrderSummary() {
 							</Typography>
 						</Typography>
 						<Typography sx={{ fontSize: 13.5, fontWeight: 600, color: tokens.coralInk }}>
-							−${promoDiscount.toFixed(2)}
+							−{formatMoney(promoDiscount)}
 						</Typography>
 					</Box>
 				)}
@@ -413,7 +414,7 @@ function OrderSummary() {
 					<Typography
 						sx={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.02em', color: tokens.ink1 }}
 					>
-						${total.toFixed(2)}
+						{formatMoney(total)}
 					</Typography>
 				</Box>
 

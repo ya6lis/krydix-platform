@@ -31,6 +31,7 @@ import {
 	type AdminPromoCodeItem,
 } from '@/graphql/operations/adminPlatform';
 import { findCategoryById, getTranslationName } from '@/utils/categoryTree';
+import { formatMoney } from '@/utils/formatMoney';
 import styles from './AdminPlatformPage.module.scss';
 
 type EditableRule = CommissionRuleItem & { isNew?: boolean };
@@ -43,14 +44,6 @@ const NAV_ITEMS: Array<{ id: PlatformNavSection; labelKey: string; icon: typeof 
 ];
 
 const PAYOUT_OPTIONS = Object.values(PayoutSchedule);
-
-function formatMoney(value: number, currency = 'USD'): string {
-	return new Intl.NumberFormat(undefined, {
-		style: 'currency',
-		currency,
-		maximumFractionDigits: 0,
-	}).format(value);
-}
 
 function formatDate(iso: string): string {
 	return new Date(iso).toLocaleDateString(undefined, {

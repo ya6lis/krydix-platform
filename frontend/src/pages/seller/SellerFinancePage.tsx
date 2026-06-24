@@ -26,12 +26,9 @@ import {
 	type SellerFinanceSummary,
 	type SellerPayout,
 } from '@/graphql/operations/payments';
+import { formatMoney } from '@/utils/formatMoney';
 
 const PAGE_SIZE = 10;
-
-function formatMoney(amount: number, currency: string) {
-	return `${amount.toLocaleString('uk-UA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currency}`;
-}
 
 function formatDate(iso: string | null) {
 	if (!iso) return '—';
@@ -72,7 +69,7 @@ export default function SellerFinancePage() {
 			const payload = result.withdrawSellerPayouts;
 			showToast(
 				t('sellerFinance.withdraw.success', {
-					amount: formatMoney(payload.netReceived, payload.currency),
+					amount: formatMoney(payload.netReceived),
 				}),
 				'success'
 			);
@@ -104,20 +101,20 @@ export default function SellerFinancePage() {
 			key: 'gross',
 			label: t('sellerFinance.table.gross'),
 			align: 'right',
-			render: (row) => formatMoney(row.amountGross, row.currency),
+			render: (row) => formatMoney(row.amountGross),
 		},
 		{
 			key: 'fee',
 			label: t('sellerFinance.table.fee'),
 			align: 'right',
-			render: (row) => formatMoney(row.platformFeeAmount, row.currency),
+			render: (row) => formatMoney(row.platformFeeAmount),
 		},
 		{
 			key: 'net',
 			label: t('sellerFinance.table.net'),
 			align: 'right',
 			render: (row) => (
-				<Typography sx={{ fontWeight: 700 }}>{formatMoney(row.amountNet, row.currency)}</Typography>
+				<Typography sx={{ fontWeight: 700 }}>{formatMoney(row.amountNet)}</Typography>
 			),
 		},
 		{
@@ -158,7 +155,7 @@ export default function SellerFinancePage() {
 					<Grid item xs={12} sm={6} lg={3}>
 						<StatCard
 							label={t('sellerFinance.stats.onHold')}
-							value={formatMoney(summary?.onHold ?? 0, summary?.currency ?? 'UAH')}
+							value={formatMoney(summary?.onHold ?? 0)}
 							icon={Icons.clock}
 							tone="amber"
 						/>
@@ -166,7 +163,7 @@ export default function SellerFinancePage() {
 					<Grid item xs={12} sm={6} lg={3}>
 						<StatCard
 							label={t('sellerFinance.stats.withdrawable')}
-							value={formatMoney(summary?.withdrawable ?? 0, summary?.currency ?? 'UAH')}
+							value={formatMoney(summary?.withdrawable ?? 0)}
 							icon={Icons.wallet}
 							tone="cyan"
 						/>
@@ -174,7 +171,7 @@ export default function SellerFinancePage() {
 					<Grid item xs={12} sm={6} lg={3}>
 						<StatCard
 							label={t('sellerFinance.stats.released')}
-							value={formatMoney(summary?.released ?? 0, summary?.currency ?? 'UAH')}
+							value={formatMoney(summary?.released ?? 0)}
 							icon={Icons.checkCircle}
 							tone="accent"
 						/>
@@ -182,7 +179,7 @@ export default function SellerFinancePage() {
 					<Grid item xs={12} sm={6} lg={3}>
 						<StatCard
 							label={t('sellerFinance.stats.withdrawnLifetime')}
-							value={formatMoney(summary?.withdrawnLifetime ?? 0, summary?.currency ?? 'UAH')}
+							value={formatMoney(summary?.withdrawnLifetime ?? 0)}
 							icon={Icons.arrowRight}
 							tone="coral"
 						/>
@@ -192,7 +189,7 @@ export default function SellerFinancePage() {
 				<Stack spacing={1.5} sx={{ mb: 2 }}>
 					<Typography sx={{ fontSize: 13, color: tokens.ink3 }}>
 						{t('sellerFinance.minimumHint', {
-							amount: formatMoney(summary?.minimumWithdrawal ?? 0, summary?.currency ?? 'UAH'),
+							amount: formatMoney(summary?.minimumWithdrawal ?? 0),
 						})}
 					</Typography>
 					{(summary?.blockedCount ?? 0) > 0 && (
@@ -241,7 +238,7 @@ export default function SellerFinancePage() {
 				onClose={() => setWithdrawOpen(false)}
 				title={t('sellerFinance.withdraw.confirmTitle')}
 				message={t('sellerFinance.withdraw.confirmMessage', {
-					amount: formatMoney(summary?.withdrawable ?? 0, summary?.currency ?? 'UAH'),
+					amount: formatMoney(summary?.withdrawable ?? 0),
 				})}
 				confirmLabel={t('sellerFinance.withdraw.action')}
 				loading={withdrawing}

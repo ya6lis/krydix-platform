@@ -10,16 +10,13 @@ import { useWishlist } from '@/hooks/useWishlist';
 import { useAuth } from '@/hooks/useAuth';
 import { useAppToast, AppImage } from '@/components/ui';
 import type { CatalogProduct } from '@/types/catalog';
+import { formatMoney } from '@/utils/formatMoney';
 
 const NEW_PRODUCT_DAYS = 14;
 const LOW_STOCK_THRESHOLD = 5;
 
 export interface ProductCardProps {
 	product: CatalogProduct;
-}
-
-function formatPrice(value: number): string {
-	return `$${value.toFixed(2)}`;
 }
 
 /** Hatched placeholder pattern — mirrors .media background in Catalog.html */
@@ -303,7 +300,7 @@ export function ProductCard({ product }: ProductCardProps) {
 					<Typography
 						sx={{ fontSize: 17, fontWeight: 800, letterSpacing: '-0.01em', color: tokens.ink1 }}
 					>
-						{formatPrice(product.basePrice)}
+						{formatMoney(product.basePrice)}
 					</Typography>
 					{onSale && (
 						<Typography
@@ -313,7 +310,7 @@ export function ProductCard({ product }: ProductCardProps) {
 								textDecoration: 'line-through',
 							}}
 						>
-							{formatPrice(product.comparePrice!)}
+							{formatMoney(product.comparePrice!)}
 						</Typography>
 					)}
 				</Box>

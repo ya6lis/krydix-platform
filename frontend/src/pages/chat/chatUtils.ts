@@ -58,10 +58,6 @@ export function formatLocation(city: string | null, country: string | null): str
 	return city ?? country;
 }
 
-export function formatMoney(value: number, currency = 'USD'): string {
-	return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(value);
-}
-
 export function groupMessagesByDay<T extends { createdAt: string }>(
 	messages: T[],
 	locale: string

@@ -29,6 +29,7 @@ import {
 	notificationDisplayText,
 	notificationRoute,
 } from '@/utils/notificationUtils';
+import { formatMoney } from '@/utils/formatMoney';
 
 function formatOrderDate(iso: string) {
 	return new Date(iso).toLocaleDateString(undefined, {
@@ -153,7 +154,7 @@ export default function BuyerDashboardPage() {
 												#{order.id.slice(-6).toUpperCase()}
 											</Typography>
 											<Typography sx={{ fontSize: 12, color: tokens.ink3 }}>
-												{formatOrderDate(order.createdAt)} · ${order.totalAmount.toFixed(2)}
+												{formatOrderDate(order.createdAt)} · {formatMoney(order.totalAmount)}
 											</Typography>
 										</Box>
 										<StatusBadge status={order.status} label={t(`status.order.${order.status}`)} />
@@ -260,7 +261,7 @@ export default function BuyerDashboardPage() {
 														whiteSpace: 'nowrap',
 													}}
 												>
-													${item.price.toFixed(0)}
+													{formatMoney(item.price, { fractionDigits: 0 })}
 												</Typography>
 											</Box>
 										);

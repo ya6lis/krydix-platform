@@ -2,6 +2,7 @@ import { Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { RangeSlider } from '@/components/ui';
 import { tokens } from '@/theme';
+import { PLATFORM_CURRENCY_SYMBOL } from '@/constants/constants';
 import { CategoryFilterTree } from '@/components/features/catalog/CategoryFilterTree';
 import type { BrandCount, CategoryNode, ProductFilterInput } from '@/types/catalog';
 
@@ -203,7 +204,7 @@ export function CatalogFilters({
 					min={PRICE_MIN}
 					max={PRICE_MAX}
 					step={5}
-					prefix="$"
+					prefix={PLATFORM_CURRENCY_SYMBOL}
 					value={value.priceRange}
 					onChange={(range) => onChange({ ...value, priceRange: range })}
 				/>

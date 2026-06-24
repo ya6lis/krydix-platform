@@ -18,6 +18,7 @@ import { useWishlist } from '@/hooks/useWishlist';
 import { useAuthStore } from '@/store/authStore';
 import { ROUTES } from '@/constants/routes';
 import { CATALOG_SEARCH_QUERY_PARAM } from '@/constants/constants';
+import { formatMoney } from '@/utils/formatMoney';
 import { canUseBuyerCommerce } from '@/utils/roleAccess';
 import { Icons } from '@/constants/icons';
 import { NotificationsPanel } from '@/components/notifications/NotificationsPanel';
@@ -596,7 +597,7 @@ function CartDropdown({
 											{item.variant ? ` — ${item.variant}` : ''}
 										</Typography>
 										<Typography sx={{ fontSize: '11.5px', color: tokens.ink3, mt: '2px' }}>
-											Qty {item.qty} · ${(item.price * item.qty).toFixed(2)}
+											Qty {item.qty} · {formatMoney(item.price * item.qty)}
 										</Typography>
 									</Box>
 									{/* remove */}
@@ -648,7 +649,7 @@ function CartDropdown({
 							>
 								<span>{t('shell.cart.subtotal')}</span>
 								<Typography component="strong" sx={{ fontSize: 15, fontWeight: 800 }}>
-									${subtotal.toFixed(2)}
+									{formatMoney(subtotal)}
 								</Typography>
 							</Box>
 							<Box
@@ -858,7 +859,7 @@ function WishlistDropdown({
 									{item.productTitle}
 								</Typography>
 								<Typography sx={{ fontSize: '11.5px', color: tokens.ink3, mt: '2px' }}>
-									${item.price.toFixed(2)}
+									{formatMoney(item.price)}
 									{!item.inStock ? ` · ${t('catalog.outOfStock')}` : ''}
 								</Typography>
 							</Box>

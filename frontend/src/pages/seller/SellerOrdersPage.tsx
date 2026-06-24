@@ -30,6 +30,7 @@ import type { OrderStatus, OrderStats, PaginatedSellerOrders, SellerOrder } from
 import { EXPORT_MY_SELLER_ORDERS_QUERY } from '@/graphql/operations/importExport';
 import { useAuth } from '@/hooks/useAuth';
 import { downloadSpreadsheetFile } from '@/utils/downloadSpreadsheet';
+import { formatMoney } from '@/utils/formatMoney';
 
 const PAGE_SIZE = 8;
 
@@ -66,10 +67,6 @@ function formatDate(iso: string) {
 
 function formatTime(iso: string) {
 	return new Date(iso).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-}
-
-function formatAmount(n: number) {
-	return `$${n.toFixed(2)}`;
 }
 
 const ACTIVE_RETURN_STATUSES = [
@@ -368,7 +365,7 @@ export default function SellerOrdersPage() {
 			align: 'right',
 			render: (row) => (
 				<Typography sx={{ fontSize: 13, fontWeight: 700, color: tokens.ink1 }}>
-					{formatAmount(row.sellerSubtotal)}
+					{formatMoney(row.sellerSubtotal)}
 				</Typography>
 			),
 		},

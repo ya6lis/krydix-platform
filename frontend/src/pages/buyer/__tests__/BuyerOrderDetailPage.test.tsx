@@ -208,7 +208,7 @@ describe('BuyerOrderDetailPage — order loaded', () => {
 	it('renders formatted total amount', async () => {
 		renderPage([makeOrderMock(makeOrder())]);
 		await waitFor(() => {
-			expect(screen.getAllByText('$268.00').length).toBeGreaterThan(0);
+			expect(screen.getAllByText(/268,00/).length).toBeGreaterThan(0);
 		});
 	});
 

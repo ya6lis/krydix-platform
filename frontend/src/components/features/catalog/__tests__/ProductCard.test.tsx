@@ -73,7 +73,7 @@ describe('ProductCard', () => {
 		renderCard(makeProduct());
 		expect(screen.getByText('Heritage Field Jacket')).toBeInTheDocument();
 		expect(screen.getByText('Northern Atelier')).toBeInTheDocument();
-		expect(screen.getByText('$184.00')).toBeInTheDocument();
+		expect(screen.getByText(/184,00/)).toBeInTheDocument();
 	});
 
 	it('navigates to the product page when the body block is clicked', () => {
@@ -101,7 +101,7 @@ describe('ProductCard', () => {
 		renderCard(makeProduct({ basePrice: 184, comparePrice: 224, totalStock: 10 }));
 		// discount = round((224 - 184) / 224 * 100) = round(17.86) = 18
 		expect(screen.getByText('−18%')).toBeInTheDocument();
-		expect(screen.getByText('$224.00')).toBeInTheDocument();
+		expect(screen.getByText(/224,00/)).toBeInTheDocument();
 	});
 
 	it('does not show sale badge when comparePrice is null', () => {

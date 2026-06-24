@@ -18,6 +18,7 @@ import { getHomeRouteForRole } from '@/utils/roleAccess';
 import { tokens } from '@/theme';
 import type { AuthUser } from '@/store/authStore';
 import { getGraphQLErrorMessage } from '@/utils/graphqlError';
+import { formatMoney } from '@/utils/formatMoney';
 
 const schema = z.object({
 	email: z.string().email(),
@@ -229,7 +230,7 @@ function LoginArt() {
 						{t('auth.art.card1Label')}
 					</Typography>
 					<Typography sx={{ fontSize: 32, fontWeight: 800, letterSpacing: '-0.02em' }}>
-						$18,765
+						{formatMoney(18765, { fractionDigits: 0 })}
 					</Typography>
 					<Typography sx={{ fontSize: 12.5, color: 'rgba(255,255,255,0.6)', mt: 0.5 }}>
 						{t('auth.art.card1Sub')}

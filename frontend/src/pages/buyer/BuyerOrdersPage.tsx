@@ -26,6 +26,7 @@ import {
 	CANCEL_ORDER_MUTATION,
 } from '@/graphql/operations/orders';
 import type { Order, OrderStatus, PaginatedOrders, OrderStats } from '@/types/orders';
+import { formatMoney } from '@/utils/formatMoney';
 
 const PAGE_SIZE = 8;
 
@@ -51,10 +52,6 @@ function formatDate(iso: string) {
 
 function formatTime(iso: string) {
 	return new Date(iso).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-}
-
-function formatAmount(n: number) {
-	return `$${n.toFixed(2)}`;
 }
 
 function ProductAvatar({ title }: { title: string }) {
@@ -281,7 +278,7 @@ export default function BuyerOrdersPage() {
 			align: 'right',
 			render: (row) => (
 				<Typography sx={{ fontSize: 13, fontWeight: 700, color: tokens.ink1 }}>
-					{formatAmount(row.totalAmount)}
+					{formatMoney(row.totalAmount)}
 				</Typography>
 			),
 		},

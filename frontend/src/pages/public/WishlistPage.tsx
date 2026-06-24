@@ -14,6 +14,7 @@ import {
 	REMOVE_FROM_WISHLIST_MUTATION,
 	type WishlistItemData,
 } from '@/graphql/operations/wishlist';
+import { formatMoney } from '@/utils/formatMoney';
 
 function groupBySeller(items: WishlistItemData[]) {
 	return items.reduce<Record<string, WishlistItemData[]>>((acc, item) => {
@@ -167,7 +168,7 @@ function LineItem({
 
 			<Box sx={{ textAlign: 'right', minWidth: 80 }}>
 				<Typography sx={{ fontSize: 14.5, fontWeight: 700, color: tokens.ink1 }}>
-					${item.price.toFixed(2)}
+					{formatMoney(item.price)}
 				</Typography>
 				{onSale && (
 					<Typography
@@ -178,7 +179,7 @@ function LineItem({
 							mt: '2px',
 						}}
 					>
-						${item.comparePrice!.toFixed(2)}
+						{formatMoney(item.comparePrice!)}
 					</Typography>
 				)}
 			</Box>
@@ -188,7 +189,7 @@ function LineItem({
 					<Typography
 						sx={{ fontSize: 17, fontWeight: 800, letterSpacing: '-0.01em', color: tokens.coralInk }}
 					>
-						−${savings.toFixed(2)}
+						−{formatMoney(savings)}
 					</Typography>
 				) : (
 					<Typography sx={{ fontSize: 14.5, fontWeight: 600, color: tokens.ink3 }}>—</Typography>
@@ -306,7 +307,7 @@ function SellerGroup({
 					{t('wishlist.sellerSubtotal_other', { count: items.length })}
 				</Typography>
 				<Typography sx={{ fontSize: 13, fontWeight: 700, color: tokens.ink1 }}>
-					${groupTotal.toFixed(2)}
+					{formatMoney(groupTotal)}
 				</Typography>
 			</Box>
 		</Box>
@@ -391,7 +392,7 @@ function WishlistSummary({ items }: { items: WishlistItemData[] }) {
 					<Typography sx={{ fontSize: 13.5, color: tokens.ink3 }}>
 						{t('wishlist.summary.subtotal')}
 					</Typography>
-					<Typography sx={{ fontSize: 13.5, fontWeight: 600 }}>${subtotal.toFixed(2)}</Typography>
+					<Typography sx={{ fontSize: 13.5, fontWeight: 600 }}>{formatMoney(subtotal)}</Typography>
 				</Box>
 
 				{totalSavings > 0 && (
@@ -400,7 +401,7 @@ function WishlistSummary({ items }: { items: WishlistItemData[] }) {
 							{t('wishlist.summary.savings')}
 						</Typography>
 						<Typography sx={{ fontSize: 13.5, fontWeight: 600, color: tokens.coralInk }}>
-							−${totalSavings.toFixed(2)}
+							−{formatMoney(totalSavings)}
 						</Typography>
 					</Box>
 				)}
@@ -438,7 +439,7 @@ function WishlistSummary({ items }: { items: WishlistItemData[] }) {
 					<Typography
 						sx={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.02em', color: tokens.ink1 }}
 					>
-						${subtotal.toFixed(2)}
+						{formatMoney(subtotal)}
 					</Typography>
 				</Box>
 

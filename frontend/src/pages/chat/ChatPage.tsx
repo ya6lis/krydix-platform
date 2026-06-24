@@ -41,10 +41,10 @@ import {
 	formatLastSeen,
 	formatMemberSince,
 	formatMessageTime,
-	formatMoney,
 	formatRelativeWhen,
 	groupMessagesByDay,
 } from './chatUtils';
+import { formatMoney } from '@/utils/formatMoney';
 import styles from './ChatPage.module.scss';
 
 const MESSAGE_PAGE_SIZE = 100;

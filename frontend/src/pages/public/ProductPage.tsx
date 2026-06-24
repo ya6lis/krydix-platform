@@ -22,8 +22,7 @@ import { useCartStore } from '@/store/cartStore';
 import { useWishlist } from '@/hooks/useWishlist';
 import { useAuth } from '@/hooks/useAuth';
 import type { CatalogProduct, CatalogProductVariant } from '@/types/catalog';
-
-// ─── constants ────────────────────────────────────────────────────────────────
+import { formatMoney } from '@/utils/formatMoney';
 
 const QTY_MIN = 1;
 
@@ -49,10 +48,6 @@ const SWATCH_COLORS: Record<string, string> = {
 
 type SelectedOptions = Record<string, string>;
 type OptionGroups = Record<string, string[]>;
-
-function formatPrice(value: number): string {
-	return `$${value.toFixed(2)}`;
-}
 
 function buildOptionGroups(variants: CatalogProductVariant[]): OptionGroups {
 	const groups: OptionGroups = {};
@@ -576,7 +571,7 @@ export default function ProductPage() {
 					{/* Price */}
 					<Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1.5, mb: 0.5 }}>
 						<Typography sx={{ fontSize: 36, fontWeight: 800, letterSpacing: '-0.02em' }}>
-							{formatPrice(price)}
+							{formatMoney(price)}
 						</Typography>
 					</Box>
 
@@ -784,7 +779,7 @@ export default function ProductPage() {
 									startIcon={<FontAwesomeIcon icon={Icons.cart} />}
 									sx={{ flex: 2, justifyContent: 'center', py: 1.75, fontSize: 14 }}
 								>
-									{t('product.addToCart')} — {formatPrice(price)}
+									{t('product.addToCart')} — {formatMoney(price)}
 								</AppButton>
 							)}
 

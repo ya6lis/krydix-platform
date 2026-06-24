@@ -22,10 +22,7 @@ import { ADMIN_REVIEW_STATS_QUERY } from '@/graphql/operations/adminReviews';
 import { PLATFORM_OVERVIEW_QUERY } from '@/graphql/operations/adminPlatform';
 import { ADMIN_FEEDBACK_STATS_QUERY } from '@/graphql/operations/feedback';
 import { AUDIT_LOGS_QUERY, type AuditLogItem } from '@/graphql/operations/adminAudit';
-
-function formatMoney(value: number) {
-	return `$${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
-}
+import { formatMoney } from '@/utils/formatMoney';
 
 function formatAuditTime(iso: string) {
 	return new Date(iso).toLocaleString(undefined, {
@@ -132,7 +129,7 @@ export default function AdminDashboardPage() {
 					<StatCard
 						icon={Icons.wallet}
 						label={t('adminDashboard.stats.revenue30d')}
-						value={platform ? formatMoney(platform.platformRevenue30d) : '—'}
+						value={platform ? formatMoney(platform.platformRevenue30d, { fractionDigits: 0 }) : '—'}
 						tone="coral"
 					/>
 				</Grid>
@@ -149,7 +146,7 @@ export default function AdminDashboardPage() {
 						<Stack spacing={1.25}>
 							<MetricRow
 								label={t('adminDashboard.platform.gmv')}
-								value={platform ? formatMoney(platform.grossMerchandiseValue30d) : '—'}
+								value={platform ? formatMoney(platform.grossMerchandiseValue30d, { fractionDigits: 0 }) : '—'}
 							/>
 							<MetricRow
 								label={t('adminDashboard.platform.newUsers')}

@@ -40,7 +40,7 @@ describe('Product page — product found', () => {
 	});
 
 	it('shows the product price', () => {
-		cy.contains('$184.00').should('be.visible');
+		cy.contains('184,00').should('be.visible');
 	});
 
 	it('shows the seller name', () => {
