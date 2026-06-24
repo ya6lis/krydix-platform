@@ -306,7 +306,9 @@ export default function ProductsManagementPage() {
 			key: 'price',
 			label: t('adminProducts.table.price'),
 			render: (row) => (
-				<Typography sx={{ fontSize: 13, fontWeight: 600 }}>{formatMoney(row.basePrice, { fractionDigits: 0 })}</Typography>
+				<Typography sx={{ fontSize: 13, fontWeight: 600 }}>
+					{formatMoney(row.basePrice, { fractionDigits: 0 })}
+				</Typography>
 			),
 		},
 		{

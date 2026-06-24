@@ -848,7 +848,9 @@ export default function CheckoutPage() {
 							<Typography sx={{ fontSize: 13, color: tokens.ink3 }}>
 								{t('checkout.summary.subtotal')}
 							</Typography>
-							<Typography sx={{ fontSize: 13, fontWeight: 700 }}>{formatMoney(subtotal)}</Typography>
+							<Typography sx={{ fontSize: 13, fontWeight: 700 }}>
+								{formatMoney(subtotal)}
+							</Typography>
 						</Box>
 						<Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
 							<Typography sx={{ fontSize: 13, color: tokens.ink3 }}>

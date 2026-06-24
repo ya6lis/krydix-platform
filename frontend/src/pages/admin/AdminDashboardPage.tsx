@@ -146,7 +146,11 @@ export default function AdminDashboardPage() {
 						<Stack spacing={1.25}>
 							<MetricRow
 								label={t('adminDashboard.platform.gmv')}
-								value={platform ? formatMoney(platform.grossMerchandiseValue30d, { fractionDigits: 0 }) : '—'}
+								value={
+									platform
+										? formatMoney(platform.grossMerchandiseValue30d, { fractionDigits: 0 })
+										: '—'
+								}
 							/>
 							<MetricRow
 								label={t('adminDashboard.platform.newUsers')}
