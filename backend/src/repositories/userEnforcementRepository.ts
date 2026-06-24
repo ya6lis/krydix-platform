@@ -8,10 +8,7 @@ const ENFORCEABLE_ORDER_STATUSES: OrderStatus[] = [
 	OrderStatus.DELIVERED,
 ];
 
-const REFUNDABLE_PAYMENT_STATUSES: PaymentStatus[] = [
-	PaymentStatus.PAID,
-	PaymentStatus.AUTHORIZED,
-];
+const REFUNDABLE_PAYMENT_STATUSES: PaymentStatus[] = [PaymentStatus.PAID, PaymentStatus.AUTHORIZED];
 
 export interface UserEnforcementResult {
 	productsAffected: number;
@@ -47,7 +44,7 @@ async function findAffectedOrderIds(userId: string): Promise<string[]> {
 async function cancelAndRefundOrders(
 	tx: Parameters<Parameters<typeof prisma.$transaction>[0]>[0],
 	orderIds: string[],
-	options?: { softDeleteOrders?: boolean },
+	options?: { softDeleteOrders?: boolean }
 ): Promise<{ ordersCancelled: number; ordersRefunded: number }> {
 	if (orderIds.length === 0) {
 		return { ordersCancelled: 0, ordersRefunded: 0 };

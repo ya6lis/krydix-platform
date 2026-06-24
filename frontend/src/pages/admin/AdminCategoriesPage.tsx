@@ -79,8 +79,7 @@ export default function AdminCategoriesPage() {
 			setFormMode(null);
 			refetch();
 		},
-		onError: (err) =>
-			showToast(err.message || t('adminCategories.toast.deleteError'), 'error'),
+		onError: (err) => showToast(err.message || t('adminCategories.toast.deleteError'), 'error'),
 	});
 
 	const handleSelect = useCallback((id: string) => {
@@ -181,11 +180,7 @@ export default function AdminCategoriesPage() {
 							tree={tree}
 							saving={creating || updating}
 							onSubmit={handleSubmit}
-							onDelete={
-								selectedCategory
-									? () => setDeleteTarget(selectedCategory)
-									: undefined
-							}
+							onDelete={selectedCategory ? () => setDeleteTarget(selectedCategory) : undefined}
 							onDiscard={handleDiscard}
 						/>
 					)}
@@ -197,8 +192,8 @@ export default function AdminCategoriesPage() {
 				title={t('adminCategories.delete.title')}
 				message={t('adminCategories.delete.message', {
 					name: deleteTarget
-						? deleteTarget.translations.find((tr) => tr.language === 'EN')?.name ??
-							deleteTarget.slug
+						? (deleteTarget.translations.find((tr) => tr.language === 'EN')?.name ??
+							deleteTarget.slug)
 						: '',
 				})}
 				confirmLabel={t('adminCategories.delete.confirm')}

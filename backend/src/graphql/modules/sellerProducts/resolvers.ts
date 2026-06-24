@@ -4,7 +4,10 @@ import { requireImportExport } from '../../../utils/importExportAccess.js';
 import { requireSellerCabinet } from '../../../utils/sellerCabinetAccess.js';
 import * as service from '../../../services/sellerProductService.js';
 import * as importService from '../../../services/bulkImportService.js';
-import { exportSellerProducts, getProductImportTemplate } from '../../../services/productExportService.js';
+import {
+	exportSellerProducts,
+	getProductImportTemplate,
+} from '../../../services/productExportService.js';
 import {
 	CreateProductSchema,
 	UpdateProductSchema,
@@ -42,7 +45,7 @@ export const sellerProductsResolvers = {
 		exportMyProducts: async (
 			_: unknown,
 			{ filter }: { filter?: Record<string, unknown> },
-			ctx: GraphQLContext,
+			ctx: GraphQLContext
 		) => {
 			const user = requireImportExport(ctx);
 			const parsedFilter = ProductListFilterSchema.parse(filter ?? {});
@@ -117,7 +120,7 @@ export const sellerProductsResolvers = {
 		previewImport: async (
 			_: unknown,
 			args: { dataUrl: string; fileType?: string; mode?: ImportMode },
-			ctx: GraphQLContext,
+			ctx: GraphQLContext
 		) => {
 			const user = requireImportExport(ctx);
 			const parsed = ImportPreviewSchema.parse(args);
@@ -125,23 +128,18 @@ export const sellerProductsResolvers = {
 				parsed.dataUrl,
 				parsed.fileType,
 				parsed.mode as ImportMode,
-				user.id,
+				user.id
 			);
 		},
 
 		confirmImport: async (
 			_: unknown,
 			{ rows, mode }: { rows: unknown[]; mode?: ImportMode },
-			ctx: GraphQLContext,
+			ctx: GraphQLContext
 		) => {
 			const user = requireImportExport(ctx);
 			const parsed = ConfirmImportSchema.parse({ rows, mode });
-			return importService.confirmImport(
-				user.id,
-				parsed.rows,
-				parsed.mode as ImportMode,
-				user.id,
-			);
+			return importService.confirmImport(user.id, parsed.rows, parsed.mode as ImportMode, user.id);
 		},
 	},
 };

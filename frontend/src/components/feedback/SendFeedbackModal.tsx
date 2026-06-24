@@ -7,7 +7,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { FeedbackCategory } from '@/constants/enums';
 import { Icons } from '@/constants/icons';
 import { tokens } from '@/theme';
-import { AppButton, AppInput, AppModal, AppSelect, AppTextarea, AppImage, useAppToast } from '@/components/ui';
+import {
+	AppButton,
+	AppInput,
+	AppModal,
+	AppSelect,
+	AppTextarea,
+	AppImage,
+	useAppToast,
+} from '@/components/ui';
 import { SUBMIT_FEEDBACK_MUTATION } from '@/graphql/operations/feedback';
 
 interface SendFeedbackModalProps {

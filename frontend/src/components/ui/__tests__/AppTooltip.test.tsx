@@ -12,7 +12,7 @@ describe('AppTooltip', () => {
 		renderTooltip(
 			<AppTooltip title="Verified seller">
 				<button>Hover me</button>
-			</AppTooltip>,
+			</AppTooltip>
 		);
 		expect(screen.getByText('Hover me')).toBeInTheDocument();
 	});
@@ -21,7 +21,7 @@ describe('AppTooltip', () => {
 		renderTooltip(
 			<AppTooltip title="Verified seller — EDRPOU on file">
 				<button>Hover me</button>
-			</AppTooltip>,
+			</AppTooltip>
 		);
 
 		fireEvent.mouseOver(screen.getByText('Hover me'));

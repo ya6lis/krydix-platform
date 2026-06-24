@@ -37,7 +37,9 @@ function makeProductItem(overrides: Record<string, unknown> = {}) {
 		updatedAt: '2026-01-01T00:00:00.000Z',
 		titleEn: 'Test Product EN',
 		titleUk: 'Тест',
-		categories: [{ id: 'cat-1', slug: 'electronics', nameEn: 'Electronics', nameUk: 'Електроніка' }],
+		categories: [
+			{ id: 'cat-1', slug: 'electronics', nameEn: 'Electronics', nameUk: 'Електроніка' },
+		],
 		variants: [{ id: 'var-1', stock: 10, isActive: true }],
 		media: [{ id: 'media-1', url: 'https://example.com/img.jpg', isMain: true }],
 		...overrides,
@@ -52,7 +54,10 @@ const myProductsMock: MockedResponse = {
 	result: {
 		data: {
 			myProducts: {
-				items: [makeProductItem(), makeProductItem({ id: 'prod-2', titleEn: 'Second Product', sku: 'TEST-002' })],
+				items: [
+					makeProductItem(),
+					makeProductItem({ id: 'prod-2', titleEn: 'Second Product', sku: 'TEST-002' }),
+				],
 				total: 2,
 				page: 1,
 				pageSize: 20,
@@ -88,10 +93,7 @@ function renderPage(mocks: MockedResponse[] = [myProductsMock]) {
 					<Routes>
 						<Route path="/seller/products" element={<SellerProductsPage />} />
 						<Route path="/seller/products/new" element={<div>New product</div>} />
-						<Route
-							path="/seller/products/:id/edit"
-							element={<div>Edit product</div>}
-						/>
+						<Route path="/seller/products/:id/edit" element={<div>Edit product</div>} />
 					</Routes>
 				</AppToastProvider>
 			</MemoryRouter>

@@ -1,47 +1,47 @@
 {
-  "moderationQueue": {
-    "items": [
-      {
-        "id": "prod-1",
-        "titleEn": "Wool Cardigan — Oat",
-        "titleUk": "Вовняний кардиган — Вівсяний",
-        "descriptionEn": "A relaxed-fit cardigan in undyed Highland wool. Five horn buttons, ribbed cuffs, and a kangaroo pocket. Naturally water-repellent.",
-        "sku": "LG-WC-OAT-S",
-        "brand": "Lichen Goods",
-        "basePrice": 96.0,
-        "imageUrl": null,
-        "status": "PENDING_MODERATION",
-        "categoryPath": "Outerwear › Knitwear",
-        "totalStock": 14,
-        "photoCount": 6,
-        "sellerId": "seller-1",
-        "sellerName": "Lichen Goods",
-        "sellerInitials": "LG",
-        "sellerAvatarUrl": null,
-        "submittedAt": "2026-05-25T20:00:00Z"
-      },
-      {
-        "id": "prod-2",
-        "titleEn": "Heritage Field Jacket — Olive",
-        "titleUk": "Польова куртка — Оливкова",
-        "descriptionEn": "Classic field jacket in olive waxed cotton. Four patch pockets, brass buckle waist belt, corduroy collar.",
-        "sku": "NA-HFJ-OLV",
-        "brand": "Northern Atelier",
-        "basePrice": 184.0,
-        "imageUrl": null,
-        "status": "PENDING_MODERATION",
-        "categoryPath": "Outerwear › Jackets",
-        "totalStock": 18,
-        "photoCount": 8,
-        "sellerId": "seller-2",
-        "sellerName": "Northern Atelier",
-        "sellerInitials": "NA",
-        "sellerAvatarUrl": null,
-        "submittedAt": "2026-05-25T18:00:00Z"
-      }
-    ],
-    "total": 2,
-    "pendingCount": 2,
-    "resolvedTodayCount": 5
-  }
+	"moderationQueue": {
+		"items": [
+			{
+				"id": "prod-1",
+				"titleEn": "Wool Cardigan — Oat",
+				"titleUk": "Вовняний кардиган — Вівсяний",
+				"descriptionEn": "A relaxed-fit cardigan in undyed Highland wool. Five horn buttons, ribbed cuffs, and a kangaroo pocket. Naturally water-repellent.",
+				"sku": "LG-WC-OAT-S",
+				"brand": "Lichen Goods",
+				"basePrice": 96.0,
+				"imageUrl": null,
+				"status": "PENDING_MODERATION",
+				"categoryPath": "Outerwear › Knitwear",
+				"totalStock": 14,
+				"photoCount": 6,
+				"sellerId": "seller-1",
+				"sellerName": "Lichen Goods",
+				"sellerInitials": "LG",
+				"sellerAvatarUrl": null,
+				"submittedAt": "2026-05-25T20:00:00Z"
+			},
+			{
+				"id": "prod-2",
+				"titleEn": "Heritage Field Jacket — Olive",
+				"titleUk": "Польова куртка — Оливкова",
+				"descriptionEn": "Classic field jacket in olive waxed cotton. Four patch pockets, brass buckle waist belt, corduroy collar.",
+				"sku": "NA-HFJ-OLV",
+				"brand": "Northern Atelier",
+				"basePrice": 184.0,
+				"imageUrl": null,
+				"status": "PENDING_MODERATION",
+				"categoryPath": "Outerwear › Jackets",
+				"totalStock": 18,
+				"photoCount": 8,
+				"sellerId": "seller-2",
+				"sellerName": "Northern Atelier",
+				"sellerInitials": "NA",
+				"sellerAvatarUrl": null,
+				"submittedAt": "2026-05-25T18:00:00Z"
+			}
+		],
+		"total": 2,
+		"pendingCount": 2,
+		"resolvedTodayCount": 5
+	}
 }

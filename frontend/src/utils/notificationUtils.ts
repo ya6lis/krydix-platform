@@ -15,10 +15,7 @@ export const SUPPORT_NOTIFICATION_ACTION = {
 
 function isSupportNotification(notification: AppNotification): boolean {
 	const metadata = notification.metadata ?? {};
-	return (
-		notification.event === NotificationEvent.SUPPORT_UPDATE ||
-		metadata.isSupportChat === true
-	);
+	return notification.event === NotificationEvent.SUPPORT_UPDATE || metadata.isSupportChat === true;
 }
 
 function supportNotificationRoute(role: Role | string | undefined): string {
@@ -78,18 +75,18 @@ export function notificationCategory(event: NotificationEvent): 'orders' | 'syst
 
 export function filterNotifications(
 	notifications: AppNotification[],
-	tab: 'all' | 'unread' | 'orders' | 'system',
+	tab: 'all' | 'unread' | 'orders' | 'system'
 ): AppNotification[] {
 	switch (tab) {
 		case 'unread':
 			return notifications.filter((item) => !item.isRead);
 		case 'orders':
 			return notifications.filter(
-				(item) => notificationCategory(item.event as NotificationEvent) === 'orders',
+				(item) => notificationCategory(item.event as NotificationEvent) === 'orders'
 			);
 		case 'system':
 			return notifications.filter(
-				(item) => notificationCategory(item.event as NotificationEvent) === 'system',
+				(item) => notificationCategory(item.event as NotificationEvent) === 'system'
 			);
 		default:
 			return notifications;
@@ -110,7 +107,7 @@ export function notificationTabCounts(notifications: AppNotification[]) {
 
 export function notificationRoute(
 	notification: AppNotification,
-	role: Role | string | undefined,
+	role: Role | string | undefined
 ): string | null {
 	const metadata = notification.metadata ?? {};
 	const event = notification.event as NotificationEvent;
@@ -150,7 +147,7 @@ export function formatNotificationTime(iso: string, locale: string): string {
 }
 
 export function extractOrderLabel(
-	notification: Pick<AppNotification, 'body' | 'metadata'>,
+	notification: Pick<AppNotification, 'body' | 'metadata'>
 ): string | null {
 	const metadata = notification.metadata ?? {};
 	if (typeof metadata.orderLabel === 'string' && metadata.orderLabel.trim()) {
@@ -165,7 +162,7 @@ export function extractOrderLabel(
 
 export function extractOrderStatus(
 	notification: Pick<AppNotification, 'body' | 'metadata'>,
-	t: (key: string, opts?: Record<string, unknown>) => string,
+	t: (key: string, opts?: Record<string, unknown>) => string
 ): string | null {
 	const metadata = notification.metadata ?? {};
 	if (typeof metadata.status === 'string' && metadata.status.trim()) {
@@ -179,7 +176,7 @@ export function extractOrderStatus(
 
 export function notificationDisplayText(
 	notification: AppNotification,
-	t: (key: string, opts?: Record<string, unknown>) => string,
+	t: (key: string, opts?: Record<string, unknown>) => string
 ) {
 	const metadata = notification.metadata ?? {};
 	const event = notification.event as NotificationEvent;

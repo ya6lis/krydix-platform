@@ -17,7 +17,9 @@ const ACTOR_INCLUDE = {
 	},
 } as const;
 
-export type RawAuditLog = Prisma.AuditLogGetPayload<{ include: { actor: { include: typeof ACTOR_INCLUDE } } }>;
+export type RawAuditLog = Prisma.AuditLogGetPayload<{
+	include: { actor: { include: typeof ACTOR_INCLUDE } };
+}>;
 
 function resolveDateRange(input: {
 	datePreset?: AuditDateRangePreset;
@@ -53,7 +55,9 @@ function buildDateWhere(input: {
 	return { createdAt };
 }
 
-function buildActorRoleWhere(actorRoles?: AuditActorRoleFilter[]): Prisma.AuditLogWhereInput | undefined {
+function buildActorRoleWhere(
+	actorRoles?: AuditActorRoleFilter[]
+): Prisma.AuditLogWhereInput | undefined {
 	if (!actorRoles?.length) return undefined;
 	return {
 		actor: {
@@ -62,13 +66,17 @@ function buildActorRoleWhere(actorRoles?: AuditActorRoleFilter[]): Prisma.AuditL
 	};
 }
 
-function buildActionKeyWhere(actionKeys?: AuditActionKeyValue[]): Prisma.AuditLogWhereInput | undefined {
+function buildActionKeyWhere(
+	actionKeys?: AuditActionKeyValue[]
+): Prisma.AuditLogWhereInput | undefined {
 	if (!actionKeys?.length) return undefined;
 	const clauses = actionKeys.map((key) => actionKeyToWhere(key));
 	return clauses.length === 1 ? clauses[0] : { OR: clauses };
 }
 
-function combineWhere(...parts: Array<Prisma.AuditLogWhereInput | undefined>): Prisma.AuditLogWhereInput {
+function combineWhere(
+	...parts: Array<Prisma.AuditLogWhereInput | undefined>
+): Prisma.AuditLogWhereInput {
 	const AND = parts.filter(Boolean) as Prisma.AuditLogWhereInput[];
 	return AND.length === 1 ? AND[0] : { AND };
 }
@@ -87,7 +95,7 @@ export async function findAuditLogs(input: {
 		buildDateWhere(input),
 		input.actorId ? { actorId: input.actorId } : undefined,
 		buildActorRoleWhere(input.actorRoles),
-		buildActionKeyWhere(input.actionKeys),
+		buildActionKeyWhere(input.actionKeys)
 	);
 
 	const skip = (input.page - 1) * input.pageSize;

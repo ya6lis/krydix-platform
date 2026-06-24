@@ -33,30 +33,33 @@ function stubAuth(win: Window, role: 'ADMIN' | 'MODERATOR') {
 function stubGraphQL(role: 'ADMIN' | 'MODERATOR') {
 	cy.intercept('POST', '**/graphql', (req) => {
 		const op: string = req.body?.operationName ?? '';
-		const session = role === 'ADMIN' ? adminSession : {
-			refreshToken: {
-				refreshToken: {
-					accessToken: 'stub-access',
-					refreshToken: 'stub-rt',
-					user: {
-						id: 'mod-1',
-						email: 'mod1@krydix.dev',
-						role: 'MODERATOR',
-						isEmailVerified: true,
-						profile: { firstName: 'Sofia', lastName: 'Kovalenko', avatarUrl: null },
-					},
-				},
-			},
-			me: {
-				me: {
-					id: 'mod-1',
-					email: 'mod1@krydix.dev',
-					role: 'MODERATOR',
-					isEmailVerified: true,
-					profile: { firstName: 'Sofia', lastName: 'Kovalenko', avatarUrl: null },
-				},
-			},
-		};
+		const session =
+			role === 'ADMIN'
+				? adminSession
+				: {
+						refreshToken: {
+							refreshToken: {
+								accessToken: 'stub-access',
+								refreshToken: 'stub-rt',
+								user: {
+									id: 'mod-1',
+									email: 'mod1@krydix.dev',
+									role: 'MODERATOR',
+									isEmailVerified: true,
+									profile: { firstName: 'Sofia', lastName: 'Kovalenko', avatarUrl: null },
+								},
+							},
+						},
+						me: {
+							me: {
+								id: 'mod-1',
+								email: 'mod1@krydix.dev',
+								role: 'MODERATOR',
+								isEmailVerified: true,
+								profile: { firstName: 'Sofia', lastName: 'Kovalenko', avatarUrl: null },
+							},
+						},
+					};
 
 		if (op === 'RefreshToken') {
 			req.reply({ data: session.refreshToken });

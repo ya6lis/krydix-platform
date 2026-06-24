@@ -50,7 +50,7 @@ describe('changeAdminReviewStatus', () => {
 			'mod-1',
 			Role.MODERATOR,
 			'rev-1',
-			'APPROVED',
+			'APPROVED'
 		);
 
 		expect(result.status).toBe('APPROVED');
@@ -68,8 +68,8 @@ describe('adminDeleteReview', () => {
 	});
 
 	it('blocks moderator from deleting review', async () => {
-		await expect(
-			service.adminDeleteReview('mod-1', Role.MODERATOR, 'rev-1'),
-		).rejects.toMatchObject({ extensions: { code: 'FORBIDDEN' } });
+		await expect(service.adminDeleteReview('mod-1', Role.MODERATOR, 'rev-1')).rejects.toMatchObject(
+			{ extensions: { code: 'FORBIDDEN' } }
+		);
 	});
 });

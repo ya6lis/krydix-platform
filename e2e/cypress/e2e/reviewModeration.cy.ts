@@ -78,7 +78,7 @@ describe('ReviewModerationPage', () => {
 
 	it('renders review cards in grid', () => {
 		cy.contains('Jaymes Sorrento').should('be.visible');
-		cy.contains('Lucia O\'Brien').should('be.visible');
+		cy.contains("Lucia O'Brien").should('be.visible');
 		cy.contains('Looks nothing like the photos').should('be.visible');
 		cy.contains('Heritage Field Jacket — Olive').should('be.visible');
 	});

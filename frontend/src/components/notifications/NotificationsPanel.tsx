@@ -169,9 +169,7 @@ export function NotificationsPanel({
 								onClick={() => onNotificationClick(notification)}
 								showDelete={Boolean(onDeleteNotification)}
 								onDelete={
-									onDeleteNotification
-										? () => onDeleteNotification(notification.id)
-										: undefined
+									onDeleteNotification ? () => onDeleteNotification(notification.id) : undefined
 								}
 								deleting={deletingId === notification.id}
 								deleteLabel={t('notificationsPage.delete')}

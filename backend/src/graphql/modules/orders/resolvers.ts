@@ -159,7 +159,7 @@ export const ordersResolvers = {
 					search?: string;
 				};
 			},
-			context: GraphQLContext,
+			context: GraphQLContext
 		) => {
 			const user = requireImportExport(context);
 			return exportSellerOrders(user.id, {
@@ -211,7 +211,11 @@ export const ordersResolvers = {
 			return confirmSellerOrder(parsed.orderId, user.id);
 		},
 
-		markSellerOrderPacked: async (_: unknown, args: { orderId: string }, context: GraphQLContext) => {
+		markSellerOrderPacked: async (
+			_: unknown,
+			args: { orderId: string },
+			context: GraphQLContext
+		) => {
 			const user = requireSeller(context);
 			const parsed = SellerOrderIdSchema.parse(args);
 			return markSellerOrderPacked(parsed.orderId, user.id);
@@ -264,12 +268,7 @@ export const ordersResolvers = {
 		) => {
 			const user = requireSeller(context);
 			const parsed = ReviewSellerReturnSchema.parse(args);
-			return reviewSellerReturnRequest(
-				parsed.orderId,
-				user.id,
-				parsed.approve,
-				parsed.resolution
-			);
+			return reviewSellerReturnRequest(parsed.orderId, user.id, parsed.approve, parsed.resolution);
 		},
 
 		markSellerReturnReceived: async (

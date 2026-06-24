@@ -56,8 +56,7 @@ export default function AdminDashboardPage() {
 	const feedbackStats = feedbackStatsData?.adminFeedbackStats;
 	const auditItems = (auditData?.auditLogs?.items ?? []) as AuditLogItem[];
 
-	const criticalFeedback =
-		(feedbackStats?.newCount ?? 0) + (feedbackStats?.underReviewCount ?? 0);
+	const criticalFeedback = (feedbackStats?.newCount ?? 0) + (feedbackStats?.underReviewCount ?? 0);
 
 	const alerts = useMemo(() => {
 		const items = [];

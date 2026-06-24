@@ -11,7 +11,12 @@ import { useAuthStore, type AuthUser } from '@/store/authStore';
 import { ROUTES } from '@/constants/routes';
 import { useRoleHomeRoute } from '@/hooks/useRoleHomeRoute';
 import { Role } from '@/constants/enums';
-import { canSeeNavForRoles, getProfileMenuLabelKey, getProfileRouteForUser, getSettingsRouteForUser } from '@/utils/roleAccess';
+import {
+	canSeeNavForRoles,
+	getProfileMenuLabelKey,
+	getProfileRouteForUser,
+	getSettingsRouteForUser,
+} from '@/utils/roleAccess';
 import i18n from '@/i18n';
 import { UNREAD_MESSAGE_COUNT_QUERY } from '@/graphql/operations/chat';
 import {
@@ -303,23 +308,26 @@ export default function AppSidebar() {
 	const [whatsNewOpen, setWhatsNewOpen] = useState(false);
 	const autoWhatsNewShownRef = useRef(false);
 	const releaseLanguage = i18n.language.startsWith('uk') ? 'UK' : 'EN';
-	const { data: unreadData } = useQuery<{ unreadMessageCount: number }>(UNREAD_MESSAGE_COUNT_QUERY, {
-		skip: !user,
-		fetchPolicy: 'cache-and-network',
-	});
+	const { data: unreadData } = useQuery<{ unreadMessageCount: number }>(
+		UNREAD_MESSAGE_COUNT_QUERY,
+		{
+			skip: !user,
+			fetchPolicy: 'cache-and-network',
+		}
+	);
 	const { data: unreadOrderData } = useQuery<{ unreadOrderNotificationCount: number }>(
 		UNREAD_ORDER_NOTIFICATION_COUNT_QUERY,
 		{
 			skip: !user,
 			fetchPolicy: 'cache-and-network',
-		},
+		}
 	);
 	const { data: unreadNotifData } = useQuery<{ unreadNotificationCount: number }>(
 		UNREAD_NOTIFICATION_COUNT_QUERY,
 		{
 			skip: !user,
 			fetchPolicy: 'cache-and-network',
-		},
+		}
 	);
 	const unreadMessageCount = unreadData?.unreadMessageCount ?? 0;
 	const unreadOrderCount = unreadOrderData?.unreadOrderNotificationCount ?? 0;
@@ -331,7 +339,7 @@ export default function AppSidebar() {
 			skip: !user,
 			variables: { sincePublishedAt: getLastSeenReleasePublishedAt() },
 			fetchPolicy: 'cache-and-network',
-		},
+		}
 	);
 
 	const { data: publishedReleaseData, loading: publishedReleaseLoading } = useQuery(
@@ -340,7 +348,7 @@ export default function AppSidebar() {
 			skip: !user,
 			variables: { language: releaseLanguage, limit: RELEASE_NOTES_HISTORY_LIMIT },
 			fetchPolicy: 'cache-and-network',
-		},
+		}
 	);
 
 	const whatsNewCount = unseenReleaseData?.unseenReleaseNotesCount ?? 0;

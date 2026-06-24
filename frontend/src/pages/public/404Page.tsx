@@ -27,7 +27,10 @@ function dashboardRoute(role: Role | string | undefined, isAuthenticated: boolea
 	return getHomeRouteForRole(role);
 }
 
-function buildQuickLinks(role: Role | string | undefined, isAuthenticated: boolean): QuickLinkItem[] {
+function buildQuickLinks(
+	role: Role | string | undefined,
+	isAuthenticated: boolean
+): QuickLinkItem[] {
 	if (!isAuthenticated) {
 		return [
 			{
@@ -180,12 +183,12 @@ export default function NotFound404Page() {
 	const isAuthenticated = Boolean(user);
 	const dashboardHref = useMemo(
 		() => dashboardRoute(user?.role, isAuthenticated),
-		[user?.role, isAuthenticated],
+		[user?.role, isAuthenticated]
 	);
 	const homeHref = dashboardHref;
 	const quickLinks = useMemo(
 		() => buildQuickLinks(user?.role, isAuthenticated),
-		[user?.role, isAuthenticated],
+		[user?.role, isAuthenticated]
 	);
 
 	const attemptedPath = location.pathname === ROUTES.NOT_FOUND ? null : location.pathname;
@@ -252,7 +255,11 @@ export default function NotFound404Page() {
 						<span className={styles.quickTitle}>{t('error404.quick.title')}</span>
 						<div className={styles.quickGrid}>
 							{quickLinks.map((item) => (
-								<RouterLink key={item.href + item.titleKey} to={item.href} className={styles.quickLink}>
+								<RouterLink
+									key={item.href + item.titleKey}
+									to={item.href}
+									className={styles.quickLink}
+								>
 									<span className={`${styles.quickIcon} ${toneClass(item.tone)}`}>
 										<FontAwesomeIcon icon={item.icon} />
 									</span>

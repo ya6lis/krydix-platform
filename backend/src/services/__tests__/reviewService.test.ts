@@ -83,7 +83,7 @@ describe('createProductReview', () => {
 				productId: 'prod-1',
 				orderId: 'order-1',
 				rating: 4,
-			}),
+			})
 		).rejects.toMatchObject({ extensions: { code: 'FORBIDDEN' } });
 	});
 
@@ -93,7 +93,7 @@ describe('createProductReview', () => {
 				productId: 'prod-1',
 				orderId: 'order-1',
 				rating: 6,
-			}),
+			})
 		).rejects.toMatchObject({ extensions: { code: 'BAD_USER_INPUT' } });
 	});
 });

@@ -6,14 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { Icons } from '@/constants/icons';
 import { tokens } from '@/theme';
-import {
-	AppCard,
-	AppInput,
-	AppPagination,
-	AppSelect,
-	AppTabs,
-	EmptyState,
-} from '@/components/ui';
+import { AppCard, AppInput, AppPagination, AppSelect, AppTabs, EmptyState } from '@/components/ui';
 import { useAppToast } from '@/components/ui/AppToast';
 import {
 	ModerationReviewCard,
@@ -71,7 +64,7 @@ export default function ReviewModerationPage() {
 				},
 			},
 			fetchPolicy: 'cache-and-network',
-		},
+		}
 	);
 
 	const [approveReviewMutation] = useMutation(APPROVE_REVIEW_MUTATION);
@@ -124,7 +117,7 @@ export default function ReviewModerationPage() {
 				setActionId(null);
 			}
 		},
-		[approveReviewMutation, showToast, t, refetch],
+		[approveReviewMutation, showToast, t, refetch]
 	);
 
 	const handleHide = useCallback(
@@ -140,12 +133,20 @@ export default function ReviewModerationPage() {
 				setActionId(null);
 			}
 		},
-		[hideReviewMutation, showToast, t, refetch],
+		[hideReviewMutation, showToast, t, refetch]
 	);
 
 	return (
 		<Box sx={{ width: '100%', maxWidth: 1200, mx: 'auto' }}>
-			<Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 3, gap: 2 }}>
+			<Box
+				sx={{
+					display: 'flex',
+					alignItems: 'flex-start',
+					justifyContent: 'space-between',
+					mb: 3,
+					gap: 2,
+				}}
+			>
 				<Box>
 					<Typography variant="h5" fontWeight={700} color={tokens.ink1}>
 						{t('reviewModeration.pageTitle')}

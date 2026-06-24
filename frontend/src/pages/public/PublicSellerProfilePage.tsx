@@ -25,7 +25,13 @@ import {
 } from '@/graphql/operations/catalog';
 import { useAuthStore } from '@/store/authStore';
 import { getSettingsRouteForUser } from '@/utils/roleAccess';
-import type { BrandCount, CatalogProduct, CategoryNode, ProductListResult, ProductSort } from '@/types/catalog';
+import type {
+	BrandCount,
+	CatalogProduct,
+	CategoryNode,
+	ProductListResult,
+	ProductSort,
+} from '@/types/catalog';
 import styles from './PublicSellerProfilePage.module.scss';
 
 const PAGE_SIZE = 12;
@@ -75,10 +81,11 @@ export default function PublicSellerProfilePage() {
 	const [sort, setSort] = useState<ProductSort>('NEWEST');
 	const [page, setPage] = useState(1);
 
-	const { data: profileData, loading: profileLoading, error: profileError } = useQuery(
-		PUBLIC_SELLER_PROFILE_QUERY,
-		{ variables: { sellerId: id }, skip: !id },
-	);
+	const {
+		data: profileData,
+		loading: profileLoading,
+		error: profileError,
+	} = useQuery(PUBLIC_SELLER_PROFILE_QUERY, { variables: { sellerId: id }, skip: !id });
 
 	const { data: categoryData } = useQuery<{ categories: CategoryNode[] }>(CATEGORIES_QUERY, {
 		variables: { language, sellerId: id },
@@ -87,7 +94,7 @@ export default function PublicSellerProfilePage() {
 
 	const { data: brandData } = useQuery<{ productBrandsWithCounts: BrandCount[] }>(
 		PRODUCT_BRANDS_WITH_COUNTS_QUERY,
-		{ variables: { sellerId: id }, skip: !id },
+		{ variables: { sellerId: id }, skip: !id }
 	);
 
 	const filter = useMemo(
@@ -96,16 +103,15 @@ export default function PublicSellerProfilePage() {
 				sellerId: id,
 				...(search.trim() ? { search: search.trim() } : {}),
 			}),
-		[id, search, catalogFilters],
+		[id, search, catalogFilters]
 	);
 
-	const { data: productsData, loading: productsLoading } = useQuery<{ products: ProductListResult }>(
-		PRODUCTS_QUERY,
-		{
-			variables: { filter, sort, page, pageSize: PAGE_SIZE, language },
-			skip: !id,
-		},
-	);
+	const { data: productsData, loading: productsLoading } = useQuery<{
+		products: ProductListResult;
+	}>(PRODUCTS_QUERY, {
+		variables: { filter, sort, page, pageSize: PAGE_SIZE, language },
+		skip: !id,
+	});
 
 	const profile = profileData?.publicSellerProfile;
 	const products = productsData?.products.items ?? [];
@@ -301,10 +307,14 @@ export default function PublicSellerProfilePage() {
 											: t('publicProfile.noProductsDescription')
 									}
 									actionLabel={filtersActive ? t('catalog.filters.clearAll') : undefined}
-									onAction={filtersActive ? () => {
-										setSearch('');
-										updateFilters(INITIAL_FILTERS);
-									} : undefined}
+									onAction={
+										filtersActive
+											? () => {
+													setSearch('');
+													updateFilters(INITIAL_FILTERS);
+												}
+											: undefined
+									}
 								/>
 							</div>
 						) : (

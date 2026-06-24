@@ -64,11 +64,7 @@ export const moderationResolvers = {
 			return service.rejectProduct(id, user.id, reason);
 		},
 
-		bulkApproveProducts: async (
-			_: unknown,
-			{ ids }: { ids: string[] },
-			ctx: GraphQLContext
-		) => {
+		bulkApproveProducts: async (_: unknown, { ids }: { ids: string[] }, ctx: GraphQLContext) => {
 			const user = requireModerator(ctx);
 			return service.bulkApproveProducts(ids, user.id);
 		},

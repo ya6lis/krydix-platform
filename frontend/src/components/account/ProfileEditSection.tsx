@@ -6,12 +6,7 @@ import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
 import { Box, Divider, Grid, Typography } from '@mui/material';
 
-import {
-	AppButton,
-	AppInput,
-	AppTextarea,
-	useAppToast,
-} from '@/components/ui';
+import { AppButton, AppInput, AppTextarea, useAppToast } from '@/components/ui';
 import {
 	REMOVE_PROFILE_AVATAR_MUTATION,
 	UPDATE_PROFILE_MUTATION,
@@ -256,8 +251,7 @@ export function ProfileEditSection() {
 									{...field}
 									label={t('account.settings.profile.displayName')}
 									helperText={
-										fieldState.error?.message ??
-										t('account.settings.profile.displayNameHelp')
+										fieldState.error?.message ?? t('account.settings.profile.displayNameHelp')
 									}
 									error={!!fieldState.error}
 								/>

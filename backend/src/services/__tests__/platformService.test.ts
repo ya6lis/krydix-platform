@@ -55,8 +55,8 @@ describe('savePayoutConfig', () => {
 
 describe('createAdminPromoCode', () => {
 	it('requires discount value', async () => {
-		await expect(
-			service.createAdminPromoCode('admin-1', { code: 'TEST' }),
-		).rejects.toThrow('Discount percent or fixed amount is required');
+		await expect(service.createAdminPromoCode('admin-1', { code: 'TEST' })).rejects.toThrow(
+			'Discount percent or fixed amount is required'
+		);
 	});
 });

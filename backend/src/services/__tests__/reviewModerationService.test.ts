@@ -70,7 +70,7 @@ describe('approveReview', () => {
 		const result = await service.approveReview('rev-1', 'mod-1');
 		expect(result.isApproved).toBe(true);
 		expect(auditLog.log).toHaveBeenCalledWith(
-			expect.objectContaining({ actorId: 'mod-1', metadata: { action: 'APPROVED' } }),
+			expect.objectContaining({ actorId: 'mod-1', metadata: { action: 'APPROVED' } })
 		);
 	});
 

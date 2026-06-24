@@ -70,7 +70,7 @@ function getDepth(id: string, parentMap: Map<string, string | null>): number {
 function getSubtreeMaxDepth(
 	id: string,
 	categories: FlatCategory[],
-	parentMap: Map<string, string | null>,
+	parentMap: Map<string, string | null>
 ): number {
 	const childrenByParent = new Map<string | null, string[]>();
 	for (const cat of categories) {
@@ -80,7 +80,9 @@ function getSubtreeMaxDepth(
 	}
 
 	let maxRelative = 1;
-	const stack: Array<{ nodeId: string; relativeDepth: number }> = [{ nodeId: id, relativeDepth: 1 }];
+	const stack: Array<{ nodeId: string; relativeDepth: number }> = [
+		{ nodeId: id, relativeDepth: 1 },
+	];
 	while (stack.length > 0) {
 		const { nodeId, relativeDepth } = stack.pop()!;
 		maxRelative = Math.max(maxRelative, relativeDepth);
@@ -94,7 +96,7 @@ function getSubtreeMaxDepth(
 function isDescendant(
 	candidateId: string,
 	ancestorId: string,
-	parentMap: Map<string, string | null>,
+	parentMap: Map<string, string | null>
 ): boolean {
 	let current = parentMap.get(candidateId) ?? null;
 	while (current) {
@@ -175,7 +177,7 @@ async function loadCategoriesOrThrow() {
 function validateParentDepth(
 	categoryId: string | null,
 	parentId: string | null,
-	categories: FlatCategory[],
+	categories: FlatCategory[]
 ) {
 	if (!parentId) return;
 
@@ -264,7 +266,9 @@ export async function createCategory(actorId: string, actorRole: Role, input: Cr
 	const sortOrder = (await repo.getMaxSortOrder(parentId)) + 1;
 	const translations = buildTranslationCreates(input);
 	if (translations.length === 0) {
-		throw new GraphQLError('English name is required', { extensions: { code: 'VALIDATION_ERROR' } });
+		throw new GraphQLError('English name is required', {
+			extensions: { code: 'VALIDATION_ERROR' },
+		});
 	}
 
 	const created = await repo.createCategoryRecord({
@@ -292,7 +296,7 @@ export async function updateCategory(
 	actorId: string,
 	actorRole: Role,
 	id: string,
-	input: UpdateCategoryInput,
+	input: UpdateCategoryInput
 ) {
 	assertAdminRole(actorRole);
 
@@ -427,7 +431,7 @@ export async function deleteCategory(actorId: string, actorRole: Role, id: strin
 export async function updateCategoryTranslation(
 	actorId: string,
 	actorRole: Role,
-	input: UpdateCategoryTranslationInput,
+	input: UpdateCategoryTranslationInput
 ) {
 	assertAdminRole(actorRole);
 

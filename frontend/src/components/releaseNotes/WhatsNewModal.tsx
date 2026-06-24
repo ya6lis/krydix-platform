@@ -215,7 +215,7 @@ export function WhatsNewModal({
 
 	const unseenLatest = useMemo(
 		() => (latestNote ? isNoteUnseen(latestNote, lastSeenPublishedAt) : false),
-		[latestNote, lastSeenPublishedAt],
+		[latestNote, lastSeenPublishedAt]
 	);
 
 	return (
@@ -243,7 +243,15 @@ export function WhatsNewModal({
 					</Typography>
 				</Box>
 			) : (
-				<Box sx={{ display: 'grid', gap: 2, maxHeight: 'min(70vh, 560px)', overflowY: 'auto', pr: 0.5 }}>
+				<Box
+					sx={{
+						display: 'grid',
+						gap: 2,
+						maxHeight: 'min(70vh, 560px)',
+						overflowY: 'auto',
+						pr: 0.5,
+					}}
+				>
 					{notes.map((note, index) => (
 						<ReleaseNoteEntry
 							key={note.id}

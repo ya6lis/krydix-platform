@@ -15,8 +15,20 @@ const mockNote = {
 	updatedAt: new Date('2026-05-20T00:00:00Z'),
 	createdById: 'admin-1',
 	translations: [
-		{ id: 't1', releaseNoteId: 'rn-1', language: 'EN' as const, title: 'New chat', body: 'Chat improvements' },
-		{ id: 't2', releaseNoteId: 'rn-1', language: 'UK' as const, title: 'Новий чат', body: 'Покращення чату' },
+		{
+			id: 't1',
+			releaseNoteId: 'rn-1',
+			language: 'EN' as const,
+			title: 'New chat',
+			body: 'Chat improvements',
+		},
+		{
+			id: 't2',
+			releaseNoteId: 'rn-1',
+			language: 'UK' as const,
+			title: 'Новий чат',
+			body: 'Покращення чату',
+		},
 	],
 	createdBy: {
 		email: 'admin@example.com',
@@ -55,7 +67,7 @@ describe('releaseNoteService', () => {
 			expect.objectContaining({
 				action: 'RELEASE_NOTE_CHANGE',
 				targetId: 'rn-1',
-			}),
+			})
 		);
 		expect(result.version).toBe('1.2.0');
 	});
@@ -70,7 +82,7 @@ describe('releaseNoteService', () => {
 				titleUk: 'Новий чат',
 				bodyEn: 'Chat improvements',
 				bodyUk: 'Покращення чату',
-			}),
+			})
 		).rejects.toThrow(GraphQLError);
 	});
 
@@ -98,7 +110,7 @@ describe('releaseNoteService', () => {
 		});
 
 		expect(repo.createReleaseNote).toHaveBeenCalledWith(
-			expect.objectContaining({ version: '1.2.0' }),
+			expect.objectContaining({ version: '1.2.0' })
 		);
 	});
 });

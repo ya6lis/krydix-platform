@@ -16,11 +16,7 @@ import { Icons } from '@/constants/icons';
 import { AppButton, AppCard, AppInput, AppSelect, EmptyState } from '@/components/ui';
 import { CategoryTreeNode } from '@/components/categories/CategoryTreeNode';
 import type { CategoryTreeItem } from '@/graphql/operations/categories';
-import {
-	collectCategoryIds,
-	flattenCategoryTree,
-	findCategoryById,
-} from '@/utils/categoryTree';
+import { collectCategoryIds, flattenCategoryTree, findCategoryById } from '@/utils/categoryTree';
 
 import styles from './CategoryTreePanel.module.scss';
 
@@ -49,7 +45,9 @@ export function CategoryTreePanel({
 }: CategoryTreePanelProps) {
 	const { t } = useTranslation();
 	const [search, setSearch] = useState('');
-	const [expandedIds, setExpandedIds] = useState<Set<string>>(() => new Set(collectCategoryIds(tree)));
+	const [expandedIds, setExpandedIds] = useState<Set<string>>(
+		() => new Set(collectCategoryIds(tree))
+	);
 
 	useEffect(() => {
 		setExpandedIds((prev) => new Set([...prev, ...collectCategoryIds(tree)]));
@@ -80,7 +78,7 @@ export function CategoryTreePanel({
 
 	const flatNodes = useMemo(
 		() => flattenCategoryTree(filteredTree, expandedIds),
-		[filteredTree, expandedIds],
+		[filteredTree, expandedIds]
 	);
 
 	const sortableIds = useMemo(() => flatNodes.map((n) => n.id), [flatNodes]);
@@ -141,10 +139,20 @@ export function CategoryTreePanel({
 						value={displayLanguage}
 						onChange={(e) => onDisplayLanguageChange(e.target.value as 'EN' | 'UK')}
 					/>
-					<AppButton tone="ghost" size="small" className={styles.toolbarBtn} onClick={handleExpandAll}>
+					<AppButton
+						tone="ghost"
+						size="small"
+						className={styles.toolbarBtn}
+						onClick={handleExpandAll}
+					>
 						{t('adminCategories.tree.expandAll')}
 					</AppButton>
-					<AppButton tone="ghost" size="small" className={styles.toolbarBtn} onClick={handleCollapseAll}>
+					<AppButton
+						tone="ghost"
+						size="small"
+						className={styles.toolbarBtn}
+						onClick={handleCollapseAll}
+					>
 						{t('adminCategories.tree.collapseAll')}
 					</AppButton>
 				</Box>

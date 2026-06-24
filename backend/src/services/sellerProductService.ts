@@ -265,7 +265,9 @@ export async function deactivateProduct(id: string, sellerId: string) {
 		throw new GraphQLError('Product not found', { extensions: { code: 'NOT_FOUND' } });
 	}
 	if (!existing.isAvailable) {
-		throw new GraphQLError('Product already deactivated', { extensions: { code: 'BAD_USER_INPUT' } });
+		throw new GraphQLError('Product already deactivated', {
+			extensions: { code: 'BAD_USER_INPUT' },
+		});
 	}
 	const updated = await repo.updateProduct(id, { isAvailable: false });
 	return mapProduct(updated);

@@ -59,7 +59,7 @@ async function upsertCategory(
 	en: string,
 	uk: string,
 	sort = 0,
-	icon: string | null = null,
+	icon: string | null = null
 ) {
 	const cat = await prisma.category.upsert({
 		where: { slug },
@@ -140,7 +140,18 @@ async function main() {
 			},
 		});
 	}
-	const extraRefreshUsers = [buyer1, buyer2, buyer3, seller1, seller2, seller3, mod1, mod2, admin, buyer1];
+	const extraRefreshUsers = [
+		buyer1,
+		buyer2,
+		buyer3,
+		seller1,
+		seller2,
+		seller3,
+		mod1,
+		mod2,
+		admin,
+		buyer1,
+	];
 	for (let i = 0; i < extraRefreshUsers.length; i++) {
 		const token = `seed-refresh-extra-${i + 1}`;
 		await prisma.refreshToken.upsert({
@@ -171,7 +182,18 @@ async function main() {
 			},
 		});
 	}
-	const pendingVerifyUsers = [buyer1, buyer2, buyer3, seller1, seller2, seller3, mod1, mod2, admin, buyer2];
+	const pendingVerifyUsers = [
+		buyer1,
+		buyer2,
+		buyer3,
+		seller1,
+		seller2,
+		seller3,
+		mod1,
+		mod2,
+		admin,
+		buyer2,
+	];
 	for (let i = 0; i < pendingVerifyUsers.length; i++) {
 		const token = `seed-email-pending-${i + 1}`;
 		await prisma.emailVerification.upsert({
@@ -196,13 +218,34 @@ async function main() {
 		'Outerwear',
 		'Верхній одяг',
 		0,
-		'layers',
+		'layers'
 	);
 	const catJackets = await upsertCategory('jackets', catOuterwear, 'Jackets', 'Куртки', 0, null);
-	const catKnitwear = await upsertCategory('knitwear', catOuterwear, 'Knitwear', 'Трикотаж', 1, null);
+	const catKnitwear = await upsertCategory(
+		'knitwear',
+		catOuterwear,
+		'Knitwear',
+		'Трикотаж',
+		1,
+		null
+	);
 	const catFootwear = await upsertCategory('footwear', null, 'Footwear', 'Взуття', 1, 'store');
-	const catSneakers = await upsertCategory('sneakers', catFootwear, 'Sneakers', 'Кросівки', 0, null);
-	const catHomeGoods = await upsertCategory('home-goods', null, 'Home Goods', 'Товари для дому', 2, 'home');
+	const catSneakers = await upsertCategory(
+		'sneakers',
+		catFootwear,
+		'Sneakers',
+		'Кросівки',
+		0,
+		null
+	);
+	const catHomeGoods = await upsertCategory(
+		'home-goods',
+		null,
+		'Home Goods',
+		'Товари для дому',
+		2,
+		'home'
+	);
 	const catKitchen = await upsertCategory('kitchen', catHomeGoods, 'Kitchen', 'Кухня', 0, null);
 	const catBedding = await upsertCategory(
 		'bedding',
@@ -210,9 +253,16 @@ async function main() {
 		'Bedding',
 		'Постільна білизна',
 		1,
-		null,
+		null
 	);
-	const catAccessories = await upsertCategory('accessories', null, 'Accessories', 'Аксесуари', 3, 'category');
+	const catAccessories = await upsertCategory(
+		'accessories',
+		null,
+		'Accessories',
+		'Аксесуари',
+		3,
+		'category'
+	);
 	log('10 categories');
 
 	// ── 3. CATEGORY ATTRIBUTES ──────────────────────────────────────────────────
@@ -303,7 +353,13 @@ async function main() {
 	const app6 = await upsertApplication(buyer3.id, 'Kravchenko Crafts', 'DRAFT');
 	const app7 = await upsertApplication(mod1.id, 'Mod Shop Draft', 'DRAFT');
 	const app8 = await upsertApplication(mod2.id, 'Review Hub LLC', 'UNDER_REVIEW');
-	const app9 = await upsertApplication(admin.id, 'Platform Test Seller', 'BLOCKED', 'Test account', admin.id);
+	const app9 = await upsertApplication(
+		admin.id,
+		'Platform Test Seller',
+		'BLOCKED',
+		'Test account',
+		admin.id
+	);
 	const allApps = [app1, app2, app3, app4, app5, app6, app7, app8, app9];
 	log('9 seller applications');
 
@@ -318,8 +374,18 @@ async function main() {
 		{ applicationId: app5, fileName: 'business_card.jpg', url: picsum(55), publicId: 'seed/doc6' },
 		{ applicationId: app6, fileName: 'tax_cert.pdf', url: picsum(56), publicId: 'seed/doc7' },
 		{ applicationId: app7, fileName: 'bank_statement.pdf', url: picsum(57), publicId: 'seed/doc8' },
-		{ applicationId: app8, fileName: 'company_charter.pdf', url: picsum(58), publicId: 'seed/doc9' },
-		{ applicationId: app9, fileName: 'blocked_notice.pdf', url: picsum(59), publicId: 'seed/doc10' },
+		{
+			applicationId: app8,
+			fileName: 'company_charter.pdf',
+			url: picsum(58),
+			publicId: 'seed/doc9',
+		},
+		{
+			applicationId: app9,
+			fileName: 'blocked_notice.pdf',
+			url: picsum(59),
+			publicId: 'seed/doc10',
+		},
 	];
 	for (const d of docData) {
 		const exists = await prisma.sellerDocument.findFirst({
@@ -332,10 +398,25 @@ async function main() {
 	// ── 6. PROMO CODES ──────────────────────────────────────────────────────────
 
 	const promoCodes = [
-		{ code: 'WELCOME10', description: 'First-order discount', discountPercent: 10, minOrderAmount: 50 },
-		{ code: 'SUMMER20', description: 'Seasonal sitewide', discountPercent: 20, minOrderAmount: 100 },
+		{
+			code: 'WELCOME10',
+			description: 'First-order discount',
+			discountPercent: 10,
+			minOrderAmount: 50,
+		},
+		{
+			code: 'SUMMER20',
+			description: 'Seasonal sitewide',
+			discountPercent: 20,
+			minOrderAmount: 100,
+		},
 		{ code: 'SAVE15', description: 'Fixed amount off', discountFixed: 15, minOrderAmount: 80 },
-		{ code: 'FIRST50', description: 'Large order discount', discountFixed: 50, minOrderAmount: 200 },
+		{
+			code: 'FIRST50',
+			description: 'Large order discount',
+			discountFixed: 50,
+			minOrderAmount: 200,
+		},
 		{ code: 'VIP25', description: 'VIP member discount', discountPercent: 25, minOrderAmount: 150 },
 		...EXTRA_PROMO_CODES,
 	];
@@ -415,9 +496,7 @@ async function main() {
 		createdAt?: Date
 	) {
 		const isAvailable =
-			status === 'APPROVED' ||
-			status === 'ENABLED' ||
-			status === 'PENDING_MODERATION';
+			status === 'APPROVED' || status === 'ENABLED' || status === 'PENDING_MODERATION';
 
 		const existing = await prisma.product.findUnique({ where: { slug } });
 		if (existing) {
@@ -547,7 +626,7 @@ async function main() {
 				stock: v.stock,
 				price: v.price,
 			})),
-			item.attrs.map((a) => ({ id: attrByName[a.name], value: a.value })),
+			item.attrs.map((a) => ({ id: attrByName[a.name], value: a.value }))
 		);
 	}
 
@@ -578,9 +657,20 @@ async function main() {
 	// ── 8. WISHLIST ───────────────────────────────────────────────────────────────
 
 	const wishlistPairs = allProds.slice(0, 12).map((productId, i) => ({
-		userId: [buyer1, buyer2, buyer3, buyer1, buyer2, buyer3, buyer1, buyer2, buyer3, buyer1, buyer2, buyer3][
-			i
-		].id,
+		userId: [
+			buyer1,
+			buyer2,
+			buyer3,
+			buyer1,
+			buyer2,
+			buyer3,
+			buyer1,
+			buyer2,
+			buyer3,
+			buyer1,
+			buyer2,
+			buyer3,
+		][i].id,
 		productId,
 	}));
 	for (const w of wishlistPairs) {
@@ -1081,9 +1171,24 @@ async function main() {
 		daysAgo(3)
 	);
 
-	const allOrders = [order1, order2, order3, order4, order5, order6, order7, order8, order9, order10, order11, order12];
+	const allOrders = [
+		order1,
+		order2,
+		order3,
+		order4,
+		order5,
+		order6,
+		order7,
+		order8,
+		order9,
+		order10,
+		order11,
+		order12,
+	];
 	const payoutCount = await prisma.sellerPayout.count();
-	log(`${allOrders.length} orders (with items, payments, deliveries) + ${payoutCount} seller payouts`);
+	log(
+		`${allOrders.length} orders (with items, payments, deliveries) + ${payoutCount} seller payouts`
+	);
 
 	// ── 10. RETURN REQUESTS ─────────────────────────────────────────────────────
 
@@ -1103,7 +1208,10 @@ async function main() {
 		const orderId = allOrders[i];
 		const exists = await prisma.returnRequest.findUnique({ where: { orderId } });
 		if (exists) continue;
-		const order = await prisma.order.findUnique({ where: { id: orderId }, include: { items: true } });
+		const order = await prisma.order.findUnique({
+			where: { id: orderId },
+			include: { items: true },
+		});
 		if (!order?.items[0]) continue;
 		await prisma.returnRequest.create({
 			data: {
@@ -1181,11 +1289,10 @@ async function main() {
 					rating: r.rating,
 					isApproved: true,
 					sellerReply:
-						r.productId === prod3 ? 'Thank you for your feedback! We appreciate your support.' : undefined,
-					photos:
 						r.productId === prod3
-							? [{ url: picsum(60), publicId: 'seed/rev1' }]
+							? 'Thank you for your feedback! We appreciate your support.'
 							: undefined,
+					photos: r.productId === prod3 ? [{ url: picsum(60), publicId: 'seed/rev1' }] : undefined,
 				},
 			});
 		}
@@ -1217,7 +1324,8 @@ async function main() {
 				text: REVIEW_TEXTS[i % REVIEW_TEXTS.length],
 				isApproved: i % 4 !== 0,
 				isBlocked: i === 9,
-				photos: i % 3 === 0 ? [{ url: picsum(70 + i), publicId: `seed/rev-extra-${i}` }] : undefined,
+				photos:
+					i % 3 === 0 ? [{ url: picsum(70 + i), publicId: `seed/rev-extra-${i}` }] : undefined,
 				createdAt: daysAgo(30 - i * 2),
 			},
 		});
@@ -1524,7 +1632,7 @@ async function main() {
 		});
 		if (!exists) {
 			await prisma.complaint.create({
-			data: {
+				data: {
 					...c,
 					target: c.target as never,
 					status: c.status as never,
@@ -1608,7 +1716,11 @@ async function main() {
 	];
 	for (const entry of auditEntries) {
 		const exists = await prisma.auditLog.findFirst({
-			where: { targetType: entry.targetType, targetId: entry.targetId, action: entry.action as never },
+			where: {
+				targetType: entry.targetType,
+				targetId: entry.targetId,
+				action: entry.action as never,
+			},
 		});
 		if (!exists) {
 			await prisma.auditLog.create({ data: { ...entry, action: entry.action as never } });
@@ -1621,7 +1733,14 @@ async function main() {
 		await prisma.auditLog.create({
 			data: {
 				actorId: [admin.id, mod1.id, mod2.id, admin.id][i],
-				action: (['PAYOUT_RELEASED', 'PAYMENT_CAPTURED', 'REFUND_ISSUED', 'PLATFORM_CONFIG_CHANGE'] as const)[i],
+				action: (
+					[
+						'PAYOUT_RELEASED',
+						'PAYMENT_CAPTURED',
+						'REFUND_ISSUED',
+						'PLATFORM_CONFIG_CHANGE',
+					] as const
+				)[i],
 				targetType: 'PlatformConfig',
 				targetId: `seed-audit-${i + 7}`,
 				metadata: { seed: true, index: i + 7 },
@@ -1694,11 +1813,41 @@ async function main() {
 		'Thank you! Your order will ship within 2 business days.',
 	]);
 	const chatPairs = [
-		{ key: 'chat-6', productId: prod6, a: buyer1.id, b: seller3.id, msgs: ['Is the pour-over dishwasher safe?', 'Hand wash only — ceramic glaze is delicate.'] },
-		{ key: 'chat-7', productId: prod7, a: buyer2.id, b: seller1.id, msgs: ['Do you have size 44?', 'Not in stock yet. Restock expected next month.'] },
-		{ key: 'chat-8', productId: extraProdIds[0] ?? prod1, a: buyer3.id, b: seller2.id, msgs: ['Can I get a bulk discount?', 'Yes — use code BULK30 for orders over 250 UAH.'] },
-		{ key: 'chat-9', productId: extraProdIds[1] ?? prod5, a: buyer1.id, b: seller3.id, msgs: ['What thread count are these sheets?', '180 thread count, stonewashed linen blend.'] },
-		{ key: 'chat-10', productId: prod1, a: buyer2.id, b: seller1.id, msgs: ['When will the cardigan be back in XL?', 'We expect XL restock in two weeks.'] },
+		{
+			key: 'chat-6',
+			productId: prod6,
+			a: buyer1.id,
+			b: seller3.id,
+			msgs: ['Is the pour-over dishwasher safe?', 'Hand wash only — ceramic glaze is delicate.'],
+		},
+		{
+			key: 'chat-7',
+			productId: prod7,
+			a: buyer2.id,
+			b: seller1.id,
+			msgs: ['Do you have size 44?', 'Not in stock yet. Restock expected next month.'],
+		},
+		{
+			key: 'chat-8',
+			productId: extraProdIds[0] ?? prod1,
+			a: buyer3.id,
+			b: seller2.id,
+			msgs: ['Can I get a bulk discount?', 'Yes — use code BULK30 for orders over 250 UAH.'],
+		},
+		{
+			key: 'chat-9',
+			productId: extraProdIds[1] ?? prod5,
+			a: buyer1.id,
+			b: seller3.id,
+			msgs: ['What thread count are these sheets?', '180 thread count, stonewashed linen blend.'],
+		},
+		{
+			key: 'chat-10',
+			productId: prod1,
+			a: buyer2.id,
+			b: seller1.id,
+			msgs: ['When will the cardigan be back in XL?', 'We expect XL restock in two weeks.'],
+		},
 	] as const;
 	for (let i = 0; i < chatPairs.length; i++) {
 		const c = chatPairs[i];
@@ -1845,7 +1994,17 @@ async function main() {
 
 	// ── 18. NOTIFICATION PREFERENCES ────────────────────────────────────────────
 
-	const prefUsers = [buyer1.id, buyer2.id, buyer3.id, seller1.id, seller2.id, seller3.id, mod1.id, mod2.id, admin.id];
+	const prefUsers = [
+		buyer1.id,
+		buyer2.id,
+		buyer3.id,
+		seller1.id,
+		seller2.id,
+		seller3.id,
+		mod1.id,
+		mod2.id,
+		admin.id,
+	];
 	const allEvents = [
 		'NEW_ORDER',
 		'ORDER_STATUS_CHANGE',
@@ -1967,7 +2126,11 @@ async function main() {
 		});
 		if (exists) continue;
 		await prisma.importJob.create({
-			data: { ...job, status: job.status as never, createdAt: daysAgo(Math.floor(Math.random() * 60) + 5) },
+			data: {
+				...job,
+				status: job.status as never,
+				createdAt: daysAgo(Math.floor(Math.random() * 60) + 5),
+			},
 		});
 	}
 	log('10 import jobs');
@@ -1975,16 +2138,66 @@ async function main() {
 	// ── 20. USER FEEDBACK ───────────────────────────────────────────────────────
 
 	const feedbackItems = [
-		{ userId: buyer1.id, category: 'BUG', subject: 'Checkout button unresponsive on mobile', status: 'NEW' },
-		{ userId: buyer2.id, category: 'FEATURE', subject: 'Wishlist sharing with friends', status: 'UNDER_REVIEW' },
-		{ userId: buyer3.id, category: 'UX', subject: 'Filter panel hard to find on catalog', status: 'ACKNOWLEDGED' },
-		{ userId: seller1.id, category: 'BUG', subject: 'Bulk import preview shows wrong columns', status: 'PLANNED' },
-		{ userId: seller2.id, category: 'FEATURE', subject: 'Export orders to CSV', status: 'RESOLVED' },
-		{ userId: seller3.id, category: 'OTHER', subject: 'Dark mode for seller dashboard', status: 'DISMISSED' },
-		{ userId: mod1.id, category: 'UX', subject: 'Moderation queue needs bulk actions', status: 'NEW' },
-		{ userId: mod2.id, category: 'BUG', subject: 'Complaint filter resets on refresh', status: 'UNDER_REVIEW' },
-		{ userId: admin.id, category: 'FEATURE', subject: 'Audit log export for compliance', status: 'PLANNED' },
-		{ userId: buyer1.id, category: 'UX', subject: 'Product comparison on mobile', status: 'ACKNOWLEDGED' },
+		{
+			userId: buyer1.id,
+			category: 'BUG',
+			subject: 'Checkout button unresponsive on mobile',
+			status: 'NEW',
+		},
+		{
+			userId: buyer2.id,
+			category: 'FEATURE',
+			subject: 'Wishlist sharing with friends',
+			status: 'UNDER_REVIEW',
+		},
+		{
+			userId: buyer3.id,
+			category: 'UX',
+			subject: 'Filter panel hard to find on catalog',
+			status: 'ACKNOWLEDGED',
+		},
+		{
+			userId: seller1.id,
+			category: 'BUG',
+			subject: 'Bulk import preview shows wrong columns',
+			status: 'PLANNED',
+		},
+		{
+			userId: seller2.id,
+			category: 'FEATURE',
+			subject: 'Export orders to CSV',
+			status: 'RESOLVED',
+		},
+		{
+			userId: seller3.id,
+			category: 'OTHER',
+			subject: 'Dark mode for seller dashboard',
+			status: 'DISMISSED',
+		},
+		{
+			userId: mod1.id,
+			category: 'UX',
+			subject: 'Moderation queue needs bulk actions',
+			status: 'NEW',
+		},
+		{
+			userId: mod2.id,
+			category: 'BUG',
+			subject: 'Complaint filter resets on refresh',
+			status: 'UNDER_REVIEW',
+		},
+		{
+			userId: admin.id,
+			category: 'FEATURE',
+			subject: 'Audit log export for compliance',
+			status: 'PLANNED',
+		},
+		{
+			userId: buyer1.id,
+			category: 'UX',
+			subject: 'Product comparison on mobile',
+			status: 'ACKNOWLEDGED',
+		},
 	] as const;
 	for (let i = 0; i < feedbackItems.length; i++) {
 		const fb = feedbackItems[i];
@@ -1998,7 +2211,8 @@ async function main() {
 				subject: fb.subject,
 				message: `${fb.subject}. Detailed feedback from seed user #${i + 1}. Please improve this area of the platform.`,
 				status: fb.status as never,
-				attachments: i % 3 === 0 ? [{ url: picsum(80 + i), publicId: `seed/fb-${i + 1}` }] : undefined,
+				attachments:
+					i % 3 === 0 ? [{ url: picsum(80 + i), publicId: `seed/fb-${i + 1}` }] : undefined,
 				handledById: ['RESOLVED', 'DISMISSED', 'PLANNED'].includes(fb.status) ? mod1.id : null,
 				handledAt: ['RESOLVED', 'DISMISSED', 'PLANNED'].includes(fb.status) ? daysAgo(5) : null,
 				createdAt: daysAgo(40 - i * 3),
@@ -2010,16 +2224,76 @@ async function main() {
 	// ── 21. RELEASE NOTES ─────────────────────────────────────────────────────────
 
 	const releaseNotes = [
-		{ version: '0.9.0', status: 'PUBLISHED', titleEn: 'Beta launch', titleUk: 'Бета-запуск', days: 90 },
-		{ version: '0.9.1', status: 'PUBLISHED', titleEn: 'Cart improvements', titleUk: 'Покращення кошика', days: 80 },
-		{ version: '0.9.2', status: 'PUBLISHED', titleEn: 'Seller verification flow', titleUk: 'Верифікація продавців', days: 70 },
-		{ version: '1.0.0', status: 'PUBLISHED', titleEn: 'MVP release', titleUk: 'Реліз MVP', days: 60 },
-		{ version: '1.0.1', status: 'PUBLISHED', titleEn: 'Moderation queue', titleUk: 'Черга модерації', days: 50 },
-		{ version: '1.0.2', status: 'PUBLISHED', titleEn: 'Order tracking mock', titleUk: 'Мок-трекінг замовлень', days: 45 },
-		{ version: '1.1.0', status: 'PUBLISHED', titleEn: 'Reviews & ratings', titleUk: 'Відгуки та рейтинги', days: 35 },
-		{ version: '1.1.1', status: 'PUBLISHED', titleEn: 'Chat messaging', titleUk: 'Чат-повідомлення', days: 25 },
-		{ version: '1.2.0', status: 'PUBLISHED', titleEn: 'Escrow & payouts', titleUk: 'Ескроу та виплати', days: 15 },
-		{ version: '1.2.1', status: 'DRAFT', titleEn: 'Admin platform settings', titleUk: 'Налаштування платформи', days: 5 },
+		{
+			version: '0.9.0',
+			status: 'PUBLISHED',
+			titleEn: 'Beta launch',
+			titleUk: 'Бета-запуск',
+			days: 90,
+		},
+		{
+			version: '0.9.1',
+			status: 'PUBLISHED',
+			titleEn: 'Cart improvements',
+			titleUk: 'Покращення кошика',
+			days: 80,
+		},
+		{
+			version: '0.9.2',
+			status: 'PUBLISHED',
+			titleEn: 'Seller verification flow',
+			titleUk: 'Верифікація продавців',
+			days: 70,
+		},
+		{
+			version: '1.0.0',
+			status: 'PUBLISHED',
+			titleEn: 'MVP release',
+			titleUk: 'Реліз MVP',
+			days: 60,
+		},
+		{
+			version: '1.0.1',
+			status: 'PUBLISHED',
+			titleEn: 'Moderation queue',
+			titleUk: 'Черга модерації',
+			days: 50,
+		},
+		{
+			version: '1.0.2',
+			status: 'PUBLISHED',
+			titleEn: 'Order tracking mock',
+			titleUk: 'Мок-трекінг замовлень',
+			days: 45,
+		},
+		{
+			version: '1.1.0',
+			status: 'PUBLISHED',
+			titleEn: 'Reviews & ratings',
+			titleUk: 'Відгуки та рейтинги',
+			days: 35,
+		},
+		{
+			version: '1.1.1',
+			status: 'PUBLISHED',
+			titleEn: 'Chat messaging',
+			titleUk: 'Чат-повідомлення',
+			days: 25,
+		},
+		{
+			version: '1.2.0',
+			status: 'PUBLISHED',
+			titleEn: 'Escrow & payouts',
+			titleUk: 'Ескроу та виплати',
+			days: 15,
+		},
+		{
+			version: '1.2.1',
+			status: 'DRAFT',
+			titleEn: 'Admin platform settings',
+			titleUk: 'Налаштування платформи',
+			days: 5,
+		},
 	] as const;
 	for (const rn of releaseNotes) {
 		await prisma.releaseNote.upsert({
@@ -2213,7 +2487,9 @@ async function main() {
 	log(
 		`seed link repair (${repair.approved} products made catalog-visible${repair.relinked ? `, ${repair.relinked} broken refs fixed` : ''})`
 	);
-	log(`notification repair (${notifRepair.removed} stale removed, ${notifRepair.synced} labels synced)`);
+	log(
+		`notification repair (${notifRepair.removed} stale removed, ${notifRepair.synced} labels synced)`
+	);
 
 	console.log('\n🌱 Seed complete!'); // eslint-disable-line no-console
 	console.log('   Logins: <role>N@krydix.dev / Test123!'); // eslint-disable-line no-console

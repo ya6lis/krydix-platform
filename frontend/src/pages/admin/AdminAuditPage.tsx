@@ -135,11 +135,7 @@ function AuditEventRow({
 			}}
 		>
 			<span className={styles.timestamp}>{formatTime(item.createdAt)}</span>
-			<AppAvatar
-				src={item.actor.avatarUrl ?? undefined}
-				name={item.actor.displayName}
-				size="sm"
-			/>
+			<AppAvatar src={item.actor.avatarUrl ?? undefined} name={item.actor.displayName} size="sm" />
 			<span className={`${styles.actionIcon} ${iconClass}`}>
 				<FontAwesomeIcon icon={icon} style={{ fontSize: 12 }} />
 			</span>
@@ -221,20 +217,20 @@ export default function AdminAuditPage() {
 			}
 			return formatted;
 		},
-		[t],
+		[t]
 	);
 
 	const toggleActionKey = (key: AuditActionKeyValue, checked: boolean) => {
 		setPage(0);
 		setSelectedActionKeys((prev) =>
-			checked ? [...prev, key] : prev.filter((item) => item !== key),
+			checked ? [...prev, key] : prev.filter((item) => item !== key)
 		);
 	};
 
 	const toggleActorRole = (role: AuditActorRoleFilter, checked: boolean) => {
 		setPage(0);
 		setSelectedActorRoles((prev) =>
-			checked ? [...prev, role] : prev.filter((item) => item !== role),
+			checked ? [...prev, role] : prev.filter((item) => item !== role)
 		);
 	};
 
@@ -335,15 +331,9 @@ export default function AdminAuditPage() {
 						) : (
 							dayGroups.map((group) => (
 								<div key={group.key} className={styles.dayBlock}>
-									<div className={styles.dayLabel}>
-										{formatDayLabel(group.items[0].createdAt)}
-									</div>
+									<div className={styles.dayLabel}>{formatDayLabel(group.items[0].createdAt)}</div>
 									{group.items.map((item) => (
-										<AuditEventRow
-											key={item.id}
-											item={item}
-											onSelect={setSelectedItem}
-										/>
+										<AuditEventRow key={item.id} item={item} onSelect={setSelectedItem} />
 									))}
 								</div>
 							))

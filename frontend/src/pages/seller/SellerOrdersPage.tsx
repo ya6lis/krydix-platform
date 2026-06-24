@@ -569,7 +569,9 @@ export default function SellerOrdersPage() {
 					<Box sx={{ py: 6 }}>
 						<EmptyState
 							icon={Icons.order}
-							title={t(hasFilters ? 'sellerOrders.emptyFiltered.title' : 'sellerOrders.empty.title')}
+							title={t(
+								hasFilters ? 'sellerOrders.emptyFiltered.title' : 'sellerOrders.empty.title'
+							)}
 							description={t(
 								hasFilters
 									? 'sellerOrders.emptyFiltered.description'
@@ -597,7 +599,12 @@ export default function SellerOrdersPage() {
 				)}
 			</Box>
 
-			<AppMenu anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={closeMenu} items={menuItems} />
+			<AppMenu
+				anchorEl={menuAnchor}
+				open={Boolean(menuAnchor)}
+				onClose={closeMenu}
+				items={menuItems}
+			/>
 
 			<ConfirmDialog
 				open={Boolean(cancelTarget)}

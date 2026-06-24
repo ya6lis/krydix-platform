@@ -77,7 +77,7 @@ describe('feedbackService', () => {
 			expect.objectContaining({
 				action: 'FEEDBACK_STATUS_CHANGE',
 				targetId: 'fb-1',
-			}),
+			})
 		);
 		expect(result.status).toBe('ACKNOWLEDGED');
 	});
@@ -89,7 +89,7 @@ describe('feedbackService', () => {
 			feedbackService.updateFeedbackStatus('admin-1', {
 				id: 'missing',
 				status: 'RESOLVED',
-			}),
+			})
 		).rejects.toBeInstanceOf(GraphQLError);
 	});
 });

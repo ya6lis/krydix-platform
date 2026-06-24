@@ -142,11 +142,7 @@ function LineItem({
 								width: 5,
 								height: 5,
 								borderRadius: '50%',
-								bgcolor: !item.inStock
-									? tokens.coral
-									: isLowStock
-										? tokens.amber
-										: tokens.cyan,
+								bgcolor: !item.inStock ? tokens.coral : isLowStock ? tokens.amber : tokens.cyan,
 							},
 						}}
 					>
@@ -272,7 +268,9 @@ function SellerGroup({
 				>
 					{initials}
 				</Avatar>
-				<Typography sx={{ fontWeight: 700, fontSize: 14, color: tokens.ink1 }}>{sellerName}</Typography>
+				<Typography sx={{ fontWeight: 700, fontSize: 14, color: tokens.ink1 }}>
+					{sellerName}
+				</Typography>
 				<Box sx={{ ml: 'auto' }}>
 					<AppButton
 						tone="ghost"
@@ -479,7 +477,11 @@ function WishlistSummary({ items }: { items: WishlistItemData[] }) {
 				}}
 			>
 				{[
-					{ icon: Icons.heart, label: t('wishlist.trust.saved'), sub: t('wishlist.trust.savedSub') },
+					{
+						icon: Icons.heart,
+						label: t('wishlist.trust.saved'),
+						sub: t('wishlist.trust.savedSub'),
+					},
 					{
 						icon: Icons.sync,
 						label: t('wishlist.trust.updated'),
@@ -512,7 +514,7 @@ export default function WishlistPage() {
 
 	const { data, loading } = useQuery<{ myWishlist: { items: WishlistItemData[]; count: number } }>(
 		MY_WISHLIST_QUERY,
-		{ fetchPolicy: 'cache-and-network' },
+		{ fetchPolicy: 'cache-and-network' }
 	);
 
 	const [removeFromWishlist, { loading: removing }] = useMutation(REMOVE_FROM_WISHLIST_MUTATION, {

@@ -11,9 +11,17 @@ import { useAuthStore } from '@/store/authStore';
 import { getProfileRouteForUser } from '@/utils/roleAccess';
 
 const ROLE_STYLES: Record<string, { bg: string; color: string; labelKey: string }> = {
-	[Role.BUYER]: { bg: tokens.accentSoft, color: tokens.accentInk, labelKey: 'dashboard.role.buyer' },
+	[Role.BUYER]: {
+		bg: tokens.accentSoft,
+		color: tokens.accentInk,
+		labelKey: 'dashboard.role.buyer',
+	},
 	[Role.SELLER]: { bg: '#ede9fe', color: '#5b21b6', labelKey: 'dashboard.role.seller' },
-	[Role.MODERATOR]: { bg: tokens.amberSoft, color: tokens.amberInk, labelKey: 'dashboard.role.moderator' },
+	[Role.MODERATOR]: {
+		bg: tokens.amberSoft,
+		color: tokens.amberInk,
+		labelKey: 'dashboard.role.moderator',
+	},
 	[Role.ADMIN]: { bg: tokens.coralSoft, color: tokens.coralInk, labelKey: 'dashboard.role.admin' },
 };
 
@@ -43,9 +51,7 @@ export function DashboardWelcomeHeader({ name, role, subtitleKey }: DashboardWel
 			<Box>
 				<Stack direction="row" alignItems="center" spacing={1.25} mb={0.75}>
 					<Typography variant="h4" sx={{ fontWeight: 800, letterSpacing: '-0.02em' }}>
-						{name
-							? t('dashboard.common.greetingNamed', { name })
-							: t('dashboard.common.greeting')}
+						{name ? t('dashboard.common.greetingNamed', { name }) : t('dashboard.common.greeting')}
 					</Typography>
 					<Box
 						sx={{

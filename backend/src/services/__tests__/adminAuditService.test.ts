@@ -89,7 +89,7 @@ describe('getAuditLogs', () => {
 		expect(repo.findAuditLogs).toHaveBeenCalledWith(
 			expect.objectContaining({
 				actionKeys: [AuditActionKey.PRODUCT_APPROVE],
-			}),
+			})
 		);
 	});
 
@@ -100,13 +100,13 @@ describe('getAuditLogs', () => {
 			expect.arrayContaining([
 				expect.objectContaining({ key: AuditActionKey.PRODUCT_APPROVE, count: 1 }),
 				expect.objectContaining({ key: AuditActionKey.USER_ROLE_CHANGE, count: 1 }),
-			]),
+			])
 		);
 		expect(result.actorRoleFilterOptions).toEqual(
 			expect.arrayContaining([
 				expect.objectContaining({ role: 'MODERATOR', count: 1 }),
 				expect.objectContaining({ role: 'ADMIN', count: 1 }),
-			]),
+			])
 		);
 	});
 });

@@ -14,10 +14,7 @@ import {
 	AppImage,
 	useAppToast,
 } from '@/components/ui';
-import {
-	UPDATE_FEEDBACK_MUTATION,
-	type UserFeedbackItem,
-} from '@/graphql/operations/feedback';
+import { UPDATE_FEEDBACK_MUTATION, type UserFeedbackItem } from '@/graphql/operations/feedback';
 
 const STATUS_OPTIONS = [
 	FeedbackStatus.NEW,

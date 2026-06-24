@@ -18,7 +18,7 @@ export interface CatalogFilterState {
 
 export function buildCatalogFilterInput(
 	f: CatalogFilterState,
-	extra: Partial<ProductFilterInput> = {},
+	extra: Partial<ProductFilterInput> = {}
 ): ProductFilterInput {
 	const input: ProductFilterInput = { ...extra };
 	if (f.categorySlug) input.categorySlug = f.categorySlug;

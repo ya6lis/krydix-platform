@@ -6,7 +6,7 @@ export interface FlatCategoryNode extends CategoryTreeItem {
 
 export function getTranslationName(
 	category: CategoryTreeItem,
-	language: 'EN' | 'UK' = 'EN',
+	language: 'EN' | 'UK' = 'EN'
 ): string {
 	return (
 		category.translations.find((tr) => tr.language === language)?.name ??
@@ -18,7 +18,7 @@ export function getTranslationName(
 export function flattenCategoryTree(
 	nodes: CategoryTreeItem[],
 	expandedIds: Set<string>,
-	treeDepth = 1,
+	treeDepth = 1
 ): FlatCategoryNode[] {
 	const result: FlatCategoryNode[] = [];
 	for (const node of nodes) {
@@ -44,7 +44,7 @@ export function collectCategoryIds(nodes: CategoryTreeItem[]): string[] {
 
 export function findCategoryById(
 	nodes: CategoryTreeItem[],
-	id: string,
+	id: string
 ): CategoryTreeItem | undefined {
 	for (const node of nodes) {
 		if (node.id === id) return node;
@@ -72,7 +72,7 @@ export function collectDescendantIds(nodes: CategoryTreeItem[], rootId: string):
 export function buildParentPath(
 	nodes: CategoryTreeItem[],
 	categoryId: string,
-	language: 'EN' | 'UK' = 'EN',
+	language: 'EN' | 'UK' = 'EN'
 ): string {
 	const path: string[] = [];
 	let current = findCategoryById(nodes, categoryId);
@@ -86,7 +86,7 @@ export function buildParentPath(
 export function buildParentOptions(
 	nodes: CategoryTreeItem[],
 	excludeIds: Set<string>,
-	language: 'EN' | 'UK' = 'EN',
+	language: 'EN' | 'UK' = 'EN'
 ): Array<{ value: string; label: string; depth: number }> {
 	const options: Array<{ value: string; label: string; depth: number }> = [
 		{ value: '', label: '—', depth: 0 },

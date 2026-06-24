@@ -1,13 +1,6 @@
 import Lightbox from 'yet-another-react-lightbox';
 import Thumbnails from 'yet-another-react-lightbox/plugins/thumbnails';
-import {
-	createContext,
-	useCallback,
-	useContext,
-	useMemo,
-	useState,
-	type ReactNode,
-} from 'react';
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 import 'yet-another-react-lightbox/styles.css';
 import 'yet-another-react-lightbox/plugins/thumbnails.css';
 
@@ -50,7 +43,7 @@ export function ImageLightboxProvider({ children }: { children: ReactNode }) {
 
 	const contextValue = useMemo(
 		() => ({ openLightbox, closeLightbox }),
-		[closeLightbox, openLightbox],
+		[closeLightbox, openLightbox]
 	);
 
 	const hasMultiple = state.slides.length > 1;

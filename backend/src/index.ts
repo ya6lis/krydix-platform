@@ -33,15 +33,17 @@ async function bootstrap() {
 		})
 	);
 	app.use(express.json({ limit: `${UPLOAD_MAX_FILE_SIZE_MB}mb` }));
-	app.use((err: unknown, _req: express.Request, res: express.Response, next: express.NextFunction) => {
-		if (err && typeof err === 'object' && 'type' in err && err.type === 'entity.too.large') {
-			return res.status(413).json({
-				error: 'PAYLOAD_TOO_LARGE',
-				message: `File is too large. Max size is ${UPLOAD_MAX_FILE_SIZE_MB}MB.`,
-			});
+	app.use(
+		(err: unknown, _req: express.Request, res: express.Response, next: express.NextFunction) => {
+			if (err && typeof err === 'object' && 'type' in err && err.type === 'entity.too.large') {
+				return res.status(413).json({
+					error: 'PAYLOAD_TOO_LARGE',
+					message: `File is too large. Max size is ${UPLOAD_MAX_FILE_SIZE_MB}MB.`,
+				});
+			}
+			return next(err);
 		}
-		return next(err);
-	});
+	);
 
 	app.get('/health', (_req, res) => {
 		res.json({ status: 'ok', timestamp: new Date().toISOString() });

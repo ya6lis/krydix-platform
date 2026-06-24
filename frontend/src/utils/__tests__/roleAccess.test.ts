@@ -72,9 +72,13 @@ describe('roleAccess', () => {
 	});
 
 	it('returns profile and settings routes', () => {
-		expect(getProfileRouteForUser({ id: 's1', role: Role.SELLER })).toBe(ROUTES.SELLER_PUBLIC('s1'));
+		expect(getProfileRouteForUser({ id: 's1', role: Role.SELLER })).toBe(
+			ROUTES.SELLER_PUBLIC('s1')
+		);
 		expect(getProfileRouteForUser({ id: 'b1', role: Role.BUYER })).toBe(ROUTES.USER_PUBLIC('b1'));
-		expect(getProfileRouteForUser({ id: 'm1', role: Role.MODERATOR })).toBe(ROUTES.USER_PUBLIC('m1'));
+		expect(getProfileRouteForUser({ id: 'm1', role: Role.MODERATOR })).toBe(
+			ROUTES.USER_PUBLIC('m1')
+		);
 		expect(getPublicProfileRoute('s1', Role.SELLER)).toBe(ROUTES.SELLER_PUBLIC('s1'));
 		expect(getPublicProfileRoute('b1', Role.BUYER)).toBe(ROUTES.USER_PUBLIC('b1'));
 		expect(getProfileMenuLabelKey(Role.SELLER)).toBe('shell.menu.store');

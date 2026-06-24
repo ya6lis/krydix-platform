@@ -99,7 +99,7 @@ export async function changeAdminProductStatus(
 	actorId: string,
 	actorRole: Role,
 	productId: string,
-	newStatus: ProductStatus,
+	newStatus: ProductStatus
 ) {
 	assertStaffRole(actorRole);
 

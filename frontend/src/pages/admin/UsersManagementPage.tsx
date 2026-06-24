@@ -2,14 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation } from '@apollo/client';
-import {
-	Box,
-	IconButton,
-	Menu,
-	MenuItem,
-	Stack,
-	Typography,
-} from '@mui/material';
+import { Box, IconButton, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { Icons } from '@/constants/icons';
@@ -93,15 +86,7 @@ function isOnlineUser(user: AdminUserItem): boolean {
 	return user.isOnline;
 }
 
-function StatMini({
-	label,
-	value,
-	delta,
-}: {
-	label: string;
-	value: number;
-	delta?: string;
-}) {
+function StatMini({ label, value, delta }: { label: string; value: number; delta?: string }) {
 	return (
 		<Box
 			sx={{
@@ -273,7 +258,7 @@ export default function UsersManagementPage() {
 			},
 			{ value: 'blocked', label: t('users.tabs.blocked'), count: tabCounts?.blocked },
 		],
-		[t, tabCounts],
+		[t, tabCounts]
 	);
 
 	const statusOptions = [
@@ -293,7 +278,7 @@ export default function UsersManagementPage() {
 				showToast(t('users.toast.roleChangeError'), 'error');
 			}
 		},
-		[changeRole, showToast, t, refetch],
+		[changeRole, showToast, t, refetch]
 	);
 
 	const handleBan = useCallback(
@@ -306,7 +291,7 @@ export default function UsersManagementPage() {
 				showToast(t('users.toast.banError'), 'error');
 			}
 		},
-		[softBan, showToast, t, refetch],
+		[softBan, showToast, t, refetch]
 	);
 
 	const handleUnban = useCallback(
@@ -319,7 +304,7 @@ export default function UsersManagementPage() {
 				showToast(t('users.toast.unbanError'), 'error');
 			}
 		},
-		[softUnban, showToast, t, refetch],
+		[softUnban, showToast, t, refetch]
 	);
 
 	const handleDelete = useCallback(async () => {
@@ -416,7 +401,9 @@ export default function UsersManagementPage() {
 			key: 'joined',
 			label: t('users.table.joined'),
 			render: (row) => (
-				<Typography sx={{ fontSize: 13, color: tokens.ink2 }}>{formatDate(row.joinedAt)}</Typography>
+				<Typography sx={{ fontSize: 13, color: tokens.ink2 }}>
+					{formatDate(row.joinedAt)}
+				</Typography>
 			),
 		},
 		{

@@ -36,7 +36,9 @@ function buildSearchFilter(search?: string): Prisma.UserWhereInput | undefined {
 	};
 }
 
-function buildStatusFilter(statusFilter?: AdminUserStatusFilter): Prisma.UserWhereInput | undefined {
+function buildStatusFilter(
+	statusFilter?: AdminUserStatusFilter
+): Prisma.UserWhereInput | undefined {
 	if (!statusFilter || statusFilter === 'ALL') return undefined;
 	if (statusFilter === 'ACTIVE') return { isActive: true, isEmailVerified: true };
 	if (statusFilter === 'PENDING_EMAIL') return { isActive: true, isEmailVerified: false };

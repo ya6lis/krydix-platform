@@ -44,7 +44,7 @@ export async function findWishlistProductIds(userId: string): Promise<string[]> 
 
 export async function findWishlistItem(
 	userId: string,
-	productId: string,
+	productId: string
 ): Promise<{ id: string } | null> {
 	return prisma.wishlistItem.findUnique({
 		where: { userId_productId: { userId, productId } },

@@ -21,7 +21,7 @@ export function useWishlist() {
 		{
 			skip: !user,
 			fetchPolicy: 'cache-and-network',
-		},
+		}
 	);
 
 	const [toggleWishlistMutation, { loading: toggling }] = useMutation(TOGGLE_WISHLIST_MUTATION, {
@@ -52,7 +52,7 @@ export function useWishlist() {
 				wasWishlisted
 					? t('wishlist.removed', { name: productTitle ?? '' })
 					: t('wishlist.added', { name: productTitle ?? '' }),
-				'success',
+				'success'
 			);
 			await refetch();
 			return !wasWishlisted;

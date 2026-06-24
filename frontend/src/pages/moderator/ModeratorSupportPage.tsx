@@ -60,10 +60,14 @@ export default function ModeratorSupportPage() {
 			search: search.trim() || undefined,
 			status: activeTab === 'all' ? undefined : TAB_STATUS[activeTab],
 		}),
-		[activeTab, page, search],
+		[activeTab, page, search]
 	);
 
-	const { data: queueData, loading: queueLoading, refetch: refetchQueue } = useQuery<{
+	const {
+		data: queueData,
+		loading: queueLoading,
+		refetch: refetchQueue,
+	} = useQuery<{
 		supportQueue: {
 			items: ConversationSummary[];
 			total: number;
@@ -73,13 +77,18 @@ export default function ModeratorSupportPage() {
 		fetchPolicy: 'cache-and-network',
 	});
 
-	const { data: conversationData, loading: conversationLoading, refetch: refetchConversation } =
-		useQuery<{ supportConversation: ConversationDetail }>(SUPPORT_CONVERSATION_QUERY, {
-			variables: { id: selectedId, language },
-			skip: !selectedId,
-		});
+	const {
+		data: conversationData,
+		loading: conversationLoading,
+		refetch: refetchConversation,
+	} = useQuery<{ supportConversation: ConversationDetail }>(SUPPORT_CONVERSATION_QUERY, {
+		variables: { id: selectedId, language },
+		skip: !selectedId,
+	});
 
-	const [assignConversation, { loading: assigning }] = useMutation(ASSIGN_SUPPORT_CONVERSATION_MUTATION);
+	const [assignConversation, { loading: assigning }] = useMutation(
+		ASSIGN_SUPPORT_CONVERSATION_MUTATION
+	);
 	const [updateStatus, { loading: updatingStatus }] = useMutation(UPDATE_SUPPORT_STATUS_MUTATION);
 
 	const items = queueData?.supportQueue.items ?? [];
@@ -93,7 +102,7 @@ export default function ModeratorSupportPage() {
 			{ value: 'resolved', label: t('moderatorSupport.tabs.resolved') },
 			{ value: 'all', label: t('moderatorSupport.tabs.all') },
 		],
-		[t],
+		[t]
 	);
 
 	const refreshAll = useCallback(() => {

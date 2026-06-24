@@ -178,7 +178,7 @@ export async function findAdminReviewById(id: string) {
 
 export async function updateAdminReviewStatus(
 	id: string,
-	data: { isApproved: boolean; isBlocked: boolean },
+	data: { isApproved: boolean; isBlocked: boolean }
 ) {
 	return prisma.productReview.update({
 		where: { id },

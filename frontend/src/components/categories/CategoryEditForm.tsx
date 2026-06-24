@@ -2,7 +2,16 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Box, FormControl, InputLabel, MenuItem, Select, Stack, Typography, Alert } from '@mui/material';
+import {
+	Box,
+	FormControl,
+	InputLabel,
+	MenuItem,
+	Select,
+	Stack,
+	Typography,
+	Alert,
+} from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useTranslation } from 'react-i18next';
 
@@ -52,7 +61,7 @@ interface CategoryEditFormProps {
 
 function getDefaultValues(
 	category: CategoryTreeItem | null,
-	parentId: string | null,
+	parentId: string | null
 ): CategoryFormValues {
 	if (!category) {
 		return {
@@ -206,7 +215,7 @@ export function CategoryEditForm({
 						renderIconPreview(
 							selected as string,
 							iconOptions.find((opt) => opt.value === selected)?.label ??
-								t('adminCategories.form.iconNone'),
+								t('adminCategories.form.iconNone')
 						)
 					}
 				>
@@ -254,7 +263,13 @@ export function CategoryEditForm({
 					<Box />
 				)}
 				<Stack direction="row" className={styles.footerActions}>
-					<AppButton tone="ghost" size="small" type="button" onClick={onDiscard} disabled={!isDirty}>
+					<AppButton
+						tone="ghost"
+						size="small"
+						type="button"
+						onClick={onDiscard}
+						disabled={!isDirty}
+					>
 						{t('adminCategories.form.discard')}
 					</AppButton>
 					<AppButton

@@ -97,7 +97,9 @@ export async function getPlatformOverview() {
 	const gmvCurrent = toNumber(current._sum.totalAmount);
 	const gmvPrevious = toNumber(previous._sum.totalAmount);
 	const gmvDelta = gmvPrevious > 0 ? ((gmvCurrent - gmvPrevious) / gmvPrevious) * 100 : 0;
-	const takeRate = defaultRule ? toNumber(defaultRule.percent) : toNumber(config.defaultPlatformFeePercent) || 2;
+	const takeRate = defaultRule
+		? toNumber(defaultRule.percent)
+		: toNumber(config.defaultPlatformFeePercent) || 2;
 	const platformRevenue = gmvCurrent * (takeRate / 100);
 	const pendingPayouts = toNumber(pendingRaw);
 
@@ -143,7 +145,7 @@ export async function saveCommissionRules(
 		fixedFee: number;
 		currency: string;
 		isDefault?: boolean;
-	}>,
+	}>
 ) {
 	if (!rules.some((r) => r.isDefault)) {
 		throw new GraphQLError('Default commission rule is required', {
@@ -172,7 +174,7 @@ export async function savePayoutConfig(
 		autoConfirmDays: number;
 		minimumPayout: number;
 		currency: string;
-	},
+	}
 ) {
 	if (input.holdPeriodDays < 0 || input.holdPeriodDays > 90) {
 		throw new GraphQLError('Hold period must be between 0 and 90 days', {
@@ -226,7 +228,7 @@ export async function createAdminPromoCode(
 		maxUses?: number;
 		expiresAt?: string;
 		isActive?: boolean;
-	},
+	}
 ) {
 	const code = input.code.trim().toUpperCase();
 	if (!code) {
@@ -271,7 +273,7 @@ export async function updateAdminPromoCode(
 		maxUses?: number;
 		expiresAt?: string | null;
 		isActive?: boolean;
-	},
+	}
 ) {
 	const updated = await repo.updatePromoCode(id, {
 		...(input.description !== undefined && { description: input.description.trim() || null }),

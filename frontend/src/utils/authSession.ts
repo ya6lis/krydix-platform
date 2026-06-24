@@ -13,7 +13,7 @@ let refreshSessionPromise: Promise<RefreshSessionResult | null> | null = null;
 
 async function performRefresh(
 	client: ApolloClient<unknown>,
-	attemptedToken: string,
+	attemptedToken: string
 ): Promise<RefreshSessionResult | null> {
 	const { data } = await client.mutate<{
 		refreshToken: { accessToken: string; refreshToken: string };
@@ -44,7 +44,7 @@ async function performRefresh(
 }
 
 export function refreshAuthSession(
-	client: ApolloClient<unknown>,
+	client: ApolloClient<unknown>
 ): Promise<RefreshSessionResult | null> {
 	if (refreshSessionPromise) {
 		return refreshSessionPromise;

@@ -66,7 +66,10 @@ function mockWorkbook(rows: Record<string, unknown>[]) {
 
 beforeEach(() => {
 	jest.clearAllMocks();
-	mockCategoryRepo.findCategoryBySlug.mockResolvedValue({ id: 'cat-1', slug: 'electronics' } as never);
+	mockCategoryRepo.findCategoryBySlug.mockResolvedValue({
+		id: 'cat-1',
+		slug: 'electronics',
+	} as never);
 	(mockPrisma.product.findFirst as jest.Mock).mockResolvedValue(null);
 	(mockPrisma.media.deleteMany as jest.Mock).mockResolvedValue({ count: 0 });
 });
@@ -75,7 +78,12 @@ describe('previewImport', () => {
 	it('returns parsed and validated rows using template columns', async () => {
 		mockWorkbook([validSheetRow]);
 
-		const rows = await importService.previewImport(STUB_DATA_URL, 'xlsx', ImportMode.UPSERT, SELLER_ID);
+		const rows = await importService.previewImport(
+			STUB_DATA_URL,
+			'xlsx',
+			ImportMode.UPSERT,
+			SELLER_ID
+		);
 
 		expect(rows).toHaveLength(1);
 		expect(rows[0].nameEn).toBe('Test Product');
@@ -103,7 +111,12 @@ describe('previewImport', () => {
 			},
 		]);
 
-		const rows = await importService.previewImport(STUB_DATA_URL, 'xlsx', ImportMode.UPSERT, SELLER_ID);
+		const rows = await importService.previewImport(
+			STUB_DATA_URL,
+			'xlsx',
+			ImportMode.UPSERT,
+			SELLER_ID
+		);
 
 		expect(rows[0].nameEn).toBe('Legacy Product');
 		expect(rows[0].price).toBe(49.99);
@@ -113,7 +126,12 @@ describe('previewImport', () => {
 	it('marks row invalid when required fields missing', async () => {
 		mockWorkbook([{ ...validSheetRow, sku: '', name_en: '' }]);
 
-		const rows = await importService.previewImport(STUB_DATA_URL, 'xlsx', ImportMode.UPSERT, SELLER_ID);
+		const rows = await importService.previewImport(
+			STUB_DATA_URL,
+			'xlsx',
+			ImportMode.UPSERT,
+			SELLER_ID
+		);
 
 		expect(rows[0].isValid).toBe(false);
 		expect(rows[0].errors.length).toBeGreaterThan(0);
@@ -122,7 +140,12 @@ describe('previewImport', () => {
 	it('marks row invalid when price is not positive', async () => {
 		mockWorkbook([{ ...validSheetRow, price: -5 }]);
 
-		const rows = await importService.previewImport(STUB_DATA_URL, 'xlsx', ImportMode.UPSERT, SELLER_ID);
+		const rows = await importService.previewImport(
+			STUB_DATA_URL,
+			'xlsx',
+			ImportMode.UPSERT,
+			SELLER_ID
+		);
 
 		expect(rows[0].isValid).toBe(false);
 		expect(rows[0].errors).toContain('price must be a positive number');
@@ -136,7 +159,7 @@ describe('previewImport', () => {
 			STUB_DATA_URL,
 			'xlsx',
 			ImportMode.CREATE_ONLY,
-			SELLER_ID,
+			SELLER_ID
 		);
 
 		expect(rows[0].isValid).toBe(false);
@@ -144,7 +167,9 @@ describe('previewImport', () => {
 	});
 
 	it('throws when data URL is invalid', async () => {
-		await expect(importService.previewImport('not-a-data-url', 'xlsx')).rejects.toThrow(GraphQLError);
+		await expect(importService.previewImport('not-a-data-url', 'xlsx')).rejects.toThrow(
+			GraphQLError
+		);
 	});
 });
 

@@ -4,7 +4,15 @@ import { useQuery } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
 import { Box, Typography, Stack } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { AppLoader, EmptyState, AppCard, AppTabs, AppButton, AppImage, useAppToast } from '@/components/ui';
+import {
+	AppLoader,
+	EmptyState,
+	AppCard,
+	AppTabs,
+	AppButton,
+	AppImage,
+	useAppToast,
+} from '@/components/ui';
 import { ProductReviewsSection } from '@/components/reviews/ProductReviewsSection';
 import { PRODUCT_QUERY } from '@/graphql/operations/catalog';
 import { Icons } from '@/constants/icons';
@@ -694,117 +702,119 @@ export default function ProductPage() {
 					})}
 
 					{(canBuy || canUseWishlist) && (
-					<Stack direction="row" alignItems="center" gap={1.25} sx={{ mt: 1, mb: 2.75 }}>
-						{canBuy && (
-						<Box
-							sx={{
-								display: 'inline-flex',
-								alignItems: 'center',
-								border: `1px solid ${tokens.line}`,
-								borderRadius: 2.5,
-								bgcolor: tokens.surface,
-							}}
-						>
-							<Box
-								component="button"
-								type="button"
-								data-cy="qty-decrement"
-								onClick={() => setQty((q) => Math.max(QTY_MIN, q - 1))}
-								disabled={qty <= QTY_MIN}
-								sx={{
-									width: 36,
-									height: 38,
-									border: 'none',
-									bgcolor: 'transparent',
-									cursor: qty <= QTY_MIN ? 'default' : 'pointer',
-									color: qty <= QTY_MIN ? tokens.ink3 : tokens.ink2,
-									fontSize: 16,
-									display: 'grid',
-									placeItems: 'center',
-									'&:hover:not(:disabled)': { color: tokens.ink1 },
-								}}
-							>
-								−
-							</Box>
-							<Box
-								component="input"
-								type="text"
-								readOnly
-								data-cy="qty-value"
-								value={qty}
-								sx={{
-									width: 44,
-									textAlign: 'center',
-									border: 'none',
-									bgcolor: 'transparent',
-									fontFamily: 'inherit',
-									fontWeight: 700,
-									fontSize: 14,
-									outline: 'none',
-									color: tokens.ink1,
-								}}
-							/>
-							<Box
-								component="button"
-								type="button"
-								data-cy="qty-increment"
-								onClick={() => setQty((q) => Math.min(stock, q + 1))}
-								disabled={qty >= stock || stock === 0}
-								sx={{
-									width: 36,
-									height: 38,
-									border: 'none',
-									bgcolor: 'transparent',
-									cursor: qty >= stock || stock === 0 ? 'default' : 'pointer',
-									color: qty >= stock || stock === 0 ? tokens.ink3 : tokens.ink2,
-									fontSize: 16,
-									display: 'grid',
-									placeItems: 'center',
-									'&:hover:not(:disabled)': { color: tokens.ink1 },
-								}}
-							>
-								+
-							</Box>
-						</Box>
-						)}
+						<Stack direction="row" alignItems="center" gap={1.25} sx={{ mt: 1, mb: 2.75 }}>
+							{canBuy && (
+								<Box
+									sx={{
+										display: 'inline-flex',
+										alignItems: 'center',
+										border: `1px solid ${tokens.line}`,
+										borderRadius: 2.5,
+										bgcolor: tokens.surface,
+									}}
+								>
+									<Box
+										component="button"
+										type="button"
+										data-cy="qty-decrement"
+										onClick={() => setQty((q) => Math.max(QTY_MIN, q - 1))}
+										disabled={qty <= QTY_MIN}
+										sx={{
+											width: 36,
+											height: 38,
+											border: 'none',
+											bgcolor: 'transparent',
+											cursor: qty <= QTY_MIN ? 'default' : 'pointer',
+											color: qty <= QTY_MIN ? tokens.ink3 : tokens.ink2,
+											fontSize: 16,
+											display: 'grid',
+											placeItems: 'center',
+											'&:hover:not(:disabled)': { color: tokens.ink1 },
+										}}
+									>
+										−
+									</Box>
+									<Box
+										component="input"
+										type="text"
+										readOnly
+										data-cy="qty-value"
+										value={qty}
+										sx={{
+											width: 44,
+											textAlign: 'center',
+											border: 'none',
+											bgcolor: 'transparent',
+											fontFamily: 'inherit',
+											fontWeight: 700,
+											fontSize: 14,
+											outline: 'none',
+											color: tokens.ink1,
+										}}
+									/>
+									<Box
+										component="button"
+										type="button"
+										data-cy="qty-increment"
+										onClick={() => setQty((q) => Math.min(stock, q + 1))}
+										disabled={qty >= stock || stock === 0}
+										sx={{
+											width: 36,
+											height: 38,
+											border: 'none',
+											bgcolor: 'transparent',
+											cursor: qty >= stock || stock === 0 ? 'default' : 'pointer',
+											color: qty >= stock || stock === 0 ? tokens.ink3 : tokens.ink2,
+											fontSize: 16,
+											display: 'grid',
+											placeItems: 'center',
+											'&:hover:not(:disabled)': { color: tokens.ink1 },
+										}}
+									>
+										+
+									</Box>
+								</Box>
+							)}
 
-						{canBuy && (
-						<AppButton
-							variant="contained"
-							disabled={stock === 0}
-							onClick={handleAddToCart}
-							startIcon={<FontAwesomeIcon icon={Icons.cart} />}
-							sx={{ flex: 2, justifyContent: 'center', py: 1.75, fontSize: 14 }}
-						>
-							{t('product.addToCart')} — {formatPrice(price)}
-						</AppButton>
-						)}
+							{canBuy && (
+								<AppButton
+									variant="contained"
+									disabled={stock === 0}
+									onClick={handleAddToCart}
+									startIcon={<FontAwesomeIcon icon={Icons.cart} />}
+									sx={{ flex: 2, justifyContent: 'center', py: 1.75, fontSize: 14 }}
+								>
+									{t('product.addToCart')} — {formatPrice(price)}
+								</AppButton>
+							)}
 
-						{canUseWishlist && (
-						<AppButton
-							variant="outlined"
-							aria-label={t(wishlisted ? 'product.removeFromWishlist' : 'product.addToWishlist')}
-							onClick={() => void toggleWishlist(product.id, product.title)}
-							disabled={toggling}
-							sx={{
-								minWidth: 0,
-								px: 1.625,
-								py: 1.625,
-								color: wishlisted ? tokens.coral : 'text.secondary',
-								borderColor: wishlisted ? tokens.coral : 'divider',
-								'&:hover': {
-									borderColor: wishlisted ? tokens.coral : tokens.ink3,
-									bgcolor: wishlisted ? tokens.coralSoft : tokens.surface2,
-								},
-							}}
-						>
-							<FontAwesomeIcon
-								icon={wishlisted ? Icons.heart : Icons.heartEmpty}
-								style={{ fontSize: 16 }}
-							/>
-						</AppButton>
-						)}
-					</Stack>
+							{canUseWishlist && (
+								<AppButton
+									variant="outlined"
+									aria-label={t(
+										wishlisted ? 'product.removeFromWishlist' : 'product.addToWishlist'
+									)}
+									onClick={() => void toggleWishlist(product.id, product.title)}
+									disabled={toggling}
+									sx={{
+										minWidth: 0,
+										px: 1.625,
+										py: 1.625,
+										color: wishlisted ? tokens.coral : 'text.secondary',
+										borderColor: wishlisted ? tokens.coral : 'divider',
+										'&:hover': {
+											borderColor: wishlisted ? tokens.coral : tokens.ink3,
+											bgcolor: wishlisted ? tokens.coralSoft : tokens.surface2,
+										},
+									}}
+								>
+									<FontAwesomeIcon
+										icon={wishlisted ? Icons.heart : Icons.heartEmpty}
+										style={{ fontSize: 16 }}
+									/>
+								</AppButton>
+							)}
+						</Stack>
 					)}
 
 					{/* Trust — 3-column grid */}

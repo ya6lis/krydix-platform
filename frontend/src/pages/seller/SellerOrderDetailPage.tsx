@@ -37,14 +37,7 @@ import {
 } from '@/graphql/operations/sellerOrders';
 import type { SellerOrder, DeliveryMethod, PaymentMethod } from '@/types/orders';
 
-type DialogType =
-	| 'cancel'
-	| 'deliver'
-	| 'ship'
-	| 'tracking'
-	| 'rejectReturn'
-	| 'refund'
-	| null;
+type DialogType = 'cancel' | 'deliver' | 'ship' | 'tracking' | 'rejectReturn' | 'refund' | null;
 
 const AVATAR_TONES = [
 	{ bg: tokens.accentSoft, fg: tokens.accentInk },
@@ -146,7 +139,9 @@ function buildOrderTimeline(order: SellerOrder, t: (k: string) => string): Timel
 
 function buildDeliveryTimeline(order: SellerOrder, t: (k: string) => string): TimelineEvent[] {
 	const deliveryStatus = order.delivery?.status ?? 'PENDING';
-	const currentIdx = ['PENDING', 'PACKED', 'SENT', 'IN_TRANSIT', 'DELIVERED'].indexOf(deliveryStatus);
+	const currentIdx = ['PENDING', 'PACKED', 'SENT', 'IN_TRANSIT', 'DELIVERED'].indexOf(
+		deliveryStatus
+	);
 	return [
 		{
 			label: t('orderDetail.timeline.deliverySuccessful'),
@@ -176,10 +171,13 @@ export default function SellerOrderDetailPage() {
 	const [cancelReason, setCancelReason] = useState('');
 	const [rejectReason, setRejectReason] = useState('');
 
-	const { data, loading, refetch } = useQuery<{ mySellerOrder: SellerOrder }>(MY_SELLER_ORDER_QUERY, {
-		variables: { id },
-		skip: !id,
-	});
+	const { data, loading, refetch } = useQuery<{ mySellerOrder: SellerOrder }>(
+		MY_SELLER_ORDER_QUERY,
+		{
+			variables: { id },
+			skip: !id,
+		}
+	);
 
 	const refetchQueries = [
 		{ query: MY_SELLER_ORDER_QUERY, variables: { id } },
@@ -200,9 +198,18 @@ export default function SellerOrderDetailPage() {
 		onError: (err: Error) => showToast(err.message, 'error'),
 	};
 
-	const [confirmOrder, { loading: confirming }] = useMutation(CONFIRM_SELLER_ORDER_MUTATION, mutationOptions);
-	const [markPacked, { loading: packing }] = useMutation(MARK_SELLER_ORDER_PACKED_MUTATION, mutationOptions);
-	const [shipOrder, { loading: shipping }] = useMutation(SHIP_SELLER_ORDER_MUTATION, mutationOptions);
+	const [confirmOrder, { loading: confirming }] = useMutation(
+		CONFIRM_SELLER_ORDER_MUTATION,
+		mutationOptions
+	);
+	const [markPacked, { loading: packing }] = useMutation(
+		MARK_SELLER_ORDER_PACKED_MUTATION,
+		mutationOptions
+	);
+	const [shipOrder, { loading: shipping }] = useMutation(
+		SHIP_SELLER_ORDER_MUTATION,
+		mutationOptions
+	);
 	const [markInTransit, { loading: inTransitLoading }] = useMutation(
 		MARK_SELLER_ORDER_IN_TRANSIT_MUTATION,
 		mutationOptions
@@ -211,12 +218,18 @@ export default function SellerOrderDetailPage() {
 		MARK_SELLER_ORDER_DELIVERED_MUTATION,
 		mutationOptions
 	);
-	const [cancelOrder, { loading: cancelling }] = useMutation(CANCEL_SELLER_ORDER_MUTATION, mutationOptions);
+	const [cancelOrder, { loading: cancelling }] = useMutation(
+		CANCEL_SELLER_ORDER_MUTATION,
+		mutationOptions
+	);
 	const [updateTracking, { loading: updatingTracking }] = useMutation(
 		UPDATE_SELLER_ORDER_TRACKING_MUTATION,
 		mutationOptions
 	);
-	const [reviewReturn, { loading: reviewingReturn }] = useMutation(REVIEW_SELLER_RETURN_MUTATION, mutationOptions);
+	const [reviewReturn, { loading: reviewingReturn }] = useMutation(
+		REVIEW_SELLER_RETURN_MUTATION,
+		mutationOptions
+	);
 	const [markReturnReceived, { loading: receivingReturn }] = useMutation(
 		MARK_SELLER_RETURN_RECEIVED_MUTATION,
 		mutationOptions
@@ -343,7 +356,9 @@ export default function SellerOrderDetailPage() {
 						</Typography>
 					</Box>
 
-					<Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', flexShrink: 0, alignItems: 'center' }}>
+					<Box
+						sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', flexShrink: 0, alignItems: 'center' }}
+					>
 						{canConfirm && (
 							<AppButton
 								variant="contained"
@@ -439,9 +454,7 @@ export default function SellerOrderDetailPage() {
 									size="small"
 									loading={reviewingReturn}
 									onClick={() =>
-										runMutation(() =>
-											reviewReturn({ variables: { orderId: id, approve: true } })
-										)
+										runMutation(() => reviewReturn({ variables: { orderId: id, approve: true } }))
 									}
 								>
 									{t('sellerOrders.detail.approveReturn')}
@@ -460,7 +473,9 @@ export default function SellerOrderDetailPage() {
 								variant="contained"
 								size="small"
 								loading={receivingReturn}
-								onClick={() => runMutation(() => markReturnReceived({ variables: { orderId: id } }))}
+								onClick={() =>
+									runMutation(() => markReturnReceived({ variables: { orderId: id } }))
+								}
 							>
 								{t('sellerOrders.detail.markReturnReceived')}
 							</AppButton>
@@ -613,7 +628,9 @@ export default function SellerOrderDetailPage() {
 							</Box>
 							<Box>
 								<Typography sx={{ fontWeight: 700, fontSize: 14 }}>{order.buyer.name}</Typography>
-								<Typography sx={{ fontSize: 12.5, color: tokens.ink3 }}>{order.buyer.email}</Typography>
+								<Typography sx={{ fontSize: 12.5, color: tokens.ink3 }}>
+									{order.buyer.email}
+								</Typography>
 							</Box>
 						</Box>
 					</SideCard>
@@ -624,7 +641,10 @@ export default function SellerOrderDetailPage() {
 								label={t('orderDetail.delivery.shipBy')}
 								value={t(formatDeliveryMethod(order.delivery.method))}
 							/>
-							<KVRow label={t('orderDetail.delivery.speed')} value={t('orderDetail.delivery.standard')} />
+							<KVRow
+								label={t('orderDetail.delivery.speed')}
+								value={t('orderDetail.delivery.standard')}
+							/>
 							<KVRow
 								label={t('orderDetail.delivery.tracking')}
 								value={
@@ -959,9 +979,13 @@ function KVRow({ label, value }: { label: string; value: React.ReactNode }) {
 				gap: 2,
 			}}
 		>
-			<Typography sx={{ fontSize: 'inherit', color: tokens.ink3, flexShrink: 0 }}>{label}</Typography>
+			<Typography sx={{ fontSize: 'inherit', color: tokens.ink3, flexShrink: 0 }}>
+				{label}
+			</Typography>
 			{typeof value === 'string' ? (
-				<Typography sx={{ fontSize: 'inherit', fontWeight: 500, textAlign: 'right' }}>{value}</Typography>
+				<Typography sx={{ fontSize: 'inherit', fontWeight: 500, textAlign: 'right' }}>
+					{value}
+				</Typography>
 			) : (
 				value
 			)}

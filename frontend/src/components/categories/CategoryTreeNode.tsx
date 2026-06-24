@@ -82,7 +82,9 @@ export function CategoryTreeNode({
 						e.stopPropagation();
 						if (hasChildren) onToggleExpand(node.id);
 					}}
-					aria-label={t(isExpanded ? 'adminCategories.tree.collapse' : 'adminCategories.tree.expand')}
+					aria-label={t(
+						isExpanded ? 'adminCategories.tree.collapse' : 'adminCategories.tree.expand'
+					)}
 				>
 					<FontAwesomeIcon icon={Icons.chevronRight} size="xs" />
 				</IconButton>
@@ -112,7 +114,7 @@ export function CategoryTreeNode({
 					onToggleActive(node.id, !node.isActive);
 				}}
 				aria-label={t(
-					node.isActive ? 'adminCategories.tree.hideCategory' : 'adminCategories.tree.showCategory',
+					node.isActive ? 'adminCategories.tree.hideCategory' : 'adminCategories.tree.showCategory'
 				)}
 			>
 				<FontAwesomeIcon icon={node.isActive ? Icons.eye : Icons.eyeOff} size="sm" />

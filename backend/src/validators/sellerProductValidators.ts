@@ -44,7 +44,18 @@ export const UploadMediaSchema = z.object({
 });
 
 export const ProductListFilterSchema = z.object({
-	status: z.enum(['DRAFT', 'PENDING_MODERATION', 'APPROVED', 'REJECTED', 'ARCHIVED', 'BLOCKED', 'DISABLED', 'ENABLED']).optional(),
+	status: z
+		.enum([
+			'DRAFT',
+			'PENDING_MODERATION',
+			'APPROVED',
+			'REJECTED',
+			'ARCHIVED',
+			'BLOCKED',
+			'DISABLED',
+			'ENABLED',
+		])
+		.optional(),
 	search: z.string().max(200).optional(),
 });
 
@@ -65,7 +76,11 @@ export const ImportRowInputSchema = z.object({
 	nameUk: z.string().min(1).max(500),
 	descriptionEn: z.string().min(1).max(10000),
 	descriptionUk: z.string().min(1).max(10000),
-	slug: z.string().min(1).max(255).regex(/^[a-z0-9-]+$/),
+	slug: z
+		.string()
+		.min(1)
+		.max(255)
+		.regex(/^[a-z0-9-]+$/),
 	sku: z.string().min(1).max(100),
 	brand: z.string().max(200).optional().nullable(),
 	price: z.number().positive(),

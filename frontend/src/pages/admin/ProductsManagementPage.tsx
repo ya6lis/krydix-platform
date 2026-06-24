@@ -164,18 +164,21 @@ export default function ProductsManagementPage() {
 	const [deleteTarget, setDeleteTarget] = useState<AdminProductItem | null>(null);
 
 	const { data: statsData } = useQuery<AdminProductStatsData>(ADMIN_PRODUCT_STATS_QUERY);
-	const { data, loading, refetch } = useQuery<AllProductsData, AllProductsVars>(ALL_PRODUCTS_QUERY, {
-		variables: {
-			input: {
-				statusFilter: TAB_STATUS_MAP[activeTab],
-				availabilityFilter: availabilityFilter === 'ALL' ? undefined : availabilityFilter,
-				search: search || undefined,
-				page: page + 1,
-				pageSize: PAGE_SIZE,
+	const { data, loading, refetch } = useQuery<AllProductsData, AllProductsVars>(
+		ALL_PRODUCTS_QUERY,
+		{
+			variables: {
+				input: {
+					statusFilter: TAB_STATUS_MAP[activeTab],
+					availabilityFilter: availabilityFilter === 'ALL' ? undefined : availabilityFilter,
+					search: search || undefined,
+					page: page + 1,
+					pageSize: PAGE_SIZE,
+				},
 			},
-		},
-		fetchPolicy: 'cache-and-network',
-	});
+			fetchPolicy: 'cache-and-network',
+		}
+	);
 
 	const [changeStatus] = useMutation(CHANGE_ADMIN_PRODUCT_STATUS_MUTATION);
 	const [deleteProduct] = useMutation(ADMIN_DELETE_PRODUCT_MUTATION);
@@ -197,7 +200,7 @@ export default function ProductsManagementPage() {
 			{ value: 'archived', label: t('adminProducts.tabs.archived'), count: tabCounts?.archived },
 			{ value: 'deleted', label: t('adminProducts.tabs.deleted'), count: tabCounts?.deleted },
 		],
-		[t, tabCounts],
+		[t, tabCounts]
 	);
 
 	const availabilityOptions = [
@@ -216,7 +219,7 @@ export default function ProductsManagementPage() {
 				showToast(t('adminProducts.toast.statusChangeError'), 'error');
 			}
 		},
-		[changeStatus, showToast, t, refetch],
+		[changeStatus, showToast, t, refetch]
 	);
 
 	const handleDelete = useCallback(async () => {
@@ -329,7 +332,9 @@ export default function ProductsManagementPage() {
 			key: 'updated',
 			label: t('adminProducts.table.updated'),
 			render: (row) => (
-				<Typography sx={{ fontSize: 13, color: tokens.ink2 }}>{formatDate(row.updatedAt)}</Typography>
+				<Typography sx={{ fontSize: 13, color: tokens.ink2 }}>
+					{formatDate(row.updatedAt)}
+				</Typography>
 			),
 		},
 		{
@@ -337,10 +342,7 @@ export default function ProductsManagementPage() {
 			label: t('adminProducts.table.status'),
 			render: (row) =>
 				row.isDeleted ? (
-					<StatusBadge
-						status="DELETED"
-						label={t('adminProducts.status.deleted')}
-					/>
+					<StatusBadge status="DELETED" label={t('adminProducts.status.deleted')} />
 				) : (
 					<AppSelect
 						value={row.status}

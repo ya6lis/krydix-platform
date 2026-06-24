@@ -64,7 +64,7 @@ export function formatMoney(value: number, currency = 'USD'): string {
 
 export function groupMessagesByDay<T extends { createdAt: string }>(
 	messages: T[],
-	locale: string,
+	locale: string
 ): Array<{ label: string; messages: T[] }> {
 	const groups: Array<{ label: string; messages: T[] }> = [];
 	for (const message of messages) {

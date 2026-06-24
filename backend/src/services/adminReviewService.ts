@@ -100,7 +100,7 @@ export async function changeAdminReviewStatus(
 	actorId: string,
 	actorRole: Role,
 	reviewId: string,
-	newStatus: AdminReviewStatus,
+	newStatus: AdminReviewStatus
 ) {
 	assertStaffRole(actorRole);
 

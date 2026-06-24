@@ -16,10 +16,7 @@ import {
 	ConfirmDialog,
 	useAppToast,
 } from '@/components/ui';
-import {
-	CATEGORY_TREE_QUERY,
-	type CategoryTreeItem,
-} from '@/graphql/operations/categories';
+import { CATEGORY_TREE_QUERY, type CategoryTreeItem } from '@/graphql/operations/categories';
 import {
 	PLATFORM_OVERVIEW_QUERY,
 	COMMISSION_RULES_QUERY,
@@ -83,7 +80,7 @@ function promoStatusClass(status: string): string {
 function buildCategoryOptions(
 	tree: CategoryTreeItem[],
 	usedCategoryIds: Set<string>,
-	language: 'EN' | 'UK',
+	language: 'EN' | 'UK'
 ): Array<{ value: string; label: string }> {
 	const options: Array<{ value: string; label: string }> = [];
 
@@ -124,8 +121,11 @@ export default function AdminPlatformPage() {
 	const { data: overviewData, loading: overviewLoading } = useQuery(PLATFORM_OVERVIEW_QUERY);
 	const { data: rulesData, loading: rulesLoading } = useQuery(COMMISSION_RULES_QUERY);
 	const { data: payoutData, loading: payoutLoading } = useQuery(PAYOUT_CONFIG_QUERY);
-	const { data: promosData, loading: promosLoading, refetch: refetchPromos } =
-		useQuery(ADMIN_PROMO_CODES_QUERY);
+	const {
+		data: promosData,
+		loading: promosLoading,
+		refetch: refetchPromos,
+	} = useQuery(ADMIN_PROMO_CODES_QUERY);
 	const { data: categoryData } = useQuery(CATEGORY_TREE_QUERY);
 
 	useEffect(() => {
@@ -167,20 +167,19 @@ export default function AdminPlatformPage() {
 	const usedCategoryIds = useMemo(
 		() =>
 			new Set(
-				rulesDraft.filter((rule) => !rule.isDefault && rule.categoryId).map((rule) => rule.categoryId!),
+				rulesDraft
+					.filter((rule) => !rule.isDefault && rule.categoryId)
+					.map((rule) => rule.categoryId!)
 			),
-		[rulesDraft],
+		[rulesDraft]
 	);
 
 	const categoryOptions = useMemo(
 		() => buildCategoryOptions(categoryTree, usedCategoryIds, contentLanguage),
-		[categoryTree, usedCategoryIds, contentLanguage],
+		[categoryTree, usedCategoryIds, contentLanguage]
 	);
 
-	const defaultRule = useMemo(
-		() => rulesDraft.find((rule) => rule.isDefault),
-		[rulesDraft],
-	);
+	const defaultRule = useMemo(() => rulesDraft.find((rule) => rule.isDefault), [rulesDraft]);
 
 	const scrollTo = useCallback((id: PlatformNavSection) => {
 		setActiveSection(id);
@@ -324,7 +323,7 @@ export default function AdminPlatformPage() {
 
 	const nextPayoutLabel = useMemo(
 		() => (overview ? formatDate(overview.nextPayoutDate) : '—'),
-		[overview],
+		[overview]
 	);
 
 	if (loading && !overview) {
@@ -385,9 +384,7 @@ export default function AdminPlatformPage() {
 						</div>
 						<div className={styles.heroStat}>
 							<div className={styles.heroLabel}>{t('adminPlatform.overview.pendingPayouts')}</div>
-							<div className={styles.heroValue}>
-								{formatMoney(overview?.pendingPayouts ?? 0)}
-							</div>
+							<div className={styles.heroValue}>{formatMoney(overview?.pendingPayouts ?? 0)}</div>
 							<div className={styles.heroDelta}>
 								{t('adminPlatform.overview.nextRun', { date: nextPayoutLabel })}
 							</div>
@@ -421,9 +418,7 @@ export default function AdminPlatformPage() {
 						{rulesDraft.map((rule) => (
 							<div key={rule.id} className={styles.ruleRow} data-testid="platform-commission-row">
 								<div className={styles.ruleCat}>
-									{rule.isDefault
-										? t('adminPlatform.commissions.defaultRate')
-										: rule.categoryName}
+									{rule.isDefault ? t('adminPlatform.commissions.defaultRate') : rule.categoryName}
 									{rule.isDefault ? (
 										<span className={styles.inlineBadge}>
 											{t('adminPlatform.commissions.baseline')}
@@ -432,7 +427,9 @@ export default function AdminPlatformPage() {
 									<div className={styles.ruleRef}>
 										{rule.isDefault
 											? t('adminPlatform.commissions.defaultHint')
-											: rule.categorySlug ? `/${rule.categorySlug}` : ''}
+											: rule.categorySlug
+												? `/${rule.categorySlug}`
+												: ''}
 									</div>
 								</div>
 								<div className={styles.pctInput}>
@@ -440,9 +437,7 @@ export default function AdminPlatformPage() {
 										className={styles.compactField}
 										type="number"
 										value={String(rule.percent)}
-										onChange={(e) =>
-											updateRule(rule.id, { percent: Number(e.target.value) || 0 })
-										}
+										onChange={(e) => updateRule(rule.id, { percent: Number(e.target.value) || 0 })}
 										step={0.1}
 										min={0}
 										max={100}
@@ -454,9 +449,7 @@ export default function AdminPlatformPage() {
 										className={styles.compactField}
 										type="number"
 										value={String(rule.fixedFee)}
-										onChange={(e) =>
-											updateRule(rule.id, { fixedFee: Number(e.target.value) || 0 })
-										}
+										onChange={(e) => updateRule(rule.id, { fixedFee: Number(e.target.value) || 0 })}
 										step={0.01}
 										min={0}
 									/>

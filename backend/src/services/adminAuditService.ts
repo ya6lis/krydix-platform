@@ -4,10 +4,7 @@ import {
 	AuditActionKey,
 	type AuditActionKeyValue,
 } from '../constants/auditActionKeys.js';
-import {
-	deriveAuditActionKey,
-	deriveAuditActionVariant,
-} from '../utils/auditLogHelpers.js';
+import { deriveAuditActionKey, deriveAuditActionVariant } from '../utils/auditLogHelpers.js';
 import type { RawAuditLog } from '../repositories/auditLogRepository.js';
 
 function buildDisplayName(actor: RawAuditLog['actor']): string {
@@ -47,7 +44,7 @@ function buildComplaintRef(id: string): string {
 }
 
 function pickTitle(
-	translations: Array<{ language: string; title?: string; name?: string }>,
+	translations: Array<{ language: string; title?: string; name?: string }>
 ): string {
 	const en = translations.find((t) => t.language === 'EN');
 	const uk = translations.find((t) => t.language === 'UK');
@@ -72,7 +69,10 @@ function asMeta(metadata: unknown): Record<string, unknown> {
 	return metadata as Record<string, unknown>;
 }
 
-function buildNote(actionKey: AuditActionKeyValue, metadata: Record<string, unknown>): string | null {
+function buildNote(
+	actionKey: AuditActionKeyValue,
+	metadata: Record<string, unknown>
+): string | null {
 	if (typeof metadata.reason === 'string' && metadata.reason.trim()) {
 		return metadata.reason.trim();
 	}
@@ -99,7 +99,9 @@ async function loadTargetMaps(items: RawAuditLog[]): Promise<TargetMaps> {
 	const userIds = extractTargetIds(items.filter((i) => i.targetType === 'User'));
 	const categoryIds = extractTargetIds(items.filter((i) => i.targetType === 'Category'));
 	const reviewIds = extractTargetIds(items.filter((i) => i.targetType === 'ProductReview'));
-	const applicationIds = extractTargetIds(items.filter((i) => i.targetType === 'SellerApplication'));
+	const applicationIds = extractTargetIds(
+		items.filter((i) => i.targetType === 'SellerApplication')
+	);
 	const complaintIds = extractTargetIds(items.filter((i) => i.targetType === 'Complaint'));
 
 	const [products, users, categories, reviews, applications, complaints] = await Promise.all([
@@ -123,7 +125,7 @@ async function loadTargetMaps(items: RawAuditLog[]): Promise<TargetMaps> {
 
 function resolveTarget(
 	item: RawAuditLog,
-	maps: TargetMaps,
+	maps: TargetMaps
 ): { label: string; path: string | null } {
 	const primaryId = item.targetId.split(',')[0]?.trim() ?? item.targetId;
 
@@ -251,9 +253,7 @@ function serializeAuditLog(item: RawAuditLog, maps: TargetMaps) {
 	};
 }
 
-function buildFilterOptions(
-	rows: Awaited<ReturnType<typeof repo.findAuditLogsForCounts>>,
-) {
+function buildFilterOptions(rows: Awaited<ReturnType<typeof repo.findAuditLogsForCounts>>) {
 	const actionCounts = new Map<AuditActionKeyValue, number>();
 	const actorRoleCounts = new Map<string, number>();
 
@@ -264,12 +264,12 @@ function buildFilterOptions(
 	}
 
 	return {
-		actionFilterOptions: ALL_AUDIT_ACTION_KEYS.filter((key) => (actionCounts.get(key) ?? 0) > 0).map(
-			(key) => ({
-				key,
-				count: actionCounts.get(key) ?? 0,
-			}),
-		),
+		actionFilterOptions: ALL_AUDIT_ACTION_KEYS.filter(
+			(key) => (actionCounts.get(key) ?? 0) > 0
+		).map((key) => ({
+			key,
+			count: actionCounts.get(key) ?? 0,
+		})),
 		actorRoleFilterOptions: ['ADMIN', 'MODERATOR']
 			.filter((role) => (actorRoleCounts.get(role) ?? 0) > 0)
 			.map((role) => ({

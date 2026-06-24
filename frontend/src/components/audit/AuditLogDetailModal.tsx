@@ -107,8 +107,7 @@ export function AuditLogDetailModal({ item, open, onClose }: AuditLogDetailModal
 							{item.eventRef} · {formatAuditDateTime(item.createdAt)}
 						</Typography>
 						<Typography sx={{ fontSize: 13.5, color: tokens.ink2, mt: 1 }}>
-							<span style={{ fontWeight: 700 }}>{item.actor.displayName}</span>{' '}
-							{item.description}
+							<span style={{ fontWeight: 700 }}>{item.actor.displayName}</span> {item.description}
 						</Typography>
 					</Box>
 				</Stack>
@@ -122,8 +121,12 @@ export function AuditLogDetailModal({ item, open, onClose }: AuditLogDetailModal
 							size="md"
 						/>
 						<Box>
-							<Typography sx={{ fontWeight: 700, fontSize: 14 }}>{item.actor.displayName}</Typography>
-							<Typography sx={{ fontSize: 12.5, color: tokens.ink3 }}>{item.actor.email}</Typography>
+							<Typography sx={{ fontWeight: 700, fontSize: 14 }}>
+								{item.actor.displayName}
+							</Typography>
+							<Typography sx={{ fontSize: 12.5, color: tokens.ink3 }}>
+								{item.actor.email}
+							</Typography>
 						</Box>
 					</Stack>
 					<DetailRow
@@ -150,25 +153,13 @@ export function AuditLogDetailModal({ item, open, onClose }: AuditLogDetailModal
 						})}
 					/>
 					<DetailRow label={t('adminAudit.detail.fields.targetLabel')} value={item.targetLabel} />
-					<DetailRow
-						label={t('adminAudit.detail.fields.targetId')}
-						value={item.targetId}
-						mono
-					/>
+					<DetailRow label={t('adminAudit.detail.fields.targetId')} value={item.targetId} mono />
 				</Box>
 
 				<Box className={styles.section}>
 					<SectionTitle>{t('adminAudit.detail.sections.action')}</SectionTitle>
-					<DetailRow
-						label={t('adminAudit.detail.fields.actionKey')}
-						value={item.actionKey}
-						mono
-					/>
-					<DetailRow
-						label={t('adminAudit.detail.fields.rawAction')}
-						value={item.rawAction}
-						mono
-					/>
+					<DetailRow label={t('adminAudit.detail.fields.actionKey')} value={item.actionKey} mono />
+					<DetailRow label={t('adminAudit.detail.fields.rawAction')} value={item.rawAction} mono />
 					{item.note ? (
 						<DetailRow label={t('adminAudit.detail.fields.note')} value={item.note} />
 					) : null}

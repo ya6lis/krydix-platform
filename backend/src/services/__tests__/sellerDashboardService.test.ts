@@ -105,8 +105,29 @@ describe('getSellerTopProducts', () => {
 			{
 				id: 'p1',
 				sku: 'SKU-001',
-				translations: [{ language: 'EN', title: 'Test Product', description: '', metaTitle: null, metaDescription: null, id: 't1', productId: 'p1' }],
-				media: [{ url: 'http://img.test/1.jpg', isMain: true, id: 'm1', productId: 'p1', publicId: 'pub1', type: 'IMAGE', sortOrder: 0, createdAt: new Date() }],
+				translations: [
+					{
+						language: 'EN',
+						title: 'Test Product',
+						description: '',
+						metaTitle: null,
+						metaDescription: null,
+						id: 't1',
+						productId: 'p1',
+					},
+				],
+				media: [
+					{
+						url: 'http://img.test/1.jpg',
+						isMain: true,
+						id: 'm1',
+						productId: 'p1',
+						publicId: 'pub1',
+						type: 'IMAGE',
+						sortOrder: 0,
+						createdAt: new Date(),
+					},
+				],
 			} as never,
 		]);
 
@@ -152,7 +173,17 @@ describe('getSellerLowStockAlerts', () => {
 				product: {
 					id: 'p1',
 					sku: 'SKU-001',
-					translations: [{ language: 'EN', title: 'Red Shirt', description: '', metaTitle: null, metaDescription: null, id: 't1', productId: 'p1' }],
+					translations: [
+						{
+							language: 'EN',
+							title: 'Red Shirt',
+							description: '',
+							metaTitle: null,
+							metaDescription: null,
+							id: 't1',
+							productId: 'p1',
+						},
+					],
 					media: [],
 				},
 			} as never,

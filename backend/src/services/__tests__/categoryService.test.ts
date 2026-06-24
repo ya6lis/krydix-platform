@@ -18,7 +18,13 @@ const flatCategories = [
 		isActive: true,
 		deletedAt: null,
 		translations: [
-			{ language: 'EN', name: 'Clothing', description: null, metaTitle: null, metaDescription: null },
+			{
+				language: 'EN',
+				name: 'Clothing',
+				description: null,
+				metaTitle: null,
+				metaDescription: null,
+			},
 			{ language: 'UK', name: 'Одяг', description: null, metaTitle: null, metaDescription: null },
 		],
 		_count: { products: 5, children: 1 },
@@ -32,7 +38,13 @@ const flatCategories = [
 		isActive: true,
 		deletedAt: null,
 		translations: [
-			{ language: 'EN', name: 'Jackets', description: null, metaTitle: null, metaDescription: null },
+			{
+				language: 'EN',
+				name: 'Jackets',
+				description: null,
+				metaTitle: null,
+				metaDescription: null,
+			},
 		],
 		_count: { products: 2, children: 0 },
 	},
@@ -92,7 +104,7 @@ describe('createCategory', () => {
 			service.createCategory('mod-1', Role.MODERATOR, {
 				slug: 'footwear',
 				nameEn: 'Footwear',
-			}),
+			})
 		).rejects.toThrow('Administrator access required');
 	});
 });
@@ -102,7 +114,7 @@ describe('deleteCategory', () => {
 		(repo.countCategoryProducts as jest.Mock).mockResolvedValue(3);
 
 		await expect(service.deleteCategory('admin-1', Role.ADMIN, 'root-1')).rejects.toThrow(
-			'Cannot delete category with assigned products',
+			'Cannot delete category with assigned products'
 		);
 	});
 

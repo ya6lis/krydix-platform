@@ -1,5 +1,6 @@
 import { Server } from 'socket.io';
-import type { Server as HttpServer } from 'http';import { decodeAccessToken } from '../utils/jwt.js';
+import type { Server as HttpServer } from 'http';
+import { decodeAccessToken } from '../utils/jwt.js';
 import { env } from '../config/env.js';
 import { logger } from '../utils/logger.js';
 import { CHAT_SOCKET_EVENT } from '../constants/chatEvents.js';

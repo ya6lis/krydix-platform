@@ -69,7 +69,7 @@ export function canImportExport(role: Role | string | undefined): boolean {
 export function canAccessRouteZone(
 	role: Role | string | undefined,
 	zone: RouteZone,
-	isAuthenticated: boolean,
+	isAuthenticated: boolean
 ): boolean {
 	if (zone === RouteZone.GLOBAL) return true;
 
@@ -116,10 +116,7 @@ export function getHomeRouteForRole(role: Role | string | undefined): string {
 }
 
 /** Public profile URL — sellers use storefront, everyone else uses user profile. */
-export function getPublicProfileRoute(
-	userId: string,
-	role: Role | string | undefined,
-): string {
+export function getPublicProfileRoute(userId: string, role: Role | string | undefined): string {
 	if (role === Role.SELLER) {
 		return ROUTES.SELLER_PUBLIC(userId);
 	}
@@ -128,7 +125,7 @@ export function getPublicProfileRoute(
 
 /** Profile menu target — storefront for sellers, user profile for others. */
 export function getProfileRouteForUser(
-	user: { id: string; role: Role | string } | null | undefined,
+	user: { id: string; role: Role | string } | null | undefined
 ): string {
 	if (!user) return ROUTES.LOGIN;
 	return getPublicProfileRoute(user.id, user.role);
@@ -141,7 +138,7 @@ export function getProfileMenuLabelKey(role: Role | string | undefined): string 
 
 /** Settings menu target — same URL for every role. */
 export function getSettingsRouteForUser(
-	user: { id: string; role: Role | string } | null | undefined,
+	user: { id: string; role: Role | string } | null | undefined
 ): string {
 	if (!user) return ROUTES.LOGIN;
 	return ROUTES.SETTINGS;

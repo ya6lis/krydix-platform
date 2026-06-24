@@ -150,7 +150,11 @@ export default function NotificationsPage() {
 	const [activeTab, setActiveTab] = useState<NotificationTabKey>('all');
 	const [deletingId, setDeletingId] = useState<string | null>(null);
 
-	const { data, loading, refetch: refetchNotifications } = useQuery<{
+	const {
+		data,
+		loading,
+		refetch: refetchNotifications,
+	} = useQuery<{
 		myNotifications: AppNotification[];
 	}>(MY_NOTIFICATIONS_QUERY, {
 		variables: { limit: 100 },
@@ -165,11 +169,11 @@ export default function NotificationsPage() {
 
 	const [markNotificationRead] = useMutation(MARK_NOTIFICATION_READ_MUTATION);
 	const [markAllNotificationsRead, { loading: markingAllRead }] = useMutation(
-		MARK_ALL_NOTIFICATIONS_READ_MUTATION,
+		MARK_ALL_NOTIFICATIONS_READ_MUTATION
 	);
 	const [deleteNotification] = useMutation(DELETE_NOTIFICATION_MUTATION);
 	const [deleteReadNotifications, { loading: deletingRead }] = useMutation(
-		DELETE_READ_NOTIFICATIONS_MUTATION,
+		DELETE_READ_NOTIFICATIONS_MUTATION
 	);
 
 	const notifications = data?.myNotifications ?? [];

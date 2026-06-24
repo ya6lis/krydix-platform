@@ -59,7 +59,15 @@ function stubGraphQL() {
 							sortOrder: 0,
 							depth: 1,
 							productCount: 10,
-							translations: [{ language: 'EN', name: 'Outerwear', description: null, metaTitle: null, metaDescription: null }],
+							translations: [
+								{
+									language: 'EN',
+									name: 'Outerwear',
+									description: null,
+									metaTitle: null,
+									metaDescription: null,
+								},
+							],
 							children: [],
 						},
 					],

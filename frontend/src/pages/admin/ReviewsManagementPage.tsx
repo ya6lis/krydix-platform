@@ -172,8 +172,7 @@ export default function ReviewsManagementPage() {
 	const total = list?.total ?? 0;
 	const tabCounts = list?.tabCounts;
 
-	const userProfileHref = (userId: string) =>
-		ROUTES.USER(userId);
+	const userProfileHref = (userId: string) => ROUTES.USER(userId);
 
 	const tabs = useMemo(
 		() => [
@@ -184,7 +183,7 @@ export default function ReviewsManagementPage() {
 			{ value: 'blocked', label: t('adminReviews.tabs.blocked'), count: tabCounts?.blocked },
 			{ value: 'deleted', label: t('adminReviews.tabs.deleted'), count: tabCounts?.deleted },
 		],
-		[t, tabCounts],
+		[t, tabCounts]
 	);
 
 	const ratingOptions = [
@@ -205,7 +204,7 @@ export default function ReviewsManagementPage() {
 				showToast(t('adminReviews.toast.statusChangeError'), 'error');
 			}
 		},
-		[changeStatus, showToast, t, refetch],
+		[changeStatus, showToast, t, refetch]
 	);
 
 	const handleDelete = useCallback(async () => {
@@ -236,11 +235,7 @@ export default function ReviewsManagementPage() {
 						color: 'inherit',
 					}}
 				>
-					<AppAvatar
-						name={row.reviewerName}
-						size="sm"
-						src={row.reviewerAvatarUrl ?? undefined}
-					/>
+					<AppAvatar name={row.reviewerName} size="sm" src={row.reviewerAvatarUrl ?? undefined} />
 					<Box>
 						<Typography sx={{ fontWeight: 700, fontSize: 14 }}>{row.reviewerName}</Typography>
 						<Typography sx={{ fontSize: 12, color: tokens.ink3, mb: 0.5 }}>
@@ -308,7 +303,9 @@ export default function ReviewsManagementPage() {
 			key: 'submitted',
 			label: t('adminReviews.table.submitted'),
 			render: (row) => (
-				<Typography sx={{ fontSize: 13, color: tokens.ink2 }}>{formatDate(row.createdAt)}</Typography>
+				<Typography sx={{ fontSize: 13, color: tokens.ink2 }}>
+					{formatDate(row.createdAt)}
+				</Typography>
 			),
 		},
 		{
@@ -316,10 +313,7 @@ export default function ReviewsManagementPage() {
 			label: t('adminReviews.table.flag'),
 			render: (row) =>
 				row.isFlagged ? (
-					<StatusBadge
-						status="NEW"
-						label={t('adminReviews.flagged')}
-					/>
+					<StatusBadge status="NEW" label={t('adminReviews.flagged')} />
 				) : (
 					<Typography sx={{ fontSize: 13, color: tokens.ink3 }}>—</Typography>
 				),

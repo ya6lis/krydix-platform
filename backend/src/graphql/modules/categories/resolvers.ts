@@ -21,7 +21,16 @@ function requireAdmin(ctx: GraphQLContext) {
 	return ctx.user;
 }
 
-function parseInput<T>(schema: { safeParse: (v: unknown) => { success: boolean; data?: T; error?: { errors: Array<{ message: string }> } } }, input: unknown): T {
+function parseInput<T>(
+	schema: {
+		safeParse: (v: unknown) => {
+			success: boolean;
+			data?: T;
+			error?: { errors: Array<{ message: string }> };
+		};
+	},
+	input: unknown
+): T {
 	const result = schema.safeParse(input);
 	if (!result.success) {
 		throw new GraphQLError(result.error!.errors[0].message, {
@@ -48,7 +57,7 @@ export const categoriesResolvers = {
 		createCategory: async (
 			_: unknown,
 			{ input }: { input: Record<string, unknown> },
-			ctx: GraphQLContext,
+			ctx: GraphQLContext
 		) => {
 			const user = requireAdmin(ctx);
 			const parsed = parseInput(CreateCategorySchema, input);
@@ -58,7 +67,7 @@ export const categoriesResolvers = {
 		updateCategory: async (
 			_: unknown,
 			{ id, input }: { id: string; input: Record<string, unknown> },
-			ctx: GraphQLContext,
+			ctx: GraphQLContext
 		) => {
 			const user = requireAdmin(ctx);
 			const parsed = parseInput(UpdateCategorySchema, input);
@@ -68,7 +77,7 @@ export const categoriesResolvers = {
 		moveCategory: async (
 			_: unknown,
 			{ input }: { input: Record<string, unknown> },
-			ctx: GraphQLContext,
+			ctx: GraphQLContext
 		) => {
 			const user = requireAdmin(ctx);
 			const parsed = parseInput(MoveCategorySchema, input);
@@ -83,7 +92,7 @@ export const categoriesResolvers = {
 		updateCategoryTranslation: async (
 			_: unknown,
 			{ input }: { input: Record<string, unknown> },
-			ctx: GraphQLContext,
+			ctx: GraphQLContext
 		) => {
 			const user = requireAdmin(ctx);
 			const parsed = parseInput(UpdateCategoryTranslationSchema, input);

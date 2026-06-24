@@ -15,8 +15,7 @@ const lastSeenAt = '2026-01-02T09:00:00.000Z';
 
 jest.mock('react-i18next', () => ({
 	useTranslation: () => ({
-		t: (key: string, opts?: Record<string, unknown>) =>
-			opts?.date ? `${key}:${opts.date}` : key,
+		t: (key: string, opts?: Record<string, unknown>) => (opts?.date ? `${key}:${opts.date}` : key),
 		i18n: { language: 'en' },
 	}),
 }));
@@ -109,7 +108,9 @@ const mocks = [
 			query: MESSAGES_QUERY,
 			variables: { conversationId: 'chat-1', page: 1, pageSize: 100 },
 		},
-		result: { data: { messages: { items: [conversation.lastMessage], total: 1, page: 1, pageSize: 100 } } },
+		result: {
+			data: { messages: { items: [conversation.lastMessage], total: 1, page: 1, pageSize: 100 } },
+		},
 	},
 	{
 		request: { query: MARK_CONVERSATION_READ_MUTATION, variables: { conversationId: 'chat-1' } },
@@ -155,7 +156,7 @@ function renderPage() {
 			<MemoryRouter initialEntries={['/chat?conversation=chat-1']}>
 				<ChatPage />
 			</MemoryRouter>
-		</MockedProvider>,
+		</MockedProvider>
 	);
 }
 

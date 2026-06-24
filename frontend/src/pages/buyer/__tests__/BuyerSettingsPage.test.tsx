@@ -82,11 +82,15 @@ describe('BuyerSettingsPage — security section', () => {
 	it('renders password fields and change password button', () => {
 		renderPage();
 		expect(screen.getByText('account.settings.security.title')).toBeInTheDocument();
-		expect(screen.getAllByText('account.settings.security.currentPassword').length).toBeGreaterThan(0);
+		expect(screen.getAllByText('account.settings.security.currentPassword').length).toBeGreaterThan(
+			0
+		);
 		expect(screen.getAllByText('account.settings.security.newPassword').length).toBeGreaterThan(0);
-		expect(screen.getAllByText('account.settings.security.confirmPassword').length).toBeGreaterThan(0);
+		expect(screen.getAllByText('account.settings.security.confirmPassword').length).toBeGreaterThan(
+			0
+		);
 		expect(
-			screen.getByRole('button', { name: 'account.settings.security.changePassword' }),
+			screen.getByRole('button', { name: 'account.settings.security.changePassword' })
 		).toBeInTheDocument();
 	});
 
@@ -100,7 +104,7 @@ describe('BuyerSettingsPage — close account', () => {
 	it('renders close account action', () => {
 		renderPage();
 		expect(
-			screen.getByRole('button', { name: 'account.settings.closeAccount.action' }),
+			screen.getByRole('button', { name: 'account.settings.closeAccount.action' })
 		).toBeInTheDocument();
 	});
 
@@ -108,7 +112,9 @@ describe('BuyerSettingsPage — close account', () => {
 		renderPage();
 		fireEvent.click(screen.getByRole('button', { name: 'account.settings.closeAccount.action' }));
 		await waitFor(() => {
-			expect(screen.getAllByText('account.settings.closeAccount.passwordLabel').length).toBeGreaterThan(0);
+			expect(
+				screen.getAllByText('account.settings.closeAccount.passwordLabel').length
+			).toBeGreaterThan(0);
 			expect(screen.getByText('confirmDialog.cancel')).toBeInTheDocument();
 		});
 	});
@@ -120,7 +126,7 @@ describe('BuyerSettingsPage — removed sections', () => {
 		expect(screen.queryByText('account.settings.notifications.title')).not.toBeInTheDocument();
 		expect(screen.queryByText('account.settings.language.title')).not.toBeInTheDocument();
 		expect(
-			screen.queryByRole('button', { name: 'account.settings.notifications.savePreferences' }),
+			screen.queryByRole('button', { name: 'account.settings.notifications.savePreferences' })
 		).not.toBeInTheDocument();
 	});
 });

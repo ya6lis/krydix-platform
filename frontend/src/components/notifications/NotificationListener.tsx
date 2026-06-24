@@ -13,7 +13,11 @@ import {
 	UNREAD_ORDER_NOTIFICATION_COUNT_QUERY,
 } from '@/graphql/operations/notifications';
 import { router } from '@/router';
-import { notificationDisplayText, notificationRoute, SUPPORT_NOTIFICATION_ACTION } from '@/utils/notificationUtils';
+import {
+	notificationDisplayText,
+	notificationRoute,
+	SUPPORT_NOTIFICATION_ACTION,
+} from '@/utils/notificationUtils';
 import type { NotificationSocketPayload } from '@/types/notification';
 
 function toastSeverity(event: NotificationEvent): 'info' | 'success' | 'warning' | 'error' {
@@ -83,7 +87,7 @@ export function NotificationListener() {
 					: undefined,
 			});
 		},
-		[markNotificationRead, refetchCounts, showToast, t, user?.role],
+		[markNotificationRead, refetchCounts, showToast, t, user?.role]
 	);
 
 	useNotificationSocket({

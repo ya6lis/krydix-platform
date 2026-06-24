@@ -96,7 +96,10 @@ function RowMenu({ product, onEdit, onDuplicate, onToggleActive, onArchive }: Ro
 
 			<Menu anchorEl={anchor} open={Boolean(anchor)} onClose={() => setAnchor(null)}>
 				<MenuItem
-					onClick={() => { setAnchor(null); onEdit(); }}
+					onClick={() => {
+						setAnchor(null);
+						onEdit();
+					}}
 					sx={{ gap: 1.5, fontSize: 13 }}
 				>
 					<FontAwesomeIcon icon={Icons.edit} fixedWidth />
@@ -104,7 +107,10 @@ function RowMenu({ product, onEdit, onDuplicate, onToggleActive, onArchive }: Ro
 				</MenuItem>
 
 				<MenuItem
-					onClick={() => { setAnchor(null); onDuplicate(); }}
+					onClick={() => {
+						setAnchor(null);
+						onDuplicate();
+					}}
 					sx={{ gap: 1.5, fontSize: 13 }}
 				>
 					<FontAwesomeIcon icon={Icons.duplicate} fixedWidth />
@@ -113,7 +119,10 @@ function RowMenu({ product, onEdit, onDuplicate, onToggleActive, onArchive }: Ro
 
 				{!isArchived && (
 					<MenuItem
-						onClick={() => { setAnchor(null); onToggleActive(); }}
+						onClick={() => {
+							setAnchor(null);
+							onToggleActive();
+						}}
 						sx={{ gap: 1.5, fontSize: 13, color: isActive ? tokens.amberInk : tokens.ink2 }}
 					>
 						<FontAwesomeIcon icon={isActive ? Icons.ban : Icons.check} fixedWidth />
@@ -123,7 +132,10 @@ function RowMenu({ product, onEdit, onDuplicate, onToggleActive, onArchive }: Ro
 
 				{!isArchived && (
 					<MenuItem
-						onClick={() => { setAnchor(null); onArchive(); }}
+						onClick={() => {
+							setAnchor(null);
+							onArchive();
+						}}
 						sx={{ gap: 1.5, fontSize: 13, color: tokens.coralInk }}
 					>
 						<FontAwesomeIcon icon={Icons.archive} fixedWidth />
@@ -164,7 +176,7 @@ function ImportModal({ open, onClose, onDone }: ImportModalProps) {
 	const [confirmImport, { loading: confirming }] = useMutation(CONFIRM_IMPORT_MUTATION);
 	const [downloadTemplate, { loading: downloadingTemplate }] = useLazyQuery(
 		DOWNLOAD_PRODUCT_IMPORT_TEMPLATE_QUERY,
-		{ fetchPolicy: 'network-only' },
+		{ fetchPolicy: 'network-only' }
 	);
 
 	const validRows = previewRows.filter((r) => r.isValid);
@@ -229,9 +241,7 @@ function ImportModal({ open, onClose, onDone }: ImportModalProps) {
 				seoDescription: r.seoDescription,
 			}));
 			const { data } = await confirmImport({ variables: { rows, mode: importMode } });
-			setImportResult(
-				data?.confirmImport ?? { created: 0, updated: 0, failed: 0, skipped: 0 },
-			);
+			setImportResult(data?.confirmImport ?? { created: 0, updated: 0, failed: 0, skipped: 0 });
 			setStep(2);
 			showToast(t('importExport.success'), 'success');
 		} catch {
@@ -277,9 +287,7 @@ function ImportModal({ open, onClose, onDone }: ImportModalProps) {
 		{
 			key: 'nameEn',
 			label: t('sellerProducts.import.previewCol.titleEn'),
-			render: (r) => (
-				<Typography sx={{ fontSize: 13 }}>{r.nameEn || '—'}</Typography>
-			),
+			render: (r) => <Typography sx={{ fontSize: 13 }}>{r.nameEn || '—'}</Typography>,
 		},
 		{
 			key: 'sku',
@@ -292,9 +300,7 @@ function ImportModal({ open, onClose, onDone }: ImportModalProps) {
 			label: t('sellerProducts.import.previewCol.price'),
 			width: 80,
 			align: 'right',
-			render: (r) => (
-				<Typography sx={{ fontSize: 13 }}>{r.price.toFixed(2)}</Typography>
-			),
+			render: (r) => <Typography sx={{ fontSize: 13 }}>{r.price.toFixed(2)}</Typography>,
 		},
 		{
 			key: 'action',
@@ -570,7 +576,9 @@ export default function SellerProductsPage() {
 				refetch();
 			} catch {
 				showToast(
-					t(product.isAvailable ? 'sellerProducts.deactivateError' : 'sellerProducts.activateError'),
+					t(
+						product.isAvailable ? 'sellerProducts.deactivateError' : 'sellerProducts.activateError'
+					),
 					'error'
 				);
 			}
@@ -660,9 +668,7 @@ export default function SellerProductsPage() {
 									cursor: 'pointer',
 									'&:hover': { color: tokens.accent },
 								}}
-								onClick={() =>
-									navigate(ROUTES.SELLER_PRODUCT_EDIT(p.id))
-								}
+								onClick={() => navigate(ROUTES.SELLER_PRODUCT_EDIT(p.id))}
 							>
 								{p.titleEn}
 							</Typography>
@@ -689,13 +695,9 @@ export default function SellerProductsPage() {
 			align: 'right',
 			render: (p) => (
 				<Stack alignItems="flex-end">
-					<Typography sx={{ fontSize: 13, fontWeight: 600 }}>
-						${p.basePrice.toFixed(2)}
-					</Typography>
+					<Typography sx={{ fontSize: 13, fontWeight: 600 }}>${p.basePrice.toFixed(2)}</Typography>
 					{p.comparePrice && (
-						<Typography
-							sx={{ fontSize: 11.5, color: tokens.ink3, textDecoration: 'line-through' }}
-						>
+						<Typography sx={{ fontSize: 11.5, color: tokens.ink3, textDecoration: 'line-through' }}>
 							${p.comparePrice.toFixed(2)}
 						</Typography>
 					)}
@@ -726,9 +728,7 @@ export default function SellerProductsPage() {
 			key: 'status',
 			label: t('sellerProducts.col.status'),
 			width: 160,
-			render: (p) => (
-				<StatusBadge status={p.status} label={p.status.replace(/_/g, ' ')} />
-			),
+			render: (p) => <StatusBadge status={p.status} label={p.status.replace(/_/g, ' ')} />,
 		},
 		{
 			key: 'createdAt',
@@ -852,7 +852,11 @@ export default function SellerProductsPage() {
 							}}
 							InputProps={{
 								startAdornment: (
-									<FontAwesomeIcon icon={Icons.search} color={tokens.ink3} style={{ marginRight: 8 }} />
+									<FontAwesomeIcon
+										icon={Icons.search}
+										color={tokens.ink3}
+										style={{ marginRight: 8 }}
+									/>
 								),
 							}}
 							sx={{ width: 240 }}
@@ -867,13 +871,9 @@ export default function SellerProductsPage() {
 					loading={loading}
 					rowKey={(p) => p.id}
 					emptyTitle={
-						search || statusFilter
-							? t('sellerProducts.emptyFiltered')
-							: t('sellerProducts.empty')
+						search || statusFilter ? t('sellerProducts.emptyFiltered') : t('sellerProducts.empty')
 					}
-					emptyDescription={
-						search || statusFilter ? undefined : t('sellerProducts.emptyAction')
-					}
+					emptyDescription={search || statusFilter ? undefined : t('sellerProducts.emptyAction')}
 				/>
 
 				{/* Pagination */}

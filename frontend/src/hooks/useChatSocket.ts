@@ -5,7 +5,9 @@ import { useAuthStore } from '@/store/authStore';
 import type { ChatMessage } from '@/types/chat';
 
 const SOCKET_URL =
-	import.meta.env.VITE_API_URL ?? import.meta.env.VITE_GRAPHQL_URL?.replace(/\/graphql$/, '') ?? 'http://localhost:5000';
+	import.meta.env.VITE_API_URL ??
+	import.meta.env.VITE_GRAPHQL_URL?.replace(/\/graphql$/, '') ??
+	'http://localhost:5000';
 
 export interface ConversationUpdatedPayload {
 	conversationId: string;

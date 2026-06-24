@@ -3,11 +3,7 @@ import { jest } from '@jest/globals';
 jest.mock('../../repositories/userRepository.js');
 
 import * as userRepo from '../../repositories/userRepository.js';
-import {
-	isUserOnline,
-	touchLastSeen,
-	resetLastSeenThrottleForTests,
-} from '../presenceService.js';
+import { isUserOnline, touchLastSeen, resetLastSeenThrottleForTests } from '../presenceService.js';
 import { USER_ONLINE_THRESHOLD_MS } from '../../constants/constants.js';
 
 beforeEach(() => {

@@ -93,28 +93,61 @@ export const router = createBrowserRouter([
 			{ path: ROUTES.NOTIFICATIONS, element: auth(RouteZone.AUTH, <NotificationsPage />) },
 			{ path: ROUTES.SETTINGS, element: auth(RouteZone.AUTH, <SettingsPage />) },
 			{ path: ROUTES.PROFILE, element: auth(RouteZone.AUTH, <AccountProfileRedirect />) },
-			{ path: ROUTES.MY_REVIEWS, element: auth(RouteZone.BUYER, <Placeholder name="My Reviews" />) },
+			{
+				path: ROUTES.MY_REVIEWS,
+				element: auth(RouteZone.BUYER, <Placeholder name="My Reviews" />),
+			},
 
 			// Seller cabinet
-			{ path: ROUTES.SELLER, element: auth(RouteZone.SELLER, <Navigate to={ROUTES.DASHBOARD} replace />) },
+			{
+				path: ROUTES.SELLER,
+				element: auth(RouteZone.SELLER, <Navigate to={ROUTES.DASHBOARD} replace />),
+			},
 			{ path: ROUTES.SELLER_PRODUCTS, element: auth(RouteZone.SELLER, <SellerProductsPage />) },
-			{ path: ROUTES.SELLER_PRODUCT_NEW, element: auth(RouteZone.SELLER, <SellerProductFormPage />) },
-			{ path: '/seller/products/:id/edit', element: auth(RouteZone.SELLER, <SellerProductFormPage />) },
+			{
+				path: ROUTES.SELLER_PRODUCT_NEW,
+				element: auth(RouteZone.SELLER, <SellerProductFormPage />),
+			},
+			{
+				path: '/seller/products/:id/edit',
+				element: auth(RouteZone.SELLER, <SellerProductFormPage />),
+			},
 			{ path: ROUTES.SELLER_ORDERS, element: auth(RouteZone.SELLER, <SellerOrdersPage />) },
 			{ path: '/seller/orders/:id', element: auth(RouteZone.SELLER, <SellerOrderDetailPage />) },
 			{ path: ROUTES.SELLER_FINANCE, element: auth(RouteZone.SELLER, <SellerFinancePage />) },
-			{ path: ROUTES.SELLER_IMPORT, element: auth(RouteZone.SELLER, <Navigate to={ROUTES.SELLER_PRODUCTS} replace />) },
-			{ path: ROUTES.SELLER_VERIFICATION, element: auth(RouteZone.SELLER, <Placeholder name="Seller Verification" />) },
+			{
+				path: ROUTES.SELLER_IMPORT,
+				element: auth(RouteZone.SELLER, <Navigate to={ROUTES.SELLER_PRODUCTS} replace />),
+			},
+			{
+				path: ROUTES.SELLER_VERIFICATION,
+				element: auth(RouteZone.SELLER, <Placeholder name="Seller Verification" />),
+			},
 
 			// Staff (moderator + admin)
-			{ path: ROUTES.PRODUCT_MODERATION, element: auth(RouteZone.MODERATOR, <ProductModerationPage />) },
-			{ path: ROUTES.REVIEW_MODERATION, element: auth(RouteZone.MODERATOR, <ReviewModerationPage />) },
+			{
+				path: ROUTES.PRODUCT_MODERATION,
+				element: auth(RouteZone.MODERATOR, <ProductModerationPage />),
+			},
+			{
+				path: ROUTES.REVIEW_MODERATION,
+				element: auth(RouteZone.MODERATOR, <ReviewModerationPage />),
+			},
 			{ path: ROUTES.STAFF_SUPPORT, element: auth(RouteZone.MODERATOR, <ModeratorSupportPage />) },
 			{ path: ROUTES.USERS, element: auth(RouteZone.MODERATOR, <UsersManagementPage />) },
 			{ path: `${ROUTES.USERS}/:id`, element: <PublicUserProfilePage /> },
-			{ path: ROUTES.MANAGE_PRODUCTS, element: auth(RouteZone.MODERATOR, <ProductsManagementPage />) },
-			{ path: ROUTES.MANAGE_REVIEWS, element: auth(RouteZone.MODERATOR, <ReviewsManagementPage />) },
-			{ path: ROUTES.COMPLAINTS, element: auth(RouteZone.MODERATOR, <Placeholder name="Complaints" />) },
+			{
+				path: ROUTES.MANAGE_PRODUCTS,
+				element: auth(RouteZone.MODERATOR, <ProductsManagementPage />),
+			},
+			{
+				path: ROUTES.MANAGE_REVIEWS,
+				element: auth(RouteZone.MODERATOR, <ReviewsManagementPage />),
+			},
+			{
+				path: ROUTES.COMPLAINTS,
+				element: auth(RouteZone.MODERATOR, <Placeholder name="Complaints" />),
+			},
 
 			// Admin only
 			{ path: ROUTES.CATEGORIES, element: auth(RouteZone.ADMIN, <AdminCategoriesPage />) },
@@ -134,12 +167,21 @@ export const router = createBrowserRouter([
 			{ path: '/seller/settings', element: <Navigate to={ROUTES.SETTINGS} replace /> },
 			{ path: '/moderator', element: <Navigate to={ROUTES.DASHBOARD} replace /> },
 			{ path: '/admin', element: <Navigate to={ROUTES.DASHBOARD} replace /> },
-			{ path: '/moderator/product-moderation', element: <Navigate to={ROUTES.PRODUCT_MODERATION} replace /> },
-			{ path: '/moderator/review-moderation', element: <Navigate to={ROUTES.REVIEW_MODERATION} replace /> },
+			{
+				path: '/moderator/product-moderation',
+				element: <Navigate to={ROUTES.PRODUCT_MODERATION} replace />,
+			},
+			{
+				path: '/moderator/review-moderation',
+				element: <Navigate to={ROUTES.REVIEW_MODERATION} replace />,
+			},
 			{ path: '/moderator/support', element: <Navigate to={ROUTES.STAFF_SUPPORT} replace /> },
 			{ path: '/moderator/users', element: <Navigate to={ROUTES.USERS} replace /> },
 			{ path: '/moderator/users/:id', element: <LegacyUserRedirect /> },
-			{ path: '/moderator/all-products', element: <Navigate to={ROUTES.MANAGE_PRODUCTS} replace /> },
+			{
+				path: '/moderator/all-products',
+				element: <Navigate to={ROUTES.MANAGE_PRODUCTS} replace />,
+			},
 			{ path: '/moderator/all-reviews', element: <Navigate to={ROUTES.MANAGE_REVIEWS} replace /> },
 			{ path: '/admin/users', element: <Navigate to={ROUTES.USERS} replace /> },
 			{ path: '/admin/users/:id', element: <LegacyUserRedirect /> },

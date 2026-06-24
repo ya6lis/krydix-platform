@@ -131,7 +131,14 @@ interface MediaThumbProps {
 	isMain: boolean;
 	deleting: boolean;
 }
-function MediaThumb({ media, galleryUrls, onDelete, onSetMain, isMain, deleting }: MediaThumbProps) {
+function MediaThumb({
+	media,
+	galleryUrls,
+	onDelete,
+	onSetMain,
+	isMain,
+	deleting,
+}: MediaThumbProps) {
 	const { t } = useTranslation();
 	return (
 		<Box
@@ -499,9 +506,7 @@ export default function SellerProductFormPage() {
 		basePrice: Number(values.basePrice),
 		comparePrice: values.comparePrice ? Number(values.comparePrice) : null,
 		isAvailable: values.isAvailable,
-		...(options?.submitForReview !== undefined
-			? { submitForReview: options.submitForReview }
-			: {}),
+		...(options?.submitForReview !== undefined ? { submitForReview: options.submitForReview } : {}),
 		...(options?.statusAction ? { statusAction: options.statusAction } : {}),
 		categoryIds: values.categoryIds,
 		variants: values.variants?.map((v) => ({
@@ -694,9 +699,7 @@ export default function SellerProductFormPage() {
 								)
 							)}
 						>
-							{isNonDraftEdit
-								? t('sellerProduct.makeDraft')
-								: t('sellerProduct.submitForReview')}
+							{isNonDraftEdit ? t('sellerProduct.makeDraft') : t('sellerProduct.submitForReview')}
 						</AppButton>
 					</Stack>
 				</Box>
@@ -1092,9 +1095,7 @@ export default function SellerProductFormPage() {
 							)
 						)}
 					>
-						{isNonDraftEdit
-							? t('sellerProduct.makeDraft')
-							: t('sellerProduct.submitForReview')}
+						{isNonDraftEdit ? t('sellerProduct.makeDraft') : t('sellerProduct.submitForReview')}
 					</AppButton>
 				</Box>
 			</Stack>

@@ -49,11 +49,19 @@ export default function SellerFinancePage() {
 	const [pageSize, setPageSize] = useState(PAGE_SIZE);
 	const [withdrawOpen, setWithdrawOpen] = useState(false);
 
-	const { data: summaryData, loading: summaryLoading, refetch: refetchSummary } = useQuery<{
+	const {
+		data: summaryData,
+		loading: summaryLoading,
+		refetch: refetchSummary,
+	} = useQuery<{
 		sellerFinanceSummary: SellerFinanceSummary;
 	}>(SELLER_FINANCE_SUMMARY_QUERY);
 
-	const { data: payoutsData, loading: payoutsLoading, refetch: refetchPayouts } = useQuery<{
+	const {
+		data: payoutsData,
+		loading: payoutsLoading,
+		refetch: refetchPayouts,
+	} = useQuery<{
 		sellerPayouts: PaginatedSellerPayouts;
 	}>(SELLER_PAYOUTS_QUERY, {
 		variables: { filter: { page, pageSize } },

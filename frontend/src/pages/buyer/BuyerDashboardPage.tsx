@@ -57,24 +57,22 @@ export default function BuyerDashboardPage() {
 	const { data: wishlistData } = useQuery(MY_WISHLIST_QUERY);
 	const { data: notifData } = useQuery<{ myNotifications: AppNotification[] }>(
 		MY_NOTIFICATIONS_QUERY,
-		{ variables: { limit: 5 } },
+		{ variables: { limit: 5 } }
 	);
 	const { data: unreadNotifData } = useQuery(UNREAD_NOTIFICATION_COUNT_QUERY);
 	const { data: unreadMsgData } = useQuery(UNREAD_MESSAGE_COUNT_QUERY);
 
 	const stats = statsData?.myOrderStats;
 	const recentOrders = ordersData?.myOrders.items ?? [];
-	const wishlistItems = (wishlistData?.myWishlist?.items as WishlistItemData[] | undefined)?.slice(
-		0,
-		6,
-	) ?? [];
+	const wishlistItems =
+		(wishlistData?.myWishlist?.items as WishlistItemData[] | undefined)?.slice(0, 6) ?? [];
 	const notifications = notifData?.myNotifications ?? [];
 	const unreadNotifications = unreadNotifData?.unreadNotificationCount ?? 0;
 	const unreadMessages = unreadMsgData?.unreadMessageCount ?? 0;
 	const activeOrders = activeOrderCount(stats);
 
 	const wishlistPriceDrops = wishlistItems.filter(
-		(item) => item.comparePrice != null && item.comparePrice > item.price,
+		(item) => item.comparePrice != null && item.comparePrice > item.price
 	).length;
 
 	return (
@@ -158,10 +156,7 @@ export default function BuyerDashboardPage() {
 												{formatOrderDate(order.createdAt)} · ${order.totalAmount.toFixed(2)}
 											</Typography>
 										</Box>
-										<StatusBadge
-											status={order.status}
-											label={t(`status.order.${order.status}`)}
-										/>
+										<StatusBadge status={order.status} label={t(`status.order.${order.status}`)} />
 										<AppButton
 											variant="outlined"
 											size="small"
@@ -197,8 +192,7 @@ export default function BuyerDashboardPage() {
 							) : (
 								<Box sx={{ display: 'flex', gap: 1.25, overflowX: 'auto', pb: 0.5 }}>
 									{wishlistItems.map((item) => {
-										const hasDrop =
-											item.comparePrice != null && item.comparePrice > item.price;
+										const hasDrop = item.comparePrice != null && item.comparePrice > item.price;
 										return (
 											<Box
 												key={item.id}
@@ -291,8 +285,7 @@ export default function BuyerDashboardPage() {
 									{notifications.map((notification) => {
 										const display = notificationDisplayText(notification, t);
 										const href =
-											notificationRoute(notification, Role.BUYER) ??
-											ROUTES.NOTIFICATIONS;
+											notificationRoute(notification, Role.BUYER) ?? ROUTES.NOTIFICATIONS;
 										return (
 											<Link
 												key={notification.id}

@@ -90,11 +90,7 @@ describe('getMyProducts', () => {
 		mockRepo.findSellerProducts.mockResolvedValue(products as never);
 		mockRepo.countSellerProducts.mockResolvedValue(1);
 
-		const result = await service.getMyProducts(
-			SELLER_ID,
-			{},
-			{ page: 1, pageSize: 20 }
-		);
+		const result = await service.getMyProducts(SELLER_ID, {}, { page: 1, pageSize: 20 });
 
 		expect(mockRepo.findSellerProducts).toHaveBeenCalledWith(SELLER_ID, {}, 0, 20);
 		expect(result.total).toBe(1);
@@ -107,11 +103,7 @@ describe('getMyProducts', () => {
 		mockRepo.findSellerProducts.mockResolvedValue([]);
 		mockRepo.countSellerProducts.mockResolvedValue(0);
 
-		await service.getMyProducts(
-			SELLER_ID,
-			{ status: 'APPROVED' },
-			{ page: 1, pageSize: 20 }
-		);
+		await service.getMyProducts(SELLER_ID, { status: 'APPROVED' }, { page: 1, pageSize: 20 });
 
 		expect(mockRepo.findSellerProducts).toHaveBeenCalledWith(
 			SELLER_ID,
@@ -125,11 +117,7 @@ describe('getMyProducts', () => {
 		mockRepo.findSellerProducts.mockResolvedValue([]);
 		mockRepo.countSellerProducts.mockResolvedValue(0);
 
-		await service.getMyProducts(
-			SELLER_ID,
-			{ search: 'jacket' },
-			{ page: 1, pageSize: 20 }
-		);
+		await service.getMyProducts(SELLER_ID, { search: 'jacket' }, { page: 1, pageSize: 20 });
 
 		const callArg = mockRepo.findSellerProducts.mock.calls[0][1];
 		expect(callArg).toHaveProperty('OR');
@@ -175,7 +163,11 @@ describe('duplicateProduct', () => {
 		const original = makeProduct();
 		mockRepo.findSellerProductById.mockResolvedValue(original as never);
 		mockRepo.slugExists.mockResolvedValue(false);
-		const duplicated = makeProduct({ id: 'prod-2', slug: 'test-product-copy', status: ProductStatus.DRAFT });
+		const duplicated = makeProduct({
+			id: 'prod-2',
+			slug: 'test-product-copy',
+			status: ProductStatus.DRAFT,
+		});
 		mockRepo.duplicateProduct.mockResolvedValue(duplicated as never);
 
 		const result = await service.duplicateProduct(PRODUCT_ID, SELLER_ID);

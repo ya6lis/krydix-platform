@@ -25,7 +25,7 @@ function parseInput<T>(
 			error?: { errors: Array<{ message: string }> };
 		};
 	},
-	input: unknown,
+	input: unknown
 ): T {
 	const result = schema.safeParse(input);
 	if (!result.success) {
@@ -41,7 +41,7 @@ export const profileResolvers = {
 		updateProfile: async (
 			_: unknown,
 			{ input }: { input: Record<string, unknown> },
-			ctx: GraphQLContext,
+			ctx: GraphQLContext
 		) => {
 			const user = requireAuth(ctx);
 			const data = parseInput(UpdateProfileSchema, input);
@@ -51,7 +51,7 @@ export const profileResolvers = {
 		uploadProfileAvatar: async (
 			_: unknown,
 			{ input }: { input: Record<string, unknown> },
-			ctx: GraphQLContext,
+			ctx: GraphQLContext
 		) => {
 			const user = requireAuth(ctx);
 			const data = parseInput(UploadProfileAvatarSchema, input);
@@ -63,11 +63,7 @@ export const profileResolvers = {
 			return profileService.removeProfileAvatar(user.id);
 		},
 
-		closeAccount: async (
-			_: unknown,
-			{ password }: { password: string },
-			ctx: GraphQLContext,
-		) => {
+		closeAccount: async (_: unknown, { password }: { password: string }, ctx: GraphQLContext) => {
 			const user = requireAuth(ctx);
 			const data = parseInput(CloseAccountSchema, { password });
 			return accountService.closeAccount(user.id, data.password);

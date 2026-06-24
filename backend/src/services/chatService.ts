@@ -45,7 +45,9 @@ function initials(user: {
 	return user.email.slice(0, 2).toUpperCase();
 }
 
-function serializeParticipant(user: NonNullable<Awaited<ReturnType<typeof userRepo.findUserById>>>) {
+function serializeParticipant(
+	user: NonNullable<Awaited<ReturnType<typeof userRepo.findUserById>>>
+) {
 	return {
 		id: user.id,
 		displayName: displayName(user),
@@ -69,8 +71,7 @@ async function loadProduct(productId: string | null, language: Language) {
 		product.translations.find((t) => t.language === language) ??
 		product.translations.find((t) => t.language === Language.EN) ??
 		product.translations[0];
-	const mainImage =
-		product.media.find((m) => m.isMain)?.url ?? product.media[0]?.url ?? null;
+	const mainImage = product.media.find((m) => m.isMain)?.url ?? product.media[0]?.url ?? null;
 	return {
 		id: product.id,
 		slug: product.slug,
@@ -86,7 +87,8 @@ function serializeMessage(
 	message: chatRepo.ChatMessageRecord,
 	participants: ReturnType<typeof serializeParticipant>[]
 ) {
-	const sender = participants.find((p) => p.id === message.senderId) ?? serializeParticipant(message.sender);
+	const sender =
+		participants.find((p) => p.id === message.senderId) ?? serializeParticipant(message.sender);
 	return {
 		id: message.id,
 		conversationId: message.chatId,
@@ -279,8 +281,7 @@ export async function getMessages(
 	const skip = (input.page - 1) * input.pageSize;
 	const { items, total } = await chatRepo.findMessages(input.conversationId, skip, input.pageSize);
 	const chat = await chatRepo.findConversationById(input.conversationId);
-	const participants =
-		chat?.participants.map((p) => serializeParticipant(p.user)) ?? [];
+	const participants = chat?.participants.map((p) => serializeParticipant(p.user)) ?? [];
 
 	return {
 		items: items.map((message) => serializeMessage(message, participants)),
@@ -340,8 +341,7 @@ export async function sendMessage(
 
 	const message = await chatRepo.createMessage(input.conversationId, userId, input.content);
 	const refreshedChat = await chatRepo.findConversationById(input.conversationId);
-	const participants =
-		refreshedChat?.participants.map((p) => serializeParticipant(p.user)) ?? [];
+	const participants = refreshedChat?.participants.map((p) => serializeParticipant(p.user)) ?? [];
 	const serialized = serializeMessage(message, participants);
 
 	emitChatEvent(input.conversationId, CHAT_SOCKET_EVENT.MESSAGE_NEW, serialized);
@@ -351,8 +351,7 @@ export async function sendMessage(
 	});
 
 	if (chat.type === ChatType.SUPPORT) {
-		const recipientId =
-			chat.requesterId === userId ? chat.assignedToId : chat.requesterId;
+		const recipientId = chat.requesterId === userId ? chat.assignedToId : chat.requesterId;
 		if (recipientId) {
 			await notificationService.notifyNewMessage({
 				recipientId,

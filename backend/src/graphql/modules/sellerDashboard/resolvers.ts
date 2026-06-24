@@ -1,7 +1,10 @@
 import { GraphQLError } from 'graphql';
 import type { GraphQLContext } from '../../../types/context.js';
 import * as service from '../../../services/sellerDashboardService.js';
-import type { DashboardPeriod, RevenueGranularity } from '../../../services/sellerDashboardService.js';
+import type {
+	DashboardPeriod,
+	RevenueGranularity,
+} from '../../../services/sellerDashboardService.js';
 
 function requireSeller(ctx: GraphQLContext) {
 	if (!ctx.user) {
@@ -33,11 +36,7 @@ export const sellerDashboardResolvers = {
 			return service.getSellerRevenueSeries(user.id, granularity ?? 'DAY', period ?? 'MONTH');
 		},
 
-		sellerTopProducts: async (
-			_: unknown,
-			{ limit }: { limit?: number },
-			ctx: GraphQLContext
-		) => {
+		sellerTopProducts: async (_: unknown, { limit }: { limit?: number }, ctx: GraphQLContext) => {
 			const user = requireSeller(ctx);
 			return service.getSellerTopProducts(user.id, limit ?? 10);
 		},

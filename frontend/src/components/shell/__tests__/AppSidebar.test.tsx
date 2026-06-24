@@ -83,7 +83,7 @@ function renderSidebar(initialRoute = '/dashboard') {
 					<AppSidebar />
 				</MemoryRouter>
 			</AppToastProvider>
-		</MockedProvider>,
+		</MockedProvider>
 	);
 }
 

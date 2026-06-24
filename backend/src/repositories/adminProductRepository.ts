@@ -95,7 +95,7 @@ function buildStatusFilter(statusFilter?: AdminProductStatusFilter): Prisma.Prod
 }
 
 function buildAvailabilityFilter(
-	availabilityFilter?: AdminProductAvailabilityFilter,
+	availabilityFilter?: AdminProductAvailabilityFilter
 ): Prisma.ProductWhereInput | undefined {
 	if (!availabilityFilter || availabilityFilter === 'ALL') return undefined;
 	if (availabilityFilter === 'AVAILABLE') return { isAvailable: true };

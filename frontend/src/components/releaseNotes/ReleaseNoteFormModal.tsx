@@ -92,7 +92,7 @@ export function ReleaseNoteFormModal({ open, onClose, note, onSaved }: ReleaseNo
 			{ value: ReleaseNoteStatus.DRAFT, label: t('adminReleaseNotes.status.DRAFT') },
 			{ value: ReleaseNoteStatus.PUBLISHED, label: t('adminReleaseNotes.status.PUBLISHED') },
 		],
-		[t],
+		[t]
 	);
 
 	const [createReleaseNote, { loading: creating }] = useMutation(CREATE_RELEASE_NOTE_MUTATION, {
@@ -101,7 +101,8 @@ export function ReleaseNoteFormModal({ open, onClose, note, onSaved }: ReleaseNo
 			onSaved();
 			onClose();
 		},
-		onError: (error) => showToast(error.message || t('adminReleaseNotes.toast.createError'), 'error'),
+		onError: (error) =>
+			showToast(error.message || t('adminReleaseNotes.toast.createError'), 'error'),
 	});
 
 	const [updateReleaseNote, { loading: updating }] = useMutation(UPDATE_RELEASE_NOTE_MUTATION, {
@@ -110,7 +111,8 @@ export function ReleaseNoteFormModal({ open, onClose, note, onSaved }: ReleaseNo
 			onSaved();
 			onClose();
 		},
-		onError: (error) => showToast(error.message || t('adminReleaseNotes.toast.updateError'), 'error'),
+		onError: (error) =>
+			showToast(error.message || t('adminReleaseNotes.toast.updateError'), 'error'),
 	});
 
 	const loading = creating || updating;
@@ -170,7 +172,9 @@ export function ReleaseNoteFormModal({ open, onClose, note, onSaved }: ReleaseNo
 		<AppModal
 			open={open}
 			onClose={onClose}
-			title={isEdit ? t('adminReleaseNotes.form.editTitle') : t('adminReleaseNotes.form.createTitle')}
+			title={
+				isEdit ? t('adminReleaseNotes.form.editTitle') : t('adminReleaseNotes.form.createTitle')
+			}
 			maxWidth="md"
 			footer={
 				<>
@@ -231,7 +235,15 @@ export function ReleaseNoteFormModal({ open, onClose, note, onSaved }: ReleaseNo
 					/>
 				)}
 
-				<Typography sx={{ fontSize: 12, fontWeight: 700, color: 'text.secondary', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+				<Typography
+					sx={{
+						fontSize: 12,
+						fontWeight: 700,
+						color: 'text.secondary',
+						letterSpacing: '0.06em',
+						textTransform: 'uppercase',
+					}}
+				>
 					{t('adminReleaseNotes.form.englishSection')}
 				</Typography>
 				<AppInput
@@ -264,7 +276,15 @@ export function ReleaseNoteFormModal({ open, onClose, note, onSaved }: ReleaseNo
 					required
 				/>
 
-				<Typography sx={{ fontSize: 12, fontWeight: 700, color: 'text.secondary', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+				<Typography
+					sx={{
+						fontSize: 12,
+						fontWeight: 700,
+						color: 'text.secondary',
+						letterSpacing: '0.06em',
+						textTransform: 'uppercase',
+					}}
+				>
 					{t('adminReleaseNotes.form.ukrainianSection')}
 				</Typography>
 				<AppInput

@@ -102,7 +102,7 @@ export async function updateCategoryRecord(
 		icon?: string | null;
 		sortOrder?: number;
 		isActive?: boolean;
-	},
+	}
 ) {
 	return prisma.category.update({
 		where: { id },
@@ -119,7 +119,7 @@ export async function upsertCategoryTranslation(
 		description?: string | null;
 		metaTitle?: string | null;
 		metaDescription?: string | null;
-	},
+	}
 ) {
 	return prisma.categoryTranslation.upsert({
 		where: { categoryId_language: { categoryId, language } },
@@ -140,7 +140,7 @@ export async function reorderSiblings(parentId: string | null, orderedIds: strin
 		prisma.category.update({
 			where: { id },
 			data: { sortOrder: index, parentId },
-		}),
+		})
 	);
 	await prisma.$transaction(updates);
 }

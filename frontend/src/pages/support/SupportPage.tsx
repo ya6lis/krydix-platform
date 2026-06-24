@@ -8,10 +8,7 @@ import { SupportChatThread } from '@/components/support/SupportChatThread';
 import { AppButton, AppInput, AppLoader, StatusBadge } from '@/components/ui';
 import { Icons } from '@/constants/icons';
 import { ROUTES } from '@/constants/routes';
-import {
-	SUPPORT_FAQ_ARTICLE_IDS,
-	type SupportFaqArticleId,
-} from '@/constants/support';
+import { SUPPORT_FAQ_ARTICLE_IDS, type SupportFaqArticleId } from '@/constants/support';
 import { useAuthStore } from '@/store/authStore';
 import {
 	CREATE_SUPPORT_CONVERSATION_MUTATION,
@@ -54,11 +51,14 @@ export default function SupportPage() {
 		data: activeData,
 		loading: activeLoading,
 		refetch: refetchActive,
-	} = useQuery<{ mySupportConversation: ConversationDetail | null }>(MY_SUPPORT_CONVERSATION_QUERY, {
-		variables: { language },
-		skip: !user,
-		fetchPolicy: 'cache-and-network',
-	});
+	} = useQuery<{ mySupportConversation: ConversationDetail | null }>(
+		MY_SUPPORT_CONVERSATION_QUERY,
+		{
+			variables: { language },
+			skip: !user,
+			fetchPolicy: 'cache-and-network',
+		}
+	);
 
 	const { data: historyData, refetch: refetchHistory } = useQuery<{
 		mySupportHistory: ConversationSummary[];
@@ -77,7 +77,7 @@ export default function SupportPage() {
 				void refetchActive();
 				void refetchHistory();
 			},
-		},
+		}
 	);
 
 	const activeConversation = activeData?.mySupportConversation ?? null;

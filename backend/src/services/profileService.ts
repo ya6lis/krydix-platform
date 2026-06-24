@@ -40,7 +40,7 @@ export async function updateProfile(
 		phone?: string | null;
 		country?: string | null;
 		city?: string | null;
-	},
+	}
 ) {
 	const existing = await profileRepo.findProfileByUserId(userId);
 	if (!existing) {

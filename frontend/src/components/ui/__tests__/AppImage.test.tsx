@@ -14,7 +14,7 @@ describe('AppImage', () => {
 				gallery={['https://example.com/1.jpg', 'https://example.com/2.jpg']}
 				galleryIndex={0}
 				alt="Preview"
-			/>,
+			/>
 		);
 
 		fireEvent.click(screen.getByRole('img', { name: 'Preview' }));

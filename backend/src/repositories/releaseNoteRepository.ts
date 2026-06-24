@@ -113,7 +113,7 @@ export async function updateReleaseNote(
 		status: ReleaseNoteStatus;
 		publishedAt: Date | null;
 		translations: Array<{ language: Language; title: string; body: string }>;
-	},
+	}
 ) {
 	const { translations, ...noteData } = data;
 

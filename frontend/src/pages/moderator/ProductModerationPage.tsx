@@ -213,7 +213,10 @@ function QueueRow({ item, selected, checked, onSelect, onCheck, isPending }: Que
 				tone="ghost"
 				size="small"
 				sx={{ flexShrink: 0, fontSize: '12px' }}
-				onClick={(e) => { e.stopPropagation(); onSelect(); }}
+				onClick={(e) => {
+					e.stopPropagation();
+					onSelect();
+				}}
 			>
 				{t('moderation.queue.reviewBtn')}
 			</AppButton>
@@ -223,7 +226,15 @@ function QueueRow({ item, selected, checked, onSelect, onCheck, isPending }: Que
 
 // ─── GalleryStrip ─────────────────────────────────────────────────────────────
 
-function GalleryStrip({ urls, activeIdx, onSelect }: { urls: string[]; activeIdx: number; onSelect: (i: number) => void }) {
+function GalleryStrip({
+	urls,
+	activeIdx,
+	onSelect,
+}: {
+	urls: string[];
+	activeIdx: number;
+	onSelect: (i: number) => void;
+}) {
 	if (urls.length <= 1) return null;
 	return (
 		<Box sx={{ display: 'flex', gap: 0.75, px: '20px', pb: 2, overflowX: 'auto' }}>
@@ -281,7 +292,9 @@ function PreviewPanel({ item, onApprove, onReject, approving, rejecting }: Previ
 	if (!item) {
 		return (
 			<AppCard sx={{ position: 'sticky', top: 84 }}>
-				<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 240 }}>
+				<Box
+					sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 240 }}
+				>
 					<Typography color={tokens.ink3} fontSize="13px" textAlign="center">
 						{t('moderation.preview.noSelection')}
 					</Typography>
@@ -313,10 +326,23 @@ function PreviewPanel({ item, onApprove, onReject, approving, rejecting }: Previ
 		<AppCard
 			key={item.id}
 			disablePadding
-			sx={{ position: 'sticky', top: 84, overflow: 'hidden', maxHeight: 'calc(100vh - 100px)', overflowY: 'auto' }}
+			sx={{
+				position: 'sticky',
+				top: 84,
+				overflow: 'hidden',
+				maxHeight: 'calc(100vh - 100px)',
+				overflowY: 'auto',
+			}}
 		>
 			{/* Hero image */}
-			<Box sx={{ position: 'relative', aspectRatio: '4/3', overflow: 'hidden', bgcolor: tokens.surface2 }}>
+			<Box
+				sx={{
+					position: 'relative',
+					aspectRatio: '4/3',
+					overflow: 'hidden',
+					bgcolor: tokens.surface2,
+				}}
+			>
 				{currentPhotoUrl ? (
 					<AppImage
 						src={currentPhotoUrl}
@@ -328,9 +354,13 @@ function PreviewPanel({ item, onApprove, onReject, approving, rejecting }: Previ
 				) : (
 					<Box
 						sx={{
-							width: '100%', height: '100%',
+							width: '100%',
+							height: '100%',
 							background: `repeating-linear-gradient(135deg,${tokens.surface2} 0 8px,transparent 8px 16px),${tokens.surface2}`,
-							display: 'grid', placeItems: 'center', fontSize: '11.5px', color: tokens.ink3,
+							display: 'grid',
+							placeItems: 'center',
+							fontSize: '11.5px',
+							color: tokens.ink3,
 						}}
 					>
 						[ no image ]
@@ -342,18 +372,32 @@ function PreviewPanel({ item, onApprove, onReject, approving, rejecting }: Previ
 				{item.galleryUrls.length > 1 && (
 					<Box
 						sx={{
-							position: 'absolute', bottom: 10, right: 12,
-							bgcolor: 'rgba(28,37,46,0.65)', color: '#fff',
-							fontSize: '11px', fontWeight: 700, px: 1, py: 0.25, borderRadius: 999,
+							position: 'absolute',
+							bottom: 10,
+							right: 12,
+							bgcolor: 'rgba(28,37,46,0.65)',
+							color: '#fff',
+							fontSize: '11px',
+							fontWeight: 700,
+							px: 1,
+							py: 0.25,
+							borderRadius: 999,
 						}}
 					>
-						{t('moderation.gallery.photoOf', { current: activePhotoIdx + 1, total: item.galleryUrls.length })}
+						{t('moderation.gallery.photoOf', {
+							current: activePhotoIdx + 1,
+							total: item.galleryUrls.length,
+						})}
 					</Box>
 				)}
 			</Box>
 
 			{/* Gallery strip */}
-			<GalleryStrip urls={item.galleryUrls} activeIdx={activePhotoIdx} onSelect={setActivePhotoIdx} />
+			<GalleryStrip
+				urls={item.galleryUrls}
+				activeIdx={activePhotoIdx}
+				onSelect={setActivePhotoIdx}
+			/>
 
 			{/* Body */}
 			<Box sx={{ px: '20px', pb: '20px', pt: item.galleryUrls.length > 1 ? 0 : '20px' }}>
@@ -397,7 +441,12 @@ function PreviewPanel({ item, onApprove, onReject, approving, rejecting }: Previ
 				<Tabs
 					value={langTab}
 					onChange={(_, v) => setLangTab(v)}
-					sx={{ minHeight: 36, mb: 1.5, borderBottom: `1px solid ${tokens.line}`, '.MuiTab-root': { minHeight: 36, fontSize: 12.5, py: 0 } }}
+					sx={{
+						minHeight: 36,
+						mb: 1.5,
+						borderBottom: `1px solid ${tokens.line}`,
+						'.MuiTab-root': { minHeight: 36, fontSize: 12.5, py: 0 },
+					}}
 				>
 					<Tab value="en" label={t('moderation.preview.langEn')} />
 					<Tab value="uk" label={t('moderation.preview.langUk')} />
@@ -417,18 +466,38 @@ function PreviewPanel({ item, onApprove, onReject, approving, rejecting }: Previ
 
 				{/* Pricing */}
 				<Box sx={{ mb: 2 }}>
-					<Typography sx={{ fontSize: '11px', fontWeight: 700, color: tokens.ink3, textTransform: 'uppercase', letterSpacing: '0.07em', mb: 1 }}>
+					<Typography
+						sx={{
+							fontSize: '11px',
+							fontWeight: 700,
+							color: tokens.ink3,
+							textTransform: 'uppercase',
+							letterSpacing: '0.07em',
+							mb: 1,
+						}}
+					>
 						Pricing
 					</Typography>
 					<Box sx={{ display: 'flex', gap: 3 }}>
 						<Box>
 							<Typography sx={{ fontSize: 11, color: tokens.ink3 }}>Base price</Typography>
-							<Typography sx={{ fontSize: 15, fontWeight: 700 }}>${item.basePrice.toFixed(2)}</Typography>
+							<Typography sx={{ fontSize: 15, fontWeight: 700 }}>
+								${item.basePrice.toFixed(2)}
+							</Typography>
 						</Box>
 						{item.comparePrice && (
 							<Box>
-								<Typography sx={{ fontSize: 11, color: tokens.ink3 }}>{t('moderation.preview.comparePrice')}</Typography>
-								<Typography sx={{ fontSize: 15, fontWeight: 700, textDecoration: 'line-through', color: tokens.ink3 }}>
+								<Typography sx={{ fontSize: 11, color: tokens.ink3 }}>
+									{t('moderation.preview.comparePrice')}
+								</Typography>
+								<Typography
+									sx={{
+										fontSize: 15,
+										fontWeight: 700,
+										textDecoration: 'line-through',
+										color: tokens.ink3,
+									}}
+								>
 									${item.comparePrice.toFixed(2)}
 								</Typography>
 							</Box>
@@ -440,7 +509,16 @@ function PreviewPanel({ item, onApprove, onReject, approving, rejecting }: Previ
 
 				{/* Specs */}
 				<Box sx={{ mb: 2, display: 'flex', flexDirection: 'column', gap: 0.75 }}>
-					<Typography sx={{ fontSize: '11px', fontWeight: 700, color: tokens.ink3, textTransform: 'uppercase', letterSpacing: '0.07em', mb: 0.5 }}>
+					<Typography
+						sx={{
+							fontSize: '11px',
+							fontWeight: 700,
+							color: tokens.ink3,
+							textTransform: 'uppercase',
+							letterSpacing: '0.07em',
+							mb: 0.5,
+						}}
+					>
 						Specs
 					</Typography>
 					{[
@@ -451,7 +529,17 @@ function PreviewPanel({ item, onApprove, onReject, approving, rejecting }: Previ
 					].map(({ k, v }) => (
 						<Box key={k} sx={{ display: 'flex', justifyContent: 'space-between', gap: 1 }}>
 							<Typography sx={{ fontSize: 13, color: tokens.ink3 }}>{k}</Typography>
-							<Typography sx={{ fontSize: 13, fontWeight: 600, textAlign: 'right', maxWidth: '60%', wordBreak: 'break-word' }}>{v}</Typography>
+							<Typography
+								sx={{
+									fontSize: 13,
+									fontWeight: 600,
+									textAlign: 'right',
+									maxWidth: '60%',
+									wordBreak: 'break-word',
+								}}
+							>
+								{v}
+							</Typography>
 						</Box>
 					))}
 				</Box>
@@ -461,17 +549,36 @@ function PreviewPanel({ item, onApprove, onReject, approving, rejecting }: Previ
 					<>
 						<Divider sx={{ mb: 2 }} />
 						<Box sx={{ mb: 2 }}>
-							<Typography sx={{ fontSize: '11px', fontWeight: 700, color: tokens.ink3, textTransform: 'uppercase', letterSpacing: '0.07em', mb: 1 }}>
+							<Typography
+								sx={{
+									fontSize: '11px',
+									fontWeight: 700,
+									color: tokens.ink3,
+									textTransform: 'uppercase',
+									letterSpacing: '0.07em',
+									mb: 1,
+								}}
+							>
 								{t('moderation.preview.variants.title')} ({item.variants.length})
 							</Typography>
-							<Box sx={{ border: `1px solid ${tokens.line}`, borderRadius: '8px', overflow: 'hidden' }}>
+							<Box
+								sx={{ border: `1px solid ${tokens.line}`, borderRadius: '8px', overflow: 'hidden' }}
+							>
 								<Table size="small">
 									<TableHead>
 										<TableRow>
-											<TableCell sx={{ fontSize: 11, py: 0.75 }}>{t('moderation.preview.variants.col.options')}</TableCell>
-											<TableCell sx={{ fontSize: 11, py: 0.75 }}>{t('moderation.preview.variants.col.sku')}</TableCell>
-											<TableCell align="right" sx={{ fontSize: 11, py: 0.75 }}>{t('moderation.preview.variants.col.price')}</TableCell>
-											<TableCell align="right" sx={{ fontSize: 11, py: 0.75 }}>{t('moderation.preview.variants.col.stock')}</TableCell>
+											<TableCell sx={{ fontSize: 11, py: 0.75 }}>
+												{t('moderation.preview.variants.col.options')}
+											</TableCell>
+											<TableCell sx={{ fontSize: 11, py: 0.75 }}>
+												{t('moderation.preview.variants.col.sku')}
+											</TableCell>
+											<TableCell align="right" sx={{ fontSize: 11, py: 0.75 }}>
+												{t('moderation.preview.variants.col.price')}
+											</TableCell>
+											<TableCell align="right" sx={{ fontSize: 11, py: 0.75 }}>
+												{t('moderation.preview.variants.col.stock')}
+											</TableCell>
 										</TableRow>
 									</TableHead>
 									<TableBody>
@@ -489,7 +596,14 @@ function PreviewPanel({ item, onApprove, onReject, approving, rejecting }: Previ
 														))}
 													</Box>
 												</TableCell>
-												<TableCell sx={{ fontSize: 11.5, py: 0.5, fontFamily: 'monospace', color: tokens.ink3 }}>
+												<TableCell
+													sx={{
+														fontSize: 11.5,
+														py: 0.5,
+														fontFamily: 'monospace',
+														color: tokens.ink3,
+													}}
+												>
 													{v.sku ?? '—'}
 												</TableCell>
 												<TableCell align="right" sx={{ fontSize: 12, py: 0.5 }}>
@@ -498,8 +612,15 @@ function PreviewPanel({ item, onApprove, onReject, approving, rejecting }: Previ
 												<TableCell
 													align="right"
 													sx={{
-														fontSize: 12, py: 0.5, fontWeight: 700,
-														color: v.stock === 0 ? tokens.coralInk : v.stock < 5 ? tokens.amberInk : tokens.ink1,
+														fontSize: 12,
+														py: 0.5,
+														fontWeight: 700,
+														color:
+															v.stock === 0
+																? tokens.coralInk
+																: v.stock < 5
+																	? tokens.amberInk
+																	: tokens.ink1,
 													}}
 												>
 													{v.stock}
@@ -518,17 +639,32 @@ function PreviewPanel({ item, onApprove, onReject, approving, rejecting }: Previ
 					<>
 						<Divider sx={{ mb: 2 }} />
 						<Box sx={{ mb: 2 }}>
-							<Typography sx={{ fontSize: '11px', fontWeight: 700, color: tokens.ink3, textTransform: 'uppercase', letterSpacing: '0.07em', mb: 1 }}>
+							<Typography
+								sx={{
+									fontSize: '11px',
+									fontWeight: 700,
+									color: tokens.ink3,
+									textTransform: 'uppercase',
+									letterSpacing: '0.07em',
+									mb: 1,
+								}}
+							>
 								{t('moderation.preview.seo.title')}
 							</Typography>
 							<Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75 }}>
 								<Box>
 									<Typography sx={{ fontSize: 11, color: tokens.ink3 }}>Meta title</Typography>
-									<Typography sx={{ fontSize: 12.5 }}>{metaTitle || t('moderation.preview.seo.notSet')}</Typography>
+									<Typography sx={{ fontSize: 12.5 }}>
+										{metaTitle || t('moderation.preview.seo.notSet')}
+									</Typography>
 								</Box>
 								<Box>
-									<Typography sx={{ fontSize: 11, color: tokens.ink3 }}>Meta description</Typography>
-									<Typography sx={{ fontSize: 12.5, color: tokens.ink2 }}>{metaDesc || t('moderation.preview.seo.notSet')}</Typography>
+									<Typography sx={{ fontSize: 11, color: tokens.ink3 }}>
+										Meta description
+									</Typography>
+									<Typography sx={{ fontSize: 12.5, color: tokens.ink2 }}>
+										{metaDesc || t('moderation.preview.seo.notSet')}
+									</Typography>
 								</Box>
 							</Box>
 						</Box>
@@ -542,12 +678,15 @@ function PreviewPanel({ item, onApprove, onReject, approving, rejecting }: Previ
 					<Box
 						sx={{
 							bgcolor: item.status === 'APPROVED' ? tokens.cyanSoft : tokens.coralSoft,
-							borderRadius: '10px', p: 1.5, textAlign: 'center',
+							borderRadius: '10px',
+							p: 1.5,
+							textAlign: 'center',
 						}}
 					>
 						<Typography
 							sx={{
-								fontSize: 13, fontWeight: 700,
+								fontSize: 13,
+								fontWeight: 700,
 								color: item.status === 'APPROVED' ? tokens.cyanInk : tokens.coralInk,
 							}}
 						>
@@ -559,14 +698,21 @@ function PreviewPanel({ item, onApprove, onReject, approving, rejecting }: Previ
 						{/* Rejection reasons */}
 						<Box
 							sx={{
-								bgcolor: tokens.bg, border: `1px solid ${tokens.line}`,
-								borderRadius: '10px', p: '14px', mb: 2,
+								bgcolor: tokens.bg,
+								border: `1px solid ${tokens.line}`,
+								borderRadius: '10px',
+								p: '14px',
+								mb: 2,
 							}}
 						>
 							<Typography
 								sx={{
-									fontSize: '11px', fontWeight: 700, letterSpacing: '0.06em',
-									textTransform: 'uppercase', color: tokens.ink3, mb: 1,
+									fontSize: '11px',
+									fontWeight: 700,
+									letterSpacing: '0.06em',
+									textTransform: 'uppercase',
+									color: tokens.ink3,
+									mb: 1,
 								}}
 							>
 								{t('moderation.preview.rejectSection.title')}
@@ -582,10 +728,18 @@ function PreviewPanel({ item, onApprove, onReject, approving, rejecting }: Previ
 										control={
 											<Radio
 												size="small"
-												sx={{ color: tokens.ink3, '&.Mui-checked': { color: tokens.accent }, p: 0.5 }}
+												sx={{
+													color: tokens.ink3,
+													'&.Mui-checked': { color: tokens.accent },
+													p: 0.5,
+												}}
 											/>
 										}
-										label={<Typography sx={{ fontSize: 13, color: tokens.ink2 }}>{t(`moderation.preview.rejectSection.reasons.${key}`)}</Typography>}
+										label={
+											<Typography sx={{ fontSize: 13, color: tokens.ink2 }}>
+												{t(`moderation.preview.rejectSection.reasons.${key}`)}
+											</Typography>
+										}
 										sx={{ mx: 0, py: 0.25 }}
 									/>
 								))}
@@ -599,9 +753,17 @@ function PreviewPanel({ item, onApprove, onReject, approving, rejecting }: Previ
 							onChange={(e) => setNote(e.target.value)}
 							placeholder={t('moderation.preview.rejectSection.notePlaceholder')}
 							sx={{
-								width: '100%', border: `1px solid ${tokens.line}`, borderRadius: '10px',
-								p: '10px 12px', fontFamily: 'inherit', fontSize: 13, resize: 'vertical',
-								minHeight: 70, outline: 'none', color: tokens.ink1, bgcolor: tokens.surface,
+								width: '100%',
+								border: `1px solid ${tokens.line}`,
+								borderRadius: '10px',
+								p: '10px 12px',
+								fontFamily: 'inherit',
+								fontSize: 13,
+								resize: 'vertical',
+								minHeight: 70,
+								outline: 'none',
+								color: tokens.ink1,
+								bgcolor: tokens.surface,
 								boxSizing: 'border-box',
 								'&:focus': { borderColor: tokens.accent },
 								'&::placeholder': { color: tokens.ink3 },
@@ -611,13 +773,19 @@ function PreviewPanel({ item, onApprove, onReject, approving, rejecting }: Previ
 						{/* Action buttons */}
 						<Box sx={{ display: 'flex', gap: 1, mt: '14px' }}>
 							<AppButton
-								tone="danger" fullWidth loading={rejecting} onClick={handleReject}
+								tone="danger"
+								fullWidth
+								loading={rejecting}
+								onClick={handleReject}
 								startIcon={<FontAwesomeIcon icon={Icons.close} />}
 							>
 								{rejecting ? t('moderation.preview.rejecting') : t('moderation.preview.rejectBtn')}
 							</AppButton>
 							<AppButton
-								tone="success" fullWidth loading={approving} onClick={handleApprove}
+								tone="success"
+								fullWidth
+								loading={approving}
+								onClick={handleApprove}
 								startIcon={<FontAwesomeIcon icon={Icons.check} />}
 							>
 								{approving ? t('moderation.preview.approving') : t('moderation.preview.approveBtn')}
@@ -638,7 +806,14 @@ function QueueSkeleton() {
 			{Array.from({ length: 5 }).map((_, i) => (
 				<Box
 					key={i}
-					sx={{ display: 'grid', gridTemplateColumns: '72px 1fr auto', gap: 2, px: '20px', py: 2, borderBottom: `1px solid ${tokens.line2}` }}
+					sx={{
+						display: 'grid',
+						gridTemplateColumns: '72px 1fr auto',
+						gap: 2,
+						px: '20px',
+						py: 2,
+						borderBottom: `1px solid ${tokens.line2}`,
+					}}
 				>
 					<Skeleton variant="rounded" width={72} height={72} sx={{ borderRadius: '10px' }} />
 					<Box>
@@ -710,10 +885,13 @@ export default function ProductModerationPage() {
 		});
 	}, []);
 
-	const handleSelectAll = useCallback((checked: boolean) => {
-		if (checked) setSelectedIds(new Set(items.map((it) => it.id)));
-		else setSelectedIds(new Set());
-	}, [items]);
+	const handleSelectAll = useCallback(
+		(checked: boolean) => {
+			if (checked) setSelectedIds(new Set(items.map((it) => it.id)));
+			else setSelectedIds(new Set());
+		},
+		[items]
+	);
 
 	const handleApprove = useCallback(
 		async (id: string) => {
@@ -768,7 +946,15 @@ export default function ProductModerationPage() {
 	return (
 		<Box>
 			{/* Page head */}
-			<Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 3, gap: 2 }}>
+			<Box
+				sx={{
+					display: 'flex',
+					alignItems: 'flex-start',
+					justifyContent: 'space-between',
+					mb: 3,
+					gap: 2,
+				}}
+			>
 				<Box>
 					<Typography variant="h5" fontWeight={700} color={tokens.ink1}>
 						{t('moderation.pageTitle')}
@@ -786,15 +972,32 @@ export default function ProductModerationPage() {
 				<Grid item sx={{ flex: 1, minWidth: 0 }}>
 					<AppCard disablePadding>
 						{/* Toolbar */}
-						<Box sx={{ px: 2, pt: 2, pb: 1.5, display: 'flex', gap: 1.5, alignItems: 'center', flexWrap: 'wrap' }}>
+						<Box
+							sx={{
+								px: 2,
+								pt: 2,
+								pb: 1.5,
+								display: 'flex',
+								gap: 1.5,
+								alignItems: 'center',
+								flexWrap: 'wrap',
+							}}
+						>
 							<AppInput
 								size="small"
 								placeholder={t('moderation.searchPlaceholder')}
 								value={search}
-								onChange={(e) => { setSearch(e.target.value); setSelectedId(null); }}
+								onChange={(e) => {
+									setSearch(e.target.value);
+									setSelectedId(null);
+								}}
 								InputProps={{
 									startAdornment: (
-										<FontAwesomeIcon icon={Icons.search} color={tokens.ink3} style={{ marginRight: 8, fontSize: 12 }} />
+										<FontAwesomeIcon
+											icon={Icons.search}
+											color={tokens.ink3}
+											style={{ marginRight: 8, fontSize: 12 }}
+										/>
 									),
 								}}
 								sx={{ flex: 1, minWidth: 200 }}
@@ -813,11 +1016,7 @@ export default function ProductModerationPage() {
 									>
 										{t('moderation.bulkBar.approveAll')}
 									</AppButton>
-									<AppButton
-										tone="ghost"
-										size="small"
-										onClick={() => setSelectedIds(new Set())}
-									>
+									<AppButton tone="ghost" size="small" onClick={() => setSelectedIds(new Set())}>
 										{t('moderation.bulkBar.clear')}
 									</AppButton>
 								</>
@@ -831,7 +1030,8 @@ export default function ProductModerationPage() {
 						{isPendingTab && items.length > 0 && (
 							<Box
 								sx={{
-									px: 2, py: 1,
+									px: 2,
+									py: 1,
 									bgcolor: tokens.bg,
 									borderBottom: `1px solid ${tokens.line2}`,
 									display: 'flex',

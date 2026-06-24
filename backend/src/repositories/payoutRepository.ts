@@ -113,12 +113,17 @@ export async function findPayoutByOrderItem(orderItemId: string): Promise<Payout
 	});
 }
 
-export async function markPayoutsBlockedForOrder(orderId: string, sellerId?: string): Promise<number> {
+export async function markPayoutsBlockedForOrder(
+	orderId: string,
+	sellerId?: string
+): Promise<number> {
 	const result = await prisma.sellerPayout.updateMany({
 		where: {
 			orderId,
 			...(sellerId && { sellerId }),
-			status: { in: [PayoutStatus.ON_HOLD, PayoutStatus.ELIGIBLE_FOR_RELEASE, PayoutStatus.RELEASED] },
+			status: {
+				in: [PayoutStatus.ON_HOLD, PayoutStatus.ELIGIBLE_FOR_RELEASE, PayoutStatus.RELEASED],
+			},
 		},
 		data: { status: PayoutStatus.BLOCKED },
 	});
@@ -153,7 +158,10 @@ export async function restoreBlockedPayoutsForOrder(
 	return restored;
 }
 
-export async function markPayoutsRefundedForOrder(orderId: string, sellerId?: string): Promise<number> {
+export async function markPayoutsRefundedForOrder(
+	orderId: string,
+	sellerId?: string
+): Promise<number> {
 	const result = await prisma.sellerPayout.updateMany({
 		where: {
 			orderId,
@@ -251,7 +259,9 @@ export async function findOrdersPendingAutoConfirm(cutoff: Date) {
 export async function sumPendingPlatformPayouts(): Promise<number> {
 	const result = await prisma.sellerPayout.aggregate({
 		where: {
-			status: { in: [PayoutStatus.ON_HOLD, PayoutStatus.ELIGIBLE_FOR_RELEASE, PayoutStatus.RELEASED] },
+			status: {
+				in: [PayoutStatus.ON_HOLD, PayoutStatus.ELIGIBLE_FOR_RELEASE, PayoutStatus.RELEASED],
+			},
 		},
 		_sum: { amountNet: true },
 	});

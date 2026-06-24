@@ -43,7 +43,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 		set((state) =>
 			state.user?.profile
 				? { user: { ...state.user, profile: { ...state.user.profile, ...profile } } }
-				: state,
+				: state
 		),
 
 	clearAuth: () => {

@@ -1,6 +1,15 @@
-import { DEFAULT_EXPORT_CURRENCY, EXPORT_PAGE_SIZE, PRODUCT_SHEET, PRODUCT_TEMPLATE_COLUMNS } from '../constants/importExport.js';
+import {
+	DEFAULT_EXPORT_CURRENCY,
+	EXPORT_PAGE_SIZE,
+	PRODUCT_SHEET,
+	PRODUCT_TEMPLATE_COLUMNS,
+} from '../constants/importExport.js';
 import * as repo from '../repositories/sellerProductRepository.js';
-import { buildExportFileName, buildXlsxFile, type SpreadsheetFile } from '../utils/spreadsheetFile.js';
+import {
+	buildExportFileName,
+	buildXlsxFile,
+	type SpreadsheetFile,
+} from '../utils/spreadsheetFile.js';
 import type { SellerProductRecord } from '../repositories/sellerProductRepository.js';
 
 function translation(product: SellerProductRecord, language: 'EN' | 'UK') {
@@ -8,7 +17,9 @@ function translation(product: SellerProductRecord, language: 'EN' | 'UK') {
 }
 
 function totalStock(product: SellerProductRecord): number {
-	return product.variants.filter((variant) => variant.isActive).reduce((sum, variant) => sum + variant.stock, 0);
+	return product.variants
+		.filter((variant) => variant.isActive)
+		.reduce((sum, variant) => sum + variant.stock, 0);
 }
 
 function categorySlugs(product: SellerProductRecord): string {
@@ -45,7 +56,7 @@ function mapProductRow(product: SellerProductRecord): Record<string, unknown> {
 
 export async function exportSellerProducts(
 	sellerId: string,
-	filter?: { status?: string; search?: string },
+	filter?: { status?: string; search?: string }
 ): Promise<SpreadsheetFile> {
 	const where = {
 		...(filter?.status ? { status: filter.status as never } : {}),
@@ -110,7 +121,7 @@ export function getProductImportTemplate(): SpreadsheetFile {
 				default:
 					return [column, ''];
 			}
-		}),
+		})
 	);
 
 	return buildXlsxFile('products_import_template.xlsx', [{ name: PRODUCT_SHEET, rows: [example] }]);

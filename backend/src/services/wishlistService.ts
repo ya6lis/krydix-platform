@@ -24,8 +24,7 @@ export interface WishlistOut {
 
 function mapItem(item: wishlistRepo.WishlistItemRecord, language: Language): WishlistItemOut {
 	const translation =
-		item.product.translations.find((t) => t.language === language) ??
-		item.product.translations[0];
+		item.product.translations.find((t) => t.language === language) ?? item.product.translations[0];
 	const profile = item.product.seller.profile;
 	const sellerName = profile
 		? `${profile.firstName} ${profile.lastName}`.trim()
@@ -75,7 +74,7 @@ async function assertProductWishlistable(productId: string) {
 export async function addToWishlist(
 	userId: string,
 	productId: string,
-	language: Language,
+	language: Language
 ): Promise<WishlistOut> {
 	await assertProductWishlistable(productId);
 	const existing = await wishlistRepo.findWishlistItem(userId, productId);
@@ -88,7 +87,7 @@ export async function addToWishlist(
 export async function removeFromWishlist(
 	userId: string,
 	productId: string,
-	language: Language,
+	language: Language
 ): Promise<WishlistOut> {
 	await wishlistRepo.removeWishlistItem(userId, productId);
 	return buildWishlist(userId, language);
@@ -97,7 +96,7 @@ export async function removeFromWishlist(
 export async function toggleWishlist(
 	userId: string,
 	productId: string,
-	language: Language,
+	language: Language
 ): Promise<WishlistOut> {
 	const existing = await wishlistRepo.findWishlistItem(userId, productId);
 	if (existing) {

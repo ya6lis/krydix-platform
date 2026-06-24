@@ -47,7 +47,10 @@ function CheckRow({ label, count, checked, onChange }: CheckRowProps) {
 				{label}
 			</Box>
 			{count !== undefined && (
-				<Box component="span" sx={{ fontSize: 11.5, color: tokens.ink3, ml: 'auto', flexShrink: 0 }}>
+				<Box
+					component="span"
+					sx={{ fontSize: 11.5, color: tokens.ink3, ml: 'auto', flexShrink: 0 }}
+				>
 					{count.toLocaleString()}
 				</Box>
 			)}
@@ -74,7 +77,11 @@ interface CategoryFilterTreeProps {
 	onSelect: (slug: string | undefined) => void;
 }
 
-export function CategoryFilterTree({ categories, selectedSlug, onSelect }: CategoryFilterTreeProps) {
+export function CategoryFilterTree({
+	categories,
+	selectedSlug,
+	onSelect,
+}: CategoryFilterTreeProps) {
 	const { t } = useTranslation();
 	const [expandedIds, setExpandedIds] = useState<Set<string>>(() => new Set());
 
@@ -145,9 +152,7 @@ export function CategoryFilterTree({ categories, selectedSlug, onSelect }: Categ
 						onChange={(checked) => onSelect(checked ? node.slug : undefined)}
 					/>
 				</Box>
-				{hasChildren &&
-					isExpanded &&
-					children.map((child) => renderNode(child, depth + 1))}
+				{hasChildren && isExpanded && children.map((child) => renderNode(child, depth + 1))}
 			</Box>
 		);
 	};

@@ -7,7 +7,7 @@ export interface AppTooltipProps extends Omit<TooltipProps, 'title'> {
 
 function resolvePopperSlotProps(
 	popper: Partial<PopperProps> | undefined,
-	arrow: boolean,
+	arrow: boolean
 ): Partial<PopperProps> {
 	return {
 		...popper,
@@ -45,7 +45,7 @@ export function AppTooltip({
 					typeof slotProps?.popper === 'function'
 						? undefined
 						: (slotProps?.popper as Partial<PopperProps> | undefined),
-					arrow,
+					arrow
 				),
 			}}
 			{...props}

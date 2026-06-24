@@ -1,4 +1,7 @@
-import { RELEASE_NOTE_VERSION_PATTERN, normalizeReleaseNoteVersion } from '@/constants/releaseNotes';
+import {
+	RELEASE_NOTE_VERSION_PATTERN,
+	normalizeReleaseNoteVersion,
+} from '@/constants/releaseNotes';
 
 export type ReleaseNoteFormErrors = Partial<
 	Record<'version' | 'titleEn' | 'titleUk' | 'bodyEn' | 'bodyUk', string>
@@ -16,7 +19,7 @@ type Translate = (key: string, options?: Record<string, unknown>) => string;
 
 export function validateReleaseNoteForm(
 	form: ReleaseNoteFormLike,
-	t: Translate,
+	t: Translate
 ): ReleaseNoteFormErrors {
 	const errors: ReleaseNoteFormErrors = {};
 	const version = normalizeReleaseNoteVersion(form.version);

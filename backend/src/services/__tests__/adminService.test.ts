@@ -54,7 +54,7 @@ describe('changeUserRole', () => {
 
 	it('blocks moderator from changing roles', async () => {
 		await expect(
-			service.changeUserRole('mod-1', Role.MODERATOR, 'user-1', Role.MODERATOR),
+			service.changeUserRole('mod-1', Role.MODERATOR, 'user-1', Role.MODERATOR)
 		).rejects.toMatchObject({ extensions: { code: 'FORBIDDEN' } });
 	});
 
@@ -62,7 +62,7 @@ describe('changeUserRole', () => {
 		(repo.findAdminUserById as jest.Mock).mockResolvedValue(mockUser);
 
 		await expect(
-			service.changeUserRole('mod-1', Role.MODERATOR, 'user-1', Role.ADMIN),
+			service.changeUserRole('mod-1', Role.MODERATOR, 'user-1', Role.ADMIN)
 		).rejects.toMatchObject({ extensions: { code: 'FORBIDDEN' } });
 	});
 });
@@ -80,9 +80,9 @@ describe('softBanUser', () => {
 	it('blocks moderator from banning admin', async () => {
 		(repo.findAdminUserById as jest.Mock).mockResolvedValue({ ...mockUser, role: 'ADMIN' });
 
-		await expect(
-			service.softBanUser('mod-1', Role.MODERATOR, 'user-1'),
-		).rejects.toMatchObject({ extensions: { code: 'FORBIDDEN' } });
+		await expect(service.softBanUser('mod-1', Role.MODERATOR, 'user-1')).rejects.toMatchObject({
+			extensions: { code: 'FORBIDDEN' },
+		});
 	});
 });
 
@@ -111,7 +111,7 @@ describe('inviteUser', () => {
 				firstName: 'New',
 				lastName: 'User',
 				role: Role.BUYER,
-			}),
+			})
 		).rejects.toMatchObject({ extensions: { code: 'FORBIDDEN' } });
 	});
 });

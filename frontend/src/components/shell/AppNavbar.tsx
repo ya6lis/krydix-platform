@@ -22,9 +22,7 @@ import { canUseBuyerCommerce } from '@/utils/roleAccess';
 import { Icons } from '@/constants/icons';
 import { NotificationsPanel } from '@/components/notifications/NotificationsPanel';
 import { AppImage } from '@/components/ui';
-import {
-	type NotificationTabKey,
-} from '@/utils/notificationUtils';
+import { type NotificationTabKey } from '@/utils/notificationUtils';
 import {
 	DELETE_NOTIFICATION_MUTATION,
 	MARK_ALL_NOTIFICATIONS_READ_MUTATION,
@@ -108,7 +106,7 @@ export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
 
 	const [markNotificationRead] = useMutation(MARK_NOTIFICATION_READ_MUTATION);
 	const [markAllNotificationsRead, { loading: markingAllRead }] = useMutation(
-		MARK_ALL_NOTIFICATIONS_READ_MUTATION,
+		MARK_ALL_NOTIFICATIONS_READ_MUTATION
 	);
 	const [deleteNotification] = useMutation(DELETE_NOTIFICATION_MUTATION);
 
@@ -261,7 +259,9 @@ export default function AppNavbar({ breadcrumbs }: AppNavbarProps) {
 					component="input"
 					type="search"
 					value={searchQuery}
-					onChange={(event: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(event.target.value)}
+					onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+						setSearchQuery(event.target.value)
+					}
 					placeholder={t('shell.search.placeholder')}
 					aria-label={t('shell.search.placeholder')}
 					sx={{
@@ -743,7 +743,9 @@ function WishlistDropdown({
 				}}
 			>
 				<Box>
-					<Typography sx={{ fontWeight: 700, fontSize: 15 }}>{t('shell.wishlist.title')}</Typography>
+					<Typography sx={{ fontWeight: 700, fontSize: 15 }}>
+						{t('shell.wishlist.title')}
+					</Typography>
 					<Typography sx={{ fontSize: 12, color: tokens.ink3, mt: '2px' }}>
 						{!isAuthenticated
 							? t('shell.wishlist.signInHint')

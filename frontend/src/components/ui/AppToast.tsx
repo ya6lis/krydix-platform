@@ -35,7 +35,7 @@ interface ToastContextValue {
 	showToast: (
 		message: string,
 		severity?: ToastSeverity,
-		options?: number | ToastShowOptions,
+		options?: number | ToastShowOptions
 	) => void;
 }
 
@@ -57,13 +57,7 @@ function normalizeOptions(options?: number | ToastShowOptions): ToastShowOptions
 	return options ?? {};
 }
 
-function ToastItem({
-	toast,
-	onClose,
-}: {
-	toast: ToastMessage;
-	onClose: (id: number) => void;
-}) {
+function ToastItem({ toast, onClose }: { toast: ToastMessage; onClose: (id: number) => void }) {
 	const { t } = useTranslation();
 
 	const handleClose = () => onClose(toast.id);
@@ -159,10 +153,7 @@ export function AppToastProvider({ children }: { children: React.ReactNode }) {
 	const { t } = useTranslation();
 	const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
-	const severityTitle = useCallback(
-		(severity: ToastSeverity) => t(`toast.title.${severity}`),
-		[t],
-	);
+	const severityTitle = useCallback((severity: ToastSeverity) => t(`toast.title.${severity}`), [t]);
 
 	const showToast = useCallback(
 		(message: string, severity: ToastSeverity = 'info', options?: number | ToastShowOptions) => {
@@ -191,7 +182,7 @@ export function AppToastProvider({ children }: { children: React.ReactNode }) {
 				setToasts((prev) => prev.filter((item) => item.id !== id));
 			}, duration);
 		},
-		[severityTitle],
+		[severityTitle]
 	);
 
 	const handleClose = useCallback((id: number) => {

@@ -4,9 +4,13 @@ import NotFound404Page from '../404Page';
 
 jest.mock('react-i18next', () => ({
 	useTranslation: () => ({ t: (key: string) => key }),
-	Trans: ({ i18nKey, components }: { i18nKey: string; components?: Record<string, React.ReactElement> }) => (
-		<span data-testid={`trans-${i18nKey}`}>{i18nKey}</span>
-	),
+	Trans: ({
+		i18nKey,
+		components,
+	}: {
+		i18nKey: string;
+		components?: Record<string, React.ReactElement>;
+	}) => <span data-testid={`trans-${i18nKey}`}>{i18nKey}</span>,
 }));
 
 jest.mock('@fortawesome/react-fontawesome', () => ({
@@ -22,7 +26,7 @@ describe('NotFound404Page', () => {
 		render(
 			<MemoryRouter initialEntries={['/missing-page']}>
 				<NotFound404Page />
-			</MemoryRouter>,
+			</MemoryRouter>
 		);
 
 		expect(screen.getByText('error404.eyebrow')).toBeInTheDocument();

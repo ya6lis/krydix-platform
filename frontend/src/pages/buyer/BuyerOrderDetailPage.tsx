@@ -237,9 +237,7 @@ export default function BuyerOrderDetailPage() {
 	const canConfirmDelivery = order.status === 'SHIPPED';
 	const canRefund = order.status === 'CONFIRMED' && !order.returnRequest;
 	const canRequestReturn =
-		order.status === 'DELIVERED' &&
-		order.delivery?.status === 'DELIVERED' &&
-		!order.returnRequest;
+		order.status === 'DELIVERED' && order.delivery?.status === 'DELIVERED' && !order.returnRequest;
 
 	const orderTimeline = buildOrderTimeline(order, t);
 	const deliveryTimeline = buildDeliveryTimeline(order, t);
@@ -641,7 +639,12 @@ export default function BuyerOrderDetailPage() {
 													)}
 													{order.returnRequest.resolution && (
 														<Typography
-															sx={{ mt: 0.5, fontSize: 12.5, color: tokens.coralInk, lineHeight: 1.5 }}
+															sx={{
+																mt: 0.5,
+																fontSize: 12.5,
+																color: tokens.coralInk,
+																lineHeight: 1.5,
+															}}
 														>
 															{t('orderDetail.returnResolution')}: {order.returnRequest.resolution}
 														</Typography>

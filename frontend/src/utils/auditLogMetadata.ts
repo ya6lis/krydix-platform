@@ -29,7 +29,7 @@ function formatMetadataValue(key: string, value: unknown, t: TFunction): string 
 
 export function buildAuditMetadataRows(
 	metadata: Record<string, unknown> | null | undefined,
-	t: TFunction,
+	t: TFunction
 ): Array<{ key: string; label: string; value: string }> {
 	if (!metadata) return [];
 

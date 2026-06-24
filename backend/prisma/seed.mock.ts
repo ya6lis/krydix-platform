@@ -10,8 +10,7 @@ export const productPhoto = (photoId: string, w = 900, h = 900) =>
 export const avatarPhoto = (seed: string, size = 400) =>
 	`https://i.pravatar.cc/${size}?u=${encodeURIComponent(seed)}`;
 
-export const picsum = (id: number, w = 800, h = 800) =>
-	`https://picsum.photos/id/${id}/${w}/${h}`;
+export const picsum = (id: number, w = 800, h = 800) => `https://picsum.photos/id/${id}/${w}/${h}`;
 
 export const daysAgo = (days: number, hours = 0) =>
 	new Date(Date.now() - days * 86_400_000 - hours * 3_600_000);
@@ -91,7 +90,10 @@ export type CatalogProduct = {
 	en: { title: string; description: string };
 	uk: { title: string; description: string };
 	variants: Array<{ sku?: string; options: Record<string, string>; stock: number; price?: number }>;
-	attrs: Array<{ name: 'Size' | 'Color' | 'Material' | 'Shoe Size' | 'Capacity' | 'Pieces'; value: string }>;
+	attrs: Array<{
+		name: 'Size' | 'Color' | 'Material' | 'Shoe Size' | 'Capacity' | 'Pieces';
+		value: string;
+	}>;
 };
 
 export const CATALOG_PRODUCTS: CatalogProduct[] = [
@@ -117,7 +119,7 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
 		uk: {
 			title: 'Вовняний кардиган — Вівсяний',
 			description:
-				"Кардиган вільного крою з нефарбованої гірської вовни. Ґудзики з рогу, манжети в рубчик і накладні кишені. Виготовлено у Львівській області.",
+				'Кардиган вільного крою з нефарбованої гірської вовни. Ґудзики з рогу, манжети в рубчик і накладні кишені. Виготовлено у Львівській області.',
 		},
 		variants: [
 			{ sku: 'LG-WC-OAT-S', options: { size: 'S', color: 'Oat' }, stock: 6 },
@@ -243,7 +245,8 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
 		},
 		uk: {
 			title: 'Набір лляних наволочок 2 шт.',
-			description: 'Дві наволочки з промитого європейського льону (50×70 см) із застібкою-envelope.',
+			description:
+				'Дві наволочки з промитого європейського льону (50×70 см) із застібкою-envelope.',
 		},
 		variants: [
 			{ options: { color: 'Natural', size: '50x70cm' }, stock: 58 },
@@ -267,11 +270,13 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
 		],
 		en: {
 			title: 'Ceramic Pour-Over Set',
-			description: 'Hand-thrown stoneware dripper and 600 ml server. Fits standard #2 filters, 1–4 cups.',
+			description:
+				'Hand-thrown stoneware dripper and 600 ml server. Fits standard #2 filters, 1–4 cups.',
 		},
 		uk: {
 			title: 'Керамічний набір для пуровера',
-			description: 'Ручна керамічна воронка та сервер 600 мл. Підходить для фільтрів №2, 1–4 чашки.',
+			description:
+				'Ручна керамічна воронка та сервер 600 мл. Підходить для фільтрів №2, 1–4 чашки.',
 		},
 		variants: [{ options: { color: 'Matte White' }, stock: 22, price: 3290 }],
 		attrs: [{ name: 'Capacity', value: '600 ml' }],
@@ -353,7 +358,8 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
 		},
 		uk: {
 			title: 'Джинсова сорочка Selvedge — Indigo',
-			description: 'Джинсова сорочка з selvedge-дрім, corozo-ґудзиками та двома нагрудними кишенями.',
+			description:
+				'Джинсова сорочка з selvedge-дрім, corozo-ґудзиками та двома нагрудними кишенями.',
 		},
 		variants: [
 			{ sku: 'NA-DS-IND-M', options: { size: 'M', color: 'Indigo' }, stock: 14 },
@@ -379,11 +385,13 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
 		],
 		en: {
 			title: 'Leather Belt — Tan',
-			description: 'Full-grain vegetable-tanned leather belt with solid brass buckle. 3.5 cm width.',
+			description:
+				'Full-grain vegetable-tanned leather belt with solid brass buckle. 3.5 cm width.',
 		},
 		uk: {
 			title: 'Шкіряний ремінь — Tan',
-			description: 'Ремінь з full-grain шкіри рослинного дублення та латунною пряжкою. Ширина 3,5 см.',
+			description:
+				'Ремінь з full-grain шкіри рослинного дублення та латунною пряжкою. Ширина 3,5 см.',
 		},
 		variants: [{ sku: 'FF-LB-TAN-100', options: { size: '100 cm', color: 'Tan' }, stock: 19 }],
 		attrs: [{ name: 'Color', value: 'Tan' }],
@@ -403,11 +411,13 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
 		],
 		en: {
 			title: 'Wool Throw Blanket — Grey',
-			description: 'Heavy merino wool throw (130×180 cm) with herringbone weave. Dry clean recommended.',
+			description:
+				'Heavy merino wool throw (130×180 cm) with herringbone weave. Dry clean recommended.',
 		},
 		uk: {
 			title: 'Вовняний плед — Grey',
-			description: 'Щільний merino-плед (130×180 см) з herringbone-плетінням. Рекомендовано хімчистку.',
+			description:
+				'Щільний merino-плед (130×180 см) з herringbone-плетінням. Рекомендовано хімчистку.',
 		},
 		variants: [{ sku: 'HC-WB-GRY-ONE', options: { color: 'Grey' }, stock: 15 }],
 		attrs: [{ name: 'Color', value: 'Grey' }],
@@ -455,7 +465,8 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
 		},
 		uk: {
 			title: 'Бамбукова дошка — Large',
-			description: 'End-grain бамбукова дошка 40×30 см з канавкою для соку та силіконовими ніжками.',
+			description:
+				'End-grain бамбукова дошка 40×30 см з канавкою для соку та силіконовими ніжками.',
 		},
 		variants: [{ sku: 'MS-BCB-L-ONE', options: { size: '40x30cm' }, stock: 27 }],
 		attrs: [{ name: 'Capacity', value: '40×30 cm' }],
@@ -506,7 +517,8 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
 		},
 		uk: {
 			title: 'Шкіряна сумка Crossbody — Cognac',
-			description: 'Компактна сумка з full-grain шкіри з регульованим ременем і магнітним клапаном.',
+			description:
+				'Компактна сумка з full-grain шкіри з регульованим ременем і магнітним клапаном.',
 		},
 		variants: [{ sku: 'NA-CB-COG-ONE', options: { color: 'Cognac' }, stock: 13 }],
 		attrs: [{ name: 'Color', value: 'Cognac' }],
@@ -613,7 +625,9 @@ export const CATALOG_PRODUCTS: CatalogProduct[] = [
 			title: 'Підодіяльник Cotton — Double',
 			description: 'Бавовняний підодіяльник 200 TC (200×220 см) із прихованими ґудзиками.',
 		},
-		variants: [{ sku: 'HC-CDC-DBL-ONE', options: { size: '200x220cm', color: 'White' }, stock: 22 }],
+		variants: [
+			{ sku: 'HC-CDC-DBL-ONE', options: { size: '200x220cm', color: 'White' }, stock: 22 },
+		],
 		attrs: [{ name: 'Pieces', value: '1' }],
 	},
 ];

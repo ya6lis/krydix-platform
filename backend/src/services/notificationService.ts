@@ -8,7 +8,9 @@ import type { SupportNotificationAction } from '../constants/supportNotification
 
 function serializeNotification(notification: notificationRepo.NotificationRecord) {
 	const metadata =
-		notification.metadata && typeof notification.metadata === 'object' && !Array.isArray(notification.metadata)
+		notification.metadata &&
+		typeof notification.metadata === 'object' &&
+		!Array.isArray(notification.metadata)
 			? (notification.metadata as Record<string, unknown>)
 			: null;
 
@@ -114,8 +116,8 @@ export async function notifySupportNewRequest(input: {
 				title: 'New support request',
 				body: `${input.requesterName} opened a support request${input.subject ? `: ${input.subject}` : '.'}`,
 				requesterName: input.requesterName,
-			}),
-		),
+			})
+		)
 	);
 }
 
@@ -147,8 +149,7 @@ export async function notifySupportStatusChange(input: {
 		input.status === 'RESOLVED'
 			? SUPPORT_NOTIFICATION_ACTION.RESOLVED
 			: SUPPORT_NOTIFICATION_ACTION.CLOSED;
-	const title =
-		input.status === 'RESOLVED' ? 'Support request resolved' : 'Support request closed';
+	const title = input.status === 'RESOLVED' ? 'Support request resolved' : 'Support request closed';
 	const body =
 		input.status === 'RESOLVED'
 			? `Your support request${input.subject ? ` "${input.subject}"` : ''} was marked as resolved.`
@@ -193,8 +194,8 @@ export async function notifyNewOrder(order: OrderRecord) {
 					orderLabel: label,
 					status: order.status,
 				},
-			}),
-		),
+			})
+		)
 	);
 }
 

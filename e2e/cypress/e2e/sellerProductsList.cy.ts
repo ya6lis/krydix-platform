@@ -28,7 +28,8 @@ function stubGraphQL(overrides: Record<string, object> = {}) {
 			req.reply({ data: overrides['ExportMyProducts'] ?? sellerFixture.exportMyProducts });
 		} else if (op === 'DownloadProductImportTemplate') {
 			req.reply({
-				data: overrides['DownloadProductImportTemplate'] ?? sellerFixture.downloadProductImportTemplate,
+				data:
+					overrides['DownloadProductImportTemplate'] ?? sellerFixture.downloadProductImportTemplate,
 			});
 		} else {
 			req.continue();
@@ -96,11 +97,7 @@ describe('SellerProductsPage — Duplicate', () => {
 
 	it('duplicates product and shows success toast', () => {
 		// Open row menu for first product
-		cy.contains('Heritage Jacket')
-			.closest('tr')
-			.find('button')
-			.last()
-			.click();
+		cy.contains('Heritage Jacket').closest('tr').find('button').last().click();
 
 		// Click duplicate in menu
 		cy.contains('sellerProducts.action.duplicate').click();
@@ -124,11 +121,7 @@ describe('SellerProductsPage — Archive', () => {
 
 	it('shows archive confirm dialog and archives on confirm', () => {
 		// Open row menu for first product
-		cy.contains('Heritage Jacket')
-			.closest('tr')
-			.find('button')
-			.last()
-			.click();
+		cy.contains('Heritage Jacket').closest('tr').find('button').last().click();
 
 		cy.contains('sellerProducts.action.archive').click();
 

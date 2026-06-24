@@ -87,7 +87,10 @@ export async function runAutoConfirmReceipts(): Promise<number> {
 	let confirmed = 0;
 
 	for (const order of orders) {
-		if (order.payment?.status !== PaymentStatus.IN_ESCROW && order.payment?.status !== PaymentStatus.PAID) {
+		if (
+			order.payment?.status !== PaymentStatus.IN_ESCROW &&
+			order.payment?.status !== PaymentStatus.PAID
+		) {
 			continue;
 		}
 		await createPayoutsForOrder(order.id, new Date());
@@ -157,10 +160,7 @@ function serializePayout(payout: payoutRepo.PayoutRecord) {
 	};
 }
 
-export async function withdrawSellerPayouts(
-	sellerId: string,
-	payoutIds?: string[]
-) {
+export async function withdrawSellerPayouts(sellerId: string, payoutIds?: string[]) {
 	const summary = await getSellerFinanceSummary(sellerId);
 	if (summary.withdrawable < summary.minimumWithdrawal) {
 		throw new GraphQLError(

@@ -15,7 +15,7 @@ export async function updateProfileByUserId(
 		country?: string | null;
 		city?: string | null;
 		avatarUrl?: string | null;
-	},
+	}
 ) {
 	return prisma.userProfile.update({
 		where: { userId },

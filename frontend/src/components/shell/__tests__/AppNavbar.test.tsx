@@ -68,7 +68,7 @@ function renderNavbar(breadcrumbs?: Array<{ label: string; href?: string }>) {
 			<MemoryRouter>
 				<AppNavbar breadcrumbs={breadcrumbs} />
 			</MemoryRouter>
-		</MockedProvider>,
+		</MockedProvider>
 	);
 }
 

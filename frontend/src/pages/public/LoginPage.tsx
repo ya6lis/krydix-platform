@@ -59,8 +59,7 @@ export default function LoginPage() {
 				user: AuthUser;
 			};
 			setAuth(user, accessToken, refreshToken);
-			const destination =
-				!from || from === ROUTES.HOME ? getHomeRouteForRole(user.role) : from;
+			const destination = !from || from === ROUTES.HOME ? getHomeRouteForRole(user.role) : from;
 			navigate(destination, { replace: true });
 		} catch (err: unknown) {
 			setError('root', { message: getGraphQLErrorMessage(err, t) });

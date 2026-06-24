@@ -77,16 +77,23 @@ export async function listFeedbacks(params: {
 }
 
 export async function getFeedbackStats() {
-	const [total, newCount, underReviewCount, acknowledgedCount, plannedCount, resolvedCount, dismissedCount] =
-		await Promise.all([
-			prisma.userFeedback.count(),
-			prisma.userFeedback.count({ where: { status: 'NEW' } }),
-			prisma.userFeedback.count({ where: { status: 'UNDER_REVIEW' } }),
-			prisma.userFeedback.count({ where: { status: 'ACKNOWLEDGED' } }),
-			prisma.userFeedback.count({ where: { status: 'PLANNED' } }),
-			prisma.userFeedback.count({ where: { status: 'RESOLVED' } }),
-			prisma.userFeedback.count({ where: { status: 'DISMISSED' } }),
-		]);
+	const [
+		total,
+		newCount,
+		underReviewCount,
+		acknowledgedCount,
+		plannedCount,
+		resolvedCount,
+		dismissedCount,
+	] = await Promise.all([
+		prisma.userFeedback.count(),
+		prisma.userFeedback.count({ where: { status: 'NEW' } }),
+		prisma.userFeedback.count({ where: { status: 'UNDER_REVIEW' } }),
+		prisma.userFeedback.count({ where: { status: 'ACKNOWLEDGED' } }),
+		prisma.userFeedback.count({ where: { status: 'PLANNED' } }),
+		prisma.userFeedback.count({ where: { status: 'RESOLVED' } }),
+		prisma.userFeedback.count({ where: { status: 'DISMISSED' } }),
+	]);
 
 	return {
 		total,
@@ -106,7 +113,7 @@ export async function updateFeedback(
 		adminNotes?: string | null;
 		handledById: string;
 		handledAt: Date;
-	},
+	}
 ) {
 	return prisma.userFeedback.update({
 		where: { id },

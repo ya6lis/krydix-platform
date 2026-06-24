@@ -14,8 +14,12 @@ import {
 type GraphqlLanguage = 'EN' | 'UK';
 
 function parseReleaseNoteInput<T extends { version: string }>(
-	schema: { safeParse: (input: unknown) => { success: true; data: T } | { success: false; error: { errors: { message: string }[] } } },
-	input: unknown,
+	schema: {
+		safeParse: (
+			input: unknown
+		) => { success: true; data: T } | { success: false; error: { errors: { message: string }[] } };
+	},
+	input: unknown
 ): T {
 	const result = schema.safeParse(input);
 	if (!result.success) {
@@ -49,7 +53,7 @@ function pickTranslation(note: repo.RawReleaseNote, language: GraphqlLanguage) {
 function serializeReleaseNote(
 	note: repo.RawReleaseNote,
 	language: GraphqlLanguage,
-	options: { includeAllTranslations?: boolean } = {},
+	options: { includeAllTranslations?: boolean } = {}
 ) {
 	const translation = pickTranslation(note, language);
 

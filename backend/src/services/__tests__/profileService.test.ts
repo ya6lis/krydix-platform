@@ -46,7 +46,7 @@ describe('updateProfile', () => {
 	it('throws when profile missing', async () => {
 		(profileRepo.findProfileByUserId as jest.Mock).mockResolvedValue(null);
 		await expect(
-			service.updateProfile('user-1', { firstName: 'Jane', lastName: 'Brady' }),
+			service.updateProfile('user-1', { firstName: 'Jane', lastName: 'Brady' })
 		).rejects.toThrow('Profile not found');
 	});
 });

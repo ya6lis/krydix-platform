@@ -57,7 +57,7 @@ export default function AdminReleaseNotesPage() {
 			search: search.trim() || undefined,
 			status: statusFilter === 'ALL' ? undefined : (statusFilter as ReleaseNoteStatus),
 		}),
-		[page, search, statusFilter],
+		[page, search, statusFilter]
 	);
 
 	const { data, loading, refetch } = useQuery<AdminReleaseNotesData, AdminReleaseNotesVars>(
@@ -65,7 +65,7 @@ export default function AdminReleaseNotesPage() {
 		{
 			variables: { input: queryInput },
 			fetchPolicy: 'cache-and-network',
-		},
+		}
 	);
 
 	const [deleteReleaseNote, { loading: deleting }] = useMutation(DELETE_RELEASE_NOTE_MUTATION, {
@@ -74,7 +74,8 @@ export default function AdminReleaseNotesPage() {
 			setDeleteTarget(null);
 			refetch();
 		},
-		onError: (error) => showToast(error.message || t('adminReleaseNotes.toast.deleteError'), 'error'),
+		onError: (error) =>
+			showToast(error.message || t('adminReleaseNotes.toast.deleteError'), 'error'),
 	});
 
 	const items = data?.adminReleaseNotes.items ?? [];
@@ -146,9 +147,19 @@ export default function AdminReleaseNotesPage() {
 
 	return (
 		<Box>
-			<Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 2, mb: 3 }}>
+			<Box
+				sx={{
+					display: 'flex',
+					justifyContent: 'space-between',
+					alignItems: 'flex-start',
+					gap: 2,
+					mb: 3,
+				}}
+			>
 				<Box>
-					<Typography sx={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.03em', color: tokens.ink1 }}>
+					<Typography
+						sx={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.03em', color: tokens.ink1 }}
+					>
 						{t('adminReleaseNotes.pageTitle')}
 					</Typography>
 					<Typography sx={{ mt: 0.75, fontSize: 14.5, color: tokens.ink3, maxWidth: 640 }}>

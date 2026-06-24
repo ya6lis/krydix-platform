@@ -47,7 +47,7 @@ export function formatGraphQLError(
 	}
 
 	logger.error(
-		{ err: error instanceof GraphQLError ? error.originalError ?? error : error, message },
+		{ err: error instanceof GraphQLError ? (error.originalError ?? error) : error, message },
 		'Sanitized internal error for client'
 	);
 

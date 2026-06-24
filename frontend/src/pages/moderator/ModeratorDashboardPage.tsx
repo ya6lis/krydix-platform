@@ -59,7 +59,7 @@ export default function ModeratorDashboardPage() {
 	const { data: auditData } = useQuery(MY_AUDIT_LOGS_QUERY, { variables: { limit: 5 } });
 	const { data: notifData } = useQuery<{ myNotifications: AppNotification[] }>(
 		MY_NOTIFICATIONS_QUERY,
-		{ variables: { limit: 5 } },
+		{ variables: { limit: 5 } }
 	);
 	const { data: unreadNotifData } = useQuery(UNREAD_NOTIFICATION_COUNT_QUERY);
 	const { data: unreadMsgData } = useQuery(UNREAD_MESSAGE_COUNT_QUERY);
@@ -253,8 +253,7 @@ export default function ModeratorDashboardPage() {
 								{notifications.map((notification) => {
 									const display = notificationDisplayText(notification, t);
 									const href =
-										notificationRoute(notification, Role.MODERATOR) ??
-										ROUTES.NOTIFICATIONS;
+										notificationRoute(notification, Role.MODERATOR) ?? ROUTES.NOTIFICATIONS;
 									return (
 										<Link
 											key={notification.id}

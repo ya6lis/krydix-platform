@@ -14,7 +14,9 @@ const t = (key: string, opts?: Record<string, unknown>) => {
 	return key;
 };
 
-function mockNotification(overrides: Partial<AppNotification> & Pick<AppNotification, 'body'>): AppNotification {
+function mockNotification(
+	overrides: Partial<AppNotification> & Pick<AppNotification, 'body'>
+): AppNotification {
 	return {
 		id: 'notif-1',
 		event: NotificationEvent.ORDER_STATUS_CHANGE,

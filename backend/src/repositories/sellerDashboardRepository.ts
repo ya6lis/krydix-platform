@@ -84,10 +84,7 @@ export async function getRevenueSeriesMonth(
 	`;
 }
 
-export async function getTopProductRows(
-	sellerId: string,
-	limit: number
-): Promise<TopProductRow[]> {
+export async function getTopProductRows(sellerId: string, limit: number): Promise<TopProductRow[]> {
 	return prisma.$queryRaw<TopProductRow[]>`
 		SELECT "productId", SUM("totalPrice")::text AS revenue, COUNT(*)::bigint AS "orderCount"
 		FROM "OrderItem"

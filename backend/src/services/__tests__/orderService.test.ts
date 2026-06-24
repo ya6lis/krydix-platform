@@ -485,7 +485,10 @@ describe('shipSellerOrder', () => {
 		});
 
 		mockRepo.findOrderByIdAndSeller.mockResolvedValueOnce(order as never);
-		mockRepo.updateDeliveryShipment.mockResolvedValue({ ...order, status: OrderStatus.SHIPPED } as never);
+		mockRepo.updateDeliveryShipment.mockResolvedValue({
+			...order,
+			status: OrderStatus.SHIPPED,
+		} as never);
 		mockRepo.findOrderByIdAndSeller.mockResolvedValueOnce(shipped as never);
 
 		const result = await orderService.shipSellerOrder(ORDER_ID, SELLER_ID, 'TTN123');

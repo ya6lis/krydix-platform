@@ -169,7 +169,9 @@ export function ModerationReviewCard({
 				{review.photos.length > 0 && (
 					<>
 						<Box sx={{ width: 3, height: 3, borderRadius: '50%', bgcolor: tokens.ink3 }} />
-						<span>{t('reviewModeration.card.photosAttached', { count: review.photos.length })}</span>
+						<span>
+							{t('reviewModeration.card.photosAttached', { count: review.photos.length })}
+						</span>
 					</>
 				)}
 				{review.isFlagged && review.flagReason && (

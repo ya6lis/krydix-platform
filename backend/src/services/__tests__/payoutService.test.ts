@@ -10,10 +10,7 @@ import * as payoutRepo from '../../repositories/payoutRepository.js';
 import * as platformRepo from '../../repositories/platformRepository.js';
 import * as orderRepo from '../../repositories/orderRepository.js';
 import * as auditLog from '../auditLogService.js';
-import {
-	getSellerFinanceSummary,
-	withdrawSellerPayouts,
-} from '../payoutService.js';
+import { getSellerFinanceSummary, withdrawSellerPayouts } from '../payoutService.js';
 
 const sumPayoutAmountsBySeller = payoutRepo.sumPayoutAmountsBySeller as jest.MockedFunction<
 	typeof payoutRepo.sumPayoutAmountsBySeller

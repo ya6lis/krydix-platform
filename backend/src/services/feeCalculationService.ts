@@ -81,9 +81,7 @@ export function computeLineFeeSnapshot(
 	};
 }
 
-export async function buildFeeSnapshots(
-	items: FeeSnapshotInput[]
-): Promise<FeeSnapshot[]> {
+export async function buildFeeSnapshots(items: FeeSnapshotInput[]): Promise<FeeSnapshot[]> {
 	const [config, rules] = await Promise.all([
 		platformRepo.getPlatformConfig(),
 		platformRepo.findCommissionRules(),

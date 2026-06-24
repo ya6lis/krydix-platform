@@ -55,7 +55,7 @@ describe('closeAccount', () => {
 				actorId: 'user-1',
 				targetId: 'user-1',
 				metadata: expect.objectContaining({ action: 'SELF_CLOSE' }),
-			}),
+			})
 		);
 	});
 

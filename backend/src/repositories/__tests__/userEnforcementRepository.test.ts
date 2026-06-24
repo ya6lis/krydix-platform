@@ -35,7 +35,7 @@ describe('applySoftBanEffects', () => {
 					update: jest.fn().mockResolvedValue({}),
 				},
 				paymentRecord: { updateMany: jest.fn() },
-			}),
+			})
 		);
 
 		const result = await applySoftBanEffects('seller-1');
@@ -66,7 +66,7 @@ describe('applySoftDeleteEffects', () => {
 					update: jest.fn().mockResolvedValue({}),
 				},
 				paymentRecord: { updateMany: jest.fn().mockResolvedValue({ count: 1 }) },
-			}),
+			})
 		);
 
 		const result = await applySoftDeleteEffects('seller-1');

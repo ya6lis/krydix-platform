@@ -13,7 +13,9 @@ export interface CreateNotificationInput {
 
 const ORDER_EVENTS: NotificationEvent[] = ['NEW_ORDER', 'ORDER_STATUS_CHANGE'];
 
-export async function createNotification(input: CreateNotificationInput): Promise<NotificationRecord> {
+export async function createNotification(
+	input: CreateNotificationInput
+): Promise<NotificationRecord> {
 	return prisma.notification.create({
 		data: {
 			userId: input.userId,
@@ -27,7 +29,7 @@ export async function createNotification(input: CreateNotificationInput): Promis
 
 export async function findNotificationsByUserId(
 	userId: string,
-	limit = 30,
+	limit = 30
 ): Promise<NotificationRecord[]> {
 	return prisma.notification.findMany({
 		where: { userId },
@@ -86,7 +88,7 @@ export async function markOrderNotificationsRead(userId: string, orderId: string
 
 export async function markConversationNotificationsRead(
 	userId: string,
-	conversationId: string,
+	conversationId: string
 ): Promise<number> {
 	const result = await prisma.notification.updateMany({
 		where: {
@@ -116,7 +118,7 @@ export async function markConversationNotificationsRead(
 
 export async function isNotificationEnabled(
 	userId: string,
-	event: NotificationEvent,
+	event: NotificationEvent
 ): Promise<boolean> {
 	const pref = await prisma.notificationPreference.findUnique({
 		where: { userId_event: { userId, event } },

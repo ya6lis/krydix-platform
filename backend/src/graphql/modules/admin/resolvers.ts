@@ -47,7 +47,7 @@ export const adminResolvers = {
 					pageSize?: number;
 				};
 			},
-			ctx: GraphQLContext,
+			ctx: GraphQLContext
 		) => {
 			requireStaff(ctx);
 			return service.getAllUsers({
@@ -77,7 +77,7 @@ export const adminResolvers = {
 					pageSize?: number;
 				};
 			},
-			ctx: GraphQLContext,
+			ctx: GraphQLContext
 		) => {
 			requireStaff(ctx);
 			return productService.getAllProducts({
@@ -107,7 +107,7 @@ export const adminResolvers = {
 					pageSize?: number;
 				};
 			},
-			ctx: GraphQLContext,
+			ctx: GraphQLContext
 		) => {
 			requireStaff(ctx);
 			return reviewService.getAllReviews({
@@ -134,7 +134,7 @@ export const adminResolvers = {
 					pageSize?: number;
 				};
 			},
-			ctx: GraphQLContext,
+			ctx: GraphQLContext
 		) => {
 			requireAdmin(ctx);
 			return auditService.getAuditLogs({
@@ -183,7 +183,7 @@ export const adminResolvers = {
 		changeUserRole: async (
 			_: unknown,
 			{ id, role }: { id: string; role: string },
-			ctx: GraphQLContext,
+			ctx: GraphQLContext
 		) => {
 			const user = requireAdmin(ctx);
 			return service.changeUserRole(user.id, user.role as Role, id, role as Role);
@@ -197,7 +197,7 @@ export const adminResolvers = {
 		softBanUser: async (
 			_: unknown,
 			{ id, reason }: { id: string; reason?: string },
-			ctx: GraphQLContext,
+			ctx: GraphQLContext
 		) => {
 			const user = requireStaff(ctx);
 			return service.softBanUser(user.id, user.role as Role, id, reason);
@@ -211,7 +211,7 @@ export const adminResolvers = {
 		inviteUser: async (
 			_: unknown,
 			{ input }: { input: { email: string; firstName: string; lastName: string; role: string } },
-			ctx: GraphQLContext,
+			ctx: GraphQLContext
 		) => {
 			const user = requireAdmin(ctx);
 			return service.inviteUser(user.id, user.role as Role, {
@@ -223,14 +223,14 @@ export const adminResolvers = {
 		changeAdminProductStatus: async (
 			_: unknown,
 			{ id, status }: { id: string; status: string },
-			ctx: GraphQLContext,
+			ctx: GraphQLContext
 		) => {
 			const user = requireStaff(ctx);
 			return productService.changeAdminProductStatus(
 				user.id,
 				user.role as Role,
 				id,
-				status as never,
+				status as never
 			);
 		},
 
@@ -242,15 +242,10 @@ export const adminResolvers = {
 		changeAdminReviewStatus: async (
 			_: unknown,
 			{ id, status }: { id: string; status: string },
-			ctx: GraphQLContext,
+			ctx: GraphQLContext
 		) => {
 			const user = requireStaff(ctx);
-			return reviewService.changeAdminReviewStatus(
-				user.id,
-				user.role as Role,
-				id,
-				status as never,
-			);
+			return reviewService.changeAdminReviewStatus(user.id, user.role as Role, id, status as never);
 		},
 
 		adminDeleteReview: async (_: unknown, { id }: { id: string }, ctx: GraphQLContext) => {
@@ -261,7 +256,7 @@ export const adminResolvers = {
 		saveCommissionRules: async (
 			_: unknown,
 			{ rules }: { rules: Array<Record<string, unknown>> },
-			ctx: GraphQLContext,
+			ctx: GraphQLContext
 		) => {
 			const user = requireAdmin(ctx);
 			return platformService.saveCommissionRules(user.id, rules as never);
@@ -270,7 +265,7 @@ export const adminResolvers = {
 		savePayoutConfig: async (
 			_: unknown,
 			{ input }: { input: Record<string, unknown> },
-			ctx: GraphQLContext,
+			ctx: GraphQLContext
 		) => {
 			const user = requireAdmin(ctx);
 			return platformService.savePayoutConfig(user.id, input as never);
@@ -279,7 +274,7 @@ export const adminResolvers = {
 		createAdminPromoCode: async (
 			_: unknown,
 			{ input }: { input: Record<string, unknown> },
-			ctx: GraphQLContext,
+			ctx: GraphQLContext
 		) => {
 			const user = requireAdmin(ctx);
 			return platformService.createAdminPromoCode(user.id, input as never);
@@ -288,7 +283,7 @@ export const adminResolvers = {
 		updateAdminPromoCode: async (
 			_: unknown,
 			{ id, input }: { id: string; input: Record<string, unknown> },
-			ctx: GraphQLContext,
+			ctx: GraphQLContext
 		) => {
 			const user = requireAdmin(ctx);
 			return platformService.updateAdminPromoCode(user.id, id, input as never);

@@ -47,7 +47,7 @@ describe('changeAdminProductStatus', () => {
 			'admin-1',
 			Role.ADMIN,
 			'prod-1',
-			'BLOCKED',
+			'BLOCKED'
 		);
 
 		expect(result.status).toBe('BLOCKED');
@@ -65,7 +65,7 @@ describe('changeAdminProductStatus', () => {
 			'mod-1',
 			Role.MODERATOR,
 			'prod-1',
-			'BLOCKED',
+			'BLOCKED'
 		);
 
 		expect(result.status).toBe('BLOCKED');
@@ -84,7 +84,7 @@ describe('adminDeleteProduct', () => {
 
 	it('blocks moderator from deleting product', async () => {
 		await expect(
-			service.adminDeleteProduct('mod-1', Role.MODERATOR, 'prod-1'),
+			service.adminDeleteProduct('mod-1', Role.MODERATOR, 'prod-1')
 		).rejects.toMatchObject({ extensions: { code: 'FORBIDDEN' } });
 	});
 });

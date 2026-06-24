@@ -17,7 +17,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Icons } from '@/constants/icons';
 import { tokens } from '@/theme';
 import { ROUTES } from '@/constants/routes';
-import { AppButton, AppTable, EmptyState, SegmentedControl, StatCard, AppImage, StatusBadge } from '@/components/ui';
+import {
+	AppButton,
+	AppTable,
+	EmptyState,
+	SegmentedControl,
+	StatCard,
+	AppImage,
+	StatusBadge,
+} from '@/components/ui';
 import {
 	DashboardWelcomeHeader,
 	DashboardAlertBanner,
@@ -893,7 +901,9 @@ export default function SellerDashboardPage() {
 		SELLER_LOW_STOCK_ALERTS_QUERY,
 		{ variables: { threshold: 5 }, fetchPolicy: 'cache-and-network' }
 	);
-	const { data: summaryData } = useQuery<SellerDashboardSummaryData>(SELLER_DASHBOARD_SUMMARY_QUERY);
+	const { data: summaryData } = useQuery<SellerDashboardSummaryData>(
+		SELLER_DASHBOARD_SUMMARY_QUERY
+	);
 	const { data: recentOrdersData, loading: recentOrdersLoading } = useQuery<{
 		mySellerOrders: { items: SellerRecentOrder[] };
 	}>(MY_SELLER_ORDERS_QUERY, {
@@ -1097,10 +1107,7 @@ export default function SellerDashboardPage() {
 												{order.sellerSubtotal.toFixed(2)}
 											</Typography>
 										</Box>
-										<StatusBadge
-											status={order.status}
-											label={t(`status.order.${order.status}`)}
-										/>
+										<StatusBadge status={order.status} label={t(`status.order.${order.status}`)} />
 										<AppButton
 											variant="outlined"
 											size="small"

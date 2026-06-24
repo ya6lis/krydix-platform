@@ -393,7 +393,10 @@ export async function getMySellerOrders(
 	};
 }
 
-export async function getMySellerOrder(orderId: string, sellerId: string): Promise<SellerOrderView> {
+export async function getMySellerOrder(
+	orderId: string,
+	sellerId: string
+): Promise<SellerOrderView> {
 	const order = await findOrderByIdAndSeller(orderId, sellerId);
 
 	if (!order) {
@@ -428,7 +431,10 @@ export async function shipSellerOrder(
 	return finishSellerMutation(orderId, sellerId, beforeStatus);
 }
 
-export async function confirmSellerOrder(orderId: string, sellerId: string): Promise<SellerOrderView> {
+export async function confirmSellerOrder(
+	orderId: string,
+	sellerId: string
+): Promise<SellerOrderView> {
 	const order = await requireSellerOrder(orderId, sellerId);
 
 	if (order.status !== OrderStatus.PENDING) {

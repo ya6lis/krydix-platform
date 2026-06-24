@@ -10,7 +10,9 @@ const COMMISSION_INCLUDE = {
 	},
 } as const;
 
-export type RawCommissionRule = Prisma.CommissionRuleGetPayload<{ include: typeof COMMISSION_INCLUDE }>;
+export type RawCommissionRule = Prisma.CommissionRuleGetPayload<{
+	include: typeof COMMISSION_INCLUDE;
+}>;
 
 export async function getPlatformConfig() {
 	return prisma.platformConfig.upsert({
@@ -55,7 +57,7 @@ export async function upsertCommissionRules(
 		fixedFee: number;
 		currency: string;
 		isDefault?: boolean;
-	}>,
+	}>
 ) {
 	return prisma.$transaction(async (tx) => {
 		const existing = await tx.commissionRule.findMany();
@@ -70,7 +72,7 @@ export async function upsertCommissionRules(
 		const saved: RawCommissionRule[] = [];
 		for (const rule of rules) {
 			const data = {
-				categoryId: rule.isDefault ? null : rule.categoryId ?? null,
+				categoryId: rule.isDefault ? null : (rule.categoryId ?? null),
 				percent: rule.percent,
 				fixedFee: rule.fixedFee,
 				currency: rule.currency,

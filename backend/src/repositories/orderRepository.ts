@@ -109,7 +109,8 @@ export async function createOrder(input: CreateOrderInput): Promise<OrderRecord>
 						sellerFeeAmountSnapshot: item.feeSnapshot?.sellerFeeAmount ?? 0,
 						platformFeePercentSnapshot: item.feeSnapshot?.platformFeePercent ?? 0,
 						platformFeeAmountSnapshot: item.feeSnapshot?.platformFeeAmount ?? 0,
-						sellerPayoutAmountSnapshot: item.feeSnapshot?.sellerPayoutAmount ?? item.unitPrice * item.quantity,
+						sellerPayoutAmountSnapshot:
+							item.feeSnapshot?.sellerPayoutAmount ?? item.unitPrice * item.quantity,
 					})),
 				},
 			},

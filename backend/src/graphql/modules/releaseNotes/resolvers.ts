@@ -24,12 +24,12 @@ export const releaseNotesResolvers = {
 
 		publishedReleaseNotes: async (
 			_: unknown,
-			{ language, limit }: { language: 'EN' | 'UK'; limit?: number | null },
+			{ language, limit }: { language: 'EN' | 'UK'; limit?: number | null }
 		) => releaseNoteService.getPublishedReleaseNotes(language, limit ?? 10),
 
 		unseenReleaseNotesCount: async (
 			_: unknown,
-			{ sincePublishedAt }: { sincePublishedAt?: string | null },
+			{ sincePublishedAt }: { sincePublishedAt?: string | null }
 		) => releaseNoteService.getUnseenReleaseNotesCount(sincePublishedAt),
 
 		adminReleaseNotes: async (_: unknown, { input }: { input?: unknown }, ctx: GraphQLContext) => {

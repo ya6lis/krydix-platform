@@ -7,7 +7,11 @@ import {
 	ORDERS_SHEET,
 	ORDER_ITEMS_SHEET,
 } from '../constants/importExport.js';
-import { buildExportFileName, buildXlsxFile, type SpreadsheetFile } from '../utils/spreadsheetFile.js';
+import {
+	buildExportFileName,
+	buildXlsxFile,
+	type SpreadsheetFile,
+} from '../utils/spreadsheetFile.js';
 import { findOrdersBySeller } from '../repositories/orderRepository.js';
 import { mapToSellerOrderView } from './orderService.js';
 
@@ -26,7 +30,7 @@ function toNumber(value: unknown): number {
 
 export async function exportSellerOrders(
 	sellerId: string,
-	filter?: { status?: OrderStatus; search?: string },
+	filter?: { status?: OrderStatus; search?: string }
 ): Promise<SpreadsheetFile> {
 	const orderRows: Record<string, unknown>[] = [];
 	const orderItemRows: Record<string, unknown>[] = [];
@@ -80,15 +84,11 @@ export function getOrderImportTemplate(): SpreadsheetFile {
 	return buildXlsxFile('orders_import_template.xlsx', [
 		{
 			name: ORDERS_SHEET,
-			rows: [
-				Object.fromEntries(ORDER_TEMPLATE_COLUMNS.map((col) => [col, ''])),
-			],
+			rows: [Object.fromEntries(ORDER_TEMPLATE_COLUMNS.map((col) => [col, '']))],
 		},
 		{
 			name: ORDER_ITEMS_SHEET,
-			rows: [
-				Object.fromEntries(ORDER_ITEM_TEMPLATE_COLUMNS.map((col) => [col, ''])),
-			],
+			rows: [Object.fromEntries(ORDER_ITEM_TEMPLATE_COLUMNS.map((col) => [col, '']))],
 		},
 	]);
 }

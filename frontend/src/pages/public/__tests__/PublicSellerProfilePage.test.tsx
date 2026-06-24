@@ -11,8 +11,7 @@ import {
 
 jest.mock('react-i18next', () => ({
 	useTranslation: () => ({
-		t: (key: string, opts?: Record<string, unknown>) =>
-			opts?.name ? `${key}:${opts.name}` : key,
+		t: (key: string, opts?: Record<string, unknown>) => (opts?.name ? `${key}:${opts.name}` : key),
 		i18n: { language: 'en' },
 	}),
 }));
@@ -116,7 +115,7 @@ function renderPage() {
 					<Route path="/sellers/:id" element={<PublicSellerProfilePage />} />
 				</Routes>
 			</MemoryRouter>
-		</MockedProvider>,
+		</MockedProvider>
 	);
 }
 

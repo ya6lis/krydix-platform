@@ -63,10 +63,12 @@ export function SupportChatThread({ conversation, onConversationUpdated }: Suppo
 	const handleSocketMessage = useCallback(
 		(message: ChatMessage) => {
 			if (message.conversationId !== conversation.id) return;
-			setMessages((prev) => (prev.some((item) => item.id === message.id) ? prev : [...prev, message]));
+			setMessages((prev) =>
+				prev.some((item) => item.id === message.id) ? prev : [...prev, message]
+			);
 			onConversationUpdated?.();
 		},
-		[conversation.id, onConversationUpdated],
+		[conversation.id, onConversationUpdated]
 	);
 
 	useChatSocket({
@@ -115,9 +117,7 @@ export function SupportChatThread({ conversation, onConversationUpdated }: Suppo
 				)}
 				<div className={styles.headInfo}>
 					<div className={styles.headName}>
-						{staffParticipant
-							? staffParticipant.displayName
-							: t('support.chat.waitingForTeam')}
+						{staffParticipant ? staffParticipant.displayName : t('support.chat.waitingForTeam')}
 					</div>
 					<div className={styles.headSub}>
 						{staffParticipant
@@ -151,7 +151,9 @@ export function SupportChatThread({ conversation, onConversationUpdated }: Suppo
 									key={message.id}
 									className={`${styles.messageRow} ${isMine ? styles.messageRowMine : ''}`}
 								>
-									{!isMine ? <Avatar participant={message.sender} className={styles.messageAvatar} /> : null}
+									{!isMine ? (
+										<Avatar participant={message.sender} className={styles.messageAvatar} />
+									) : null}
 									<div className={styles.messageStack}>
 										<div
 											className={`${styles.messageBubble} ${isMine ? styles.messageBubbleMine : styles.messageBubbleOther}`}
@@ -177,7 +179,10 @@ export function SupportChatThread({ conversation, onConversationUpdated }: Suppo
 						onKeyDown={handleKeyDown}
 						placeholder={t('support.composer.placeholder')}
 						rows={1}
-						disabled={conversation.supportMeta?.status === 'RESOLVED' || conversation.supportMeta?.status === 'CLOSED'}
+						disabled={
+							conversation.supportMeta?.status === 'RESOLVED' ||
+							conversation.supportMeta?.status === 'CLOSED'
+						}
 					/>
 					<div className={styles.composerHint}>{t('support.composer.hint')}</div>
 				</div>

@@ -43,7 +43,7 @@ describe('AppToast', () => {
 		render(
 			<AppToastProvider>
 				<ToastTrigger message="Saved!" />
-			</AppToastProvider>,
+			</AppToastProvider>
 		);
 
 		await act(async () => {
@@ -61,7 +61,7 @@ describe('AppToast', () => {
 		render(
 			<AppToastProvider>
 				<OpenableToastTrigger onOpen={onOpen} />
-			</AppToastProvider>,
+			</AppToastProvider>
 		);
 
 		await act(async () => {

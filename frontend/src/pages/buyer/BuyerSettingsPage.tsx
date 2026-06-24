@@ -7,7 +7,10 @@ import { useMutation } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AppInput, AppButton, AppModal, useAppToast } from '@/components/ui';
-import { AccountSettingsNav, type AccountSettingsSection } from '@/components/account/AccountSettingsNav';
+import {
+	AccountSettingsNav,
+	type AccountSettingsSection,
+} from '@/components/account/AccountSettingsNav';
 import { ProfileEditSection } from '@/components/account/ProfileEditSection';
 import { CLOSE_ACCOUNT_MUTATION } from '@/graphql/operations/profile';
 import { useAuth } from '@/hooks/useAuth';
@@ -269,7 +272,11 @@ export default function BuyerSettingsPage() {
 				maxWidth="xs"
 				footer={
 					<>
-						<AppButton variant="outlined" onClick={handleCloseDialogDismiss} disabled={closingAccount}>
+						<AppButton
+							variant="outlined"
+							onClick={handleCloseDialogDismiss}
+							disabled={closingAccount}
+						>
 							{t('confirmDialog.cancel')}
 						</AppButton>
 						<AppButton

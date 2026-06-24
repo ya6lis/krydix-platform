@@ -37,12 +37,7 @@ const LEVEL_STYLES: Record<number, { bg: string; color: string }> = {
 	4: { bg: tokens.surface2, color: tokens.ink3 },
 };
 
-export function CategoryIcon({
-	icon,
-	fallbackName,
-	size = 'sm',
-	level = 1,
-}: CategoryIconProps) {
+export function CategoryIcon({ icon, fallbackName, size = 'sm', level = 1 }: CategoryIconProps) {
 	const faIcon = resolveIcon(icon);
 	const dimension = size === 'sm' ? 22 : 28;
 	const fontSize = size === 'sm' ? 11 : 13;

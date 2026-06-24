@@ -296,10 +296,7 @@ export async function deleteConversation(chatId: string): Promise<void> {
 	await prisma.chat.delete({ where: { id: chatId } });
 }
 
-export async function countUnreadByConversation(
-	chatId: string,
-	userId: string
-): Promise<number> {
+export async function countUnreadByConversation(chatId: string, userId: string): Promise<number> {
 	return prisma.chatMessage.count({
 		where: {
 			chatId,

@@ -43,7 +43,16 @@ const productFixture = {
 		totalStock: 31,
 		createdAt: '2026-01-01T00:00:00Z',
 		media: [],
-		variants: [{ id: 'v1', sku: 'NA-HFJ-OLV-M', options: { size: 'M' }, price: 184, stock: 18, isActive: true }],
+		variants: [
+			{
+				id: 'v1',
+				sku: 'NA-HFJ-OLV-M',
+				options: { size: 'M' },
+				price: 184,
+				stock: 18,
+				isActive: true,
+			},
+		],
 		categories: [{ id: 'c1', slug: 'jackets', name: 'Jackets' }],
 		seller: { id: 'seller-2', name: 'Northern Atelier' },
 	},
@@ -64,13 +73,17 @@ function stubGraphQL(overrides: Record<string, object> = {}) {
 		} else if (op === 'Product') {
 			req.reply({ data: overrides['Product'] ?? productFixture });
 		} else if (op === 'ProductReviews') {
-			req.reply({ data: overrides['ProductReviews'] ?? { productReviews: fixture.productReviews } });
+			req.reply({
+				data: overrides['ProductReviews'] ?? { productReviews: fixture.productReviews },
+			});
 		} else if (op === 'ReviewEligibility') {
 			req.reply({
 				data: overrides['ReviewEligibility'] ?? { reviewEligibility: fixture.reviewEligibility },
 			});
 		} else if (op === 'CreateProductReview') {
-			req.reply({ data: overrides['CreateProductReview'] ?? { createProductReview: fixture.createReview } });
+			req.reply({
+				data: overrides['CreateProductReview'] ?? { createProductReview: fixture.createReview },
+			});
 		} else {
 			req.continue();
 		}
@@ -166,7 +179,9 @@ describe('ProductPage — Reviews tab', () => {
 			else if (op === 'ProductReviews')
 				req.reply({ data: { productReviews: fixture.productReviews } });
 			else if (op === 'ReviewEligibility')
-				req.reply({ data: { reviewEligibility: { canWrite: false, orderId: null, existingReviewId: null } } });
+				req.reply({
+					data: { reviewEligibility: { canWrite: false, orderId: null, existingReviewId: null } },
+				});
 			else req.continue();
 		}).as('noEligibility');
 

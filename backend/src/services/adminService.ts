@@ -77,7 +77,12 @@ function assertAdminRole(actorRole: Role) {
 	}
 }
 
-function assertCanManageTarget(actorRole: Role, targetRole: Role, actorId: string, targetId: string) {
+function assertCanManageTarget(
+	actorRole: Role,
+	targetRole: Role,
+	actorId: string,
+	targetId: string
+) {
 	if (actorId === targetId) {
 		throw new GraphQLError('You cannot modify your own account', {
 			extensions: { code: 'BAD_USER_INPUT' },
@@ -121,7 +126,7 @@ export async function changeUserRole(
 	actorId: string,
 	actorRole: Role,
 	userId: string,
-	newRole: Role,
+	newRole: Role
 ) {
 	assertAdminRole(actorRole);
 
@@ -189,7 +194,7 @@ export async function softBanUser(
 	actorId: string,
 	actorRole: Role,
 	userId: string,
-	reason?: string,
+	reason?: string
 ) {
 	assertStaffRole(actorRole);
 
@@ -231,7 +236,7 @@ export async function softUnbanUser(actorId: string, actorRole: Role, userId: st
 export async function inviteUser(
 	actorId: string,
 	actorRole: Role,
-	input: { email: string; firstName: string; lastName: string; role: Role },
+	input: { email: string; firstName: string; lastName: string; role: Role }
 ) {
 	assertAdminRole(actorRole);
 

@@ -10,7 +10,11 @@ import { Role } from '@/constants/enums';
 import { CHAT_FILTER, type ChatFilter } from '@/constants/chatEvents';
 import { AppLoader, AppMenu, ConfirmDialog, AppImage, useAppToast } from '@/components/ui';
 import { useAuthStore } from '@/store/authStore';
-import { useChatSocket, type ConversationUpdatedPayload, type TypingPayload } from '@/hooks/useChatSocket';
+import {
+	useChatSocket,
+	type ConversationUpdatedPayload,
+	type TypingPayload,
+} from '@/hooks/useChatSocket';
 import {
 	CONVERSATION_QUERY,
 	DELETE_CONVERSATION_MUTATION,
@@ -46,7 +50,9 @@ import styles from './ChatPage.module.scss';
 const MESSAGE_PAGE_SIZE = 100;
 const TYPING_CLEAR_MS = 3000;
 
-function participantProfileRoute(participant: ConversationSummary['otherParticipant']): string | null {
+function participantProfileRoute(
+	participant: ConversationSummary['otherParticipant']
+): string | null {
 	if (!participant) return null;
 	if (participant.role === Role.SELLER) {
 		return ROUTES.SELLER_PUBLIC(participant.id);
@@ -57,7 +63,7 @@ function participantProfileRoute(participant: ConversationSummary['otherParticip
 function participantPresence(
 	participant: ConversationSummary['otherParticipant'],
 	t: (key: string, opts?: Record<string, unknown>) => string,
-	locale: string,
+	locale: string
 ) {
 	if (!participant) return '';
 	if (participant.isOnline) {
@@ -88,7 +94,10 @@ function MessageStatus({ isDelivered, isRead }: { isDelivered: boolean; isRead: 
 	);
 }
 
-function participantLabel(participant: ConversationSummary['otherParticipant'], t: (k: string) => string) {
+function participantLabel(
+	participant: ConversationSummary['otherParticipant'],
+	t: (k: string) => string
+) {
 	if (!participant) return '';
 	if (participant.role === Role.MODERATOR) {
 		return `${participant.displayName} · ${t('chat.roleModerator')}`;
@@ -101,7 +110,7 @@ function participantLabel(participant: ConversationSummary['otherParticipant'], 
 
 function conversationContext(
 	conversation: ConversationSummary | ConversationDetail,
-	t: (k: string, opts?: Record<string, unknown>) => string,
+	t: (k: string, opts?: Record<string, unknown>) => string
 ) {
 	if (conversation.product) {
 		return (
@@ -213,7 +222,8 @@ export default function ChatPage() {
 			if (!item.otherParticipant) return false;
 			if (filter === CHAT_FILTER.UNREAD && item.unreadCount === 0) return false;
 			if (filter === CHAT_FILTER.BUYERS && item.otherParticipant.role !== Role.BUYER) return false;
-			if (filter === CHAT_FILTER.MODS && item.otherParticipant.role !== Role.MODERATOR) return false;
+			if (filter === CHAT_FILTER.MODS && item.otherParticipant.role !== Role.MODERATOR)
+				return false;
 			if (!query) return true;
 			const haystack = [
 				item.otherParticipant.displayName,
@@ -224,7 +234,9 @@ export default function ChatPage() {
 				.toLowerCase();
 			return haystack.includes(query);
 		}) as Array<
-			ConversationSummary & { otherParticipant: NonNullable<ConversationSummary['otherParticipant']> }
+			ConversationSummary & {
+				otherParticipant: NonNullable<ConversationSummary['otherParticipant']>;
+			}
 		>;
 	}, [conversations, filter, search]);
 
@@ -233,28 +245,26 @@ export default function ChatPage() {
 	const filterCounts = useMemo(
 		() => ({
 			all: conversations.length,
-			buyers: conversations.filter(
-				(item) => item.otherParticipant?.role === Role.BUYER,
-			).length,
-			mods: conversations.filter(
-				(item) => item.otherParticipant?.role === Role.MODERATOR,
-			).length,
+			buyers: conversations.filter((item) => item.otherParticipant?.role === Role.BUYER).length,
+			mods: conversations.filter((item) => item.otherParticipant?.role === Role.MODERATOR).length,
 			unread: conversations.filter((item) => item.unreadCount > 0).length,
 		}),
-		[conversations],
+		[conversations]
 	);
 
 	const handleSocketMessage = useCallback(
 		(message: ChatMessage) => {
 			if (message.conversationId === selectedId) {
-				setMessages((prev) => (prev.some((item) => item.id === message.id) ? prev : [...prev, message]));
+				setMessages((prev) =>
+					prev.some((item) => item.id === message.id) ? prev : [...prev, message]
+				);
 			}
 			void refetchConversations();
 			if (message.senderId !== currentUser?.id) {
 				void apolloClient.refetchQueries({ include: [UNREAD_MESSAGE_COUNT_QUERY] });
 			}
 		},
-		[apolloClient, currentUser?.id, refetchConversations, selectedId],
+		[apolloClient, currentUser?.id, refetchConversations, selectedId]
 	);
 
 	const handleConversationUpdated = useCallback(
@@ -267,23 +277,23 @@ export default function ChatPage() {
 					prev.map((message) =>
 						message.senderId === currentUser?.id
 							? { ...message, isDelivered: true, isRead: true }
-							: message,
-					),
+							: message
+					)
 				);
 			} else if (payload.deliveredBy) {
 				setMessages((prev) =>
 					prev.map((message) =>
 						message.senderId === currentUser?.id && !message.isRead
 							? { ...message, isDelivered: true }
-							: message,
-					),
+							: message
+					)
 				);
 			} else {
 				void refetchConversation();
 				void refetchMessages();
 			}
 		},
-		[currentUser?.id, refetchConversations, refetchConversation, refetchMessages, selectedId],
+		[currentUser?.id, refetchConversations, refetchConversation, refetchMessages, selectedId]
 	);
 
 	const handleTyping = useCallback(
@@ -293,7 +303,7 @@ export default function ChatPage() {
 			window.clearTimeout(typingTimeoutRef.current);
 			typingTimeoutRef.current = window.setTimeout(() => setIsOtherTyping(false), TYPING_CLEAR_MS);
 		},
-		[currentUser?.id, selectedId],
+		[currentUser?.id, selectedId]
 	);
 
 	const { emitTyping } = useChatSocket({
@@ -387,7 +397,9 @@ export default function ChatPage() {
 		const { data } = await sendMessage({ variables: { conversationId: selectedId, content } });
 		const message = data?.sendMessage as ChatMessage | undefined;
 		if (message) {
-			setMessages((prev) => (prev.some((item) => item.id === message.id) ? prev : [...prev, message]));
+			setMessages((prev) =>
+				prev.some((item) => item.id === message.id) ? prev : [...prev, message]
+			);
 		}
 		void refetchConversations();
 		void refetchMessages();
@@ -417,10 +429,7 @@ export default function ChatPage() {
 		if (route) navigate(route);
 	};
 
-	const messageGroups = useMemo(
-		() => groupMessagesByDay(messages, locale),
-		[messages, locale],
-	);
+	const messageGroups = useMemo(() => groupMessagesByDay(messages, locale), [messages, locale]);
 
 	const filterOptions: Array<{ id: ChatFilter; label: string; count: number }> = [
 		{ id: CHAT_FILTER.ALL, label: t('chat.filters.all'), count: filterCounts.all },
@@ -494,7 +503,9 @@ export default function ChatPage() {
 										</span>
 									</div>
 									<div className={styles.convCtx}>{conversationContext(item, t)}</div>
-									<div className={styles.convPreview}>{item.lastMessage?.content ?? t('chat.noMessagesYet')}</div>
+									<div className={styles.convPreview}>
+										{item.lastMessage?.content ?? t('chat.noMessagesYet')}
+									</div>
 								</div>
 								{item.unreadCount > 0 ? (
 									<span className={styles.unreadBadge}>{item.unreadCount}</span>
@@ -517,9 +528,7 @@ export default function ChatPage() {
 									online={activeOther.isOnline}
 								/>
 								<div className={styles.convHeadInfo}>
-									<div className={styles.convHeadName}>
-										{activeOther.displayName}
-									</div>
+									<div className={styles.convHeadName}>{activeOther.displayName}</div>
 									<div className={styles.convHeadSub}>
 										<span className={activeOther.isOnline ? styles.onlineLabel : ''}>
 											{participantPresence(activeOther, t, locale)}
@@ -691,7 +700,8 @@ export default function ChatPage() {
 									{t(`chat.role.${activeOther.role.toLowerCase()}`, {
 										defaultValue: activeOther.role,
 									})}{' '}
-									· {t('chat.memberSince', {
+									·{' '}
+									{t('chat.memberSince', {
 										date: formatMemberSince(activeOther.memberSince, locale),
 									})}
 								</div>
@@ -704,17 +714,11 @@ export default function ChatPage() {
 										<span className={styles.kvKey}>{t('chat.email')}</span>
 										<span className={styles.kvValue}>{activeOther.email}</span>
 									</div>
-									{formatLocation(
-										activeOther.city,
-										activeOther.country,
-									) ? (
+									{formatLocation(activeOther.city, activeOther.country) ? (
 										<div className={styles.kvRow}>
 											<span className={styles.kvKey}>{t('chat.location')}</span>
 											<span className={styles.kvValue}>
-												{formatLocation(
-													activeOther.city,
-													activeOther.country,
-												)}
+												{formatLocation(activeOther.city, activeOther.country)}
 											</span>
 										</div>
 									) : null}

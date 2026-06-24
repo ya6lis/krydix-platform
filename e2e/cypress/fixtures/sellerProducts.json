@@ -144,9 +144,17 @@
 					"updatedAt": "2026-05-25T10:00:00.000Z",
 					"titleEn": "Heritage Jacket",
 					"titleUk": "Куртка Heritage",
-					"categories": [{ "id": "cat-3", "slug": "clothing", "nameEn": "Clothing", "nameUk": "Одяг" }],
+					"categories": [
+						{ "id": "cat-3", "slug": "clothing", "nameEn": "Clothing", "nameUk": "Одяг" }
+					],
 					"variants": [{ "id": "var-1", "stock": 15, "isActive": true }],
-					"media": [{ "id": "media-1", "url": "https://res.cloudinary.com/demo/image/upload/sample.jpg", "isMain": true }]
+					"media": [
+						{
+							"id": "media-1",
+							"url": "https://res.cloudinary.com/demo/image/upload/sample.jpg",
+							"isMain": true
+						}
+					]
 				},
 				{
 					"id": "prod-draft-1",

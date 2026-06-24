@@ -47,7 +47,7 @@ export const notificationsResolvers = {
 		markOrderNotificationsRead: async (
 			_: unknown,
 			{ orderId }: { orderId: string },
-			ctx: GraphQLContext,
+			ctx: GraphQLContext
 		) => {
 			const user = requireAuth(ctx);
 			return notificationService.markOrderNotificationsRead(user.id, orderId);
@@ -56,7 +56,7 @@ export const notificationsResolvers = {
 		markConversationNotificationsRead: async (
 			_: unknown,
 			{ conversationId }: { conversationId: string },
-			ctx: GraphQLContext,
+			ctx: GraphQLContext
 		) => {
 			const user = requireAuth(ctx);
 			return notificationService.markConversationNotificationsRead(user.id, conversationId);

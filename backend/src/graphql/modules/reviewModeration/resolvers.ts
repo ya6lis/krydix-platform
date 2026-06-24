@@ -41,7 +41,7 @@ export const reviewModerationResolvers = {
 					pageSize?: number;
 				};
 			},
-			ctx: GraphQLContext,
+			ctx: GraphQLContext
 		) => {
 			requireModerator(ctx);
 			return service.getModerationReviews({

@@ -1,5 +1,9 @@
 import { gql } from '@apollo/client';
-import type { AuditActionKeyValue, AuditActorRoleFilter, AuditDateRangePreset } from '@/constants/auditActionKeys';
+import type {
+	AuditActionKeyValue,
+	AuditActorRoleFilter,
+	AuditDateRangePreset,
+} from '@/constants/auditActionKeys';
 
 const AUDIT_LOG_FIELDS = `
 	id

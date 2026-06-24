@@ -96,7 +96,9 @@ function normalizeRow(raw: Record<string, unknown>): Record<string, unknown> {
 
 function parseBoolean(value: unknown): boolean | null {
 	if (typeof value === 'boolean') return value;
-	const text = String(value ?? '').trim().toLowerCase();
+	const text = String(value ?? '')
+		.trim()
+		.toLowerCase();
 	if (['true', '1', 'yes', 'y'].includes(text)) return true;
 	if (['false', '0', 'no', 'n'].includes(text)) return false;
 	return null;
@@ -126,16 +128,22 @@ function decodeDataUrl(dataUrl: string): Buffer {
 	return Buffer.from(base64Match[1], 'base64');
 }
 
-function readProductRows(dataUrl: string, _fileType: 'xlsx' | 'csv' = 'xlsx'): Record<string, unknown>[] {
+function readProductRows(
+	dataUrl: string,
+	_fileType: 'xlsx' | 'csv' = 'xlsx'
+): Record<string, unknown>[] {
 	const buffer = decodeDataUrl(dataUrl);
 	const workbook = xlsxRead(buffer, { type: 'buffer' });
-	const sheetName = workbook.SheetNames.find((name) => name === PRODUCT_SHEET) ?? workbook.SheetNames[0];
+	const sheetName =
+		workbook.SheetNames.find((name) => name === PRODUCT_SHEET) ?? workbook.SheetNames[0];
 	if (!sheetName) {
 		throw new GraphQLError('File has no sheets', { extensions: { code: 'BAD_USER_INPUT' } });
 	}
 
 	const sheet = workbook.Sheets[sheetName];
-	const rows = xlsxUtils.sheet_to_json<Record<string, unknown>>(sheet, { defval: '' }).map(normalizeRow);
+	const rows = xlsxUtils
+		.sheet_to_json<Record<string, unknown>>(sheet, { defval: '' })
+		.map(normalizeRow);
 
 	if (rows.length === 0) {
 		throw new GraphQLError('File is empty', { extensions: { code: 'BAD_USER_INPUT' } });
@@ -153,7 +161,7 @@ async function validateNormalizedRow(
 	row: Record<string, unknown>,
 	mode: ImportMode,
 	sellerId: string,
-	seenSkus: Set<string>,
+	seenSkus: Set<string>
 ): Promise<{ valid: boolean; errors: string[]; willCreate: boolean; willUpdate: boolean }> {
 	const errors: string[] = [];
 
@@ -177,7 +185,11 @@ async function validateNormalizedRow(
 	}
 
 	const quantity = Number(row.quantity);
-	if (row.quantity !== undefined && row.quantity !== '' && (Number.isNaN(quantity) || quantity < 0 || !Number.isInteger(quantity))) {
+	if (
+		row.quantity !== undefined &&
+		row.quantity !== '' &&
+		(Number.isNaN(quantity) || quantity < 0 || !Number.isInteger(quantity))
+	) {
 		errors.push('quantity must be a non-negative integer');
 	}
 
@@ -189,7 +201,9 @@ async function validateNormalizedRow(
 		}
 	}
 
-	const status = String(row.status ?? '').trim().toUpperCase();
+	const status = String(row.status ?? '')
+		.trim()
+		.toUpperCase();
 	if (status && !VALID_STATUSES.has(status)) {
 		errors.push(`Invalid status: ${status}`);
 	}
@@ -231,7 +245,7 @@ async function validateNormalizedRow(
 function mapPreviewRow(
 	row: Record<string, unknown>,
 	rowIndex: number,
-	validation: { valid: boolean; errors: string[]; willCreate: boolean; willUpdate: boolean },
+	validation: { valid: boolean; errors: string[]; willCreate: boolean; willUpdate: boolean }
 ): ImportPreviewRow {
 	const nameEn = String(row.name_en ?? '').trim();
 	const slug = slugify(nameEn || String(row.sku ?? ''));
@@ -248,7 +262,9 @@ function mapPreviewRow(
 		currency: String(row.currency ?? '').trim(),
 		quantity: Number(row.quantity) || 0,
 		category: String(row.category ?? '').trim(),
-		status: String(row.status ?? '').trim().toUpperCase(),
+		status: String(row.status ?? '')
+			.trim()
+			.toUpperCase(),
 		brand: String(row.brand ?? '').trim() || null,
 		images: String(row.images ?? '').trim(),
 		isActive: parseBoolean(row.isActive) ?? true,
@@ -269,7 +285,7 @@ export async function previewImport(
 	dataUrl: string,
 	fileType: 'xlsx' | 'csv' = 'xlsx',
 	mode: ImportMode = ImportMode.UPSERT,
-	sellerId?: string,
+	sellerId?: string
 ): Promise<ImportPreviewRow[]> {
 	const rows = readProductRows(dataUrl, fileType);
 	const seenSkus = new Set<string>();
@@ -320,7 +336,7 @@ export async function confirmImport(
 	sellerId: string,
 	rows: ImportRowInput[],
 	mode: ImportMode = ImportMode.UPSERT,
-	actorId?: string,
+	actorId?: string
 ): Promise<ImportResult> {
 	const result: ImportResult = { created: 0, updated: 0, failed: 0, skipped: 0, errors: [] };
 
@@ -415,10 +431,7 @@ export async function confirmImport(
 			const message = err instanceof Error ? err.message : 'Unknown error';
 			result.failed += 1;
 			result.errors.push({ rowIndex, error: message });
-			logger.error(
-				{ err, rowIndex, sku: row.sku, sellerId, actorId },
-				'Product import row failed',
-			);
+			logger.error({ err, rowIndex, sku: row.sku, sellerId, actorId }, 'Product import row failed');
 		}
 	}
 

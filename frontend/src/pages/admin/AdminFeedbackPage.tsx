@@ -101,9 +101,9 @@ export default function AdminFeedbackPage() {
 	const [page, setPage] = useState(0);
 	const [selectedFeedback, setSelectedFeedback] = useState<UserFeedbackItem | null>(null);
 
-	const { data: statsData, refetch: refetchStats } = useQuery<{ adminFeedbackStats: FeedbackStats }>(
-		ADMIN_FEEDBACK_STATS_QUERY,
-	);
+	const { data: statsData, refetch: refetchStats } = useQuery<{
+		adminFeedbackStats: FeedbackStats;
+	}>(ADMIN_FEEDBACK_STATS_QUERY);
 
 	const queryInput = useMemo(
 		() => ({
@@ -113,7 +113,7 @@ export default function AdminFeedbackPage() {
 			category: categoryFilter === 'ALL' ? undefined : (categoryFilter as FeedbackCategory),
 			status: activeTab === 'all' ? undefined : TAB_STATUS_MAP[activeTab],
 		}),
-		[activeTab, categoryFilter, page, search],
+		[activeTab, categoryFilter, page, search]
 	);
 
 	const { data, loading, refetch } = useQuery<AdminFeedbacksData, AdminFeedbacksVars>(
@@ -121,7 +121,7 @@ export default function AdminFeedbackPage() {
 		{
 			variables: { input: queryInput },
 			fetchPolicy: 'cache-and-network',
-		},
+		}
 	);
 
 	const stats = statsData?.adminFeedbackStats;
@@ -151,7 +151,7 @@ export default function AdminFeedbackPage() {
 				count: stats?.dismissedCount,
 			},
 		],
-		[stats, t],
+		[stats, t]
 	);
 
 	const columns: AppTableColumn<UserFeedbackItem>[] = [
@@ -209,7 +209,9 @@ export default function AdminFeedbackPage() {
 	return (
 		<Box sx={{ p: { xs: 2, md: 3 } }}>
 			<Box sx={{ mb: 3 }}>
-				<Typography sx={{ fontSize: 24, fontWeight: 800, color: tokens.ink1, letterSpacing: '-0.02em' }}>
+				<Typography
+					sx={{ fontSize: 24, fontWeight: 800, color: tokens.ink1, letterSpacing: '-0.02em' }}
+				>
 					{t('adminFeedback.pageTitle')}
 				</Typography>
 				<Typography sx={{ fontSize: 14, color: tokens.ink3, mt: 0.5 }}>

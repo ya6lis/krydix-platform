@@ -3,10 +3,7 @@ import { jest } from '@jest/globals';
 jest.mock('../../repositories/platformRepository.js');
 
 import * as platformRepo from '../../repositories/platformRepository.js';
-import {
-	buildFeeSnapshots,
-	computeLineFeeSnapshot,
-} from '../feeCalculationService.js';
+import { buildFeeSnapshots, computeLineFeeSnapshot } from '../feeCalculationService.js';
 
 const findCommissionRules = platformRepo.findCommissionRules as jest.MockedFunction<
 	typeof platformRepo.findCommissionRules

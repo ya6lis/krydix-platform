@@ -8,7 +8,7 @@ export interface SpreadsheetFile {
 
 export function buildXlsxFile(
 	fileName: string,
-	sheets: Array<{ name: string; rows: Record<string, unknown>[] }>,
+	sheets: Array<{ name: string; rows: Record<string, unknown>[] }>
 ): SpreadsheetFile {
 	const workbook = xlsxUtils.book_new();
 

@@ -40,12 +40,12 @@ describe('notificationService.notifyNewMessage', () => {
 			expect.objectContaining({
 				userId: 'seller-1',
 				event: 'NEW_MESSAGE',
-			}),
+			})
 		);
 		expect(mockEmit).toHaveBeenCalledWith(
 			'seller-1',
 			'notification:new',
-			expect.objectContaining({ unreadCount: 1 }),
+			expect.objectContaining({ unreadCount: 1 })
 		);
 	});
 });
@@ -79,7 +79,7 @@ describe('notificationService.notifySupportAssigned', () => {
 			expect.objectContaining({
 				userId: 'buyer-1',
 				event: 'SUPPORT_UPDATE',
-			}),
+			})
 		);
 	});
 });
