@@ -64,7 +64,7 @@ const VIEW_ICONS: Record<ViewMode, (typeof Icons)[keyof typeof Icons]> = {
 export default function CatalogPage() {
 	const { t, i18n } = useTranslation();
 	const language = i18n.language === 'uk' ? 'UK' : 'EN';
-	const { user, canUseSellerCabinet } = useAuth();
+	const { canUseSellerCabinet } = useAuth();
 	const showSellerActions = canUseSellerCabinet;
 	const [searchParams] = useSearchParams();
 	const searchQuery = searchParams.get(CATALOG_SEARCH_QUERY_PARAM) ?? '';

@@ -70,7 +70,7 @@ function getDepth(id: string, parentMap: Map<string, string | null>): number {
 function getSubtreeMaxDepth(
 	id: string,
 	categories: FlatCategory[],
-	parentMap: Map<string, string | null>
+	_parentMap: Map<string, string | null>
 ): number {
 	const childrenByParent = new Map<string | null, string[]>();
 	for (const cat of categories) {

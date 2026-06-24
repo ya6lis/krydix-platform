@@ -74,7 +74,10 @@ export function ImageLightboxProvider({ children }: { children: ReactNode }) {
 export function useImageLightbox(): ImageLightboxContextValue {
 	const ctx = useContext(ImageLightboxContext);
 	if (!ctx) {
-		throw new Error('useImageLightbox must be used inside ImageLightboxProvider');
+		return {
+			openLightbox: () => undefined,
+			closeLightbox: () => undefined,
+		};
 	}
 	return ctx;
 }

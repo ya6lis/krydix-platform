@@ -16,6 +16,7 @@ import { useAuthStore } from '@/store/authStore';
 import { ROUTES } from '@/constants/routes';
 import { getHomeRouteForRole } from '@/utils/roleAccess';
 import { tokens } from '@/theme';
+import type { AuthUser } from '@/store/authStore';
 import { getGraphQLErrorMessage } from '@/utils/graphqlError';
 
 const schema = z.object({

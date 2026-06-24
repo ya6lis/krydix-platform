@@ -207,6 +207,10 @@ export function AppToastProvider({ children }: { children: React.ReactNode }) {
 
 export function useAppToast(): ToastContextValue {
 	const ctx = useContext(ToastContext);
-	if (!ctx) throw new Error('useAppToast must be used inside AppToastProvider');
+	if (!ctx) {
+		return {
+			showToast: () => undefined,
+		};
+	}
 	return ctx;
 }

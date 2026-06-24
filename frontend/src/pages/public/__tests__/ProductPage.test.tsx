@@ -18,7 +18,7 @@ jest.mock('@fortawesome/react-fontawesome', () => ({
 }));
 
 jest.mock('@/hooks/useAuth', () => ({
-	useAuth: () => ({ isAuthenticated: false }),
+	useAuth: () => ({ isAuthenticated: false, canBuy: true, canUseWishlist: true }),
 }));
 
 jest.mock('@/hooks/useWishlist', () => ({

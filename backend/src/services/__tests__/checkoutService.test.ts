@@ -7,6 +7,23 @@ jest.mock('../../repositories/productRepository.js');
 jest.mock('../notificationService.js', () => ({
 	notifyNewOrder: jest.fn().mockResolvedValue(undefined),
 }));
+jest.mock('../feeCalculationService.js', () => ({
+	buildFeeSnapshots: jest.fn().mockResolvedValue([
+		{
+			currency: 'UAH',
+			buyerFeePercent: 0,
+			buyerFeeAmount: 0,
+			sellerFeePercent: 12,
+			sellerFeeAmount: 24.5,
+			platformFeePercent: 12,
+			platformFeeAmount: 24.5,
+			sellerPayoutAmount: 175.5,
+		},
+	]),
+}));
+jest.mock('../auditLogService.js', () => ({
+	log: jest.fn().mockResolvedValue(undefined),
+}));
 
 import * as cartRepo from '../../repositories/cartRepository.js';
 import * as orderRepo from '../../repositories/orderRepository.js';
@@ -235,6 +252,8 @@ describe('checkoutService.createOrder', () => {
 	it('creates order atomically — Order + items + PaymentRecord + DeliveryRecord', async () => {
 		mockCartRepo.findCartByUser.mockResolvedValue([makeCartItem()]);
 		mockOrderRepo.createOrder.mockResolvedValue(makeOrder());
+		mockOrderRepo.capturePaymentInEscrow.mockResolvedValue(makeOrder());
+		mockOrderRepo.findOrderById.mockResolvedValue(makeOrder());
 		mockCartRepo.clearCart.mockResolvedValue(undefined);
 
 		const result = await checkoutService.createOrder(
@@ -268,6 +287,8 @@ describe('checkoutService.createOrder', () => {
 			promoCodeId: 'promo-1',
 		} as unknown as orderRepo.OrderRecord;
 		mockOrderRepo.createOrder.mockResolvedValue(orderWithDiscount);
+		mockOrderRepo.capturePaymentInEscrow.mockResolvedValue(orderWithDiscount);
+		mockOrderRepo.findOrderById.mockResolvedValue(orderWithDiscount);
 		mockCartRepo.clearCart.mockResolvedValue(undefined);
 
 		const result = await checkoutService.createOrder(

@@ -43,6 +43,7 @@ const fakeUser = {
 
 beforeEach(() => {
 	jest.clearAllMocks();
+	mockUserRepo.updateUserLastSeenAt.mockResolvedValue(fakeUser);
 });
 
 describe('authService.register', () => {

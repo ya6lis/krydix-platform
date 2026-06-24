@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@apollo/client';
 import { Box, Grid, Stack, Typography, Link } from '@mui/material';

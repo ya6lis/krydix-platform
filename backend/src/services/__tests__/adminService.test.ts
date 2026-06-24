@@ -9,7 +9,6 @@ jest.mock('../../utils/hash.js');
 jest.mock('../../utils/email.js');
 
 import * as repo from '../../repositories/adminRepository.js';
-import * as userRepo from '../../repositories/userRepository.js';
 import * as auditLog from '../auditLogService.js';
 import * as userEnforcement from '../userEnforcementService.js';
 import * as service from '../adminService.js';

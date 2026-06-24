@@ -47,8 +47,6 @@ import type {
 	ModerationQueueVars,
 	ModerationFilterType,
 } from '@/graphql/operations/moderation';
-import { ROUTES } from '@/constants/routes';
-
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function formatRelativeTime(isoString: string): string {

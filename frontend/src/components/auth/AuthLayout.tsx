@@ -2,7 +2,6 @@ import { Box, Typography, Stack } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { tokens } from '@/theme';
-import { ROUTES } from '@/constants/routes';
 import { useRoleHomeRoute } from '@/hooks/useRoleHomeRoute';
 
 export interface AuthLayoutProps {

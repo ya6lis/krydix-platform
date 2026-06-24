@@ -14,7 +14,6 @@ import {
 import { ProfileEditSection } from '@/components/account/ProfileEditSection';
 import { CLOSE_ACCOUNT_MUTATION } from '@/graphql/operations/profile';
 import { useAuth } from '@/hooks/useAuth';
-import { ROUTES } from '@/constants/routes';
 import { getHomeRouteForRole } from '@/utils/roleAccess';
 import { tokens } from '@/theme';
 

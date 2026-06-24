@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { act } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, useNavigate } from 'react-router-dom';
 import AppNavbar from '../AppNavbar';
 import { useCartStore } from '@/store/cartStore';
 import {
@@ -19,7 +19,7 @@ jest.mock('react-i18next', () => ({
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),
-	useNavigate: () => jest.fn(),
+	useNavigate: jest.fn(),
 }));
 
 jest.mock('@fortawesome/react-fontawesome', () => ({
@@ -86,7 +86,7 @@ describe('AppNavbar', () => {
 
 	it('submits search and navigates to catalog with query', () => {
 		const navigate = jest.fn();
-		jest.spyOn(require('react-router-dom'), 'useNavigate').mockReturnValue(navigate);
+		jest.mocked(useNavigate).mockReturnValue(navigate);
 
 		renderNavbar();
 		fireEvent.change(screen.getByPlaceholderText('shell.search.placeholder'), {

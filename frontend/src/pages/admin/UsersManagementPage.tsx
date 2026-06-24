@@ -6,7 +6,6 @@ import { Box, IconButton, Menu, MenuItem, Stack, Typography } from '@mui/materia
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { Icons } from '@/constants/icons';
-import { ROUTES } from '@/constants/routes';
 import { tokens } from '@/theme';
 import { Role } from '@/constants/enums';
 import { useAuth } from '@/hooks/useAuth';

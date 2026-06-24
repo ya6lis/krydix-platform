@@ -74,11 +74,13 @@ describe('AppToast', () => {
 		expect(screen.queryByTestId('app-toast')).not.toBeInTheDocument();
 	});
 
-	it('throws when useAppToast used outside provider', () => {
-		const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
-		expect(() => {
-			render(<ToastTrigger message="test" />);
-		}).toThrow('useAppToast must be used inside AppToastProvider');
-		consoleError.mockRestore();
+	it('no-ops when useAppToast is used outside provider', async () => {
+		render(<ToastTrigger message="test" />);
+
+		await act(async () => {
+			screen.getByRole('button', { name: 'Show Toast' }).click();
+		});
+
+		expect(screen.queryByTestId('app-toast')).not.toBeInTheDocument();
 	});
 });

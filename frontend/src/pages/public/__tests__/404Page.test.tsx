@@ -6,7 +6,7 @@ jest.mock('react-i18next', () => ({
 	useTranslation: () => ({ t: (key: string) => key }),
 	Trans: ({
 		i18nKey,
-		components,
+		components: _components,
 	}: {
 		i18nKey: string;
 		components?: Record<string, React.ReactElement>;

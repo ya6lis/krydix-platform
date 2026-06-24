@@ -331,7 +331,7 @@ export async function sendMessage(
 	userId: string,
 	input: SendMessageInput,
 	role: Role = Role.BUYER,
-	language: Language = Language.EN
+	_language: Language = Language.EN
 ) {
 	const chat = await requireConversationAccess(input.conversationId, userId, role);
 

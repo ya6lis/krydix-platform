@@ -1,6 +1,6 @@
 import type { ApolloClient } from '@apollo/client';
 import { AUTH_REFRESH_TOKEN_KEY } from '@/constants/constants';
-import { REFRESH_TOKEN_MUTATION, ME_QUERY } from '@/graphql/operations/auth';
+import { REFRESH_TOKEN_MUTATION } from '@/graphql/operations/auth';
 import { refreshAuthSession } from '../authSession';
 
 const user = {

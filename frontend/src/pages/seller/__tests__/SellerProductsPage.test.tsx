@@ -5,6 +5,12 @@ import SellerProductsPage from '../SellerProductsPage';
 import { AppToastProvider } from '@/components/ui';
 import { MY_PRODUCTS_QUERY } from '@/graphql/operations/sellerProducts';
 
+jest.mock('@/hooks/useAuth', () => ({
+	useAuth: () => ({
+		canImportExport: true,
+	}),
+}));
+
 jest.mock('react-i18next', () => ({
 	useTranslation: () => ({
 		t: (key: string, opts?: Record<string, unknown>) => {

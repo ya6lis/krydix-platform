@@ -1,4 +1,4 @@
-import type { NotificationEvent, OrderStatus } from '@prisma/client';
+import type { OrderStatus } from '@prisma/client';
 import * as notificationRepo from '../repositories/notificationRepository.js';
 import type { OrderRecord } from '../repositories/orderRepository.js';
 import { emitUserNotification } from '../socket/chatSocket.js';
