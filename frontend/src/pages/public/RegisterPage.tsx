@@ -21,6 +21,7 @@ import { AuthLayout, REGISTER_GRADIENT } from '@/components/auth/AuthLayout';
 import { Icons } from '@/constants/icons';
 import { REGISTER_MUTATION } from '@/graphql/operations/auth';
 import { ROUTES } from '@/constants/routes';
+import { getGraphQLErrorMessage } from '@/utils/graphqlError';
 import { tokens } from '@/theme';
 
 const schema = z.object({
@@ -69,8 +70,7 @@ export default function RegisterPage() {
 			await registerMutation({ variables: { input: data } });
 			setSuccess(true);
 		} catch (err: unknown) {
-			const message = err instanceof Error ? err.message : t('common.error');
-			setError('root', { message });
+			setError('root', { message: getGraphQLErrorMessage(err, t) });
 		}
 	};
 

@@ -252,6 +252,13 @@
 		"verifyEmailSuccess": "Пошту підтверджено. Тепер можна увійти.",
 		"verifyEmailFailed": "Недійсне або прострочене посилання.",
 		"verifyEmailRetry": "Запросіть новий лист з підтвердженням.",
+		"errors": {
+			"invalidCredentials": "Невірна пошта або пароль.",
+			"emailNotVerified": "Підтвердьте пошту перед входом.",
+			"accountInactive": "Цей акаунт неактивний. Зверніться до підтримки.",
+			"accountClosed": "Цей акаунт закрито.",
+			"emailTaken": "Ця пошта вже зареєстрована."
+		},
 		"welcomeBack": "З поверненням",
 		"getStartedFree": "Почніть безкоштовно",
 		"signInTitle": "Увійдіть до Krydix",

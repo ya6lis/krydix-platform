@@ -252,6 +252,13 @@
 		"verifyEmailSuccess": "Email verified successfully. You can now sign in.",
 		"verifyEmailFailed": "Invalid or expired verification link.",
 		"verifyEmailRetry": "Please request a new verification email.",
+		"errors": {
+			"invalidCredentials": "Invalid email or password.",
+			"emailNotVerified": "Please verify your email before signing in.",
+			"accountInactive": "This account is inactive. Contact support for help.",
+			"accountClosed": "This account has been closed.",
+			"emailTaken": "This email is already registered."
+		},
 		"welcomeBack": "Welcome back",
 		"getStartedFree": "Get started — free",
 		"signInTitle": "Sign in to Krydix",

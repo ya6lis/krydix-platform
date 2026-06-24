@@ -11,6 +11,7 @@ import { touchLastSeen } from './services/presenceService.js';
 import { initChatSocket } from './socket/chatSocket.js';
 import { startOrderMonetizationJobs } from './services/orderJobService.js';
 import { UPLOAD_MAX_FILE_SIZE_MB } from './constants/constants.js';
+import { formatGraphQLError } from './utils/formatGraphQLError.js';
 import type { GraphQLContext } from './types/context.js';
 
 const allowedOrigins = env.FRONTEND_URL.split(',').map((o) => o.trim());
@@ -46,7 +47,10 @@ async function bootstrap() {
 		res.json({ status: 'ok', timestamp: new Date().toISOString() });
 	});
 
-	const server = new ApolloServer<GraphQLContext>({ schema });
+	const server = new ApolloServer<GraphQLContext>({
+		schema,
+		formatError: (formattedError, error) => formatGraphQLError(formattedError, error),
+	});
 	await server.start();
 
 	app.use(
