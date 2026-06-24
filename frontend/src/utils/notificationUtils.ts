@@ -36,6 +36,7 @@ export function notificationTone(event: NotificationEvent): NotificationTone {
 			return 'message';
 		case NotificationEvent.NEW_ORDER:
 		case NotificationEvent.ORDER_STATUS_CHANGE:
+		case NotificationEvent.COMPLAINT_UPDATE:
 			return 'order';
 		case NotificationEvent.MODERATION_RESULT:
 			return 'mod';
@@ -53,6 +54,7 @@ export function notificationIcon(event: NotificationEvent) {
 			return Icons.chats;
 		case NotificationEvent.NEW_ORDER:
 		case NotificationEvent.ORDER_STATUS_CHANGE:
+		case NotificationEvent.COMPLAINT_UPDATE:
 			return Icons.order;
 		case NotificationEvent.MODERATION_RESULT:
 			return Icons.shield;
@@ -64,7 +66,11 @@ export function notificationIcon(event: NotificationEvent) {
 }
 
 export function notificationCategory(event: NotificationEvent): 'orders' | 'system' {
-	if (event === NotificationEvent.NEW_ORDER || event === NotificationEvent.ORDER_STATUS_CHANGE) {
+	if (
+		event === NotificationEvent.NEW_ORDER ||
+		event === NotificationEvent.ORDER_STATUS_CHANGE ||
+		event === NotificationEvent.COMPLAINT_UPDATE
+	) {
 		return 'orders';
 	}
 	return 'system';
@@ -118,7 +124,9 @@ export function notificationRoute(
 	}
 
 	if (
-		(event === NotificationEvent.NEW_ORDER || event === NotificationEvent.ORDER_STATUS_CHANGE) &&
+		(event === NotificationEvent.NEW_ORDER ||
+			event === NotificationEvent.ORDER_STATUS_CHANGE ||
+			event === NotificationEvent.COMPLAINT_UPDATE) &&
 		typeof metadata.orderId === 'string'
 	) {
 		return role === Role.SELLER
@@ -259,6 +267,25 @@ export function notificationDisplayText(
 				title: t('notifications.events.orderStatus.title'),
 				body: t('notifications.events.orderStatus.body', { order, status }),
 			};
+		}
+		case NotificationEvent.COMPLAINT_UPDATE: {
+			if (typeof metadata.orderId === 'string') {
+				const order = extractOrderLabel(notification);
+				const returnStatus =
+					typeof metadata.returnStatus === 'string' ? metadata.returnStatus : null;
+				if (returnStatus) {
+					return {
+						title: t('notifications.events.returnUpdate.title'),
+						body: t('notifications.events.returnUpdate.body', {
+							order: order ?? metadata.orderId.slice(-4).toUpperCase(),
+							status: t(`status.returnRequest.${returnStatus}`, {
+								defaultValue: returnStatus.replace(/_/g, ' ').toLowerCase(),
+							}),
+						}),
+					};
+				}
+			}
+			return { title: notification.title, body: notification.body };
 		}
 		default:
 			return { title: notification.title, body: notification.body };

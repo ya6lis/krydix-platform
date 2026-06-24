@@ -64,6 +64,10 @@ export async function blockPayoutsForOrder(orderId: string, sellerId?: string): 
 	await payoutRepo.markPayoutsBlockedForOrder(orderId, sellerId);
 }
 
+export async function restorePayoutsForOrder(orderId: string, sellerId?: string): Promise<void> {
+	await payoutRepo.restoreBlockedPayoutsForOrder(orderId, sellerId);
+}
+
 export async function refundPayoutsForOrder(orderId: string, sellerId?: string): Promise<void> {
 	await payoutRepo.markPayoutsRefundedForOrder(orderId, sellerId);
 }

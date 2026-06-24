@@ -339,15 +339,6 @@ export default function BuyerOrdersPage() {
 						{t('orders.subtitle')}
 					</Typography>
 				</Box>
-				<Box sx={{ display: 'flex', gap: 1.5, flexShrink: 0 }}>
-					<AppButton
-						variant="contained"
-						size="small"
-						startIcon={<FontAwesomeIcon icon={Icons.print} />}
-					>
-						{t('orders.printLabels')}
-					</AppButton>
-				</Box>
 			</Box>
 
 			{/* stat row */}

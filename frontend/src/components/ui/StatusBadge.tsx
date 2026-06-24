@@ -34,6 +34,8 @@ const STATUS_TONES: Record<string, StatusTone> = {
 	PENDING: 'amber',
 	DRAFT: 'amber',
 	UNDER_REVIEW: 'amber',
+	AWAITING_RETURN_SHIPPING: 'amber',
+	RECEIVED: 'cyan',
 	AUTHORIZED: 'amber',
 	CONFIRMED: 'amber',
 	PACKED: 'amber',

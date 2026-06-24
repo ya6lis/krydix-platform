@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link as RouterLink, useNavigate, useSearchParams } from 'react-router-dom';
-import { useMutation, useQuery, useApolloClient } from '@apollo/client';
+import { useMutation, useQuery, useApolloClient, ApolloError } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -8,7 +8,7 @@ import { Icons } from '@/constants/icons';
 import { ROUTES } from '@/constants/routes';
 import { Role } from '@/constants/enums';
 import { CHAT_FILTER, type ChatFilter } from '@/constants/chatEvents';
-import { AppLoader, AppMenu, ConfirmDialog, AppImage } from '@/components/ui';
+import { AppLoader, AppMenu, ConfirmDialog, AppImage, useAppToast } from '@/components/ui';
 import { useAuthStore } from '@/store/authStore';
 import { useChatSocket, type ConversationUpdatedPayload, type TypingPayload } from '@/hooks/useChatSocket';
 import {
@@ -156,6 +156,7 @@ export default function ChatPage() {
 	const bootstrappedRef = useRef(false);
 	const typingTimeoutRef = useRef<number>();
 	const typingEmitTimeoutRef = useRef<number>();
+	const { showToast } = useAppToast();
 
 	const isSellerView = currentUser?.role === Role.SELLER;
 
@@ -314,6 +315,13 @@ export default function ChatPage() {
 			return;
 		}
 
+		if (sellerId && sellerId === currentUser?.id) {
+			bootstrappedRef.current = true;
+			showToast(t('chat.errors.cannotMessageSelf'), 'warning');
+			setSearchParams({}, { replace: true });
+			return;
+		}
+
 		if (productId || sellerId) {
 			bootstrappedRef.current = true;
 			void startConversation({
@@ -322,15 +330,35 @@ export default function ChatPage() {
 					sellerId: sellerId ?? undefined,
 					language,
 				},
-			}).then(({ data }) => {
-				const id = data?.startConversation?.id;
-				if (!id) return;
-				setSelectedId(id);
-				setSearchParams({ conversation: id }, { replace: true });
-				void refetchConversations();
-			});
+			})
+				.then(({ data }) => {
+					const id = data?.startConversation?.id;
+					if (!id) return;
+					setSelectedId(id);
+					setSearchParams({ conversation: id }, { replace: true });
+					void refetchConversations();
+				})
+				.catch((error: unknown) => {
+					const message =
+						error instanceof ApolloError ? error.graphQLErrors[0]?.message : undefined;
+					if (message?.toLowerCase().includes('yourself')) {
+						showToast(t('chat.errors.cannotMessageSelf'), 'warning');
+					} else {
+						showToast(t('chat.errors.startFailed'), 'error');
+					}
+					setSearchParams({}, { replace: true });
+				});
 		}
-	}, [language, refetchConversations, searchParams, setSearchParams, startConversation]);
+	}, [
+		currentUser?.id,
+		language,
+		refetchConversations,
+		searchParams,
+		setSearchParams,
+		showToast,
+		startConversation,
+		t,
+	]);
 
 	useEffect(() => {
 		if (!selectedId) return;

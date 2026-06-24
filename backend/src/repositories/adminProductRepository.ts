@@ -23,17 +23,17 @@ const PRODUCT_INCLUDE = {
 		},
 	},
 	media: {
-		orderBy: [{ isMain: 'desc' as const }, { sortOrder: 'asc' as const }],
+		orderBy: [{ isMain: 'desc' }, { sortOrder: 'asc' }],
 		take: 1,
 	},
 	categories: {
 		include: {
 			category: {
 				include: {
-					translations: { where: { language: 'EN' as const }, take: 1 },
+					translations: { where: { language: 'EN' }, take: 1 },
 					parent: {
 						include: {
-							translations: { where: { language: 'EN' as const }, take: 1 },
+							translations: { where: { language: 'EN' }, take: 1 },
 						},
 					},
 				},
@@ -44,7 +44,7 @@ const PRODUCT_INCLUDE = {
 	variants: {
 		select: { stock: true },
 	},
-} as const;
+} satisfies Prisma.ProductInclude;
 
 export type RawAdminProduct = Prisma.ProductGetPayload<{ include: typeof PRODUCT_INCLUDE }>;
 

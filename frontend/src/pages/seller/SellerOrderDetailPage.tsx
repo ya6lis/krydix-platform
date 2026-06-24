@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, Link as RouterLink, useNavigate } from 'react-router-dom';
-import { Box, Typography, Link, Menu, MenuItem } from '@mui/material';
+import { Box, Typography, Link } from '@mui/material';
 import { useQuery, useMutation } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -172,7 +172,6 @@ export default function SellerOrderDetailPage() {
 	const { t } = useTranslation();
 	const { showToast } = useAppToast();
 	const [dialog, setDialog] = useState<DialogType>(null);
-	const [manageAnchor, setManageAnchor] = useState<HTMLElement | null>(null);
 	const [trackingCode, setTrackingCode] = useState('');
 	const [cancelReason, setCancelReason] = useState('');
 	const [rejectReason, setRejectReason] = useState('');
@@ -193,7 +192,6 @@ export default function SellerOrderDetailPage() {
 		onCompleted: () => {
 			showToast(t('sellerOrders.detail.success'), 'success');
 			setDialog(null);
-			setManageAnchor(null);
 			setTrackingCode('');
 			setCancelReason('');
 			setRejectReason('');
@@ -263,6 +261,15 @@ export default function SellerOrderDetailPage() {
 	const canMarkReturnReceived =
 		returnRequest && ['APPROVED', 'AWAITING_RETURN_SHIPPING'].includes(returnRequest.status);
 	const canProcessRefund = returnRequest?.status === 'RECEIVED';
+
+	const hasManageActions =
+		canConfirm ||
+		canPack ||
+		canShip ||
+		canMarkInTransit ||
+		canMarkDelivered ||
+		canUpdateTracking ||
+		canCancel;
 
 	const orderTimeline = buildOrderTimeline(order, t);
 	const deliveryTimeline = buildDeliveryTimeline(order, t);
@@ -336,23 +343,67 @@ export default function SellerOrderDetailPage() {
 						</Typography>
 					</Box>
 
-					<Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', flexShrink: 0 }}>
-						<AppButton
-							variant="outlined"
-							size="small"
-							startIcon={<FontAwesomeIcon icon={Icons.print} />}
-							onClick={() => window.print()}
-						>
-							{t('sellerOrders.detail.print')}
-						</AppButton>
-						<AppButton
-							variant="contained"
-							size="small"
-							startIcon={<FontAwesomeIcon icon={Icons.edit} />}
-							onClick={(e) => setManageAnchor(e.currentTarget)}
-						>
-							{t('sellerOrders.detail.manage')}
-						</AppButton>
+					<Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', flexShrink: 0, alignItems: 'center' }}>
+						{canConfirm && (
+							<AppButton
+								variant="contained"
+								size="small"
+								loading={confirming}
+								onClick={() => runMutation(() => confirmOrder({ variables: { orderId: id } }))}
+							>
+								{t('sellerOrders.detail.confirmOrder')}
+							</AppButton>
+						)}
+						{canPack && (
+							<AppButton
+								variant="outlined"
+								size="small"
+								loading={packing}
+								onClick={() => runMutation(() => markPacked({ variables: { orderId: id } }))}
+							>
+								{t('sellerOrders.detail.markPacked')}
+							</AppButton>
+						)}
+						{canShip && (
+							<AppButton variant="contained" size="small" onClick={() => setDialog('ship')}>
+								{t('sellerOrders.detail.confirmShipment')}
+							</AppButton>
+						)}
+						{canMarkInTransit && (
+							<AppButton
+								variant="outlined"
+								size="small"
+								loading={inTransitLoading}
+								onClick={() => runMutation(() => markInTransit({ variables: { orderId: id } }))}
+							>
+								{t('sellerOrders.detail.markInTransit')}
+							</AppButton>
+						)}
+						{canMarkDelivered && (
+							<AppButton variant="contained" size="small" onClick={() => setDialog('deliver')}>
+								{t('sellerOrders.detail.markDelivered')}
+							</AppButton>
+						)}
+						{canUpdateTracking && (
+							<AppButton variant="outlined" size="small" onClick={() => setDialog('tracking')}>
+								{t('sellerOrders.detail.updateTracking')}
+							</AppButton>
+						)}
+						{canCancel && (
+							<AppButton
+								tone="danger"
+								variant="outlined"
+								size="small"
+								onClick={() => setDialog('cancel')}
+							>
+								{t('sellerOrders.detail.cancelOrder')}
+							</AppButton>
+						)}
+						{!hasManageActions && (
+							<Typography sx={{ fontSize: 13, color: tokens.ink3 }}>
+								{t('sellerOrders.detail.noActions')}
+							</Typography>
+						)}
 					</Box>
 				</Box>
 			</Box>
@@ -374,6 +425,11 @@ export default function SellerOrderDetailPage() {
 							label={t('sellerOrders.detail.return.resolution')}
 							value={returnRequest.resolution}
 						/>
+					)}
+					{returnRequest.status === 'AWAITING_RETURN_SHIPPING' && (
+						<Typography sx={{ mt: 1.5, fontSize: 13, color: tokens.ink3, lineHeight: 1.5 }}>
+							{t('sellerOrders.detail.return.awaitingShipmentHint')}
+						</Typography>
 					)}
 					<Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mt: 2 }}>
 						{canReviewReturn && (
@@ -645,71 +701,6 @@ export default function SellerOrderDetailPage() {
 					)}
 				</Box>
 			</Box>
-
-			<Menu
-				anchorEl={manageAnchor}
-				open={Boolean(manageAnchor)}
-				onClose={() => setManageAnchor(null)}
-			>
-				{canConfirm && (
-					<MenuItem
-						onClick={() => runMutation(() => confirmOrder({ variables: { orderId: id } }))}
-					>
-						{t('sellerOrders.detail.confirmOrder')}
-					</MenuItem>
-				)}
-				{canPack && (
-					<MenuItem onClick={() => runMutation(() => markPacked({ variables: { orderId: id } }))}>
-						{t('sellerOrders.detail.markPacked')}
-					</MenuItem>
-				)}
-				{canShip && (
-					<MenuItem
-						onClick={() => {
-							setManageAnchor(null);
-							setDialog('ship');
-						}}
-					>
-						{t('sellerOrders.detail.confirmShipment')}
-					</MenuItem>
-				)}
-				{canMarkInTransit && (
-					<MenuItem onClick={() => runMutation(() => markInTransit({ variables: { orderId: id } }))}>
-						{t('sellerOrders.detail.markInTransit')}
-					</MenuItem>
-				)}
-				{canMarkDelivered && (
-					<MenuItem
-						onClick={() => {
-							setManageAnchor(null);
-							setDialog('deliver');
-						}}
-					>
-						{t('sellerOrders.detail.markDelivered')}
-					</MenuItem>
-				)}
-				{canUpdateTracking && (
-					<MenuItem
-						onClick={() => {
-							setManageAnchor(null);
-							setDialog('tracking');
-						}}
-					>
-						{t('sellerOrders.detail.updateTracking')}
-					</MenuItem>
-				)}
-				{canCancel && (
-					<MenuItem
-						onClick={() => {
-							setManageAnchor(null);
-							setDialog('cancel');
-						}}
-						sx={{ color: tokens.coral }}
-					>
-						{t('sellerOrders.detail.cancelOrder')}
-					</MenuItem>
-				)}
-			</Menu>
 
 			<AppModal
 				open={dialog === 'ship'}

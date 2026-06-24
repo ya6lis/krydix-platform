@@ -141,6 +141,7 @@ export default function BuyerOrderDetailPage() {
 	const { showToast } = useAppToast();
 	const [dialog, setDialog] = useState<DialogType>(null);
 	const [returnReason, setReturnReason] = useState('');
+	const [returnDetails, setReturnDetails] = useState('');
 
 	const { data, loading } = useQuery<{ myOrder: Order }>(MY_ORDER_QUERY, {
 		variables: { id },
@@ -199,6 +200,7 @@ export default function BuyerOrderDetailPage() {
 			showToast(t('common.success'), 'success');
 			setDialog(null);
 			setReturnReason('');
+			setReturnDetails('');
 		},
 		onError: (err) => showToast(err.message, 'error'),
 	});
@@ -233,8 +235,11 @@ export default function BuyerOrderDetailPage() {
 
 	const canCancel = ['PENDING', 'CONFIRMED'].includes(order.status);
 	const canConfirmDelivery = order.status === 'SHIPPED';
-	const canRefund = ['DELIVERED', 'CONFIRMED'].includes(order.status);
-	const canRequestReturn = order.status === 'DELIVERED' && !order.returnRequest;
+	const canRefund = order.status === 'CONFIRMED' && !order.returnRequest;
+	const canRequestReturn =
+		order.status === 'DELIVERED' &&
+		order.delivery?.status === 'DELIVERED' &&
+		!order.returnRequest;
 
 	const orderTimeline = buildOrderTimeline(order, t);
 	const deliveryTimeline = buildDeliveryTimeline(order, t);
@@ -294,14 +299,6 @@ export default function BuyerOrderDetailPage() {
 					</Box>
 
 					<Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', flexShrink: 0 }}>
-						<AppButton
-							variant="outlined"
-							size="small"
-							startIcon={<FontAwesomeIcon icon={Icons.print} />}
-							onClick={() => window.print()}
-						>
-							{t('orderDetail.actions.print')}
-						</AppButton>
 						{canCancel && (
 							<AppButton variant="outlined" size="small" onClick={() => setDialog('cancel')}>
 								{t('orderDetail.actions.cancel')}
@@ -635,6 +632,20 @@ export default function BuyerOrderDetailPage() {
 													>
 														{order.returnRequest.reason}
 													</Typography>
+													{order.returnRequest.details && (
+														<Typography
+															sx={{ mt: 0.5, fontSize: 12.5, color: tokens.ink3, lineHeight: 1.5 }}
+														>
+															{order.returnRequest.details}
+														</Typography>
+													)}
+													{order.returnRequest.resolution && (
+														<Typography
+															sx={{ mt: 0.5, fontSize: 12.5, color: tokens.coralInk, lineHeight: 1.5 }}
+														>
+															{t('orderDetail.returnResolution')}: {order.returnRequest.resolution}
+														</Typography>
+													)}
 												</Box>
 											)}
 										</Box>
@@ -674,11 +685,22 @@ export default function BuyerOrderDetailPage() {
 			/>
 			<AppModal
 				open={dialog === 'return'}
-				onClose={() => setDialog(null)}
+				onClose={() => {
+					setDialog(null);
+					setReturnReason('');
+					setReturnDetails('');
+				}}
 				title={t('orderDetail.returnConfirm.title')}
 				footer={
 					<>
-						<AppButton variant="outlined" onClick={() => setDialog(null)}>
+						<AppButton
+							variant="outlined"
+							onClick={() => {
+								setDialog(null);
+								setReturnReason('');
+								setReturnDetails('');
+							}}
+						>
 							{t('common.cancel')}
 						</AppButton>
 						<AppButton
@@ -690,7 +712,7 @@ export default function BuyerOrderDetailPage() {
 									variables: {
 										orderId: order.id,
 										reason: returnReason.trim(),
-										details: returnReason.trim(),
+										details: returnDetails.trim() || undefined,
 									},
 								})
 							}
@@ -700,14 +722,24 @@ export default function BuyerOrderDetailPage() {
 					</>
 				}
 			>
-				<AppTextarea
-					label={t('orderDetail.returnConfirm.reasonLabel')}
-					placeholder={t('orderDetail.returnConfirm.reasonPlaceholder')}
-					value={returnReason}
-					onChange={(event) => setReturnReason(event.target.value)}
-					rows={5}
-					maxLength={500}
-				/>
+				<Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+					<AppTextarea
+						label={t('orderDetail.returnConfirm.reasonLabel')}
+						placeholder={t('orderDetail.returnConfirm.reasonPlaceholder')}
+						value={returnReason}
+						onChange={(event) => setReturnReason(event.target.value)}
+						rows={4}
+						maxLength={500}
+					/>
+					<AppTextarea
+						label={t('orderDetail.returnConfirm.detailsLabel')}
+						placeholder={t('orderDetail.returnConfirm.detailsPlaceholder')}
+						value={returnDetails}
+						onChange={(event) => setReturnDetails(event.target.value)}
+						rows={4}
+						maxLength={1000}
+					/>
+				</Box>
 			</AppModal>
 		</Box>
 	);

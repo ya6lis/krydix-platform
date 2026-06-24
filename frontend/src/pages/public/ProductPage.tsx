@@ -499,22 +499,24 @@ export default function ProductPage() {
 								{t('product.verifiedSeller')}
 							</Box>
 						</Box>
-						<AppButton
-							variant="outlined"
-							size="small"
-							startIcon={<FontAwesomeIcon icon={Icons.chat} />}
-							onClick={() => {
-								if (!user) {
-									navigate(ROUTES.LOGIN);
-									return;
-								}
-								navigate(`${ROUTES.CHAT}?productId=${product.id}`);
-							}}
-							sx={{ flexShrink: 0 }}
-							data-testid="product-message-seller"
-						>
-							{t('product.message')}
-						</AppButton>
+						{user?.id !== product.seller.id ? (
+							<AppButton
+								variant="outlined"
+								size="small"
+								startIcon={<FontAwesomeIcon icon={Icons.chat} />}
+								onClick={() => {
+									if (!user) {
+										navigate(ROUTES.LOGIN);
+										return;
+									}
+									navigate(`${ROUTES.CHAT}?productId=${product.id}`);
+								}}
+								sx={{ flexShrink: 0 }}
+								data-testid="product-message-seller"
+							>
+								{t('product.message')}
+							</AppButton>
+						) : null}
 					</Box>
 
 					{/* Title */}

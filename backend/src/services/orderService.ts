@@ -28,6 +28,7 @@ import {
 import * as notificationService from './notificationService.js';
 import * as payoutService from './payoutService.js';
 import * as auditLog from './auditLogService.js';
+import * as platformRepo from '../repositories/platformRepository.js';
 
 const CANCELLABLE_STATUSES: OrderStatus[] = [OrderStatus.PENDING, OrderStatus.CONFIRMED];
 const DELIVERABLE_STATUSES: OrderStatus[] = [OrderStatus.SHIPPED, OrderStatus.DELIVERED];
@@ -46,6 +47,50 @@ const RETURN_RECEIVABLE_STATUSES: ReturnRequestStatus[] = [
 	ReturnRequestStatus.APPROVED,
 	ReturnRequestStatus.AWAITING_RETURN_SHIPPING,
 ];
+
+function addDays(date: Date, days: number): Date {
+	const next = new Date(date);
+	next.setDate(next.getDate() + days);
+	return next;
+}
+
+function getDeliveryCompletedAt(order: OrderRecord): Date | null {
+	return order.delivery?.deliveredAt ?? order.delivery?.confirmedReceivedAt ?? null;
+}
+
+function resolveSingleSellerId(order: OrderRecord): string {
+	const sellerIds = [...new Set(order.items.map((item) => item.sellerId))];
+	if (sellerIds.length === 0) {
+		throw new GraphQLError('Unable to determine seller for this order.', {
+			extensions: { code: 'BAD_USER_INPUT' },
+		});
+	}
+	if (sellerIds.length > 1) {
+		throw new GraphQLError(
+			'Return requests for orders with multiple sellers are not supported yet. Please contact support.',
+			{ extensions: { code: 'BAD_USER_INPUT' } }
+		);
+	}
+	return sellerIds[0]!;
+}
+
+async function assertWithinReturnWindow(order: OrderRecord): Promise<void> {
+	const config = await platformRepo.getPlatformConfig();
+	const completedAt = getDeliveryCompletedAt(order);
+	if (!completedAt) {
+		throw new GraphQLError(
+			'Return window cannot be verified because delivery completion date is missing.',
+			{ extensions: { code: 'BAD_USER_INPUT' } }
+		);
+	}
+	const deadline = addDays(completedAt, config.returnWindowDays);
+	if (new Date() > deadline) {
+		throw new GraphQLError(
+			`Return window of ${config.returnWindowDays} days after delivery has expired.`,
+			{ extensions: { code: 'BAD_USER_INPUT' } }
+		);
+	}
+}
 
 async function requireSellerOrder(orderId: string, sellerId: string): Promise<SellerOrderRecord> {
 	const order = await findOrderByIdAndSeller(orderId, sellerId);
@@ -189,7 +234,7 @@ export async function confirmDelivery(orderId: string, buyerId: string): Promise
 		);
 	}
 
-	if (order.items.every((item) => item.confirmedReceivedAt)) {
+	if (order.items.length > 0 && order.items.every((item) => item.confirmedReceivedAt)) {
 		throw new GraphQLError('Receipt has already been confirmed for this order.', {
 			extensions: { code: 'BAD_USER_INPUT' },
 		});
@@ -201,7 +246,7 @@ export async function confirmDelivery(orderId: string, buyerId: string): Promise
 	}
 
 	await payoutService.createPayoutsForOrder(orderId, new Date());
-	return findOrderByIdAndBuyer(orderId, buyerId) ?? confirmed;
+	return (await findOrderByIdAndBuyer(orderId, buyerId)) ?? confirmed;
 }
 
 export async function requestRefund(orderId: string, buyerId: string): Promise<OrderRecord> {
@@ -269,12 +314,19 @@ export async function requestReturn(
 		});
 	}
 
-	const sellerId = order.items[0]?.sellerId;
-	if (!sellerId) {
-		throw new GraphQLError('Unable to determine seller for this order.', {
+	if (order.payment?.status === PaymentStatus.REFUNDED) {
+		throw new GraphQLError('This order has already been refunded.', {
 			extensions: { code: 'BAD_USER_INPUT' },
 		});
 	}
+
+	await assertWithinReturnWindow(order);
+
+	const sellerId = resolveSingleSellerId(order);
+	const config = await platformRepo.getPlatformConfig();
+	const initialStatus = config.returnRequiresApproval
+		? ReturnRequestStatus.UNDER_REVIEW
+		: ReturnRequestStatus.AWAITING_RETURN_SHIPPING;
 
 	return createReturnRequest({
 		orderId,
@@ -282,6 +334,7 @@ export async function requestReturn(
 		sellerId,
 		reason: reason.trim(),
 		details: details?.trim() || null,
+		status: initialStatus,
 	}).then(async (request) => {
 		await payoutService.blockPayoutsForOrder(orderId, sellerId);
 		await auditLog.log({
@@ -291,6 +344,15 @@ export async function requestReturn(
 			targetId: orderId,
 			metadata: { reason: 'return_requested', sellerId },
 		});
+		void notificationService
+			.notifyReturnUpdate({
+				userId: sellerId,
+				orderId,
+				title: 'Return request received',
+				body: `Buyer submitted a return request for order #${orderId.slice(-4).toUpperCase()}.`,
+				returnStatus: request.status,
+			})
+			.catch(() => undefined);
 		return request;
 	});
 }
@@ -477,7 +539,8 @@ export async function updateSellerOrderTracking(
 ): Promise<SellerOrderView> {
 	const order = await requireSellerOrder(orderId, sellerId);
 
-	if (![OrderStatus.CONFIRMED, OrderStatus.SHIPPED].includes(order.status)) {
+	const trackingAllowedStatuses: OrderStatus[] = [OrderStatus.CONFIRMED, OrderStatus.SHIPPED];
+	if (!trackingAllowedStatuses.includes(order.status)) {
 		throw new GraphQLError(
 			`Tracking can only be updated for CONFIRMED or SHIPPED orders. Current status: "${order.status}".`,
 			{ extensions: { code: 'BAD_USER_INPUT' } }
@@ -502,6 +565,7 @@ export async function reviewSellerReturnRequest(
 ): Promise<SellerOrderView> {
 	await requireSellerOrder(orderId, sellerId);
 	const returnRequest = await requireSellerReturn(orderId, sellerId);
+	const order = await findOrderById(orderId);
 
 	if (!RETURN_REVIEW_STATUSES.includes(returnRequest.status)) {
 		throw new GraphQLError(
@@ -516,15 +580,41 @@ export async function reviewSellerReturnRequest(
 		});
 	}
 
-	await updateReturnRequestStatus(
-		orderId,
-		approve ? ReturnRequestStatus.AWAITING_RETURN_SHIPPING : ReturnRequestStatus.REJECTED,
-		{
-			reviewedById: sellerId,
-			reviewedAt: new Date(),
-			resolution: resolution?.trim() || (approve ? 'Return approved by seller.' : null),
-		}
-	);
+	const nextStatus = approve
+		? ReturnRequestStatus.AWAITING_RETURN_SHIPPING
+		: ReturnRequestStatus.REJECTED;
+
+	await updateReturnRequestStatus(orderId, nextStatus, {
+		reviewedById: sellerId,
+		reviewedAt: new Date(),
+		resolution:
+			resolution?.trim() ||
+			(approve ? 'Return approved. Please ship the item back to the seller.' : null),
+		closedAt: approve ? undefined : new Date(),
+	});
+
+	if (approve) {
+		void notificationService
+			.notifyReturnUpdate({
+				userId: order!.buyerId,
+				orderId,
+				title: 'Return approved',
+				body: `Your return request for order #${orderId.slice(-4).toUpperCase()} was approved.`,
+				returnStatus: nextStatus,
+			})
+			.catch(() => undefined);
+	} else {
+		await payoutService.restorePayoutsForOrder(orderId, sellerId);
+		void notificationService
+			.notifyReturnUpdate({
+				userId: order!.buyerId,
+				orderId,
+				title: 'Return rejected',
+				body: `Your return request for order #${orderId.slice(-4).toUpperCase()} was rejected.`,
+				returnStatus: nextStatus,
+			})
+			.catch(() => undefined);
+	}
 
 	return finishSellerMutation(orderId, sellerId);
 }
@@ -548,6 +638,19 @@ export async function markSellerReturnReceived(
 		reviewedAt: new Date(),
 	});
 
+	const order = await findOrderById(orderId);
+	if (order) {
+		void notificationService
+			.notifyReturnUpdate({
+				userId: order.buyerId,
+				orderId,
+				title: 'Return received',
+				body: `Seller confirmed receipt of your returned items for order #${orderId.slice(-4).toUpperCase()}.`,
+				returnStatus: ReturnRequestStatus.RECEIVED,
+			})
+			.catch(() => undefined);
+	}
+
 	return finishSellerMutation(orderId, sellerId);
 }
 
@@ -566,8 +669,11 @@ export async function processSellerReturnRefund(
 	}
 
 	const beforeStatus = (await findOrderByIdAndSeller(orderId, sellerId))!.status;
+	const order = await findOrderById(orderId);
+
 	await updateReturnRequestStatus(orderId, ReturnRequestStatus.REFUNDED, {
 		refundedAt: new Date(),
+		closedAt: new Date(),
 	});
 	await updatePaymentStatus(orderId, PaymentStatus.REFUNDED);
 	await payoutService.refundPayoutsForOrder(orderId, sellerId);
@@ -579,5 +685,18 @@ export async function processSellerReturnRefund(
 		metadata: { reason: 'return_refund' },
 	});
 	await applyOrderStatusChange(orderId, OrderStatus.REFUNDED);
+
+	if (order) {
+		void notificationService
+			.notifyReturnUpdate({
+				userId: order.buyerId,
+				orderId,
+				title: 'Return refunded',
+				body: `Refund processed for order #${orderId.slice(-4).toUpperCase()}.`,
+				returnStatus: ReturnRequestStatus.REFUNDED,
+			})
+			.catch(() => undefined);
+	}
+
 	return finishSellerMutation(orderId, sellerId, beforeStatus);
 }

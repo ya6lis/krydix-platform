@@ -33,6 +33,7 @@ import {
 	ShipSellerOrderSchema,
 	CancelSellerOrderSchema,
 	UpdateSellerTrackingSchema,
+	RequestReturnSchema,
 	ReviewSellerReturnSchema,
 	SellerOrderIdSchema,
 } from '../../../validators/ordersValidators.js';
@@ -190,7 +191,8 @@ export const ordersResolvers = {
 			context: GraphQLContext
 		) => {
 			const user = requireAuth(context);
-			return requestReturn(args.orderId, user.id, args.reason, args.details);
+			const parsed = RequestReturnSchema.parse(args);
+			return requestReturn(parsed.orderId, user.id, parsed.reason, parsed.details);
 		},
 
 		shipSellerOrder: async (

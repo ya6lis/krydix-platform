@@ -145,6 +145,10 @@
 			"orderStatus": {
 				"title": "Order update",
 				"body": "Order #{{order}} is now {{status}}."
+			},
+			"returnUpdate": {
+				"title": "Return request update",
+				"body": "Order #{{order}} — {{status}}."
 			}
 		}
 	},
@@ -390,8 +394,11 @@
 			"PENDING": "Pending",
 			"AUTHORIZED": "Authorized",
 			"PAID": "Paid",
+			"IN_ESCROW": "In escrow",
 			"FAILED": "Failed",
-			"REFUNDED": "Refunded"
+			"REFUNDED": "Refunded",
+			"CHARGEBACK": "Chargeback",
+			"CANCELED": "Canceled"
 		},
 		"returnRequest": {
 			"REQUESTED": "Requested",
@@ -867,9 +874,12 @@
 		"returnConfirm": {
 			"title": "Request a return?",
 			"reasonLabel": "Reason for return",
-			"reasonPlaceholder": "Describe the defect, issue, or other reason for the return",
+			"reasonPlaceholder": "Briefly describe why you want to return this order",
+			"detailsLabel": "Additional details (optional)",
+			"detailsPlaceholder": "Add photos description, defect location, or other helpful context",
 			"submit": "Submit return request"
 		},
+		"returnResolution": "Seller response",
 		"qty": "×{{count}}",
 		"sku": "SKU"
 	},
@@ -951,6 +961,10 @@
 			"seller": "Seller",
 			"moderator": "Moderator",
 			"admin": "Administrator"
+		},
+		"errors": {
+			"cannotMessageSelf": "You can't message yourself.",
+			"startFailed": "Could not start the conversation. Please try again."
 		}
 	},
 	"account": {
@@ -1206,6 +1220,7 @@
 		},
 		"viewDetails": "View details",
 		"cancelOrder": "Cancel order",
+		"manageReturn": "Manage return",
 		"detail": {
 			"orderNumberPrefix": "Order #",
 			"title": "Order {{order}}",
@@ -1234,6 +1249,7 @@
 			"shippingTitle": "Shipping",
 			"print": "Print",
 			"manage": "Manage order",
+			"noActions": "No further actions for this order status.",
 			"phone": "Phone",
 			"returnTitle": "Return request",
 			"deliveryTitle": "Delivery",
@@ -1273,7 +1289,8 @@
 				"reason": "Reason",
 				"details": "Details",
 				"resolution": "Resolution",
-				"status": "Return status"
+				"status": "Return status",
+				"awaitingShipmentHint": "Return approved. Waiting for the buyer to ship the item back. Mark as received once it arrives."
 			},
 			"shipForm": {
 				"title": "Ship order",

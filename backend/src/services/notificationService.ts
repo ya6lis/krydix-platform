@@ -24,7 +24,7 @@ function serializeNotification(notification: notificationRepo.NotificationRecord
 }
 
 function orderLabel(orderId: string): string {
-	return orderId.slice(-8).toUpperCase();
+	return `KX-${orderId.slice(-4).toUpperCase()}`;
 }
 
 async function pushNotification(input: notificationRepo.CreateNotificationInput) {
@@ -79,8 +79,8 @@ async function notifySupportUpdate(input: {
 	action: SupportNotificationAction;
 	title: string;
 	body: string;
-	staffName?: string;
-	requesterName?: string;
+	staffName?: string | null;
+	requesterName?: string | null;
 }) {
 	await pushNotification({
 		userId: input.userId,
@@ -213,6 +213,27 @@ export async function notifyOrderStatusChange(order: OrderRecord, previousStatus
 			orderLabel: label,
 			status: order.status,
 			previousStatus: previousStatus ?? null,
+		},
+	});
+}
+
+export async function notifyReturnUpdate(input: {
+	userId: string;
+	orderId: string;
+	title: string;
+	body: string;
+	returnStatus: string;
+}) {
+	const label = orderLabel(input.orderId);
+	await pushNotification({
+		userId: input.userId,
+		event: 'COMPLAINT_UPDATE',
+		title: input.title,
+		body: input.body,
+		metadata: {
+			orderId: input.orderId,
+			orderLabel: label,
+			returnStatus: input.returnStatus,
 		},
 	});
 }

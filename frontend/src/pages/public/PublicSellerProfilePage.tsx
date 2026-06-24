@@ -191,20 +191,22 @@ export default function PublicSellerProfilePage() {
 					</div>
 
 					<div className={styles.heroActions}>
-						<AppButton
-							tone="ghost"
-							startIcon={<FontAwesomeIcon icon={Icons.chat} />}
-							onClick={() => {
-								if (!currentUser) {
-									navigate(ROUTES.LOGIN);
-									return;
-								}
-								navigate(`${ROUTES.CHAT}?sellerId=${id}`);
-							}}
-							data-testid="seller-profile-contact"
-						>
-							{t('publicProfile.contactSeller')}
-						</AppButton>
+						{!isOwner ? (
+							<AppButton
+								tone="ghost"
+								startIcon={<FontAwesomeIcon icon={Icons.chat} />}
+								onClick={() => {
+									if (!currentUser) {
+										navigate(ROUTES.LOGIN);
+										return;
+									}
+									navigate(`${ROUTES.CHAT}?sellerId=${id}`);
+								}}
+								data-testid="seller-profile-contact"
+							>
+								{t('publicProfile.contactSeller')}
+							</AppButton>
+						) : null}
 					</div>
 				</div>
 

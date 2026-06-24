@@ -7,13 +7,13 @@ export function normalizeReleaseNoteVersion(value: string): string {
 	return value.trim().replace(/^[vV]/, '');
 }
 
-const versionSchema = z.preprocess(
-	(value) => (typeof value === 'string' ? normalizeReleaseNoteVersion(value) : value),
-	z
-		.string()
-		.min(1, 'Version is required')
-		.regex(RELEASE_NOTE_VERSION_PATTERN, 'Version must look like 1.0 or 1.0.0'),
-);
+const versionSchema = z
+	.string()
+	.min(1, 'Version is required')
+	.transform(normalizeReleaseNoteVersion)
+	.refine((value) => RELEASE_NOTE_VERSION_PATTERN.test(value), {
+		message: 'Version must look like 1.0 or 1.0.0',
+	});
 
 const translationFields = {
 	titleEn: z.string().trim().min(3, 'English title must be at least 3 characters').max(200),

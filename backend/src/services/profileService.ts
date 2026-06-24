@@ -14,7 +14,9 @@ function ensureCloudinary() {
 	}
 }
 
-function serializeProfile(profile: NonNullable<Awaited<ReturnType<typeof userRepo.findUserById>>['profile']>) {
+type UserRecord = NonNullable<Awaited<ReturnType<typeof userRepo.findUserById>>>;
+
+function serializeProfile(profile: NonNullable<UserRecord['profile']>) {
 	return {
 		id: profile.id,
 		firstName: profile.firstName,

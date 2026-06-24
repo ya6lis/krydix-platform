@@ -36,6 +36,12 @@ export const ReviewSellerReturnSchema = z.object({
 	resolution: z.string().max(1000).optional(),
 });
 
+export const RequestReturnSchema = z.object({
+	orderId: z.string().min(1, 'Order ID is required'),
+	reason: z.string().trim().min(1).max(500),
+	details: z.string().trim().max(1000).optional(),
+});
+
 export const SellerOrderIdSchema = z.object({
 	orderId: z.string().min(1, 'Order ID is required'),
 });
@@ -44,4 +50,5 @@ export type ShipSellerOrderInput = z.infer<typeof ShipSellerOrderSchema>;
 export type CancelSellerOrderInput = z.infer<typeof CancelSellerOrderSchema>;
 export type UpdateSellerTrackingInput = z.infer<typeof UpdateSellerTrackingSchema>;
 export type ReviewSellerReturnInput = z.infer<typeof ReviewSellerReturnSchema>;
+export type RequestReturnInput = z.infer<typeof RequestReturnSchema>;
 export type SellerOrderIdInput = z.infer<typeof SellerOrderIdSchema>;

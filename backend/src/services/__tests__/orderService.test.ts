@@ -3,13 +3,31 @@ import { OrderStatus } from '@prisma/client';
 
 jest.mock('../../repositories/orderRepository.js');
 jest.mock('../../repositories/returnRequestRepository.js');
+jest.mock('../../repositories/platformRepository.js');
+jest.mock('../payoutService.js', () => ({
+	blockPayoutsForOrder: jest.fn().mockResolvedValue(undefined),
+	restorePayoutsForOrder: jest.fn().mockResolvedValue(undefined),
+	refundPayoutsForOrder: jest.fn().mockResolvedValue(undefined),
+	createPayoutsForOrder: jest.fn().mockResolvedValue(undefined),
+}));
+jest.mock('../auditLogService.js', () => ({
+	log: jest.fn().mockResolvedValue(undefined),
+}));
+jest.mock('../notificationService.js', () => ({
+	notifyOrderStatusChange: jest.fn().mockResolvedValue(undefined),
+	notifyReturnUpdate: jest.fn().mockResolvedValue(undefined),
+}));
 
 import * as orderRepo from '../../repositories/orderRepository.js';
 import * as returnRepo from '../../repositories/returnRequestRepository.js';
+import * as platformRepo from '../../repositories/platformRepository.js';
+import * as payoutService from '../payoutService.js';
 import * as orderService from '../orderService.js';
 
 const mockRepo = orderRepo as jest.Mocked<typeof orderRepo>;
 const mockReturnRepo = returnRepo as jest.Mocked<typeof returnRepo>;
+const mockPlatformRepo = platformRepo as jest.Mocked<typeof platformRepo>;
+const mockPayoutService = payoutService as jest.Mocked<typeof payoutService>;
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -39,6 +57,13 @@ const ORDER_ID = 'order-1';
 
 beforeEach(() => {
 	jest.clearAllMocks();
+	mockPlatformRepo.getPlatformConfig.mockResolvedValue({
+		returnWindowDays: 14,
+		returnRequiresApproval: true,
+	} as never);
+	mockPayoutService.blockPayoutsForOrder.mockResolvedValue(undefined);
+	mockPayoutService.restorePayoutsForOrder.mockResolvedValue(undefined);
+	mockPayoutService.refundPayoutsForOrder.mockResolvedValue(undefined);
 });
 
 // ─── cancelOrder ─────────────────────────────────────────────────────────────
@@ -102,9 +127,16 @@ describe('cancelOrder', () => {
 
 describe('confirmDelivery', () => {
 	it('confirms delivery when order is SHIPPED', async () => {
-		const order = makeOrder({ status: OrderStatus.SHIPPED });
+		const order = makeOrder({
+			status: OrderStatus.SHIPPED,
+			items: [{ sellerId: 'seller-1', confirmedReceivedAt: null }],
+		});
 		mockRepo.findOrderByIdAndBuyer.mockResolvedValue(order as never);
 		mockRepo.updateOrderStatus.mockResolvedValue({
+			...order,
+			status: OrderStatus.DELIVERED,
+		} as never);
+		mockRepo.findOrderByIdAndBuyer.mockResolvedValueOnce(order as never).mockResolvedValueOnce({
 			...order,
 			status: OrderStatus.DELIVERED,
 		} as never);
@@ -134,8 +166,11 @@ describe('confirmDelivery', () => {
 		});
 	});
 
-	it('throws when order is already DELIVERED', async () => {
-		const order = makeOrder({ status: OrderStatus.DELIVERED });
+	it('throws when receipt was already confirmed', async () => {
+		const order = makeOrder({
+			status: OrderStatus.DELIVERED,
+			items: [{ sellerId: 'seller-1', confirmedReceivedAt: new Date() }],
+		});
 		mockRepo.findOrderByIdAndBuyer.mockResolvedValue(order as never);
 
 		await expect(orderService.confirmDelivery(ORDER_ID, BUYER_ID)).rejects.toThrow(GraphQLError);
@@ -199,12 +234,18 @@ describe('requestRefund', () => {
 // ─── requestReturn ───────────────────────────────────────────────────────────
 
 describe('requestReturn', () => {
-	it('creates return request for DELIVERED order', async () => {
-		const order = makeOrder({
+	const deliveredOrder = () =>
+		makeOrder({
 			status: OrderStatus.DELIVERED,
-			delivery: { status: 'DELIVERED' },
+			delivery: {
+				status: 'DELIVERED',
+				deliveredAt: new Date(),
+			},
 			items: [{ sellerId: 'seller-1' }],
 		});
+
+	it('creates return request for DELIVERED order', async () => {
+		const order = deliveredOrder();
 		mockRepo.findOrderByIdAndBuyer.mockResolvedValue(order as never);
 		mockReturnRepo.findReturnRequestByOrderId.mockResolvedValue(null);
 
@@ -213,9 +254,9 @@ describe('requestReturn', () => {
 			orderId: ORDER_ID,
 			buyerId: BUYER_ID,
 			sellerId: 'seller-1',
-			status: 'REQUESTED',
+			status: 'UNDER_REVIEW',
 			reason: 'Product arrived with a defect',
-			details: 'Product arrived with a defect',
+			details: 'Zipper broken on arrival',
 			resolution: null,
 			reviewedById: null,
 			reviewedAt: null,
@@ -230,7 +271,7 @@ describe('requestReturn', () => {
 			ORDER_ID,
 			BUYER_ID,
 			'Product arrived with a defect',
-			'Product arrived with a defect'
+			'Zipper broken on arrival'
 		);
 
 		expect(mockReturnRepo.createReturnRequest).toHaveBeenCalledWith({
@@ -238,9 +279,67 @@ describe('requestReturn', () => {
 			buyerId: BUYER_ID,
 			sellerId: 'seller-1',
 			reason: 'Product arrived with a defect',
-			details: 'Product arrived with a defect',
+			details: 'Zipper broken on arrival',
+			status: 'UNDER_REVIEW',
 		});
-		expect(result.status).toBe('REQUESTED');
+		expect(mockPayoutService.blockPayoutsForOrder).toHaveBeenCalledWith(ORDER_ID, 'seller-1');
+		expect(result.status).toBe('UNDER_REVIEW');
+	});
+
+	it('auto-approves when platform does not require seller review', async () => {
+		mockPlatformRepo.getPlatformConfig.mockResolvedValue({
+			returnWindowDays: 14,
+			returnRequiresApproval: false,
+		} as never);
+
+		const order = deliveredOrder();
+		mockRepo.findOrderByIdAndBuyer.mockResolvedValue(order as never);
+		mockReturnRepo.findReturnRequestByOrderId.mockResolvedValue(null);
+		mockReturnRepo.createReturnRequest.mockResolvedValue({
+			id: 'rr-1',
+			status: 'AWAITING_RETURN_SHIPPING',
+		} as never);
+
+		await orderService.requestReturn(ORDER_ID, BUYER_ID, 'Wrong size');
+
+		expect(mockReturnRepo.createReturnRequest).toHaveBeenCalledWith(
+			expect.objectContaining({ status: 'AWAITING_RETURN_SHIPPING' })
+		);
+	});
+
+	it('throws when return window expired', async () => {
+		const order = makeOrder({
+			status: OrderStatus.DELIVERED,
+			delivery: {
+				status: 'DELIVERED',
+				deliveredAt: new Date('2020-01-01'),
+			},
+			items: [{ sellerId: 'seller-1' }],
+		});
+		mockRepo.findOrderByIdAndBuyer.mockResolvedValue(order as never);
+		mockReturnRepo.findReturnRequestByOrderId.mockResolvedValue(null);
+
+		await expect(
+			orderService.requestReturn(ORDER_ID, BUYER_ID, 'Broken item')
+		).rejects.toMatchObject({
+			extensions: { code: 'BAD_USER_INPUT' },
+		});
+	});
+
+	it('throws when order has multiple sellers', async () => {
+		const order = makeOrder({
+			status: OrderStatus.DELIVERED,
+			delivery: { status: 'DELIVERED', deliveredAt: new Date() },
+			items: [{ sellerId: 'seller-1' }, { sellerId: 'seller-2' }],
+		});
+		mockRepo.findOrderByIdAndBuyer.mockResolvedValue(order as never);
+		mockReturnRepo.findReturnRequestByOrderId.mockResolvedValue(null);
+
+		await expect(
+			orderService.requestReturn(ORDER_ID, BUYER_ID, 'Broken item')
+		).rejects.toMatchObject({
+			extensions: { code: 'BAD_USER_INPUT' },
+		});
 	});
 
 	it('throws when order is not delivered', async () => {
@@ -253,11 +352,7 @@ describe('requestReturn', () => {
 	});
 
 	it('throws when a return request already exists', async () => {
-		const order = makeOrder({
-			status: OrderStatus.DELIVERED,
-			delivery: { status: 'DELIVERED' },
-			items: [{ sellerId: 'seller-1' }],
-		});
+		const order = deliveredOrder();
 		mockRepo.findOrderByIdAndBuyer.mockResolvedValue(order as never);
 		mockReturnRepo.findReturnRequestByOrderId.mockResolvedValue({ id: 'rr-1' } as never);
 

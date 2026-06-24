@@ -72,6 +72,24 @@ function formatAmount(n: number) {
 	return `$${n.toFixed(2)}`;
 }
 
+const ACTIVE_RETURN_STATUSES = [
+	'REQUESTED',
+	'UNDER_REVIEW',
+	'APPROVED',
+	'AWAITING_RETURN_SHIPPING',
+	'RECEIVED',
+];
+
+function hasReturnRequest(order: SellerOrder): boolean {
+	return Boolean(order.returnRequest);
+}
+
+function hasActiveReturnRequest(order: SellerOrder): boolean {
+	return Boolean(
+		order.returnRequest && ACTIVE_RETURN_STATUSES.includes(order.returnRequest.status)
+	);
+}
+
 function getInitials(name: string) {
 	return name
 		.split(' ')
@@ -268,6 +286,18 @@ export default function SellerOrdersPage() {
 						window.location.href = ROUTES.SELLER_ORDER(menuOrder.id);
 					},
 				},
+				...(hasActiveReturnRequest(menuOrder)
+					? [
+							{
+								label: t('sellerOrders.manageReturn'),
+								icon: Icons.sync,
+								onClick: () => {
+									window.location.href = ROUTES.SELLER_ORDER(menuOrder.id);
+									closeMenu();
+								},
+							},
+						]
+					: []),
 				...(['PENDING', 'CONFIRMED'].includes(menuOrder.status)
 					? [
 							{
@@ -358,7 +388,17 @@ export default function SellerOrdersPage() {
 		{
 			key: 'status',
 			label: t('sellerOrders.table.status'),
-			render: (row) => <StatusBadge status={row.status} label={t(`status.order.${row.status}`)} />,
+			render: (row) => (
+				<Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75, alignItems: 'flex-start' }}>
+					<StatusBadge status={row.status} label={t(`status.order.${row.status}`)} />
+					{hasReturnRequest(row) && row.returnRequest && (
+						<StatusBadge
+							status={row.returnRequest.status}
+							label={t(`status.returnRequest.${row.returnRequest.status}`)}
+						/>
+					)}
+				</Box>
+			),
 		},
 		{
 			key: 'actions',
@@ -409,13 +449,6 @@ export default function SellerOrdersPage() {
 							{t('sellerOrders.export')}
 						</AppButton>
 					)}
-					<AppButton
-						variant="contained"
-						size="small"
-						startIcon={<FontAwesomeIcon icon={Icons.print} />}
-					>
-						{t('sellerOrders.printLabels')}
-					</AppButton>
 				</Box>
 			</Box>
 

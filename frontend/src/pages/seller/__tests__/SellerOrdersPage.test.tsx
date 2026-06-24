@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { MemoryRouter } from 'react-router-dom';
 import SellerOrdersPage from '../SellerOrdersPage';
+import { AppToastProvider } from '@/components/ui';
 import {
 	MY_SELLER_ORDERS_QUERY,
 	MY_SELLER_ORDER_STATS_QUERY,
@@ -89,11 +90,13 @@ function makeOrdersMock(items: SellerOrder[] = [], total = items.length): Mocked
 
 function renderPage(mocks: MockedResponse[]) {
 	return render(
-		<MockedProvider mocks={mocks} addTypename={false}>
-			<MemoryRouter>
-				<SellerOrdersPage />
-			</MemoryRouter>
-		</MockedProvider>
+		<AppToastProvider>
+			<MockedProvider mocks={mocks} addTypename={false}>
+				<MemoryRouter>
+					<SellerOrdersPage />
+				</MemoryRouter>
+			</MockedProvider>
+		</AppToastProvider>
 	);
 }
 
@@ -115,6 +118,29 @@ describe('SellerOrdersPage', () => {
 
 		await waitFor(() => {
 			expect(screen.getByText('sellerOrders.empty.title')).toBeInTheDocument();
+		});
+	});
+
+	it('shows return request badge on order row', async () => {
+		const order = makeSellerOrder('order-abc123', 'DELIVERED');
+		order.returnRequest = {
+			id: 'rr-1',
+			orderId: order.id,
+			buyerId: 'buyer-1',
+			sellerId: 's1',
+			status: 'UNDER_REVIEW',
+			reason: 'Defective item',
+			details: null,
+			resolution: null,
+			reviewedAt: null,
+			refundedAt: null,
+			createdAt: '2026-05-02T12:00:00.000Z',
+			updatedAt: '2026-05-02T12:00:00.000Z',
+		};
+		renderPage([statsMock, makeOrdersMock([order], 1)]);
+
+		await waitFor(() => {
+			expect(screen.getByText('status.returnRequest.UNDER_REVIEW')).toBeInTheDocument();
 		});
 	});
 });

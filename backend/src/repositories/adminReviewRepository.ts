@@ -1,5 +1,7 @@
 import { prisma } from '../utils/prisma.js';
-import type { Prisma } from '@prisma/client';
+import type { ComplaintStatus, Prisma } from '@prisma/client';
+
+const OPEN_COMPLAINT_STATUSES: ComplaintStatus[] = ['NEW', 'IN_REVIEW'];
 
 export type AdminReviewStatusFilter =
 	| 'ALL'
@@ -27,12 +29,12 @@ const REVIEW_INCLUDE = {
 		},
 	},
 	complaints: {
-		where: { status: { in: ['NEW', 'IN_REVIEW'] as const } },
-		orderBy: { createdAt: 'desc' as const },
+		where: { status: { in: OPEN_COMPLAINT_STATUSES } },
+		orderBy: { createdAt: 'desc' },
 		take: 1,
 		select: { id: true, reason: true },
 	},
-} as const;
+} satisfies Prisma.ProductReviewInclude;
 
 export type RawAdminReview = Prisma.ProductReviewGetPayload<{ include: typeof REVIEW_INCLUDE }>;
 

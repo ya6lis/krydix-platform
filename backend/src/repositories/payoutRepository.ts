@@ -125,6 +125,34 @@ export async function markPayoutsBlockedForOrder(orderId: string, sellerId?: str
 	return result.count;
 }
 
+export async function restoreBlockedPayoutsForOrder(
+	orderId: string,
+	sellerId?: string
+): Promise<number> {
+	const blocked = await prisma.sellerPayout.findMany({
+		where: {
+			orderId,
+			...(sellerId && { sellerId }),
+			status: PayoutStatus.BLOCKED,
+		},
+	});
+
+	const now = new Date();
+	let restored = 0;
+	for (const payout of blocked) {
+		const nextStatus =
+			payout.availableAt && payout.availableAt <= now
+				? PayoutStatus.ELIGIBLE_FOR_RELEASE
+				: PayoutStatus.ON_HOLD;
+		await prisma.sellerPayout.update({
+			where: { id: payout.id },
+			data: { status: nextStatus },
+		});
+		restored += 1;
+	}
+	return restored;
+}
+
 export async function markPayoutsRefundedForOrder(orderId: string, sellerId?: string): Promise<number> {
 	const result = await prisma.sellerPayout.updateMany({
 		where: {

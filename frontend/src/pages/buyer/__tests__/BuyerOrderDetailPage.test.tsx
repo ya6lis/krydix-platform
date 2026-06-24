@@ -2,7 +2,7 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import BuyerOrderDetailPage from '../BuyerOrderDetailPage';
-import { AppToastProvider } from '@/components/ui';
+import { AppToastProvider, ImageLightboxProvider } from '@/components/ui';
 import {
 	MY_ORDER_QUERY,
 	MY_ORDERS_QUERY,
@@ -82,6 +82,21 @@ function makeOrder(status: string = 'PENDING', overrides: Partial<Order> = {}): 
 	};
 }
 
+function makeDeliveredOrder(overrides: Partial<Order> = {}): Order {
+	return makeOrder('DELIVERED', {
+		delivery: {
+			__typename: 'Delivery',
+			id: 'del-1',
+			method: 'COURIER',
+			status: 'DELIVERED',
+			address: '12 Main St, Kyiv',
+			trackingCode: 'TTN-001',
+			createdAt: '2026-05-01T11:00:00.000Z',
+		},
+		...overrides,
+	});
+}
+
 function makeOrderMock(order: Order | null, id: string = ORDER_ID): MockedResponse {
 	return {
 		request: { query: MY_ORDER_QUERY, variables: { id } },
@@ -140,13 +155,15 @@ function notificationMocks(orderId: string): MockedResponse[] {
 function renderPage(mocks: MockedResponse[], id: string = ORDER_ID) {
 	return render(
 		<AppToastProvider>
-			<MockedProvider mocks={[...mocks, ...notificationMocks(id)]}>
-				<MemoryRouter initialEntries={[`/orders/${id}`]}>
-					<Routes>
-						<Route path="/orders/:id" element={<BuyerOrderDetailPage />} />
-					</Routes>
-				</MemoryRouter>
-			</MockedProvider>
+			<ImageLightboxProvider>
+				<MockedProvider mocks={[...mocks, ...notificationMocks(id)]}>
+					<MemoryRouter initialEntries={[`/orders/${id}`]}>
+						<Routes>
+							<Route path="/orders/:id" element={<BuyerOrderDetailPage />} />
+						</Routes>
+					</MemoryRouter>
+				</MockedProvider>
+			</ImageLightboxProvider>
 		</AppToastProvider>
 	);
 }
@@ -260,24 +277,31 @@ describe('BuyerOrderDetailPage — action buttons visibility', () => {
 		});
 	});
 
-	it('shows Request Refund button for DELIVERED order', async () => {
-		renderPage([makeOrderMock(makeOrder('DELIVERED'))]);
+	it('shows Request Refund button for CONFIRMED order', async () => {
+		renderPage([makeOrderMock(makeOrder('CONFIRMED'))]);
 		await waitFor(() => {
 			expect(screen.getByText('orderDetail.actions.requestRefund')).toBeInTheDocument();
 		});
 	});
 
-	it('hides Request Refund button for SHIPPED order', async () => {
-		renderPage([makeOrderMock(makeOrder('SHIPPED'))]);
+	it('hides Request Refund button for DELIVERED order', async () => {
+		renderPage([makeOrderMock(makeDeliveredOrder())]);
 		await waitFor(() => {
 			expect(screen.queryByText('orderDetail.actions.requestRefund')).not.toBeInTheDocument();
 		});
 	});
 
-	it('shows Request Return button for DELIVERED order', async () => {
-		renderPage([makeOrderMock(makeOrder('DELIVERED'))]);
+	it('shows Request Return button for delivered order with completed delivery', async () => {
+		renderPage([makeOrderMock(makeDeliveredOrder())]);
 		await waitFor(() => {
 			expect(screen.getByText('orderDetail.actions.requestReturn')).toBeInTheDocument();
+		});
+	});
+
+	it('hides Request Return button when delivery is not completed', async () => {
+		renderPage([makeOrderMock(makeOrder('DELIVERED'))]);
+		await waitFor(() => {
+			expect(screen.queryByText('orderDetail.actions.requestReturn')).not.toBeInTheDocument();
 		});
 	});
 });
@@ -318,7 +342,7 @@ describe('BuyerOrderDetailPage — confirm dialogs', () => {
 	});
 
 	it('opens refund dialog when Request Refund button clicked', async () => {
-		renderPage([makeOrderMock(makeOrder('DELIVERED'))]);
+		renderPage([makeOrderMock(makeOrder('CONFIRMED'))]);
 		await waitFor(() => screen.getByText('orderDetail.actions.requestRefund'));
 		fireEvent.click(screen.getByText('orderDetail.actions.requestRefund'));
 		await waitFor(() => {
@@ -327,7 +351,7 @@ describe('BuyerOrderDetailPage — confirm dialogs', () => {
 	});
 
 	it('opens return dialog when Request Return button clicked', async () => {
-		renderPage([makeOrderMock(makeOrder('DELIVERED'))]);
+		renderPage([makeOrderMock(makeDeliveredOrder())]);
 		await waitFor(() => screen.getByText('orderDetail.actions.requestReturn'));
 		fireEvent.click(screen.getByText('orderDetail.actions.requestReturn'));
 		await waitFor(() => {
@@ -342,7 +366,6 @@ describe('BuyerOrderDetailPage — confirm dialogs', () => {
 				variables: {
 					orderId: ORDER_ID,
 					reason: 'Broken zipper on arrival',
-					details: 'Broken zipper on arrival',
 				},
 			},
 			result: {
@@ -353,9 +376,9 @@ describe('BuyerOrderDetailPage — confirm dialogs', () => {
 						orderId: ORDER_ID,
 						buyerId: 'buyer-1',
 						sellerId: 'seller-1',
-						status: 'REQUESTED',
+						status: 'UNDER_REVIEW',
 						reason: 'Broken zipper on arrival',
-						details: 'Broken zipper on arrival',
+						details: null,
 						resolution: null,
 						reviewedById: null,
 						reviewedAt: null,
@@ -368,19 +391,19 @@ describe('BuyerOrderDetailPage — confirm dialogs', () => {
 			},
 		};
 		renderPage([
-			makeOrderMock(makeOrder('DELIVERED')),
+			makeOrderMock(makeDeliveredOrder()),
 			requestReturnMock,
 			makeOrderMock(
-				makeOrder('DELIVERED', {
+				makeDeliveredOrder({
 					returnRequest: {
 						__typename: 'ReturnRequest',
 						id: 'rr-1',
 						orderId: ORDER_ID,
 						buyerId: 'buyer-1',
 						sellerId: 'seller-1',
-						status: 'REQUESTED',
+						status: 'UNDER_REVIEW',
 						reason: 'Broken zipper on arrival',
-						details: 'Broken zipper on arrival',
+						details: null,
 						resolution: null,
 						reviewedById: null,
 						reviewedAt: null,
@@ -400,7 +423,7 @@ describe('BuyerOrderDetailPage — confirm dialogs', () => {
 		});
 		fireEvent.click(screen.getByText('orderDetail.returnConfirm.submit'));
 		await waitFor(() => {
-			expect(screen.getByText('status.returnRequest.REQUESTED')).toBeInTheDocument();
+			expect(screen.getByText('status.returnRequest.UNDER_REVIEW')).toBeInTheDocument();
 		});
 	});
 });

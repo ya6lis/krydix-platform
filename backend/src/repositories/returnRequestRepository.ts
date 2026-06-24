@@ -26,6 +26,7 @@ export interface CreateReturnRequestInput {
 	sellerId: string;
 	reason: string;
 	details?: string | null;
+	status?: ReturnRequestStatus;
 }
 
 export async function createReturnRequest(
@@ -38,6 +39,7 @@ export async function createReturnRequest(
 			sellerId: input.sellerId,
 			reason: input.reason,
 			details: input.details ?? null,
+			status: input.status ?? ReturnRequestStatus.REQUESTED,
 		},
 	});
 }

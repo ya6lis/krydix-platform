@@ -1,5 +1,4 @@
 import { GraphQLError } from 'graphql';
-import type { ZodSchema } from 'zod';
 import type { Language } from '@prisma/client';
 import { AuditAction, ReleaseNoteStatus } from '../constants/enums.js';
 import * as auditLogService from './auditLogService.js';
@@ -8,11 +7,16 @@ import {
 	AdminReleaseNotesInputSchema,
 	CreateReleaseNoteSchema,
 	UpdateReleaseNoteSchema,
+	type CreateReleaseNoteInput,
+	type UpdateReleaseNoteInput,
 } from '../validators/releaseNoteValidators.js';
 
 type GraphqlLanguage = 'EN' | 'UK';
 
-function parseReleaseNoteInput<T>(schema: ZodSchema<T>, input: unknown): T {
+function parseReleaseNoteInput<T extends { version: string }>(
+	schema: { safeParse: (input: unknown) => { success: true; data: T } | { success: false; error: { errors: { message: string }[] } } },
+	input: unknown,
+): T {
 	const result = schema.safeParse(input);
 	if (!result.success) {
 		const message = result.error.errors.map((issue) => issue.message).join(' ');
@@ -104,7 +108,7 @@ export async function getUnseenReleaseNotesCount(sincePublishedAt?: string | nul
 }
 
 export async function getAdminReleaseNotes(input: unknown) {
-	const parsed = parseReleaseNoteInput(AdminReleaseNotesInputSchema, input ?? {});
+	const parsed = AdminReleaseNotesInputSchema.parse(input ?? {});
 	const { items, total } = await repo.listReleaseNotes(parsed);
 
 	return {
@@ -122,7 +126,7 @@ export async function getAdminReleaseNoteById(id: string) {
 }
 
 export async function createReleaseNote(adminId: string, input: unknown) {
-	const parsed = parseReleaseNoteInput(CreateReleaseNoteSchema, input);
+	const parsed = parseReleaseNoteInput(CreateReleaseNoteSchema, input) as CreateReleaseNoteInput;
 	const existing = await repo.findReleaseNoteByVersion(parsed.version);
 	if (existing) {
 		throw new GraphQLError('Release note version already exists', {
@@ -153,7 +157,7 @@ export async function createReleaseNote(adminId: string, input: unknown) {
 }
 
 export async function updateReleaseNote(adminId: string, input: unknown) {
-	const parsed = parseReleaseNoteInput(UpdateReleaseNoteSchema, input);
+	const parsed = parseReleaseNoteInput(UpdateReleaseNoteSchema, input) as UpdateReleaseNoteInput;
 	const existing = await repo.findReleaseNoteById(parsed.id);
 	if (!existing) {
 		throw new GraphQLError('Release note not found', { extensions: { code: 'NOT_FOUND' } });

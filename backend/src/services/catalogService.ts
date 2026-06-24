@@ -6,9 +6,10 @@ import { Language, ProductSort, ProductStatus } from '../constants/enums.js';
 import type { ProductQueryInput } from '../validators/catalogValidators.js';
 
 /** Products visible in the public catalog. */
+const VISIBLE_STATUSES: ProductStatus[] = [ProductStatus.APPROVED, ProductStatus.ENABLED];
 const VISIBLE_PRODUCT_WHERE: Prisma.ProductWhereInput = {
 	deletedAt: null,
-	status: { in: [ProductStatus.APPROVED, ProductStatus.ENABLED] },
+	status: { in: VISIBLE_STATUSES },
 };
 
 interface TranslationLike {
@@ -288,10 +289,7 @@ export async function getProductBySlug(
 ): Promise<CatalogProduct | null> {
 	const product = await productRepo.findProductBySlug(slug);
 	if (!product) return null;
-	if (
-		product.deletedAt ||
-		!VISIBLE_PRODUCT_WHERE.status?.in?.includes(product.status as ProductStatus)
-	) {
+	if (product.deletedAt || !VISIBLE_STATUSES.includes(product.status as ProductStatus)) {
 		return null;
 	}
 	const ratings = await productRepo.ratingsByProductIds([product.id]);

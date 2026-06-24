@@ -1,4 +1,4 @@
-import type { FeedbackCategory, FeedbackStatus, Prisma } from '@prisma/client';
+import { Prisma, type FeedbackCategory, type FeedbackStatus } from '@prisma/client';
 import { prisma } from '../utils/prisma.js';
 
 const feedbackInclude = {
@@ -16,7 +16,10 @@ export async function createFeedback(data: {
 	attachments: Prisma.InputJsonValue | null;
 }) {
 	return prisma.userFeedback.create({
-		data,
+		data: {
+			...data,
+			attachments: data.attachments === null ? Prisma.JsonNull : data.attachments,
+		},
 		include: feedbackInclude,
 	});
 }
